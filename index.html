@@ -109,6 +109,40 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#fff;color:var(--slate);padding:12px 16px;border-radius:12px;font-weight:700;font-size:15px;z-index:60;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.25)}
 .demo-note{font-size:13px;color:#7F8E99}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+
+/* header: links on desktop, menu on phones */
+.bar{gap:12px}
+.links{display:none;gap:26px;align-items:center;margin-left:auto;margin-right:18px}
+.links a,.links button{color:#fff;text-decoration:none;font:700 16px var(--body);background:none;border:0;cursor:pointer;padding:8px 0;opacity:.92}
+.links a:hover,.links button:hover{opacity:1;text-decoration:underline;text-underline-offset:4px}
+.acts{display:flex;gap:8px;align-items:center}
+.bar .btn.ghost{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.5);min-height:44px;font-size:16px;padding:0 16px}
+.bar .bar-cta{min-height:44px;font-size:16px;padding:0 18px;display:none}
+.menu-btn svg{margin-right:2px}
+.bar .btn{white-space:nowrap}
+.bar .btn.btn-main.bar-cta{background:var(--hivis);color:var(--slate);border:0}
+@media (min-width:900px){.links{display:flex}.bar .bar-cta{display:inline-flex}.menu-btn{display:none!important}}
+@media (max-width:899px){.bar .acts .btn.ghost{padding:0 12px}.logo{font-size:20px}.logo svg{width:26px;height:26px}}
+/* thumb bar on phones, after the hero */
+.thumbbar{position:fixed;left:0;right:0;bottom:0;z-index:19;display:grid;grid-template-columns:1fr 1.4fr;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(31,42,51,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transform:translateY(110%);transition:transform .25s}
+.thumbbar.on{transform:none}.thumbbar .btn{min-height:52px;width:100%}
+.ghost-d{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.6)}
+@media (min-width:900px){.thumbbar{display:none}}
+@media (max-width:899px){footer{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}}
+.menu{display:grid;gap:8px}.menu a,.menu button{display:flex;justify-content:space-between;align-items:center;min-height:60px;padding:0 16px;border-radius:14px;background:#1A242C;border:1.5px solid #3A4A56;color:var(--text);font:800 20px var(--body);text-decoration:none;cursor:pointer;text-align:left}
+.menu .btn-main{background:var(--hivis);color:var(--slate);border-color:var(--hivis)}
+/* club */
+.club{background:var(--concrete)}
+.clubgrid{display:grid;gap:36px}@media (min-width:900px){.clubgrid{grid-template-columns:1.3fr .9fr;align-items:end}}
+.perks{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:18px}
+.perks li{display:grid;gap:2px;padding-left:22px;position:relative}.perks li::before{content:'';position:absolute;left:0;top:9px;width:10px;height:10px;border-radius:2px;background:var(--chalk)}
+.perks b{font:850 22px/1.15 var(--display);font-variation-settings:'wdth' 110}.perks span{color:var(--soft)}
+.plan{background:var(--paper);border-radius:20px;padding:22px;display:grid;gap:16px;box-shadow:0 20px 50px rgba(31,42,51,.12)}
+.seg2{display:grid;grid-template-columns:1fr 1fr;background:var(--concrete);border-radius:12px;padding:4px}
+.seg2 button{min-height:44px;border:0;border-radius:9px;background:none;font:800 16px var(--body);color:var(--soft);cursor:pointer}
+.seg2 button[aria-checked="true"]{background:var(--slate);color:#fff}
+.price{margin:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.price b{font:900 56px/1 var(--display);font-variation-settings:'wdth' 125}.price span{color:var(--soft)}
+.muted2{color:var(--soft);font-size:14px}
 /* owner view + customer portal */
 .app{position:fixed;inset:0;z-index:35;background:var(--night);overflow:auto;-webkit-overflow-scrolling:touch}
 .app-open{overflow:hidden}.app-open .fab{display:none}
@@ -164,8 +198,10 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 
 <header class="bar" id="bar">
   <a class="logo" href="#top" aria-label="Ridgeline Roofing, home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>Ridgeline</a>
-  <a class="btn" href="#" data-sms="fab">Text us</a>
+  <nav class="links" aria-label="Main"><a href="#how">How it works</a><a href="#club">Roof Care Club</a><button type="button" data-login>Customer login</button></nav>
+  <div class="acts"><a class="btn ghost" href="#" data-sms="fab">Text us</a><button class="btn btn-main bar-cta" type="button" data-start>Free inspection</button><button class="btn ghost menu-btn" type="button" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button></div>
 </header>
+<div class="thumbbar" id="thumbbar"><a class="btn ghost-d" href="#" data-sms="fab">Text us</a><button class="btn btn-main" type="button" data-start>Free inspection</button></div>
 
 <main id="top">
   <section class="hero" id="hero" aria-labelledby="h1">
@@ -196,7 +232,7 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
     </div>
   </section>
 
-  <section class="sec how" aria-labelledby="howH">
+  <section class="sec how" id="how" aria-labelledby="howH">
     <div class="wrap">
       <h2 id="howH">How it works</h2>
       <ol class="steps">
@@ -204,6 +240,26 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
         <li><b>We check the roof</b><span>Within 48 hours. You don’t need to be home.</span></li>
         <li><b>You get the photos</b><span>Every problem we find, on your phone. You decide what happens next.</span></li>
       </ol>
+    </div>
+  </section>
+
+  <section class="sec club" id="club" aria-labelledby="clubH">
+    <div class="wrap clubgrid">
+      <div>
+        <h2 id="clubH">Roof Care Club</h2>
+        <p class="lede">We check your roof every year and after every big storm, so small problems never turn into ceiling stains.</p>
+        <ul class="perks">
+          <li><b>Yearly checkup</b><span>Shingles to attic, photos on your phone.</span></li>
+          <li><b>Storm checks</b><span>Hail or high wind in your ZIP, we come within 72 hours. You don’t have to call.</span></li>
+          <li><b>15% off repairs</b><span>Every repair, as long as you’re a member.</span></li>
+        </ul>
+      </div>
+      <div class="plan">
+        <div class="seg2" role="radiogroup" aria-label="Plan"><button type="button" role="radio" aria-checked="true" data-plan="m">Monthly</button><button type="button" role="radio" aria-checked="false" data-plan="y">Yearly</button></div>
+        <p class="price"><b id="pPrice">$12</b><span id="pPer">a month, cancel anytime</span></p>
+        <button class="btn btn-main" type="button" id="joinBtn" style="width:100%">Join the club</button>
+        <small class="muted2">First checkup is scheduled when you join.</small>
+      </div>
     </div>
   </section>
 
@@ -559,6 +615,23 @@ function startSheet(){const close=open(`<div class="scrim"><div class="sheet" ro
   $('#gSave').onclick=()=>{const o={phone:who.phone,msg:$('#gm').value.trim(),addr:$('#ga').value.trim(),photos:pics};if(ps!=null)o.appt={t:days[pd].getTime(),slot:SL[ps],confirmed:false};upsert(o);
     $('#g2').hidden=true;$('#g3').hidden=false;$('#gWhen').textContent=ps!=null?`${days[pd].toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}, ${SL[ps]}. We’ll text to confirm the day before.`:'We’ll text you shortly to pick a time.'}}
 $$('[data-start]').forEach(b=>b.onclick=startSheet);
+
+/* ---------- header menu, thumb bar, club ---------- */
+$('#menuBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="mH">Menu</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
+    <nav class="menu"><button class="btn-main" type="button" data-go="start">Free inspection</button><a href="#how" data-go="nav">How it works</a><a href="#club" data-go="nav">Roof Care Club</a><a href="#" data-sms="fab">Text us</a><button type="button" data-go="login">Customer login</button></nav></div></div>`,'#layer .menu .btn-main');
+  refreshSms(document);
+  $$('#layer [data-go]').forEach(x=>x.addEventListener('click',()=>{const g=x.dataset.go;close();if(g==='start')startSheet();if(g==='login')loginSheet()}))};
+addEventListener('scroll',()=>$('#thumbbar').classList.toggle('on',scrollY>innerHeight*.8),{passive:true});
+let plan='m';$$('[data-plan]').forEach(b=>b.onclick=()=>{plan=b.dataset.plan;$$('[data-plan]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));$('#pPrice').textContent=plan==='m'?'$12':'$129';$('#pPer').textContent=plan==='m'?'a month, cancel anytime':'a year, saves $15'});
+$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="jH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="jH">Join the Roof Care Club</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
+    <p class="muted">${plan==='m'?'$12 a month':'$129 a year'}. Your first checkup gets scheduled right after.</p>
+    <div class="field"><label for="jn">Your name</label><input id="jn" autocomplete="name"></div><div class="field"><label for="jp">Mobile number</label><input id="jp" type="tel" inputmode="tel" autocomplete="tel"></div><div class="field"><label for="ja">Home address</label><input id="ja" autocomplete="street-address"></div>
+    <p class="err" id="je" role="alert" hidden></p><button class="btn btn-main" type="button" id="jGo">Join for ${plan==='m'?'$12 a month':'$129 a year'}</button>
+    <p class="muted" style="font-size:14px">On the live site this goes to a secure card checkout. Nothing is charged in this demo.</p></div></div>`,'#jn');
+  $('#jGo').onclick=()=>{const n=$('#jn').value.trim(),p=$('#jp').value.trim(),a=$('#ja').value.trim();if(!n||!phoneOk(p)||!a){$('#je').textContent='Add your name, a 10-digit mobile number and your address.';$('#je').hidden=false;return}
+    const c=upsert({name:n,phone:p,addr:a,source:'Roof Care Club',club:{plan:plan==='m'?'Monthly, $12':'Yearly, $129'}});c.portal=true;save();
+    $('#layer .sheet').innerHTML=`<span class="okpill">You’re in</span><h3>Welcome to the club, ${esc(first(n))}.</h3><p class="muted">We’ll text you to schedule your first checkup. You can see your plan any time under Customer login.</p><button class="btn btn-line" type="button" id="jDone">Done</button>`;$('#jDone').onclick=close}};
+
 
 apply();routeHash();
 })();
