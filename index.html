@@ -531,6 +531,14 @@ footer .wrap{display:block}
  #ripZone{top:calc(64px + env(safe-area-inset-top,0px))!important;height:78vw!important}
  .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,0) 0%,rgba(31,42,51,0) calc(64px + 70vw),var(--slate) calc(64px + 78vw + 10px))!important}
 }
+/* phones: a slot under the photo holds the action box (Watch us fix it / steps / compare). The page scrolls normally there. */
+@media (max-width:899px){
+ .hero{padding-top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 92px)}
+ #ripFound,#ripFixed,#fixCap{top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 10px)!important;left:12px!important;right:12px!important;width:auto!important}
+ .hero .riplabel{display:flex!important;position:absolute;top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 26px)!important;left:12px;right:12px;transform:none;justify-content:center;white-space:normal;font-size:15px}
+ .hero.tearing .riplabel,.hero.found .riplabel,.hero.fixing .riplabel{opacity:0}
+}
+@media (max-width:899px){.hero{padding-top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 112px)}#fixCap{padding:8px 10px!important;gap:6px!important}.hero .riplabel{top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 36px)!important}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
