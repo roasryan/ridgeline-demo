@@ -607,14 +607,105 @@ footer .wrap{display:block}
 @media (max-width:1240px) and (min-width:1100px){.links a[href="roof-replacement-cost.html"],.links a[href="reviews.html"]{display:none}}
 @media (max-width:999px){.top #ripMeter{display:none!important}.tsub{font-size:16px}.tleft .proof1{font-size:13px;margin:8px 0 12px}.heroact{min-height:0}}
 #inspect,#quote{scroll-margin-top:calc(var(--bh,64px) + 12px)}
+/* ===== v9: always-on banner ===== */
+.bar{display:block!important;padding:0!important;background:rgba(16,24,31,.94)!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.09)}
+.bar1{display:flex;align-items:center;gap:14px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 8px;max-width:1320px;margin:0 auto}
+.bar .logo{flex:none}
+.qbar{display:flex;gap:8px;margin-left:auto}
+.qi{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border-radius:12px;color:#fff;text-decoration:none;font:700 15px/1 var(--body);background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.16);cursor:pointer;white-space:nowrap;transition:border-color .2s,background .2s}
+.qi:hover{background:rgba(255,255,255,.13)}
+.qi svg{width:20px;height:20px;flex:none}
+.qi span i{display:none;font-style:normal}
+.qi.on{border-color:var(--hivis)}
+.qi-main{background:var(--hivis)!important;color:var(--slate)!important;border-color:var(--hivis)!important}
+.bar .menu-btn{display:inline-flex!important;align-items:center;gap:6px;min-height:44px;padding:0 13px;border-radius:12px;background:none;border:1.5px solid rgba(255,255,255,.22);color:#fff;font:700 15px var(--body);cursor:pointer;flex:none}
+.tcpop{position:absolute;right:max(16px,calc((100vw - 1320px)/2 + 16px));top:100%;margin-top:8px;background:#1F2A33;color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;display:grid;gap:10px;width:min(300px,calc(100vw - 32px));box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.tcpop[hidden]{display:none}.tcpop .btn{width:100%;min-height:52px}.tcpop small{color:#AEBBC4;font-size:13px;line-height:1.4}
+.tcpop .btn-line.light{color:#fff;border-color:rgba(255,255,255,.5);background:transparent}
+.thumbbar{display:none!important}
+@media (max-width:1060px){.qi span b{display:none}.qi span i{display:inline}.qi{padding:0 12px}}
+@media (max-width:759px){
+ .bar1{flex-wrap:wrap;gap:6px 10px;padding:calc(6px + env(safe-area-inset-top,0px)) 10px 8px}
+ .bar .menu-btn{margin-left:auto;min-height:40px}
+ .qbar{order:3;width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0}
+ .qi{flex-direction:column;justify-content:center;gap:3px;min-height:50px;padding:4px 2px;font-size:12.5px;border-radius:11px}
+ .qi svg{width:19px;height:19px}
+ .tcpop{right:10px}
+}
+/* ===== v9: one seasonal sky behind the whole page; light content floats on it as panels ===== */
+html{background:#121B23}
+body{background:transparent!important}
+#sky{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none;display:block}
+main,footer{position:relative;z-index:1}
+.top,.sec,.phero,footer{background-color:transparent!important}
+.top{padding-top:calc(var(--bh,64px) + 12px)!important}
+@media (max-width:999px){.top{padding-top:calc(var(--bh,64px) + 8px)!important}}
+.sec:not(.offer):not(.end){padding:10px 12px!important}
+.sec:not(.offer):not(.end) > .wrap{background:#fff;border-radius:24px;padding:clamp(26px,5vw,60px) clamp(18px,4vw,52px);box-shadow:0 24px 60px rgba(0,0,0,.32)}
+.sec.trust > .wrap,.sec.reviews > .wrap,.sec.club > .wrap{background:#EEF2F4}
+.sec.offer,.sec.end{padding:72px 16px!important}
+.band{margin:10px 12px;border-radius:24px}
+@media (max-width:640px){.sec:not(.offer):not(.end){padding:8px 8px!important}.sec:not(.offer):not(.end) > .wrap{border-radius:18px}}
+/* ===== v9: roof lookup ===== */
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rgrid{display:grid;gap:22px;align-items:center}
+@media (min-width:900px){.rgrid{grid-template-columns:.9fr 1.1fr;gap:44px}}
+.rtext h2{margin:4px 0 8px}
+.rmform{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.rmform input{flex:1 1 220px;min-height:54px;font:500 18px var(--body);border:2px solid #C9D2D8;border-radius:12px;padding:0 14px;color:var(--ink);background:#fff}
+.rmform input:focus{outline:3px solid var(--hivis);border-color:var(--slate)}
+.rmform .btn{min-height:54px}
+.rmmsg{min-height:1.4em;margin:10px 0 0;font-weight:700;color:#2F6B3A}.rmmsg.bad{color:#B3261E}
+.rmaddr{font-weight:800;margin:6px 0 10px;font-size:17px}
+.rmstats{display:grid;grid-template-columns:1.6fr 1fr;gap:10px}
+.rmstats div{background:#F2F5F7;border-radius:14px;padding:12px 14px;display:grid}
+.rmstats b{font:850 26px/1.1 var(--display);font-variation-settings:'wdth' 110}.rmstats span{font-size:14px;color:#55636E}
+.rmnote{font-size:14px;color:#55636E;margin:10px 0 14px}
+.rmcta{display:flex;flex-wrap:wrap;gap:8px}
+.rmview{position:relative;aspect-ratio:4/3;border-radius:18px;overflow:hidden;background:#0E151B;cursor:crosshair;isolation:isolate}
+.rmtiles{position:absolute;inset:0}.rmtiles img{max-width:none;display:block;user-select:none;pointer-events:none}
+.rmview:not(.found) .rmtiles{filter:blur(4px) brightness(.55)}
+#rmSvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.rmpoly{fill:rgba(255,212,0,.16);stroke:#FFD400;stroke-width:3;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(0,0,0,.6))}
+.rmpin{position:absolute;transform:translate(-50%,-100%);pointer-events:none;z-index:2}
+.rmview:not(.found) .rmpin{display:none}
+.rmpin span{display:block;background:#FFD400;color:#1F2A33;font:800 14px var(--body);padding:7px 12px;border-radius:999px;box-shadow:0 6px 16px rgba(0,0,0,.4);margin-bottom:12px;position:relative;white-space:nowrap}
+.rmpin span::after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-bottom:0;border-top-color:#FFD400}
+.rmempty{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:#fff;gap:4px;z-index:1;pointer-events:none}
+.rmempty b{font:850 22px var(--display)}.rmempty span{color:#C9D3DA;font-size:15px}
+.rmview.found .rmempty{display:none}
+.rmfine{font-size:12px;color:#6B7882;margin:8px 2px 0}
+/* ===== v9: armadillo booking helper ===== */
+.dillo{position:fixed;right:12px;bottom:10px;z-index:18;transform:translateY(150%);transition:transform .55s cubic-bezier(.2,1.35,.4,1)}
+.dillo.in{transform:none}.dillo.in.away{transform:translateY(150%)}
+.dgo{background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:flex-end}
+.dgo img{width:128px;height:auto;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5));transform-origin:50% 92%}
+.dillo.wave img{animation:dwave 1.1s ease-in-out 2}
+@keyframes dwave{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg) translateY(-5px)}70%{transform:rotate(5deg)}}
+.dbub{background:#fff;color:#1F2A33;font:800 15px/1.25 var(--body);padding:10px 14px;border-radius:16px 16px 4px 16px;box-shadow:0 10px 26px rgba(0,0,0,.35);max-width:210px;text-align:left;margin-right:40px;margin-bottom:-4px}
+.dx{position:absolute;top:-10px;right:-2px;width:30px;height:30px;border-radius:50%;border:0;background:#1F2A33;color:#fff;font:700 18px/1 var(--body);cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+@media (max-width:700px){.dgo img{width:86px}.dbub{font-size:13px;max-width:160px;margin-right:24px}}
+@media (prefers-reduced-motion:reduce){.dillo{transition:none}.dillo.wave img{animation:none}}
+.tcpop .btn-main{background:var(--hivis)!important;color:var(--slate)!important;border:0!important}
+@media (min-width:900px){.rgrid{grid-template-columns:.9fr 1.1fr;grid-template-areas:"h m" "o m";align-items:start}.rtext{grid-area:h}.rmwrap{grid-area:m}.rmout{grid-area:o}}
+.rmout{margin-top:-8px}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
-<header class="bar" id="bar">
-  <a class="logo" href="index.html" aria-label="Ridgeline Roofing, home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>Ridgeline</a>
-  <nav class="links" aria-label="Main"><a href="roofing-services.html" aria-current="page">Services</a><a href="commercial-roofing.html">Commercial</a><a href="insurance-claims.html">Insurance claims</a><a href="roof-replacement-cost.html">Cost guide</a><a href="reviews.html">Reviews</a><a href="roof-care-club.html">Roof Care Club</a><button type="button" data-login>Customer login</button></nav>
-  <div class="acts"><a class="btn ghost" href="#" data-sms="fab">Text us</a><a class="btn btn-main bar-cta" href="index.html#inspect">Free inspection</a><button class="btn ghost menu-btn" type="button" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button></div>
+<canvas id="sky" aria-hidden="true"></canvas>
+<header class="bar solid" id="bar">
+  <div class="bar1">
+    <a class="logo" href="index.html" aria-label="Ridgeline Roofing, home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>Ridgeline</a>
+    <nav class="qbar" id="qbar" aria-label="Get started">
+      <a class="qi qi-main" href="index.html#inspect" data-q="inspect"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M6 10v10h12V10"/><path d="m9.5 15 2 2 3.5-4"/></svg><span><b>Free inspection</b><i>Inspection</i></span></a>
+      <a class="qi" href="index.html#quote" data-q="quote"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h3M14 13h2M8 17h3M14 17h2"/></svg><span><b>Instant quote</b><i>Quote</i></span></a>
+      <button class="qi" type="button" id="tcBtn" aria-expanded="false" aria-controls="tcPop"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg><span><b>Text / Call</b><i>Text/Call</i></span></button>
+      <a class="qi" href="roofing-services.html" data-q="what"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span><b>Services</b><i>Services</i></span></a>
+    </nav>
+    <button class="menu-btn" type="button" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Menu</span></button>
+  </div>
+  <div class="tcpop" id="tcPop" hidden><a class="btn btn-main" href="#" data-sms="fab">Text us</a><a class="btn btn-line light" href="tel:+13467740053">Call <span data-phone>(346) 774-0053</span></a><small>A real person answers, 7 AM to 7 PM. 24/7 storm line.</small></div>
 </header>
-<div class="thumbbar" id="thumbbar"><a class="btn ghost-d" href="#" data-sms="fab">Text us</a><a class="btn btn-main" href="index.html#inspect">Free inspection</a></div>
+<div class="thumbbar" id="thumbbar" hidden></div>
 
 <main id="top">
   <section class="phero plain"><div class="wrap"><nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / <span>Services</span></nav><h1>Roofing services in Houston</h1><p class="sub">Roof repair, roof replacement, storm damage, gutters, ventilation and commercial roofing. Pick one to see the steps, prices and warranty.</p></div></section>
@@ -926,7 +1017,9 @@ const ok=n=>READY.has(n);
 const src=(el,n)=>{el.src=`img/${n}.webp`;el.srcset=`img/${n}-m.webp 800w, img/${n}.webp 1200w`;el.sizes='100vw'};
 {const q=new URLSearchParams(location.search),sv=q.get('season');if(sv&&/^(winter|spring|summer|fall)$/.test(sv)){PICK.season=sv;if(q.get('region'))PICK.region=q.get('region')}}
 function apply(){const sea=PICK.season==='auto'?seasonNow():PICK.season,reg=PICK.region==='auto'?regionFor(BIZ_CITY):PICK.region;
-  let s=SET[pickSet(sea,reg)];const fb=SET.hurricane;
+  const full=x=>!!(x&&x.done&&x.stages&&ok(x.before)&&ok(x.under)&&ok(x.done)&&x.stages.every(t=>t&&ok(t[0])));/* only finished scenarios (old roof, every repair step, new roof) ever show; the rest wait for their Flow photos */
+  let key=pickSet(sea,reg);if(!full(SET[key]))key='hurricane';let s=SET[key];const fb=SET.hurricane;
+  document.documentElement.dataset.season=({hurricane:'fall',gutters:'fall',hail:'spring',heat:'summer',usWinter:'winter',gulfWinter:'winter'})[key]||'fall';window.dispatchEvent(new Event('rl-season'));
   const pair=ok(s.before)&&ok(s.under)?[s.before,s.under]:[fb.before,fb.under];
   if($('#hOver')){const hh=$('#hero');if(hh)hh.style.setProperty('--hbg',`url(img/${pair[0]}-m.webp)`);src($('#hOver'),pair[0]);src($('#hUnder'),pair[1]);const dn=$('#hDone');if(dn){if(s.done&&ok(s.done)){dn.dataset.ok='1';src(dn,s.done)}else dn.dataset.ok='0'}}
   if($('#why'))$('#why').textContent=s.why;
@@ -978,9 +1071,9 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
     if(getComputedStyle(over).objectFit!=='cover'){const hr=hero.getBoundingClientRect(),r=over.getBoundingClientRect(),k=w/hr.width;return[(r.left-hr.left)*k,(r.top-hr.top)*k,r.width*k,r.width*ih/iw*k]}
     const s=Math.max(w/iw,h/ih),dw=iw*s,dh=ih*s;return[(w-dw)/2,(h-dh)*.4,dw,dh]}
   function build(){const r=hero.getBoundingClientRect();if(!r.width||!r.height)return;const nw=Math.round(r.width*dpr),nh=Math.round(r.height*dpr);
-    if(top&&nw===cv.width&&nh===cv.height&&top.__src===over.currentSrc)return;
+    if(top&&top.__ok&&nw===cv.width&&nh===cv.height&&top.__src===over.currentSrc)return;
     cv.width=nw;cv.height=nh;top=mk(nw,nh);top.__src=over.currentSrc;const t=top.getContext('2d');let T=null;
-    if(over.complete&&over.naturalWidth){T=cover(over,nw,nh);t.drawImage(over,...T)}
+    if(over.complete&&over.naturalWidth){T=cover(over,nw,nh);try{t.drawImage(over,...T)}catch(e){T=null}}top.__ok=!!T;
     maskC=mk(nw,nh);const m=maskC.getContext('2d');const key=((over.currentSrc||over.src||'').match(/\/(\w+?)(?:-m)?\.webp/)||[])[1];const poly=ROOF[key]||ROOF._;
     if(T){const[a,b,c,d]=T;m.fillStyle='#000';m.beginPath();poly.forEach(([u,v])=>m.lineTo(a+u*c,b+v*d));m.closePath();m.fill();
       const ys=poly.map(p=>b+p[1]*d);rt=Math.max(0,Math.min(...ys));rb=Math.min(nh,Math.max(...ys))}
@@ -1097,7 +1190,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
    show.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});show.addEventListener('touchend',e=>{if(sx==null)return;const d=e.changedTouches[0].clientX-sx;sx=null;sw(d)},{passive:true})}
   /* BEFORE / AFTER: the new roof stays on screen; the visitor can drag a handle to compare with the roof they started with */
   const cmp=$('#cmpHandle');let cut=0,cmpOn=false;
-  function drawCmp(){if(!frames.length)return;const last=frames[frames.length-1],W2=fx.width,H2=fx.height;fg.clearRect(0,0,W2,H2);fg.drawImage(last,0,0);if(cut>0){fg.save();fg.beginPath();fg.rect(0,0,W2*cut,H2);fg.clip();fg.drawImage(top,0,0);fg.restore()}cmp.style.left=(cut*100)+'%'}
+  function drawCmp(){if(!frames.length)return;fx.hidden=false;if(fx.width!==cv.width||fx.height!==cv.height){fx.width=cv.width;fx.height=cv.height}const last=frames[frames.length-1],W2=fx.width,H2=fx.height;fg.clearRect(0,0,W2,H2);fg.drawImage(last,0,0);if(cut>0){fg.save();fg.beginPath();fg.rect(0,0,W2*cut,H2);fg.clip();fg.drawImage(top,0,0);fg.restore()}cmp.style.left=(cut*100)+'%'}
   function setCut(v,anim){v=Math.max(0,Math.min(1,v));if(anim&&M&&!reduce){const a=cut;M.animate(0,1,{duration:.6,ease:[.3,.7,.2,1],onUpdate:t=>{cut=a+(v-a)*t;drawCmp()}})}else{cut=v;drawCmp()}}
   function startCmp(){if(cmpOn)return;cmpOn=true;cmp.hidden=false;hero.classList.add('cmp');setCut(.5,true);$('#cmpBtn').textContent='Show the new roof'}
   function stopCmp(){setCut(0,true);$('#cmpBtn').textContent='Compare before & after';cmpOn=false;setTimeout(()=>{if(!cmpOn){cmp.hidden=true;hero.classList.remove('cmp')}},650)}
@@ -1105,15 +1198,16 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   $('#cmpBtn').onclick=()=>cmpOn?stopCmp():startCmp();
   {let drag=false;const mv=e=>{if(!drag)return;const r=hero.getBoundingClientRect();setCut((e.clientX-r.left)/r.width)};
    cmp.addEventListener('pointerdown',e=>{drag=true;cmp.setPointerCapture(e.pointerId);e.preventDefault()});cmp.addEventListener('pointermove',mv);cmp.addEventListener('pointerup',()=>drag=false);cmp.addEventListener('pointercancel',()=>drag=false)}
-  function finish(){clearTimeout(sTimer);cap.hidden=true;show.hidden=true;cancelAnimationFrame(anim);cut=0;drawCmp();fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  function finish(){window.dispatchEvent(new Event('rl-fixed'));clearTimeout(sTimer);cap.hidden=true;show.hidden=true;cancelAnimationFrame(anim);cut=0;drawCmp();fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
   window.__rip=()=>({tears,full,done,c:measure(),slides:slides.length,si,manual});
   $('#ripFix').onclick=fixIt;
   $('#ripAgain').onclick=()=>{clearTimeout(sTimer);cmpOn=false;cut=0;cmp.hidden=true;hero.classList.remove('cmp');$('#cmpBtn').textContent='Compare before & after';cancelAnimationFrame(anim);FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;show.hidden=true;fx.hidden=true;cap.hidden=true;hero.classList.remove('fixing','tearing');$('#ripReset').click()};
 
   $('#ripReset').onclick=()=>{clearTimeout(actT);actT=0;full=false;meter.classList.remove('full');hero.classList.remove('tearing');hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);pile.getContext('2d').clearRect(0,0,pile.width,pile.height);pileA=1;chunks=[];pts=[];tears=0;measured=-1;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone');dirty=true;kick()};
-  const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
-  if(over.complete&&over.naturalWidth)ready();else over.addEventListener('load',ready,{once:true});
-  over.addEventListener('load',()=>{if(top){top.__src='';build()}});
+  /* only hide the real photo once the canvas really has the old roof painted (slow phones / in-app browsers) */
+  let tries=0;const ready=()=>{const go=()=>{if(top)top.__src='';build();if(top&&top.__ok){hero.classList.add('ripon');if(!reduce&&!tears)setTimeout(demo,1100)}else if(tries++<40)setTimeout(go,250)};if(over.decode)over.decode().then(go,go);else go()};
+  if(over.complete&&over.naturalWidth)ready();
+  over.addEventListener('load',ready);
   let rz=0;new ResizeObserver(()=>{clearTimeout(rz);rz=setTimeout(build,120)}).observe(hero);
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible){dirty=true;kick()}}).observe(hero);
   if(M&&!reduce)M.animate('.tleft > *',{opacity:[.001,1],y:[24,0]},{duration:.7,delay:M.stagger(.08,{startDelay:.15}),ease:[.2,.8,.2,1]})})();
@@ -1297,6 +1391,121 @@ if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"
     const c=upsert({name:n,phone:p,addr:a,source:'Roof Care Club',club:{plan:plan==='m'?'Monthly, $12':'Yearly, $129'}});c.portal=true;save();
     $('#layer .sheet').innerHTML=`<span class="okpill">You’re in</span><h3>Welcome to the club, ${esc(first(n))}.</h3><p class="muted">We’ll text you to schedule your first checkup. You can see your plan any time under Customer login.</p><button class="btn btn-line" type="button" id="jDone">Done</button>`;$('#jDone').onclick=close}};
 
+
+
+/* ================= v9: always-on banner, seasonal sky, roof lookup, armadillo ================= */
+
+/* ---- banner: Text / Call popover + which section you're on ---- */
+{const b=$('#tcBtn'),pop=$('#tcPop');if(b&&pop){const set=v=>{pop.hidden=!v;b.setAttribute('aria-expanded',v)};
+  b.onclick=e=>{e.stopPropagation();set(pop.hidden);if(!pop.hidden&&M&&!reduce)M.animate(pop,{opacity:[0,1],y:[-6,0]},{duration:.18})};
+  document.addEventListener('click',e=>{if(!pop.hidden&&!pop.contains(e.target)&&e.target!==b)set(false)});
+  pop.addEventListener('click',e=>{if(e.target.closest('a'))setTimeout(()=>set(false),50)});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')set(false)})}
+ const map={inspect:$('#inspect'),quote:$('#quote'),what:$('#what')};
+ if(window.IntersectionObserver&&map.inspect){const vis={};const io=new IntersectionObserver(es=>{es.forEach(x=>vis[x.target.id]=x.isIntersecting?x.intersectionRatio:0);
+   let best=null,bv=0;for(const k in vis)if(vis[k]>bv){bv=vis[k];best=k}
+   $$('#qbar [data-q]').forEach(a=>a.classList.toggle('on',a.dataset.q===best))},{threshold:[0,.15,.3,.5]});
+  Object.values(map).forEach(el=>el&&io.observe(el))}}
+
+/* ---- seasonal motion background (one canvas behind the whole page) ---- */
+{const cv=$('#sky');if(cv){const g=cv.getContext('2d');let W=0,H=0,dpr=1,P=[],sea='fall',raf=0,t0=0,clouds=[];
+  const pal={fall:['#121B23','#1E2B36','#2A3742'],spring:['#13202A','#1C3140','#28414F'],summer:['#1E1A1A','#2E2420','#3E2C22'],winter:['#121A24','#1C2836','#2A3848']};
+  const R=(a,b)=>a+Math.random()*(b-a);
+  const LEAF=['#C4622D','#D9893A','#A8432A','#E0B04A','#8C5A2B'];
+  function mk(fresh){const p={x:R(0,W),y:fresh?R(-H,H):R(-60,-10),s:R(.6,1.4)};
+    if(sea==='fall'){Object.assign(p,{k:Math.random()<.42?'leaf':'rain',vx:R(1.2,2.6),vy:R(1.4,3),r:R(0,6.28),vr:R(-.05,.05),c:LEAF[(Math.random()*LEAF.length)|0]})}
+    else if(sea==='spring'){Object.assign(p,{k:Math.random()<.18?'hail':'rain',vx:R(.3,.9),vy:R(5,8)})}
+    else if(sea==='summer'){Object.assign(p,{k:'heat',y:fresh?R(0,H):H+R(10,80),vx:R(-.15,.15),vy:-R(.25,.6),a:R(.05,.14),w:R(40,120)})}
+    else Object.assign(p,{k:'snow',vx:R(-.3,.4),vy:R(.4,1.1),r:R(0,6.28)});return p}
+  function size(){dpr=Math.min(1.5,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);
+    const n=Math.round(Math.min(90,W*H/(sea==='summer'?26000:14000)));P=Array.from({length:n},()=>mk(true));
+    clouds=Array.from({length:5},(_,i)=>({x:R(-.2,1.1)*W,y:R(-.1,.55)*H,r:R(.35,.7)*Math.max(W,H),v:R(.04,.12)*(i%2?1:.6)}))}
+  function bg(){const c=pal[sea]||pal.fall,gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,c[2]);gr.addColorStop(.45,c[1]);gr.addColorStop(1,c[0]);g.fillStyle=gr;g.fillRect(0,0,W,H);
+    if(sea==='summer'){const s=g.createRadialGradient(W*.85,-H*.05,0,W*.85,-H*.05,H*.9);s.addColorStop(0,'rgba(255,190,90,.38)');s.addColorStop(1,'rgba(255,150,60,0)');g.fillStyle=s;g.fillRect(0,0,W,H)}
+    for(const k of clouds){const cg=g.createRadialGradient(k.x,k.y,0,k.x,k.y,k.r);const a=sea==='summer'?.05:sea==='winter'?.1:.13;cg.addColorStop(0,`rgba(150,170,185,${a})`);cg.addColorStop(1,'rgba(150,170,185,0)');g.fillStyle=cg;g.fillRect(0,0,W,H)}}
+  function frame(t){const dt=Math.min(3,(t-(t0||t))/16.7);t0=t;bg();
+    const wind=sea==='fall'?1+Math.sin(t/2600)*.6:1;
+    for(const k of clouds){k.x+=k.v*dt*wind;if(k.x-k.r>W)k.x=-k.r}
+    for(let i=0;i<P.length;i++){const p=P[i];p.x+=p.vx*dt*wind;p.y+=p.vy*dt;
+      if(p.k==='leaf'){p.r+=p.vr*dt;p.x+=Math.sin(t/600+i)*.6;g.save();g.translate(p.x,p.y);g.rotate(p.r);g.scale(p.s,p.s*Math.abs(Math.cos(t/500+i))+.2);g.fillStyle=p.c;g.globalAlpha=.75;g.beginPath();g.ellipse(0,0,7,3.6,0,0,6.283);g.fill();g.restore()}
+      else if(p.k==='rain'){g.strokeStyle='rgba(190,210,225,.22)';g.lineWidth=1.1*p.s;g.beginPath();g.moveTo(p.x,p.y);g.lineTo(p.x-p.vx*4,p.y-p.vy*4);g.stroke()}
+      else if(p.k==='hail'){g.fillStyle='rgba(235,242,248,.6)';g.beginPath();g.arc(p.x,p.y,2.2*p.s,0,6.283);g.fill()}
+      else if(p.k==='snow'){p.x+=Math.sin(t/900+i)*.35;g.fillStyle='rgba(255,255,255,.7)';g.beginPath();g.arc(p.x,p.y,1.8*p.s,0,6.283);g.fill()}
+      else if(p.k==='heat'){g.strokeStyle=`rgba(255,200,140,${p.a})`;g.lineWidth=2;g.beginPath();for(let j=0;j<=6;j++){const xx=p.x-p.w/2+j*p.w/6,yy=p.y+Math.sin(t/400+j+i)*4;j?g.lineTo(xx,yy):g.moveTo(xx,yy)}g.stroke()}
+      if(p.y>H+20||p.x>W+40||p.x<-60||(p.k==='heat'&&p.y<-20))P[i]=mk(false)}
+    raf=requestAnimationFrame(frame)}
+  function start(){cancelAnimationFrame(raf);sea=document.documentElement.dataset.season||'fall';size();if(reduce){bg();return}t0=0;raf=requestAnimationFrame(frame)}
+  addEventListener('rl-season',start);let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(start,150)});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else start()});start()}}
+
+/* ---- roof lookup: address → satellite photo of their house, roof outlined, size feeds the quote ----
+   Demo: OpenStreetMap search + Esri satellite + OSM building outlines (no key).
+   Live client sites: paste a Google Maps Platform key here (Geocoding + Maps Static APIs, key locked to the client's domain). */
+const MAPS_KEY='';
+{const view=$('#rmView');if(view){const tiles=$('#rmTiles'),svg=$('#rmSvg'),pin=$('#rmPin'),msg=$('#rmMsg'),out=$('#rmOut');
+  const Z=19,TS=256;let C=null,S=1,blds=[],pick=null,addr='';
+  const wx=(lon,z)=>(lon+180)/360*TS*2**z,wy=(lat,z)=>{const r=lat*Math.PI/180;return(1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*TS*2**z};
+  const lonOf=(x,z)=>x/(TS*2**z)*360-180,latOf=(y,z)=>{const n=Math.PI-2*Math.PI*y/(TS*2**z);return 180/Math.PI*Math.atan(.5*(Math.exp(n)-Math.exp(-n)))};
+  const say=(t,bad)=>{msg.textContent=t;msg.classList.toggle('bad',!!bad)};
+  function draw(lat,lon,scale){C={lat,lon,x:wx(lon,Z),y:wy(lat,Z)};S=scale;const w=view.clientWidth,h=view.clientHeight;tiles.innerHTML='';
+    if(MAPS_KEY){const im=new Image();im.alt='';im.src=`https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lon}&zoom=${Z}&size=640x640&scale=2&maptype=satellite&key=${MAPS_KEY}`;
+      Object.assign(im.style,{position:'absolute',width:640*S+'px',height:640*S+'px',left:(w/2-320*S)+'px',top:(h/2-320*S)+'px'});tiles.appendChild(im)}
+    else{const half=[w/2/S,h/2/S],x0=Math.floor((C.x-half[0])/TS),x1=Math.floor((C.x+half[0])/TS),y0=Math.floor((C.y-half[1])/TS),y1=Math.floor((C.y+half[1])/TS);
+      for(let tx=x0;tx<=x1;tx++)for(let ty=y0;ty<=y1;ty++){const im=new Image();im.alt='';im.decoding='async';im.src=`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${Z}/${ty}/${tx}`;
+        Object.assign(im.style,{position:'absolute',width:TS*S+1+'px',height:TS*S+1+'px',left:(w/2+(tx*TS-C.x)*S)+'px',top:(h/2+(ty*TS-C.y)*S)+'px'});tiles.appendChild(im)}}
+    outline()}
+  const px=(lat,lon)=>{const w=view.clientWidth,h=view.clientHeight;return[w/2+(wx(lon,Z)-C.x)*S,h/2+(wy(lat,Z)-C.y)*S]};
+  function outline(){const w=view.clientWidth,h=view.clientHeight;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML='';
+    if(pick){const pts=pick.g.map(p=>px(p.lat,p.lon).map(v=>v.toFixed(1)).join(',')).join(' ');svg.innerHTML=`<polygon points="${pts}" class="rmpoly"/>`;
+      const c=pick.c;const[a,b]=px(c.lat,c.lon);pin.style.left=a+'px';pin.style.top=b+'px'}
+    else{pin.style.left=w/2+'px';pin.style.top=h/2+'px'}pin.hidden=false}
+  const inside=(pt,g)=>{let ins=false;for(let i=0,j=g.length-1;i<g.length;j=i++){const a=g[i],b=g[j];if((a.lat>pt.lat)!==(b.lat>pt.lat)&&pt.lon<(b.lon-a.lon)*(pt.lat-a.lat)/(b.lat-a.lat)+a.lon)ins=!ins}return ins};
+  const area=g=>{const k=Math.cos(g[0].lat*Math.PI/180)*111320,m=110540;let s=0;for(let i=0,j=g.length-1;i<g.length;j=i++)s+=(g[j].lon*k)*(g[i].lat*m)-(g[i].lon*k)*(g[j].lat*m);return Math.abs(s/2)*10.7639};
+  const cen=g=>({lat:g.reduce((s,p)=>s+p.lat,0)/g.length,lon:g.reduce((s,p)=>s+p.lon,0)/g.length});
+  const dist=(a,b)=>Math.hypot((a.lat-b.lat)*110540,(a.lon-b.lon)*111320*Math.cos(a.lat*Math.PI/180));
+  function choose(pt){let best=null,bd=1e9;for(const b of blds){if(b.ft<350)continue;if(inside(pt,b.g))return b;const d=dist(pt,b.c);if(d<bd){bd=d;best=b}}return bd<35?best:null}
+  function result(){const nice=addr.split(',').slice(0,2).join(',');
+    if(pick){const roof=Math.round(pick.ft*1.1*1.12/10)*10;const lo=Math.round(roof*.9/50)*50,hi=Math.round(roof*1.1/50)*50;
+      out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><div class="rmstats"><div><b>${lo.toLocaleString()}–${hi.toLocaleString()}</b><span>sq ft of roof (estimate)</span></div><div><b>${Math.round(roof/100)}</b><span>squares</span></div></div>
+        <p class="rmnote">Outline from public building maps; we measure it exactly at your inspection. Wrong house? Tap your roof on the photo.</p>
+        <div class="rmcta"><button class="btn btn-main" type="button" id="rmPrice">Price this roof</button><a class="btn btn-line" href="#inspect" id="rmBook">Book a free inspection</a></div>`;
+      try{localStorage.setItem('rl-roof',JSON.stringify({addr,roof}))}catch(x){}}
+    else out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><p class="rmnote">We found your street but couldn’t outline this roof from public maps. Tap your roof on the photo, or we’ll measure it at your free inspection.</p><div class="rmcta"><a class="btn btn-main" href="#inspect" id="rmBook">Book a free inspection</a><a class="btn btn-line" href="#quote">See typical prices</a></div>`;
+    out.hidden=false;view.classList.add('found');
+    const fill=()=>{const ia=$('#iAddr');if(ia&&!ia.value)ia.value=addr.split(',').slice(0,3).join(',').trim();const qa=$('#qAddr');if(qa&&!qa.value){qa.value=nice;qa.dispatchEvent(new Event('input'))}};fill();
+    const pr=$('#rmPrice');if(pr)pr.onclick=()=>{if(window.setJob)window.setJob('replace');const u=$('#qUnit'),s=$('#qSize');if(u&&s){u.value='roof';u.dispatchEvent(new Event('change'));s.value=Math.round(pick.ft*1.1*1.12/10)*10;s.dispatchEvent(new Event('input'))}
+      const q=$('#quote');if(q)q.scrollIntoView({behavior:reduce?'auto':'smooth'})}}
+  async function find(q){say('Finding your house…');out.hidden=true;pick=null;blds=[];
+    try{let lat,lon;
+      if(MAPS_KEY){const r=await(await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(q)}&components=country:US&key=${MAPS_KEY}`)).json();if(!r.results||!r.results[0])throw 0;lat=r.results[0].geometry.location.lat;lon=r.results[0].geometry.location.lng;addr=r.results[0].formatted_address}
+      else{const r=await(await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=us&addressdetails=0&q=${encodeURIComponent(q)}`,{headers:{'Accept-Language':'en'}})).json();if(!r[0])throw 0;lat=+r[0].lat;lon=+r[0].lon;addr=r[0].display_name}
+      draw(lat,lon,1.6);say('Outlining your roof…');
+      try{const oq=`[out:json][timeout:12];way(around:70,${lat},${lon})["building"];out geom;`;
+        const o=await(await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(oq),headers:{'Content-Type':'application/x-www-form-urlencoded'}})).json();
+        blds=(o.elements||[]).filter(e=>e.geometry&&e.geometry.length>3).map(e=>{const g=e.geometry.map(p=>({lat:p.lat,lon:p.lon}));return{g,c:cen(g),ft:area(g)}})}catch(x){blds=[]}
+      pick=choose({lat,lon});
+      if(pick){const w=view.clientWidth;const xs=pick.g.map(p=>wx(p.lon,Z)),ys=pick.g.map(p=>wy(p.lat,Z));const span=Math.max(Math.max(...xs)-Math.min(...xs),(Math.max(...ys)-Math.min(...ys))*w/view.clientHeight);
+        draw(pick.c.lat,pick.c.lon,clamp(w*.5/span,1,2.6))}
+      say(pick?'Found it. That’s your roof.':'Here’s your street.');result()}
+    catch(x){say('We couldn’t find that address. Try street, city and ZIP.',true)}}
+  $('#rmForm').onsubmit=e=>{e.preventDefault();const v=$('#rmAddr').value.trim();if(v.length<6){say('Type your street address, city and ZIP.',true);return}find(v)};
+  view.addEventListener('click',e=>{if(!C||!blds.length)return;const r=view.getBoundingClientRect();const x=C.x+(e.clientX-r.left-r.width/2)/S,y=C.y+(e.clientY-r.top-r.height/2)/S;
+    const pt={lat:latOf(y,Z),lon:lonOf(x,Z)};const b=blds.find(b=>inside(pt,b.g));if(b){pick=b;outline();result();say('Got it. That’s your roof.')}});
+  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(C)draw(C.lat,C.lon,S)},200)});
+  /* idle: a blurred Houston neighborhood until they search */
+  setTimeout(()=>{if(!C)draw(29.7058,-95.4588,1.4)},800);
+  /* the inspection form's address can open the lookup too */
+  const ia=$('#iAddr');if(ia)ia.addEventListener('change',()=>{const v=ia.value.trim();if(v.length>8&&!view.classList.contains('found')){$('#rmAddr').value=v}})}}
+
+/* ---- the armadillo: our own booking helper (original character, real photo from Flow) ---- */
+{const d=$('#dillo');if(d){const im=d.querySelector('img');const lines=['Free roof check this week?','Tap me. I’ll book it.','Photo report in 24 hours.','I’ll find your spot.'];let i=0,tm;
+  const show=()=>{d.hidden=false;requestAnimationFrame(()=>d.classList.add('in'))};
+  if(im.complete&&im.naturalWidth)setTimeout(show,2500);else{im.onload=()=>setTimeout(show,2500);im.onerror=()=>d.remove()}
+  const bub=d.querySelector('.dbub');const cycle=()=>{i=(i+1)%lines.length;bub.textContent=lines[i];d.classList.remove('wave');void d.offsetWidth;d.classList.add('wave')};tm=setInterval(cycle,6000);
+  window.addEventListener('rl-fixed',()=>{bub.textContent='Want this on YOUR roof? Tap me.';d.classList.add('wave')});
+  d.querySelector('button.dgo').onclick=()=>{const f=$('#inspect');if(f){f.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(()=>{const n=$('#iName');if(n&&!$('#iCard.done'))n.focus({preventScroll:true})},reduce?0:700)}else location.href='index.html#inspect'};
+  d.querySelector('.dx').onclick=()=>{d.remove();clearInterval(tm)};
+  const f=$('#inspect');if(f&&window.IntersectionObserver)new IntersectionObserver(es=>d.classList.toggle('away',es[0].isIntersecting),{threshold:.25}).observe(f)}}
 
 apply();routeHash();
 })();
