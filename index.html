@@ -524,6 +524,13 @@ footer .wrap{display:block}
 #cmpHandle .ct.b{right:12px}#cmpHandle .ct.a{left:12px}
 @media (max-width:899px){#cmpHandle i{top:30%}#cmpHandle .ct{top:calc(74px + env(safe-area-inset-top,0px) + 40px)}}
 @media (max-width:899px){#cmpHandle{top:calc(64px + env(safe-area-inset-top,0px));bottom:auto;height:78vw}#cmpHandle .ct{top:12px}#cmpHandle i{top:40%}}
+/* phones: no dead gap. The text starts right under the photo, and only the photo itself is draggable (the rest of the hero scrolls normally) */
+@media (max-width:899px){
+ .hero{height:auto!important;min-height:0!important;padding-top:calc(64px + env(safe-area-inset-top,0px) + 78vw)}
+ .hero .hcopy{position:relative;bottom:auto;padding-top:18px}
+ #ripZone{top:calc(64px + env(safe-area-inset-top,0px))!important;height:78vw!important}
+ .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,0) 0%,rgba(31,42,51,0) calc(64px + 70vw),var(--slate) calc(64px + 78vw + 10px))!important}
+}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
