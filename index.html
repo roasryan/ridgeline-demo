@@ -1155,9 +1155,9 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
     if(getComputedStyle(over).objectFit!=='cover'){const hr=hero.getBoundingClientRect(),r=over.getBoundingClientRect(),k=w/hr.width;return[(r.left-hr.left)*k,(r.top-hr.top)*k,r.width*k,r.width*ih/iw*k]}
     const s=Math.max(w/iw,h/ih),dw=iw*s,dh=ih*s;return[(w-dw)/2,(h-dh)*.4,dw,dh]}
   function build(){const r=hero.getBoundingClientRect();if(!r.width||!r.height)return;const nw=Math.round(r.width*dpr),nh=Math.round(r.height*dpr);
-    if(top&&nw===cv.width&&nh===cv.height&&top.__src===over.currentSrc)return;
+    if(top&&top.__ok&&nw===cv.width&&nh===cv.height&&top.__src===over.currentSrc)return;
     cv.width=nw;cv.height=nh;top=mk(nw,nh);top.__src=over.currentSrc;const t=top.getContext('2d');let T=null;
-    if(over.complete&&over.naturalWidth){T=cover(over,nw,nh);t.drawImage(over,...T)}
+    if(over.complete&&over.naturalWidth){T=cover(over,nw,nh);try{t.drawImage(over,...T)}catch(e){T=null}}top.__ok=!!T;
     maskC=mk(nw,nh);const m=maskC.getContext('2d');const key=((over.currentSrc||over.src||'').match(/\/(\w+?)(?:-m)?\.webp/)||[])[1];const poly=ROOF[key]||ROOF._;
     if(T){const[a,b,c,d]=T;m.fillStyle='#000';m.beginPath();poly.forEach(([u,v])=>m.lineTo(a+u*c,b+v*d));m.closePath();m.fill();
       const ys=poly.map(p=>b+p[1]*d);rt=Math.max(0,Math.min(...ys));rb=Math.min(nh,Math.max(...ys))}
@@ -1274,7 +1274,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
    show.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});show.addEventListener('touchend',e=>{if(sx==null)return;const d=e.changedTouches[0].clientX-sx;sx=null;sw(d)},{passive:true})}
   /* BEFORE / AFTER: the new roof stays on screen; the visitor can drag a handle to compare with the roof they started with */
   const cmp=$('#cmpHandle');let cut=0,cmpOn=false;
-  function drawCmp(){if(!frames.length)return;const last=frames[frames.length-1],W2=fx.width,H2=fx.height;fg.clearRect(0,0,W2,H2);fg.drawImage(last,0,0);if(cut>0){fg.save();fg.beginPath();fg.rect(0,0,W2*cut,H2);fg.clip();fg.drawImage(top,0,0);fg.restore()}cmp.style.left=(cut*100)+'%'}
+  function drawCmp(){if(!frames.length)return;fx.hidden=false;if(fx.width!==cv.width||fx.height!==cv.height){fx.width=cv.width;fx.height=cv.height}const last=frames[frames.length-1],W2=fx.width,H2=fx.height;fg.clearRect(0,0,W2,H2);fg.drawImage(last,0,0);if(cut>0){fg.save();fg.beginPath();fg.rect(0,0,W2*cut,H2);fg.clip();fg.drawImage(top,0,0);fg.restore()}cmp.style.left=(cut*100)+'%'}
   function setCut(v,anim){v=Math.max(0,Math.min(1,v));if(anim&&M&&!reduce){const a=cut;M.animate(0,1,{duration:.6,ease:[.3,.7,.2,1],onUpdate:t=>{cut=a+(v-a)*t;drawCmp()}})}else{cut=v;drawCmp()}}
   function startCmp(){if(cmpOn)return;cmpOn=true;cmp.hidden=false;hero.classList.add('cmp');setCut(.5,true);$('#cmpBtn').textContent='Show the new roof'}
   function stopCmp(){setCut(0,true);$('#cmpBtn').textContent='Compare before & after';cmpOn=false;setTimeout(()=>{if(!cmpOn){cmp.hidden=true;hero.classList.remove('cmp')}},650)}
@@ -1288,9 +1288,10 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   $('#ripAgain').onclick=()=>{clearTimeout(sTimer);cmpOn=false;cut=0;cmp.hidden=true;hero.classList.remove('cmp');$('#cmpBtn').textContent='Compare before & after';cancelAnimationFrame(anim);FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;show.hidden=true;fx.hidden=true;cap.hidden=true;hero.classList.remove('fixing','tearing');$('#ripReset').click()};
 
   $('#ripReset').onclick=()=>{clearTimeout(actT);actT=0;full=false;meter.classList.remove('full');hero.classList.remove('tearing');hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);pile.getContext('2d').clearRect(0,0,pile.width,pile.height);pileA=1;chunks=[];pts=[];tears=0;measured=-1;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone');dirty=true;kick()};
-  const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
-  if(over.complete&&over.naturalWidth)ready();else over.addEventListener('load',ready,{once:true});
-  over.addEventListener('load',()=>{if(top){top.__src='';build()}});
+  /* only hide the real photo once the canvas really has the old roof painted (slow phones / in-app browsers) */
+  let tries=0;const ready=()=>{const go=()=>{if(top)top.__src='';build();if(top&&top.__ok){hero.classList.add('ripon');if(!reduce&&!tears)setTimeout(demo,1100)}else if(tries++<40)setTimeout(go,250)};if(over.decode)over.decode().then(go,go);else go()};
+  if(over.complete&&over.naturalWidth)ready();
+  over.addEventListener('load',ready);
   let rz=0;new ResizeObserver(()=>{clearTimeout(rz);rz=setTimeout(build,120)}).observe(hero);
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible){dirty=true;kick()}}).observe(hero);
   if(M&&!reduce)M.animate('.tleft > *',{opacity:[.001,1],y:[24,0]},{duration:.7,delay:M.stagger(.08,{startDelay:.15}),ease:[.2,.8,.2,1]})})();
