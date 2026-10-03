@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Text link test</title>
+<style>
+body{margin:0;background:#0E1318;color:#E6ECEF;font:17px/1.5 system-ui,-apple-system,sans-serif;padding:24px 16px}
+h1{font-size:24px;margin:0 0 6px}p{color:#9AA8B4;margin:0 0 20px}
+a{display:block;background:#F2B544;color:#14100A;text-decoration:none;font-weight:700;border-radius:12px;padding:16px;margin:0 0 12px;text-align:center}
+a.alt{background:#1E2730;color:#E6ECEF;border:1px solid #2C3843}
+code{font-size:13px;color:#9AA8B4;word-break:break-all;display:block;margin:-6px 0 16px}
+</style></head><body>
+<h1>Text link test</h1>
+<p>Tap each button. Note which ones open Messages with the text already filled in.</p>
+<a href="sms:+13467740053?body=Test%201%3A%20Hi%20Ridgeline%2C%20I%20have%20a%20question%20about%20my%20roof.">1. Standard (?body=)</a>
+<code>sms:+13467740053?body=…</code>
+<a class="alt" href="sms:+13467740053&amp;body=Test%202%3A%20Hi%20Ridgeline%2C%20I%20have%20a%20question%20about%20my%20roof.">2. Older iPhone style (&amp;body=)</a>
+<code>sms:+13467740053&amp;body=…</code>
+<a class="alt" href="sms:+13467740053?&amp;body=Test%203%3A%20Hi%20Ridgeline%2C%20I%20have%20a%20question%20about%20my%20roof.">3. Combined (?&amp;body=)</a>
+<code>sms:+13467740053?&amp;body=…</code>
+<a class="alt" href="sms://open?addresses=+13467740053&amp;body=Test%204%3A%20Hi%20Ridgeline%2C%20I%20have%20a%20question%20about%20my%20roof.">4. iPhone open?addresses</a>
+<code>sms://open?addresses=+13467740053&amp;body=…</code>
+</body></html>
