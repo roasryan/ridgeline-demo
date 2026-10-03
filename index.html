@@ -121,7 +121,7 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .menu-btn svg{margin-right:2px}
 .bar .btn{white-space:nowrap}
 .bar .btn.btn-main.bar-cta{background:var(--hivis);color:var(--slate);border:0}
-@media (min-width:900px){.links{display:flex}.bar .bar-cta{display:inline-flex}.menu-btn{display:none!important}}
+@media (min-width:1100px){.links{display:flex}.menu-btn{display:none!important}}@media (min-width:700px){.bar .bar-cta{display:inline-flex}}
 @media (max-width:899px){.bar .acts .btn.ghost{padding:0 12px}.logo{font-size:20px}.logo svg{width:26px;height:26px}}
 /* thumb bar on phones, after the hero */
 .thumbbar{position:fixed;left:0;right:0;bottom:0;z-index:19;display:grid;grid-template-columns:1fr 1.4fr;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(31,42,51,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transform:translateY(110%);transition:transform .25s}
@@ -143,6 +143,26 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .seg2 button[aria-checked="true"]{background:var(--slate);color:#fff}
 .price{margin:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.price b{font:900 56px/1 var(--display);font-variation-settings:'wdth' 125}.price span{color:var(--soft)}
 .muted2{color:var(--soft);font-size:14px}
+
+/* what we do */
+.what{background:var(--paper)}
+.svcs{list-style:none;margin:36px 0 0;padding:0;display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:640px){.svcs{grid-template-columns:1fr 1fr}}@media (min-width:1000px){.svcs{grid-template-columns:repeat(3,1fr)}}
+.svc{display:grid;grid-template-columns:110px minmax(0,1fr);gap:14px;align-items:start;background:var(--concrete);border-radius:16px;padding:12px}
+@media (min-width:1000px){.svc{grid-template-columns:1fr;padding:0;overflow:hidden}.svc>div{padding:0 16px 18px}}
+.svc img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px}@media (min-width:1000px){.svc img{border-radius:0}}
+.svc>div{display:grid;gap:4px;min-width:0}.svc b{font:850 21px/1.15 var(--display);font-variation-settings:'wdth' 110}.svc span{color:var(--soft);font-size:16px}
+.svc a{color:var(--chalk);font-weight:800;font-size:16px;text-underline-offset:3px;margin-top:4px;width:max-content}
+/* reviews */
+.reviews{background:var(--concrete)}
+.revhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:14px 30px}
+.score{margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--soft)}.score b{font:900 48px/1 var(--display);color:var(--ink)}
+.stars{display:inline-flex;gap:2px}.stars svg{width:20px;height:20px;fill:#F5A300}
+.revs{list-style:none;margin:30px 0 0;padding:0 0 6px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(280px,86%);gap:14px;overflow-x:auto;scroll-snap-type:x mandatory}
+@media (min-width:900px){.revs{grid-auto-flow:row;grid-template-columns:repeat(3,1fr);overflow:visible}}
+.rev{scroll-snap-align:start;background:var(--paper);border-radius:18px;padding:22px;display:grid;gap:14px;align-content:start;box-shadow:0 14px 40px rgba(31,42,51,.08)}
+.rev p{margin:0;font-size:18px;line-height:1.5}.who{display:grid;gap:2px}.who span{color:var(--soft);font-size:15px}
+.demo-note2{margin:16px 0 0;color:var(--soft);font-size:14px}
 /* owner view + customer portal */
 .app{position:fixed;inset:0;z-index:35;background:var(--night);overflow:auto;-webkit-overflow-scrolling:touch}
 .app-open{overflow:hidden}.app-open .fab{display:none}
@@ -198,7 +218,7 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 
 <header class="bar" id="bar">
   <a class="logo" href="#top" aria-label="Ridgeline Roofing, home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>Ridgeline</a>
-  <nav class="links" aria-label="Main"><a href="#how">How it works</a><a href="#club">Roof Care Club</a><button type="button" data-login>Customer login</button></nav>
+  <nav class="links" aria-label="Main"><a href="#what">What we do</a><a href="#how">How it works</a><a href="#reviews">Reviews</a><a href="#club">Roof Care Club</a><button type="button" data-login>Customer login</button></nav>
   <div class="acts"><a class="btn ghost" href="#" data-sms="fab">Text us</a><button class="btn btn-main bar-cta" type="button" data-start>Free inspection</button><button class="btn ghost menu-btn" type="button" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button></div>
 </header>
 <div class="thumbbar" id="thumbbar"><a class="btn ghost-d" href="#" data-sms="fab">Text us</a><button class="btn btn-main" type="button" data-start>Free inspection</button></div>
@@ -232,6 +252,14 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
     </div>
   </section>
 
+  <section class="sec what" id="what" aria-labelledby="whatH">
+    <div class="wrap">
+      <h2 id="whatH">What we do</h2>
+      <p class="lede">Homes only. If it’s on your roof or keeps water off it, we handle it.</p>
+      <ul class="svcs"><li class="svc"><img src="img/s5-m.webp" alt="" loading="lazy"><div><b>Roof replacement</b><span>Tear-off to the wood, new decking where needed, impact-rated shingles.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with a roof replacement. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/s2-m.webp" alt="" loading="lazy"><div><b>Leak repair</b><span>We find where the water really gets in and fix that, not just the stain.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with a leak. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/hail-m.webp" alt="" loading="lazy"><div><b>Storm and hail damage</b><span>Photos within 48 hours. Tarp the same or next day if water is coming in.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with storm or hail damage. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/s4-m.webp" alt="" loading="lazy"><div><b>Insurance claims</b><span>We document everything and meet your adjuster at the house.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with an insurance claim. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/f3-m.webp" alt="" loading="lazy"><div><b>Gutters</b><span>Seamless gutters and guards, sized for Houston downpours.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with gutters. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/heat-m.webp" alt="" loading="lazy"><div><b>Attic ventilation</b><span>Ridge and soffit vents so the attic stays cooler and shingles last longer.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with attic ventilation. My address is ">Ask about this</a></div></li></ul>
+    </div>
+  </section>
+
   <section class="sec how" id="how" aria-labelledby="howH">
     <div class="wrap">
       <h2 id="howH">How it works</h2>
@@ -240,6 +268,14 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
         <li><b>We check the roof</b><span>Within 48 hours. You don’t need to be home.</span></li>
         <li><b>You get the photos</b><span>Every problem we find, on your phone. You decide what happens next.</span></li>
       </ol>
+    </div>
+  </section>
+
+  <section class="sec reviews" id="reviews" aria-labelledby="revH">
+    <div class="wrap">
+      <div class="revhead"><h2 id="revH">What neighbors say</h2><p class="score"><b>4.9</b><span class="stars" aria-hidden="true"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg></span><span>212 Google reviews</span></p></div>
+      <ul class="revs"><li class="rev"><div class="stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg></div><p>“They found the leak was at the chimney, not where the stain was. Photos of everything before they started. Fixed in one morning.”</p><div class="who"><b>Linda P.</b><span>Meyerland · Leak repair · 2 weeks ago</span></div></li><li class="rev"><div class="stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg></div><p>“Insurance approved the whole roof after they met the adjuster with me. Crew was gone by 5 and the yard was cleaner than before.”</p><div class="who"><b>Marcus W.</b><span>The Heights · Roof replacement · 1 month ago</span></div></li><li class="rev"><div class="stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg></div><p>“I didn’t even know we had hail damage. The photos made it obvious. Joined the club after, worth it for the storm checks alone.”</p><div class="who"><b>Ana L.</b><span>Pearland · Hail damage · 3 months ago</span></div></li></ul>
+      <p class="demo-note2">Sample reviews for this demo. On a client’s site this section shows their real Google reviews, pulled in automatically and linked to the source.</p>
     </div>
   </section>
 
@@ -268,7 +304,7 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
       <h2 id="endH">Know what’s on your roof this week.</h2>
       <p class="lede">If we’re not there within 48 hours, $50 comes off any repair we do.</p>
       <button class="btn btn-main" type="button" data-start>Get my free inspection</button>
-      <div class="proof"><span><b>4.9</b> from 212 Houston homeowners (sample)</span><span><b>10-year</b> workmanship warranty</span><span>We work with your insurance</span></div>
+      <div class="proof"><span><b>4.9</b> from 212 Google reviews (sample)</span><span><b>10-year</b> workmanship warranty</span><span>We work with your insurance</span></div>
     </div>
   </section>
 </main>
@@ -618,7 +654,7 @@ $$('[data-start]').forEach(b=>b.onclick=startSheet);
 
 /* ---------- header menu, thumb bar, club ---------- */
 $('#menuBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="mH">Menu</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
-    <nav class="menu"><button class="btn-main" type="button" data-go="start">Free inspection</button><a href="#how" data-go="nav">How it works</a><a href="#club" data-go="nav">Roof Care Club</a><a href="#" data-sms="fab">Text us</a><button type="button" data-go="login">Customer login</button></nav></div></div>`,'#layer .menu .btn-main');
+    <nav class="menu"><button class="btn-main" type="button" data-go="start">Free inspection</button><a href="#what" data-go="nav">What we do</a><a href="#how" data-go="nav">How it works</a><a href="#reviews" data-go="nav">Reviews</a><a href="#club" data-go="nav">Roof Care Club</a><a href="#" data-sms="fab">Text us</a><button type="button" data-go="login">Customer login</button></nav></div></div>`,'#layer .menu .btn-main');
   refreshSms(document);
   $$('#layer [data-go]').forEach(x=>x.addEventListener('click',()=>{const g=x.dataset.go;close();if(g==='start')startSheet();if(g==='login')loginSheet()}))};
 addEventListener('scroll',()=>$('#thumbbar').classList.toggle('on',scrollY>innerHeight*.8),{passive:true});
