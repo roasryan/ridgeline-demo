@@ -920,6 +920,7 @@ const regionFor=c=>GULF.test(c)?'gulf':'us';
 const PICK={season:'auto',region:'auto'};try{Object.assign(PICK,JSON.parse(localStorage.getItem('rl-pick2')||'{}'))}catch(x){}
 const ok=n=>READY.has(n);
 const src=(el,n)=>{el.src=`img/${n}.webp`;el.srcset=`img/${n}-m.webp 800w, img/${n}.webp 1200w`;el.sizes='100vw'};
+{const q=new URLSearchParams(location.search),sv=q.get('season');if(sv&&/^(winter|spring|summer|fall)$/.test(sv)){PICK.season=sv;if(q.get('region'))PICK.region=q.get('region')}}
 function apply(){const sea=PICK.season==='auto'?seasonNow():PICK.season,reg=PICK.region==='auto'?regionFor(BIZ_CITY):PICK.region;
   let s=SET[pickSet(sea,reg)];const fb=SET.hurricane;
   const pair=ok(s.before)&&ok(s.under)?[s.before,s.under]:[fb.before,fb.under];
