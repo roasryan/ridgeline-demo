@@ -906,12 +906,12 @@ addEventListener('hashchange',routeHash);
 /* ---------- season + region ---------- */
 const BIZ_CITY='Houston';
 const GULF=/Houston|Galveston|Corpus Christi|Beaumont|Brownsville|New Orleans|Baton Rouge|Lake Charles|Mobile|Biloxi|Gulfport|Pensacola|Panama City|Tampa|Sarasota|Fort Myers|Naples|Miami|Key West/i;
-const READY=new Set(["f1", "f2", "f3", "fa1", "fa2", "fa3", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "sv_attic", "sv_claim", "sv_gutter", "sv_leak", "sv_roof", "sv_storm", "w1", "w2", "w3", "w4"]);
+const READY=new Set(["f1", "f2", "f3", "fa1", "fa2", "fa3", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "sp1", "sp2", "sv_attic", "sv_claim", "sv_gutter", "sv_leak", "sv_roof", "sv_storm", "w1", "w2", "w3", "w4"]);
 const SET={
   hurricane:{done:'fa3',hero:'s6',under:'fa2',lens:'Rot under the shingles',before:'fa1',after:'s5',why:'Hurricane season. Find the leaks before the storm does.',capB:'Worn shingles, water getting in',capA:'New roof, hurricane rated',sms:'the next storm'},
   usWinter:{hero:'w4',under:'w2',lens:'Water behind the ice',before:'w1',after:'w4',why:'Ice dam season. Water backs up under the shingles at the edge.',capB:'Ice dam, water backing up',capA:'New roof, edge stays clear',sms:'ice dams start'},
   gulfWinter:{hero:'freeze',under:'g2',lens:'Leak around the pipe',before:'g1',after:'g4',why:'Freeze season. Cracked pipe boots leak for months before you see it.',capB:'Cracked pipe boot',capA:'Metal flashing that won’t crack',sms:'the next freeze'},
-  hail:{hero:'hail',under:'h1',lens:'Hail bruises',before:'h1',after:'s5',why:'Hail season. Bruised shingles look fine and leak years later.',capB:'Hail-bruised shingles',capA:'Class 4 impact shingles',sms:'the next hailstorm'},
+  hail:{done:'sp3',hero:'hail',under:'sp2',lens:'Hail bruises',before:'sp1',after:'s5',why:'Hail season. Bruised shingles look fine and leak years later.',capB:'Hail-bruised shingles',capA:'Class 4 impact shingles',sms:'the next hailstorm'},
   heat:{hero:'heat',under:'u1',lens:'Sun-baked shingles',before:'u1',after:'heat',why:'Summer heat. A hot attic cooks your shingles from below.',capB:'Curled, cracked shingles',capA:'New shingles and a ridge vent',sms:'summer gets worse'},
   gutters:{hero:'f4',under:'f2',lens:'Rotted roof edge',before:'f1',after:'f4',why:'Leaf season. Clogged gutters rot the edge of your roof.',capB:'Gutters packed with leaves',capA:'New edge and gutter guard',sms:'the leaves come down'}};
 const pickSet=(sea,reg)=>({winter:reg==='gulf'?'gulfWinter':'usWinter',spring:'hail',summer:'heat',fall:reg==='gulf'?'hurricane':'gutters'})[sea];
@@ -967,7 +967,7 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
   const cv=$('#ripCv'),x=cv.getContext('2d'),zone=$('#ripZone'),over=$('#hOver'),hint=$('#ripHint'),meter=$('#ripMeter'),found=$('#ripFound'),cap=$('#fixCap'),fixed=$('#ripFixed');
   const dpr=Math.min(1.5,devicePixelRatio||1);
   /* roof outline per photo, as fractions of the photo (x,y). Anything outside (sky, trees, gutter) can't be torn. */
-  const ROOF={fa1:[[0.103,0.592],[0.250,0.322],[0.385,0.314],[0.481,0.202],[0.621,0.202],[0.832,0.394],[0.658,0.390],[0.581,0.255],[0.509,0.390],[0.320,0.406],[0.320,0.592],[0.280,0.592],[0.280,0.436],[0.233,0.390],[0.188,0.436],[0.188,0.592]],s1:[[0,.37],[.37,.175],[.68,.175],[1,.36],[1,.93],[0,.93]],w1:[[0,.38],[.33,.175],[.70,.175],[1,.33],[1,.9],[0,.9]],f1:[[0,.37],[.37,.18],[.70,.18],[1,.35],[1,.82],[0,.82]],_:[[0,.36],[.35,.18],[.68,.18],[1,.35],[1,.9],[0,.9]]};
+  const ROOF={sp1:[[0.113,0.368],[0.320,0.195],[0.581,0.205],[0.749,0.364],[0.680,0.364],[0.661,0.341],[0.538,0.536],[0.476,0.536],[0.472,0.390],[0.305,0.375],[0.218,0.332],[0.182,0.368]],fa1:[[0.103,0.592],[0.250,0.322],[0.385,0.314],[0.481,0.202],[0.621,0.202],[0.832,0.394],[0.658,0.390],[0.581,0.255],[0.509,0.390],[0.320,0.406],[0.320,0.592],[0.280,0.592],[0.280,0.436],[0.233,0.390],[0.188,0.436],[0.188,0.592]],s1:[[0,.37],[.37,.175],[.68,.175],[1,.36],[1,.93],[0,.93]],w1:[[0,.38],[.33,.175],[.70,.175],[1,.33],[1,.9],[0,.9]],f1:[[0,.37],[.37,.18],[.70,.18],[1,.35],[1,.82],[0,.82]],_:[[0,.36],[.35,.18],[.68,.18],[1,.35],[1,.9],[0,.9]]};
   const mk=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,w|0);c.height=Math.max(1,h|0);return c};
   let top=null,holes=null,hx=null,maskC=null,hm=null,roofC=null,lipC=null,pile=null,pileA=1,mArr=null,mW=0,mH=0,rt=0,rb=0;
   let chunks=[],tears=0,shake=0,last=null,done=false,visible=true,auto=null,pins=[],pts=[],dirty=true,frame=0,down=false,spawnN=0,measured=-1,fixAnim=false;
