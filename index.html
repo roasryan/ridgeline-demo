@@ -163,6 +163,21 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .rev{scroll-snap-align:start;background:var(--paper);border-radius:18px;padding:22px;display:grid;gap:14px;align-content:start;box-shadow:0 14px 40px rgba(31,42,51,.08)}
 .rev p{margin:0;font-size:18px;line-height:1.5}.who{display:grid;gap:2px}.who span{color:var(--soft);font-size:15px}
 .demo-note2{margin:16px 0 0;color:var(--soft);font-size:14px}
+
+/* intake */
+.intake{gap:12px}.ihead{display:flex;justify-content:space-between;align-items:center;gap:10px}.ihead h3{font-size:24px}
+.ibar{height:6px;background:#1A242C;border-radius:9px;overflow:hidden}.ibar i{display:block;height:100%;background:var(--hivis);transition:width .3s}
+.istep{margin:0;font-size:14px}
+#ibody{display:grid;gap:12px}#ibody h4{margin:0;font:850 22px/1.15 var(--display);font-variation-settings:'wdth' 110}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media (max-width:420px){.igrid{grid-template-columns:1fr}}
+.iopt{position:relative;display:grid;gap:2px;padding:14px;border:1.5px solid #3A4A56;border-radius:14px;background:#1A242C;cursor:pointer;min-height:52px;align-content:center}
+.iopt input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0}.iopt b{font-size:16.5px}.iopt small{color:var(--muted);font-size:14px}
+.iopt.on{border-color:var(--hivis);background:rgba(255,212,0,.1)}.iopt:has(input:focus-visible){outline:3px solid var(--chalk);outline-offset:2px}
+.pills{display:flex;flex-wrap:wrap;gap:8px}.pills .iopt{padding:10px 14px;min-height:44px;border-radius:999px}
+.inav{display:grid;grid-template-columns:1fr 2fr;gap:8px;position:sticky;bottom:-24px;background:var(--deck);padding:10px 0 4px}
+.verdict{font:900 30px/1.05 var(--display);font-variation-settings:'wdth' 120;margin:0;color:var(--hivis)}
+.iopts{display:grid;gap:8px}.iest{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#1A242C;border-radius:12px;padding:12px 14px}.iest b{font:900 22px var(--display);white-space:nowrap}
+.svc-ph{display:grid;place-items:center;aspect-ratio:4/3;border-radius:10px;background:#D9DFE3;color:var(--soft);font-size:13px;font-weight:700;text-align:center}
 /* owner view + customer portal */
 .app{position:fixed;inset:0;z-index:35;background:var(--night);overflow:auto;-webkit-overflow-scrolling:touch}
 .app-open{overflow:hidden}.app-open .fab{display:none}
@@ -233,7 +248,7 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
       <h1 id="h1">Free roof inspection.</h1>
       <p class="sub">Photos on your phone in 48 hours.</p>
       <p class="why" id="why">Hurricane season. Find the leaks before the storm does.</p>
-      <div class="hcta"><button class="btn btn-main" type="button" data-start>Get my free inspection</button><small>48 hours or $50 off. No pressure to buy.</small></div>
+      <div class="hcta"><button class="btn btn-main" type="button" data-start>Get my free estimate</button><small>Price range in 60 seconds. Free inspection within 48 hours or $50 off.</small></div>
     </div>
   </section>
 
@@ -256,7 +271,7 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
     <div class="wrap">
       <h2 id="whatH">What we do</h2>
       <p class="lede">Homes only. If it’s on your roof or keeps water off it, we handle it.</p>
-      <ul class="svcs"><li class="svc"><img src="img/sv_roof-m.webp" srcset="img/sv_roof-m.webp 800w, img/sv_roof.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="Roofers laying new charcoal shingles over fresh underlayment" loading="lazy"><div><b>Roof replacement</b><span>Tear-off to the wood, new decking where needed, impact-rated shingles.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with a roof replacement. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_leak-m.webp" srcset="img/sv_leak-m.webp 800w, img/sv_leak.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="A roofer sealing new metal flashing at a chimney, water-stained wood exposed" loading="lazy"><div><b>Leak repair</b><span>We find where the water really gets in and fix that, not just the stain.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with a leak. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_storm-m.webp" srcset="img/sv_storm-m.webp 800w, img/sv_storm.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="A blue emergency tarp on a storm-damaged roof, torn shingles on the driveway" loading="lazy"><div><b>Storm and hail damage</b><span>Photos within 48 hours. Tarp the same or next day if water is coming in.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with storm or hail damage. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_claim-m.webp" srcset="img/sv_claim-m.webp 800w, img/sv_claim.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="A chalked hail test square with circled hits and a claim clipboard" loading="lazy"><div><b>Insurance claims</b><span>We document everything and meet your adjuster at the house.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with an insurance claim. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_gutter-m.webp" srcset="img/sv_gutter-m.webp 800w, img/sv_gutter.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="A new white seamless gutter with a mesh guard being screwed in" loading="lazy"><div><b>Gutters</b><span>Seamless gutters and guards, sized for Houston downpours.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with gutters. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_attic-m.webp" srcset="img/sv_attic-m.webp 800w, img/sv_attic.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="Inside an attic: daylight through the ridge vent, foam baffles at the eaves" loading="lazy"><div><b>Attic ventilation</b><span>Ridge and soffit vents so the attic stays cooler and shingles last longer.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with attic ventilation. My address is ">Ask about this</a></div></li></ul>
+      <ul class="svcs"><li class="svc"><img src="img/sv_roof-m.webp" srcset="img/sv_roof-m.webp 800w, img/sv_roof.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="Roofers laying new charcoal shingles over fresh underlayment" loading="lazy"><div><b>Roof replacement</b><span>Tear-off to the wood, new decking where needed, impact-rated shingles.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with a roof replacement. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_leak-m.webp" srcset="img/sv_leak-m.webp 800w, img/sv_leak.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="A roofer sealing new metal flashing at a chimney, water-stained wood exposed" loading="lazy"><div><b>Leak repair</b><span>We find where the water really gets in and fix that, not just the stain.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with a leak. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_storm-m.webp" srcset="img/sv_storm-m.webp 800w, img/sv_storm.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="A blue emergency tarp on a storm-damaged roof, torn shingles on the driveway" loading="lazy"><div><b>Storm and hail damage</b><span>Photos within 48 hours. Tarp the same or next day if water is coming in.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with storm or hail damage. My address is ">Ask about this</a></div></li><li class="svc"><div class="svc-ph" aria-hidden="true">New photo coming</div><div><b>Insurance claims</b><span>We document everything and meet your adjuster at the house.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with an insurance claim. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_gutter-m.webp" srcset="img/sv_gutter-m.webp 800w, img/sv_gutter.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="A new white seamless gutter with a mesh guard being screwed in" loading="lazy"><div><b>Gutters</b><span>Seamless gutters and guards, sized for Houston downpours.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with gutters. My address is ">Ask about this</a></div></li><li class="svc"><img src="img/sv_attic-m.webp" srcset="img/sv_attic-m.webp 800w, img/sv_attic.webp 1200w" sizes="(max-width:1000px) 110px, 380px" alt="Inside an attic: daylight through the ridge vent, foam baffles at the eaves" loading="lazy"><div><b>Attic ventilation</b><span>Ridge and soffit vents so the attic stays cooler and shingles last longer.</span><a href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with attic ventilation. My address is ">Ask about this</a></div></li></ul>
     </div>
   </section>
 
@@ -264,7 +279,7 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
     <div class="wrap">
       <h2 id="howH">How it works</h2>
       <ol class="steps">
-        <li><b>Tell us where</b><span>Name and number. Takes 30 seconds.</span></li>
+        <li><b>Get your estimate</b><span>Four quick questions, a price range on the spot.</span></li>
         <li><b>We check the roof</b><span>Within 48 hours. You don’t need to be home.</span></li>
         <li><b>You get the photos</b><span>Every problem we find, on your phone. You decide what happens next.</span></li>
       </ol>
@@ -490,7 +505,7 @@ function oToday(){const C=DB.customers,now=Date.now();
   const nudge=C.filter(c=>c.estimate&&c.estimate.status==='sent'&&now-c.estimate.t>3*DAY);
   const owed=C.filter(c=>c.invoice&&c.invoice.status==='sent');
   const late=t=>now-t>36e5;
-  return `<h3 class="osec">New requests to answer <span class="cnt">${leads.length}</span></h3>${leads.length?leads.map(c=>`<article class="orow ${late(c.created)?'late':''}" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(c.source)} · ${ago(c.created)}${late(c.created)?' · answer soon':''}</small>${c.msg?`<p>“${esc(c.msg)}”</p>`:''}</div>
+  return `<h3 class="osec">New requests to answer <span class="cnt">${leads.length}</span></h3>${leads.length?leads.map(c=>`<article class="orow ${late(c.created)?'late':''}" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(c.source)} · ${ago(c.created)}${late(c.created)?' · answer soon':''}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small>${c.quote?`<p>Saw: ${esc(c.quote.verdict)}</p>`:''}${c.msg?`<p>“${esc(c.msg)}”</p>`:''}</div>
       <div class="oacts"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, this is ${ownerName} with Ridgeline Roofing. Got your request for a free roof inspection. What day works best this week?`)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" data-book="${c.id}">Book inspection</button></div></article>`).join(''):'<p class="muted">All caught up.</p>'}
     <h3 class="osec">Inspections coming up <span class="cnt">${up.length}</span></h3>${up.length?up.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${fmtDay(c.appt.t)}, ${c.appt.slot} · ${esc(c.addr||'No address yet')}</small>${c.appt.confirmed?'<span class="okpill sm">Confirmed</span>':'<span class="warnpill">Not confirmed yet</span>'}</div>
       <div class="oacts">${c.appt.confirmed?'':`<a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. Confirming your free roof inspection ${fmtDay(c.appt.t)}, ${c.appt.slot}. Reply YES to confirm or text a better time.`)}">Text to confirm</a><button class="btn btn-line btn-sm" type="button" data-confirm="${c.id}">They confirmed</button>`}
@@ -545,6 +560,8 @@ function custSheet(id){const c=byId(id);if(!c)return;const s=c.show=c.show||{};
   const make={report:'<button class="btn btn-line btn-sm" type="button" data-mk="report">Add report</button>',estimate:'<button class="btn btn-line btn-sm" type="button" data-mk="estimate">Write estimate</button>',updates:'<button class="btn btn-line btn-sm" type="button" data-mk="update">Post update</button>',invoice:'<button class="btn btn-line btn-sm" type="button" data-mk="invoice">Create invoice</button>',schedule:'<button class="btn btn-line btn-sm" type="button" data-mk="book">Book inspection</button>',club:''};
   const invite=`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline Roofing. Your project page is ready: ${SITE_URL} Tap Customer login and use this phone number.`;
   const close=open(sheetWrap('cuH',esc(c.name),`<p class="muted" style="margin-top:-6px">${pretty(c.phone)}${c.addr?' · '+esc(c.addr):''} · came from ${esc(c.source)}</p>
+    ${c.email?`<p style="margin:0"><a href="mailto:${esc(c.email)}" style="color:var(--hivis)">${esc(c.email)}</a>${c.contactPref?` · prefers ${esc(c.contactPref)}${c.bestTime?', '+esc(c.bestTime.toLowerCase()):''}`:''}</p>`:''}
+    ${c.quote?`<div class="pbox" style="padding:10px 12px"><b>Instant estimate they saw</b><span class="muted" style="font-size:14.5px">${esc(c.quote.verdict)}. ${esc(c.quote.range)}${c.quote.age?` · roof ${c.quote.age==='u'?'age unknown':'~'+c.quote.age+' yrs'}`:''}${c.quote.stories?` · ${c.quote.stories}-story`:''}</span></div>`:''}
     ${c.msg?`<p>“${esc(c.msg)}”</p>`:''}${c.photos&&c.photos.length?`<div class="thumbs">${c.photos.map(u=>`<img src="${u}" alt="">`).join('')}</div>`:''}
     <div class="field"><label for="cst">Where they are</label><select id="cst">${STAGES.map(([k,l])=>`<option value="${k}" ${c.stage===k?'selected':''}>${l}</option>`).join('')}</select></div>
     <div class="pbox"><label class="tog"><input type="checkbox" id="cport" ${c.portal?'checked':''}> Customer portal: they log in with ${pretty(c.phone)}</label>
@@ -626,31 +643,81 @@ $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
 /* ---------- top bar turns solid after the hero ---------- */
 addEventListener('scroll',()=>$('#bar').classList.toggle('solid',scrollY>innerHeight*.6),{passive:true});
 
-/* ---------- one button: name + number, then optional extras ---------- */
 function push(o){upsert(o)}
-function startSheet(){const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="gH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="gH">Free roof inspection</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
-    <div id="g1"><p class="muted" style="margin-bottom:12px">We text you back in about 10 minutes, 7 AM to 7 PM.</p>
-      <div class="field"><label for="gn">Your name</label><input id="gn" autocomplete="name"></div>
-      <div class="field" style="margin-top:10px"><label for="gp">Mobile number</label><input id="gp" type="tel" inputmode="tel" autocomplete="tel"></div>
-      <p class="err" id="ge" role="alert" hidden></p>
-      <button class="btn btn-main" type="button" id="gGo" style="width:100%;margin-top:14px">Get my free inspection</button></div>
-    <div id="g2" hidden><span class="okpill">Request sent</span><h3 id="gThx" style="margin-top:10px"></h3><p class="muted" style="margin:8px 0 14px">Want to speed things up? Everything below is optional.</p>
-      <div class="field"><label for="gm">What’s going on? In your own words</label><textarea id="gm" rows="3" placeholder="Stain on the bedroom ceiling after the storm."></textarea></div>
-      <div class="field" style="margin-top:10px"><span class="flabel">Photos</span><label class="upl" for="gf"><span id="gfl">Add photos of the roof or ceiling</span><input id="gf" type="file" accept="image/*" multiple></label><div class="thumbs" id="gt"></div></div>
-      <div class="field" style="margin-top:10px"><label for="ga">Address</label><input id="ga" autocomplete="street-address"></div>
-      <div class="field" style="margin-top:10px"><span class="flabel">Pick a time</span><div class="days" id="gd"></div><div class="slots" id="gs" style="margin-top:8px"></div></div>
-      <button class="btn btn-main" type="button" id="gSave" style="width:100%;margin-top:14px">Add to my request</button></div>
-    <div id="g3" hidden><span class="okpill">All set</span><h3 style="margin-top:10px">See you soon.</h3><p class="muted" id="gWhen" style="margin-top:8px"></p><button class="btn btn-line" type="button" data-close style="margin-top:14px">Done</button></div></div></div>`,'#gn');
-  let who=null,pd=null,ps=null;const pics=[];
-  $('#gGo').onclick=()=>{const n=$('#gn').value.trim(),p=$('#gp').value.trim();if(!n||!phoneOk(p)){$('#ge').textContent='Add your name and a 10-digit mobile number so we can text you.';$('#ge').hidden=false;(n?$('#gp'):$('#gn')).focus();return}
-    who=upsert({name:n,phone:p,source:'Website'});toast('Sent to the owner’s phone.');$('#g1').hidden=true;$('#g2').hidden=false;$('#gThx').textContent=`Thanks, ${first(n)}. We got it.`;draw()};
-  const draw=()=>{$('#gd').innerHTML=days.map((d,i)=>`<button type="button" class="day" data-gd="${i}" aria-pressed="${pd===i}"><small>${d.toLocaleDateString('en-US',{weekday:'short'})}</small><b>${d.getDate()}</b></button>`).join('');
-    $('#gs').innerHTML=SL.map((s,j)=>`<button type="button" class="slot" data-gs="${j}" aria-pressed="${ps===j}">${s}</button>`).join('');
-    $$('[data-gd]').forEach(b=>b.onclick=()=>{pd=+b.dataset.gd;draw()});$$('[data-gs]').forEach(b=>b.onclick=()=>{ps=+b.dataset.gs;if(pd==null)pd=0;draw()})};
-  $('#layer').addEventListener('change',e=>{if(e.target.id!=='gf')return;[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*k;cv.height=im.height*k;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);pics.push(cv.toDataURL('image/jpeg',.7));$('#gt').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('');$('#gfl').textContent=pics.length+' photo'+(pics.length>1?'s':'')+' added'};im.src=r.result};r.readAsDataURL(f)})});
-  $('#gSave').onclick=()=>{const o={phone:who.phone,msg:$('#gm').value.trim(),addr:$('#ga').value.trim(),photos:pics};if(ps!=null)o.appt={t:days[pd].getTime(),slot:SL[ps],confirmed:false};upsert(o);
-    $('#g2').hidden=true;$('#g3').hidden=false;$('#gWhen').textContent=ps!=null?`${days[pd].toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}, ${SL[ps]}. We’ll text to confirm the day before.`:'We’ll text you shortly to pick a time.'}}
-$$('[data-start]').forEach(b=>b.onclick=startSheet);
+/* ---------- intake: free inspection + instant estimate (multi-step, contact before the answer) ---------- */
+const RATES={arch:[520,610,'architectural shingles'],impact:[640,760,'Class 4 impact shingles'],metal:[1050,1300,'standing-seam metal']};
+const money=n=>'$'+(Math.round(n/50)*50).toLocaleString('en-US');
+function startSheet(pre){
+  const Q={need:pre||'',needOther:'',addr:'',sqft:'',stories:'1',age:'',signs:[],notes:'',photos:[],name:'',phone:'',email:'',contact:'text',best:'Anytime'};
+  const NEEDS=[['leak','It’s leaking','Water stain, drip or wet attic'],['storm','Storm or hail hit it','Missing shingles, dents, debris'],['old','It’s getting old','Worn, curling, 15+ years'],['new','I want a new roof','Upgrade, selling, or just time'],['claim','Help with insurance','You already filed or want to'],['other','Something else','Tell us in your own words']];
+  const AGES=[['5','Under 10 years'],['13','10 to 15'],['18','15 to 20'],['24','20+'],['u','Not sure']];
+  const SIGNS=[['stain','Ceiling stain'],['granules','Grit in gutters'],['curl','Curling shingles'],['missing','Missing shingles'],['sag','Sagging spot'],['none','None that I know of']];
+  const STEPS=['need','home','details','contact','answer'];let si=pre?1:0;
+  const close=open(`<div class="scrim"><div class="sheet intake" role="dialog" aria-modal="true" aria-labelledby="iH"><div class="ihead"><h3 id="iH">Free inspection + instant estimate</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
+    <div class="ibar" aria-hidden="true"><i id="ibar"></i></div><p class="istep muted" id="istep"></p><div id="ibody"></div>
+    <p class="err" id="ierr" role="alert" hidden></p><div class="inav"><button class="btn btn-line" type="button" id="iback">Back</button><button class="btn btn-main" type="button" id="inext">Next</button></div></div></div>`);
+  const opt=(name,v,t,sub,type='radio')=>{const on=type==='radio'?Q[name]===v:Q[name].includes(v);return `<label class="iopt ${on?'on':''}"><input type="${type}" name="${name}" value="${v}" ${on?'checked':''}><b>${t}</b>${sub?`<small>${sub}</small>`:''}</label>`};
+  const fld=(k,l,t='text',ph='',ac='')=>`<div class="field"><label for="i-${k}">${l}</label><input id="i-${k}" data-k="${k}" type="${t}" ${t==='tel'?'inputmode="tel"':''} ${t==='email'?'inputmode="email"':''} autocomplete="${ac}" placeholder="${ph}" value="${esc(Q[k])}"></div>`;
+  function verdict(){const age=Q.age==='u'||!Q.age?15:+Q.age,bad=Q.signs.filter(x=>x!=='none').length;
+    if(Q.need==='leak'||Q.signs.includes('stain'))return['Find the leak first','Water is already getting in. Most leaks come from a pipe boot, flashing or a few shingles. Under about 15 years old, a repair is usually enough.','repair'];
+    if(Q.need==='storm'||Q.need==='claim')return['Get it checked for storm damage','Hail and wind damage is easy to miss from the ground. If we find it, insurance often covers the roof and you pay your deductible.','storm'];
+    if(Q.need==='new'||age>=20||(age>=15&&bad>=1))return['Plan on a new roof','At this age and with these signs, repairs buy months, not years.','replace'];
+    if(age>=13||bad>=2)return['Time for a close look','Your roof is at the age where problems start. The inspection tells you if a repair or a new roof makes more sense.','replace'];
+    return['Your roof is probably fine','No warning signs at this age. A checkup every year or two is all it needs.','inspect']}
+  function est(){const[v,why,kind]=verdict();const sq=Math.max(12,Math.round((+Q.sqft||2400)/(+Q.stories)*1.25*1.1/100)),f=Q.stories==='1'?1:Q.stories==='2'?1.06:1.12;
+    if(kind==='replace')return{v,why,kind,opts:Object.entries(RATES).map(([k,r])=>({k,name:r[2][0].toUpperCase()+r[2].slice(1),lo:sq*r[0]*f,hi:sq*r[1]*f})),note:`About ${sq} squares of roof${Q.sqft?'':', based on a typical 2,400 sq ft Houston home until we measure yours'}.`};
+    if(kind==='repair')return{v,why,kind,opts:[{name:'Leak repair',lo:350,hi:1400}],note:'Most leak repairs land in this range.'};
+    if(kind==='storm')return{v,why,kind,opts:[{name:'Your deductible, if the claim is approved',lo:0,hi:0}],note:'The inspection and the photo report for your adjuster are free.'};
+    return{v,why,kind,opts:[{name:'Inspection',lo:0,hi:0}],note:'No charge, no pressure to buy.'}}
+  function render(){const k=STEPS[si];$('#ibar').style.width=((si+1)/STEPS.length*100)+'%';$('#istep').textContent=k==='answer'?'Your estimate':`Step ${si+1} of 4`;$('#ierr').hidden=true;
+    let h='';
+    if(k==='need')h=`<h4>What’s going on with your roof?</h4><div class="igrid">${NEEDS.map(([v,t,s])=>opt('need',v,t,s)).join('')}</div>
+      <div class="field" id="otherBox" ${Q.need==='other'?'':'hidden'}><label for="i-needOther">Tell us in your own words</label><textarea id="i-needOther" data-k="needOther" rows="2">${esc(Q.needOther)}</textarea></div>`;
+    if(k==='home')h=`<h4>About the house</h4>${fld('addr','Home address','text','4410 Bellfort Ave, Houston','street-address')}
+      <div class="two">${fld('sqft','Home size (sq ft)','number','Not sure? Leave blank')}<div class="field"><span class="flabel">Stories</span><div class="pills">${['1','2','3'].map(v=>opt('stories',v,v)).join('')}</div></div></div>
+      <div class="field"><span class="flabel">How old is the roof?</span><div class="pills">${AGES.map(([v,t])=>opt('age',v,t)).join('')}</div></div>`;
+    if(k==='details')h=`<h4>Anything you’ve noticed?</h4><p class="muted" style="margin:-6px 0 4px">Pick all that apply. All optional.</p><div class="pills">${SIGNS.map(([v,t])=>opt('signs',v,t,'','checkbox')).join('')}</div>
+      <div class="field"><label for="i-notes">Anything else, in your own words</label><textarea id="i-notes" data-k="notes" rows="2" placeholder="Stain over the back bedroom after Tuesday’s storm.">${esc(Q.notes)}</textarea></div>
+      <div class="field"><span class="flabel">Photos (optional)</span><label class="upl" for="i-ph"><span id="iphl">${Q.photos.length?Q.photos.length+' photo(s) added':'Add photos of the roof, ceiling or damage'}</span><input id="i-ph" type="file" accept="image/*" multiple></label><div class="thumbs" id="ith">${Q.photos.map(u=>`<img src="${u}" alt="">`).join('')}</div></div>`;
+    if(k==='contact')h=`<h4>Where should we send your estimate?</h4><p class="muted" style="margin:-6px 0 4px">We’ll text it to you and follow up to set up the free inspection.</p>
+      ${fld('name','Full name','text','','name')}<div class="two">${fld('phone','Mobile number','tel','','tel')}${fld('email','Email','email','you@example.com','email')}</div>
+      <div class="field"><span class="flabel">Best way to reach you</span><div class="pills">${[['text','Text'],['call','Call'],['email','Email']].map(([v,t])=>opt('contact',v,t)).join('')}</div></div>
+      <div class="field"><span class="flabel">Best time</span><div class="pills">${['Morning','Afternoon','Evening','Anytime'].map(v=>opt('best',v,v)).join('')}</div></div>
+      <p class="muted" style="font-size:13.5px">By continuing you agree we can text, call or email you about your roof. Reply STOP anytime. We never sell your info.</p>`;
+    if(k==='answer'){const e=est();h=`<p class="verdict">${e.v}</p><p>${e.why}</p>
+      <div class="iopts">${e.opts.map(o=>`<div class="iest"><span>${o.name}</span><b>${o.hi?money(o.lo)+' – '+money(o.hi):'Free'}</b></div>`).join('')}</div>
+      <p class="muted" style="font-size:14.5px">${e.note} Final price after the free inspection.</p>
+      <h4 style="margin-top:6px">Pick a time for your free inspection</h4><div class="days" id="idays"></div><div class="slots" id="islots"></div>
+      <p class="muted" style="font-size:14px">Prefer we call you first? Skip this and we’ll reach out by ${Q.contact==='email'?'email':Q.contact==='call'?'phone':'text'} ${Q.best==='Anytime'?'soon':'in the '+Q.best.toLowerCase()}.</p>`}
+    $('#ibody').innerHTML=h;$('#iback').style.visibility=si?'visible':'hidden';
+    $('#inext').textContent=k==='contact'?'See my estimate':k==='answer'?'Book my free inspection':'Next';
+    if(k==='answer'){let pd=null,ps=null;const dr=()=>{$('#idays').innerHTML=days.map((d,i)=>`<button type="button" class="day" data-d="${i}" aria-pressed="${pd===i}"><small>${d.toLocaleDateString('en-US',{weekday:'short'})}</small><b>${d.getDate()}</b></button>`).join('');$('#islots').innerHTML=SL.map((s,j)=>`<button type="button" class="slot" data-s="${j}" aria-pressed="${ps===j}">${s}</button>`).join('');
+      $$('#idays [data-d]').forEach(b=>b.onclick=()=>{pd=+b.dataset.d;dr()});$$('#islots [data-s]').forEach(b=>b.onclick=()=>{ps=+b.dataset.s;if(pd==null)pd=0;dr()})};dr();
+      $('#inext').onclick=()=>{if(ps==null){$('#ierr').textContent='Pick a day and a time window, or close this and we’ll reach out to schedule.';$('#ierr').hidden=false;return}
+        upsert({phone:Q.phone,appt:{t:days[pd].getTime(),slot:SL[ps],confirmed:false}});
+        $('#layer .sheet').innerHTML=`<span class="okpill">Booked</span><h3>See you ${days[pd].toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}, ${SL[ps]}.</h3><p class="muted">We’ll ${Q.contact==='email'?'email':'text'} you a reminder the day before and when we’re on the way. You don’t need to be home.</p><button class="btn btn-line" type="button" id="idone">Done</button>`;$('#idone').onclick=close};
+      if(M&&!reduce)M.animate('.iest b',{opacity:[.001,1],y:[8,0]},{duration:.4,delay:M.stagger(.08)})}
+    else $('#inext').onclick=next;
+    $$('#ibody input,#ibody textarea').forEach(el=>{if(el.dataset.k)el.oninput=()=>{Q[el.dataset.k]=el.value}});
+    $$('#ibody input[type=radio],#ibody input[type=checkbox]').forEach(el=>el.onchange=()=>{if(el.type==='radio')Q[el.name]=el.value;else{if(el.value==='none'&&el.checked)Q.signs=['none'];else{Q.signs=Q.signs.filter(x=>x!=='none'&&x!==el.value);if(el.checked)Q.signs.push(el.value)}}
+      if(el.name==='need'&&el.value!=='other'){si++;render();return}render();if(el.name==='need'&&el.value==='other')$('#i-needOther').focus()});
+    const ph=$('#i-ph');if(ph)ph.onchange=e=>{[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const z=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*z;cv.height=im.height*z;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);Q.photos.push(cv.toDataURL('image/jpeg',.7));$('#ith').innerHTML=Q.photos.map(u=>`<img src="${u}" alt="">`).join('');$('#iphl').textContent=Q.photos.length+' photo(s) added'};im.src=r.result};r.readAsDataURL(f)})};
+    $('#layer .sheet').scrollTop=0}
+  function next(){const k=STEPS[si],er=$('#ierr');
+    if(k==='need'&&!Q.need){er.textContent='Pick the one that fits best.';er.hidden=false;return}
+    if(k==='need'&&Q.need==='other'&&!Q.needOther.trim()){er.textContent='Tell us a little about what’s going on.';er.hidden=false;return}
+    if(k==='home'&&Q.addr.trim().length<5){er.textContent='Add the home address so we know where to come.';er.hidden=false;$('#i-addr').focus();return}
+    if(k==='contact'){const okE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(Q.email.trim());
+      if(Q.name.trim().length<2){er.textContent='Add your name.';er.hidden=false;$('#i-name').focus();return}
+      if(!phoneOk(Q.phone)){er.textContent='Add a 10-digit mobile number.';er.hidden=false;$('#i-phone').focus();return}
+      if(!okE){er.textContent='Add an email like you@example.com.';er.hidden=false;$('#i-email').focus();return}
+      const e=est(),NEED=Object.fromEntries(NEEDS.map(x=>[x[0],x[1]]));
+      const c=upsert({name:Q.name.trim(),phone:Q.phone,addr:Q.addr.trim(),source:'Website estimate',photos:Q.photos,msg:[NEED[Q.need]+(Q.needOther?': '+Q.needOther:''),Q.notes].filter(Boolean).join('. ')});
+      Object.assign(c,{email:Q.email.trim(),contactPref:Q.contact,bestTime:Q.best,quote:{verdict:e.v,range:e.opts.map(o=>o.name+': '+(o.hi?money(o.lo)+'–'+money(o.hi):'Free')).join(' · '),sqft:Q.sqft,stories:Q.stories,age:Q.age,signs:Q.signs.slice()}});save();toast('Sent to the owner’s phone.')}
+    si=Math.min(STEPS.length-1,si+1);render()}
+  $('#iback').onclick=()=>{si=Math.max(0,si-1);render()};render()}
+$$('[data-start]').forEach(b=>b.onclick=()=>startSheet());
+
 
 /* ---------- header menu, thumb bar, club ---------- */
 $('#menuBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="mH">Menu</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
