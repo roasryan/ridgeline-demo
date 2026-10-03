@@ -404,6 +404,85 @@ footer .wrap{display:block}
 .topic .ic{grid-column:1;grid-row:1/3}.topic b{grid-column:2;grid-row:1}.topic span{grid-column:2;grid-row:2}.topic .go{font-style:normal}
 @media (max-width:520px){.topic .ic{grid-row:1/4}.topic .go{grid-row:3;grid-column:2}}
 @media (max-width:640px){.ostack li{grid-template-columns:1fr}.ostack li em{grid-row:auto;grid-column:1}.thumbbar .btn{font-size:17px;padding:0 12px}}
+
+/* more room to rip: copy gets out of the way while tearing, smaller copy block */
+.hero .hcopy,.riplabel,#ripMeter{transition:opacity .35s,transform .35s}
+.hero.tearing .hcopy{opacity:0;transform:translateY(16px);pointer-events:none}.hero.tearing .hcopy>*{pointer-events:none}
+.hero.tearing .riplabel{opacity:0}
+.hero .hcopy h1{font-size:clamp(44px,5.6vw,80px)}
+.hero .hcopy .sub{font-size:clamp(19px,2vw,26px)}
+@media (min-width:900px){.hero .hcopy .why{display:none}.hero .shade{background:linear-gradient(180deg,rgba(31,42,51,.45) 0%,rgba(31,42,51,0) 18%,rgba(31,42,51,0) 60%,rgba(31,42,51,.85) 90%,var(--slate) 100%)}}
+@media (max-width:899px){
+ .hero{min-height:0;height:100svh}
+ #ripZone{height:64%}
+ .hero .hcopy{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+ .hero .hcopy h1{font-size:clamp(32px,9vw,42px);max-width:none}
+ .hero .hcopy .sub{font-size:17px;margin-top:8px}
+ .hero .hcopy .proof1{font-size:13px;margin-top:8px}
+ .hero .hcopy .hcta{margin-top:12px}.hero .hcopy .hcta .btn-main{min-height:56px;font-size:19px}
+ .hero .hcopy .hcta .btn-line{display:none}
+ .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,.45) 0%,rgba(31,42,51,0) 16%,rgba(31,42,51,0) 56%,rgba(31,42,51,.9) 72%,var(--slate) 100%)}
+ #ripFound{top:calc(64% + 8px)}
+}
+
+@media (max-width:899px){.hero.found .hcopy{opacity:0;pointer-events:none}.hero.found .hcopy>*{pointer-events:none}.hero.found .riplabel{opacity:0}}
+
+/* ===== watch us fix it ===== */
+#ripFound .btn-line,#ripFixed .btn-line{color:var(--ink)}
+.linkbtn{background:none;border:0;padding:10px 0 0;font:700 15px var(--body);color:var(--soft);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#ripFixed{position:absolute;z-index:7;left:16px;right:16px;top:calc(120px + env(safe-area-inset-top,0px));max-width:420px;margin:0 auto;background:#fff;color:var(--ink);border-radius:18px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+#ripFixed b{font:850 22px/1.1 var(--display);font-variation-settings:'wdth' 115;display:block}#ripFixed p{margin:8px 0 14px;font-size:16px;color:var(--soft)}#ripFixed .row{display:flex;gap:10px;flex-wrap:wrap}#ripFixed .btn{min-height:48px;font-size:16px}
+#fixCap{position:absolute;z-index:7;left:50%;bottom:calc(36% + 12px);transform:translateX(-50%);background:rgba(31,42,51,.94);color:#fff;font-weight:800;font-size:17px;padding:12px 18px;border-radius:14px;max-width:min(92vw,520px);text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#fixCap small{display:block;color:var(--hivis);font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px}
+.hero.fixing .hcopy,.hero.fixing .riplabel,.hero.fixing #ripMeter{opacity:0;pointer-events:none}.hero.fixing .hcopy>*{pointer-events:none}
+.hero.fixing #ripZone{cursor:default}
+@media (min-width:900px){#ripFixed{left:auto;right:5vw;top:auto;bottom:12vh;margin:0}#fixCap{bottom:14vh}}
+@media (max-width:899px){#ripFixed{top:calc(64% + 8px);padding:14px 16px}#ripFixed b{font-size:19px}#ripFixed p{display:none}#ripFixed .row{margin-top:10px;flex-wrap:nowrap}#ripFixed .btn{min-height:44px;font-size:15px;padding:0 14px;flex:1}#fixCap{bottom:auto;top:calc(64% + 12px);font-size:16px}}
+/* ===== what we do ===== */
+.wwd{background:var(--paper)}
+.layers{list-style:none;margin:34px 0 0;padding:0;display:grid;gap:14px}
+.layers li{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:start;background:var(--concrete);border-radius:16px;padding:14px}
+.layers canvas{width:100%;aspect-ratio:3/2;border-radius:10px;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.layers em{font-style:normal;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--slate);color:var(--hivis);font-weight:900;margin-right:10px;vertical-align:middle}
+.layers b{font:850 21px/1.15 var(--display);font-variation-settings:'wdth' 110;vertical-align:middle}
+.layers span{display:block;color:var(--soft);font-size:16px;margin-top:8px}.layers a{display:inline-block;margin-top:8px;font-weight:800;font-size:15px;text-decoration:none;border-bottom:2px solid var(--hivis)}
+@media (min-width:1000px){.layers{grid-template-columns:repeat(5,1fr)}.layers li{grid-template-columns:1fr;padding:0;overflow:hidden;background:var(--concrete)}.layers li>div{padding:4px 16px 18px}.layers canvas{border-radius:0}}
+@media (max-width:520px){.layers li{grid-template-columns:1fr}}
+.wwd-note{font-size:14px;color:var(--soft);margin:14px 0 0}
+#fixCap{left:16px;right:16px;margin:0 auto;width:fit-content;transform:none}
+@media (max-width:520px){.layers li{grid-template-columns:96px 1fr;gap:14px}.layers b{font-size:19px}.layers em{width:26px;height:26px;margin-right:6px}}
+.hero.ripon{cursor:grab}.hero.ripon.tearing{cursor:grabbing}.hero.ripon .hcta,.hero.ripon .bar{cursor:auto}
+.rpin .rp{display:flex;align-items:center;gap:8px}.rpin.l .rp{flex-direction:row-reverse}
+
+/* phone hero: whole house visible, blurred copy of the photo fills the rest */
+.hero::before{content:'';position:absolute;inset:-40px;background:var(--hbg) center 30%/cover no-repeat;filter:blur(28px) brightness(.55);transform:scale(1.1)}
+@media (max-width:899px){
+ .hero .ph{inset:auto;left:-20%;width:140%;max-width:none;height:auto;top:calc(64px + env(safe-area-inset-top,0px));object-fit:fill}
+ .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,.35) 0%,rgba(31,42,51,0) 14%,rgba(31,42,51,0) 54%,rgba(31,42,51,.85) 66%,var(--slate) 100%)}
+}
+@media (max-width:899px){.rpin,.rpin.l{transform:translate(-50%,calc(-100% + 7px))}.rpin .rp,.rpin.l .rp{flex-direction:column-reverse;gap:4px}}
+/* job picker */
+.qjobs{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media (min-width:700px){.qjobs{grid-template-columns:repeat(3,1fr)}}
+.qjobs button{min-height:52px;padding:8px 12px;border-radius:14px;border:2px solid var(--line);background:#fff;font:800 15px/1.2 var(--body);color:var(--ink);cursor:pointer;text-align:left}
+.qjobs button[aria-checked="true"]{border-color:var(--slate);background:var(--slate);color:#fff}
+.qhint{font-size:15px;color:var(--soft);margin:4px 0 12px}
+#qOther .tog2{margin:6px 0}
+/* v6 fix flow */
+#fixShow{position:absolute;inset:0;z-index:3;touch-action:pan-y;cursor:grab}
+#fixShow .stg{opacity:0;transition:opacity .6s ease;pointer-events:none}
+#fixShow .stg.on{opacity:1}
+#fixCap{left:16px;right:16px;margin:0 auto;width:min(560px,calc(100% - 32px));transform:none;display:grid;gap:10px;text-align:left}
+#fixCapT{font-size:17px}
+.fixnav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fixnav .btn{min-height:40px;font-size:15px}.fixnav .btn-line{color:#fff;border-color:rgba(255,255,255,.6)}.fixnav .btn:disabled{opacity:.35}
+#fixDots{display:flex;gap:6px}#fixDots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.35);cursor:pointer}#fixDots button.on{background:var(--hivis);width:26px;border-radius:6px}
+.fixhint{color:#AEBBC4;font-size:13px}
+#ripMeter.full{background:var(--hivis);color:var(--slate)}#ripMeter.full i{background:var(--slate)}
+.hero.fixing #ripMeter,.hero.fixing .riplabel{opacity:0}
+
+.hero.fixing #ripZone{pointer-events:none}
+.hero.fixing #fixShow{z-index:5}
+#fixCap small.fixhint{color:#AEBBC4;font-size:13px;text-transform:none;letter-spacing:0;margin:0;font-weight:600}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
@@ -705,12 +784,12 @@ addEventListener('hashchange',routeHash);
 /* ---------- season + region ---------- */
 const BIZ_CITY='Houston';
 const GULF=/Houston|Galveston|Corpus Christi|Beaumont|Brownsville|New Orleans|Baton Rouge|Lake Charles|Mobile|Biloxi|Gulfport|Pensacola|Panama City|Tampa|Sarasota|Fort Myers|Naples|Miami|Key West/i;
-const READY=new Set(["f1", "f2", "f3", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "sv_attic", "sv_claim", "sv_gutter", "sv_leak", "sv_roof", "sv_storm", "w1", "w2", "w3", "w4"]);
+const READY=new Set(["f1", "f2", "f3", "fa1", "fa2", "fa3", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "sp1", "sp2", "sv_attic", "sv_claim", "sv_gutter", "sv_leak", "sv_roof", "sv_storm", "w1", "w2", "w3", "w4"]);
 const SET={
-  hurricane:{hero:'s6',under:'s2',lens:'Rot under the shingles',before:'s1',after:'s5',why:'Hurricane season. Find the leaks before the storm does.',capB:'Worn shingles, water getting in',capA:'New roof, hurricane rated',sms:'the next storm'},
+  hurricane:{done:'fa3',hero:'s6',under:'fa2',lens:'Rot under the shingles',before:'fa1',after:'s5',why:'Hurricane season. Find the leaks before the storm does.',capB:'Worn shingles, water getting in',capA:'New roof, hurricane rated',sms:'the next storm'},
   usWinter:{hero:'w4',under:'w2',lens:'Water behind the ice',before:'w1',after:'w4',why:'Ice dam season. Water backs up under the shingles at the edge.',capB:'Ice dam, water backing up',capA:'New roof, edge stays clear',sms:'ice dams start'},
   gulfWinter:{hero:'freeze',under:'g2',lens:'Leak around the pipe',before:'g1',after:'g4',why:'Freeze season. Cracked pipe boots leak for months before you see it.',capB:'Cracked pipe boot',capA:'Metal flashing that won’t crack',sms:'the next freeze'},
-  hail:{hero:'hail',under:'h1',lens:'Hail bruises',before:'h1',after:'s5',why:'Hail season. Bruised shingles look fine and leak years later.',capB:'Hail-bruised shingles',capA:'Class 4 impact shingles',sms:'the next hailstorm'},
+  hail:{done:'sp3',hero:'hail',under:'sp2',lens:'Hail bruises',before:'sp1',after:'s5',why:'Hail season. Bruised shingles look fine and leak years later.',capB:'Hail-bruised shingles',capA:'Class 4 impact shingles',sms:'the next hailstorm'},
   heat:{hero:'heat',under:'u1',lens:'Sun-baked shingles',before:'u1',after:'heat',why:'Summer heat. A hot attic cooks your shingles from below.',capB:'Curled, cracked shingles',capA:'New shingles and a ridge vent',sms:'summer gets worse'},
   gutters:{hero:'f4',under:'f2',lens:'Rotted roof edge',before:'f1',after:'f4',why:'Leaf season. Clogged gutters rot the edge of your roof.',capB:'Gutters packed with leaves',capA:'New edge and gutter guard',sms:'the leaves come down'}};
 const pickSet=(sea,reg)=>({winter:reg==='gulf'?'gulfWinter':'usWinter',spring:'hail',summer:'heat',fall:reg==='gulf'?'hurricane':'gutters'})[sea];
@@ -719,12 +798,13 @@ const regionFor=c=>GULF.test(c)?'gulf':'us';
 const PICK={season:'auto',region:'auto'};try{Object.assign(PICK,JSON.parse(localStorage.getItem('rl-pick2')||'{}'))}catch(x){}
 const ok=n=>READY.has(n);
 const src=(el,n)=>{el.src=`img/${n}.webp`;el.srcset=`img/${n}-m.webp 800w, img/${n}.webp 1200w`;el.sizes='100vw'};
+{const q=new URLSearchParams(location.search),sv=q.get('season');if(sv&&/^(winter|spring|summer|fall)$/.test(sv)){PICK.season=sv;if(q.get('region'))PICK.region=q.get('region')}}
 function apply(){const sea=PICK.season==='auto'?seasonNow():PICK.season,reg=PICK.region==='auto'?regionFor(BIZ_CITY):PICK.region;
   let s=SET[pickSet(sea,reg)];const fb=SET.hurricane;
   const pair=ok(s.before)&&ok(s.under)?[s.before,s.under]:[fb.before,fb.under];
-  if($('#hOver')){src($('#hOver'),pair[0]);src($('#hUnder'),pair[1])}
+  if($('#hOver')){const hh=$('#hero');if(hh)hh.style.setProperty('--hbg',`url(img/${pair[0]}-m.webp)`);src($('#hOver'),pair[0]);src($('#hUnder'),pair[1]);const dn=$('#hDone');if(dn){if(s.done&&ok(s.done)){dn.dataset.ok='1';src(dn,s.done)}else dn.dataset.ok='0'}}
   if($('#why'))$('#why').textContent=s.why;
-  SMS.hero=`Hi Ridgeline, I’d like a free roof inspection before ${s.sms}. My address is `;refreshSms(document);
+  window.RL_STAGES=(s.stages||[]).map(([img,cap])=>({img:ok(img)?img:null,cap}));SMS.hero=`Hi Ridgeline, I’d like a free roof inspection before ${s.sms}. My address is `;refreshSms(document);
   try{localStorage.setItem('rl-pick2',JSON.stringify(PICK))}catch(x){}}
 $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="dH">Demo settings</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
     <p class="muted">For showing clients. The live site picks these by date and city on its own.</p>
@@ -733,64 +813,156 @@ $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
     <div class="smsrow"><a class="btn btn-main btn-sm" href="#owner" data-close>Open owner view</a></div></div></div>`,'#dS');
   $('#dS').value=PICK.season;$('#dR').value=PICK.region;$('#dS').onchange=e=>{PICK.season=e.target.value;apply()};$('#dR').onchange=e=>{PICK.region=e.target.value;apply()}};
 
-/* ---------- RIP IT OFF: drag across the roof to tear the old shingles off. Chunks fly with real physics and pile up; what's underneath is the rot. ---------- */
+/* ---------- roof layer textures, drawn in code (no photos): used by the hero "fix it" and the What we do swatches ---------- */
+const RT={rnd:(a,b)=>a+Math.random()*(b-a),
+  canvas(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));return c},
+  ply(w,h,u){const c=RT.canvas(w,h),g=c.getContext('2d');g.fillStyle='#D8B07A';g.fillRect(0,0,w,h);
+    for(let i=0;i<h/(2.2*u);i++){const y=i*2.2*u;g.strokeStyle=`rgba(${RT.rnd(120,160)|0},${RT.rnd(80,105)|0},45,${RT.rnd(.12,.3)})`;g.lineWidth=RT.rnd(.6,1.6)*u;g.beginPath();g.moveTo(0,y);for(let x=0;x<=w;x+=20*u)g.lineTo(x,y+Math.sin(x/(70*u)+i*.7)*2.4*u+RT.rnd(-.6,.6)*u);g.stroke()}
+    for(let k=0;k<w*h/(26000*u*u);k++){g.fillStyle='rgba(120,75,35,.45)';g.beginPath();g.ellipse(RT.rnd(0,w),RT.rnd(0,h),RT.rnd(3,7)*u,RT.rnd(2,4)*u,0,0,7);g.fill()}
+    const pw=192*u,ph=96*u;g.strokeStyle='rgba(70,45,20,.7)';g.lineWidth=1.6*u;for(let y=0;y<h;y+=ph){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();for(let x=(y/ph%2)*pw/2;x<w;x+=pw){g.beginPath();g.moveTo(x,y);g.lineTo(x,y+ph);g.stroke()}}
+    g.fillStyle='rgba(60,60,60,.8)';for(let y=0;y<h;y+=ph)for(let x=8*u;x<w;x+=16*u){g.fillRect(x,y+4*u,1.6*u,1.6*u)}return c},
+  felt(w,h,u){const c=RT.canvas(w,h),g=c.getContext('2d');g.fillStyle='#BFC5CB';g.fillRect(0,0,w,h);
+    const row=72*u;for(let y=0;y<h;y+=row){g.fillStyle='rgba(0,0,0,.12)';g.fillRect(0,y,w,2*u);g.fillStyle='rgba(255,255,255,.25)';g.fillRect(0,y+2*u,w,1.5*u);
+      g.fillStyle='rgba(40,85,170,.55)';g.font=`700 ${9*u}px system-ui,sans-serif`;for(let x=((y/row)%2)*90*u;x<w;x+=180*u)g.fillText('SYNTHETIC UNDERLAYMENT',x,y+row*.55);
+      g.fillStyle='rgba(40,85,170,.35)';for(let x=12*u;x<w;x+=36*u){g.beginPath();g.arc(x,y+row*.25,2.6*u,0,7);g.fill()}}
+    /* ice & water shield along the bottom edge */
+    const iw=h*.16;g.fillStyle='#24282D';g.fillRect(0,h-iw,w,iw);g.fillStyle='rgba(255,255,255,.08)';for(let x=0;x<w;x+=6*u)g.fillRect(x,h-iw,1*u,iw);return c},
+  shingles(w,h,u,old,persp){const c=RT.canvas(w,h),g=c.getContext('2d');g.fillStyle=old?'#4A4D50':'#1E2125';g.fillRect(0,0,w,h);
+    let y=0;while(y<h){const f=persp?(.55+.9*y/h):1,rh=27*u*f;let x=-RT.rnd(0,60)*u*f;
+      while(x<w){const tw=RT.rnd(30,70)*u*f,v=old?RT.rnd(62,95):RT.rnd(40,64),wm=RT.rnd(-3,4);
+        const tg=g.createLinearGradient(0,y,0,y+rh);tg.addColorStop(0,`rgb(${v+8+wm},${v+9},${v+12})`);tg.addColorStop(1,`rgb(${v-6+wm},${v-5},${v-2})`);g.fillStyle=tg;g.fillRect(x+1.2*u,y,tw-2.4*u,rh);
+        for(let k=0;k<tw*rh/(14*u*u);k++){const q=RT.rnd(-22,22);g.fillStyle=`rgba(${v+q},${v+q},${v+q+5},.6)`;g.fillRect(x+RT.rnd(0,tw),y+RT.rnd(0,rh),1.3*u,1.3*u)}
+        if(!old&&Math.random()<.3){g.fillStyle='rgba(0,0,0,.22)';g.fillRect(x+1.2*u,y+rh*.55,tw-2.4*u,rh*.45)}
+        if(old&&Math.random()<.35){g.fillStyle='rgba(30,40,25,.28)';g.fillRect(x,y,tw,rh)}x+=tw}
+      const gr=g.createLinearGradient(0,y+rh-8*u*f,0,y+rh);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.7)');g.fillStyle=gr;g.fillRect(0,y+rh-8*u*f,w,8*u*f);g.fillStyle='rgba(255,255,255,.08)';g.fillRect(0,y,w,1.5*u);y+=rh}
+    if(persp){const lg=g.createLinearGradient(0,0,0,h);lg.addColorStop(0,'rgba(255,255,255,.06)');lg.addColorStop(1,'rgba(0,0,0,.25)');g.fillStyle=lg;g.fillRect(0,0,w,h)}return c}};
+/* What we do swatches */
+$$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.getContext('2d'),k=cv.dataset.sw,u=1.1;
+  if(k==='old'){g.drawImage(RT.shingles(w,h,u,true),0,0);g.save();g.beginPath();for(let i=0;i<14;i++){const a=i/14*Math.PI*2,r=RT.rnd(70,110);g.lineTo(w*.55+Math.cos(a)*r*1.5,h*.55+Math.sin(a)*r*.75)}g.closePath();g.clip();g.drawImage(RT.ply(w,h,u),0,0);g.fillStyle='rgba(60,35,15,.55)';g.beginPath();g.ellipse(w*.58,h*.58,80,40,.3,0,7);g.fill();g.restore()}
+  else if(k==='ply')g.drawImage(RT.ply(w,h,u),0,0);else if(k==='felt')g.drawImage(RT.felt(w,h,u),0,0);
+  else{g.drawImage(RT.shingles(w,h,u,false),0,0);if(k==='done'){g.fillStyle='#FFD400';g.beginPath();g.arc(w-60,60,34,0,7);g.fill();g.strokeStyle='#1F2A33';g.lineWidth=7;g.lineCap='round';g.lineJoin='round';g.beginPath();g.moveTo(w-76,60);g.lineTo(w-64,72);g.lineTo(w-44,48);g.stroke()}}});
+/* ---------- RIP IT OFF v2: tear only the roof (per-photo roof outline), exact finger alignment, cached compositing, capped debris that settles into one pile ---------- */
 (function rip(){const hero=$('#hero');if(!hero)return;
-  const cv=$('#ripCv'),x=cv.getContext('2d'),zone=$('#ripZone'),over=$('#hOver'),under=$('#hUnder'),hint=$('#ripHint'),meter=$('#ripMeter'),found=$('#ripFound');
-  const dpr=Math.min(2,devicePixelRatio||1);let W=0,H=0,top=null,holes=null,hx=null,chunks=[],tears=0,shake=0,last=null,done=false,run=true,cleared=0,auto=null,pins=[];
-  const FIND=[['Soft, rotted decking',.52,.52],['Torn felt paper',.36,.34],['Water stains',.66,.4],['Exposed nails',.44,.62]];
-  function cover(img,w,h){const iw=img.naturalWidth,ih=img.naturalHeight,s=Math.max(w/iw,h/ih),dw=iw*s,dh=ih*s;return[(w-dw)/2,(h-dh)*.4,dw,dh]}
-  function build(){const r=hero.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;
-    top=document.createElement('canvas');top.width=cv.width;top.height=cv.height;const t=top.getContext('2d');if(over.complete&&over.naturalWidth){const[a,b,c,d]=cover(over,cv.width,cv.height);t.drawImage(over,a,b,c,d)}
-    const k=holes;holes=document.createElement('canvas');holes.width=cv.width;holes.height=cv.height;hx=holes.getContext('2d');if(k)hx.drawImage(k,0,0,cv.width,cv.height);draw()}
-  /* a torn hole: jagged, shingle-row shaped, wider than tall */
-  function tear(px,py,vx,vy,big){const s=(big?1.6:1)*Math.max(26,Math.min(W,H)*.045)*dpr,cx=px*dpr,cy=py*dpr;
-    hx.fillStyle='#000';hx.beginPath();const n=11;for(let i=0;i<n;i++){const a=i/n*Math.PI*2,rr=s*(.65+Math.random()*.55);hx.lineTo(cx+Math.cos(a)*rr*1.5,cy+Math.sin(a)*rr*.8)}hx.closePath();hx.fill();
-    /* the piece that came off becomes a flying chunk cut from the roof photo */
-    if(!reduce&&chunks.length<220){const cw=Math.round(s*2.6),ch=Math.round(s*1.5),c=document.createElement('canvas');c.width=cw;c.height=ch;const g=c.getContext('2d');
-      g.beginPath();for(let i=0;i<9;i++){const a=i/9*Math.PI*2;g.lineTo(cw/2+Math.cos(a)*cw/2*(.7+Math.random()*.3),ch/2+Math.sin(a)*ch/2*(.7+Math.random()*.3))}g.closePath();g.clip();
-      g.drawImage(top,cx-cw/2,cy-ch/2,cw,ch,0,0,cw,ch);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(0,ch*.7,cw,ch*.3);
-      chunks.push({c,x:cx,y:cy,vx:(vx*.9+(Math.random()-.5)*7)*dpr,vy:(vy*.6-6-Math.random()*8)*dpr,r:0,vr:(Math.random()-.5)*.35,rest:false,life:0})}
-    tears++;if(!reduce)shake=Math.min(10,shake+2.2);if(navigator.vibrate&&down&&tears%6===0)try{navigator.vibrate(8)}catch(e){}}
-  function draw(){x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,cv.width,cv.height);
-    const sx=shake?(Math.random()-.5)*shake*dpr:0,sy=shake?(Math.random()-.5)*shake*dpr:0;x.setTransform(1,0,0,1,sx,sy);
-    x.drawImage(top,0,0);x.globalCompositeOperation='destination-out';x.drawImage(holes,0,0);
-    /* torn edges: dark lip around every hole so it reads as thickness */
-    x.globalCompositeOperation='source-atop';x.save();x.filter='blur('+(5*dpr)+'px)';x.globalAlpha=.75;x.drawImage(holes,0,0);x.restore();x.globalCompositeOperation='source-over';
-    for(const k of chunks){x.save();x.translate(k.x,k.y);x.rotate(k.r);x.shadowColor='rgba(0,0,0,.55)';x.shadowBlur=14*dpr;x.shadowOffsetY=8*dpr;x.drawImage(k.c,-k.c.width/2,-k.c.height/2);x.restore()}}
-  function step(){if(!run)return;const g=.55*dpr,floor=cv.height-6*dpr;let moving=false;
-    for(const k of chunks){if(k.rest)continue;k.vy+=g;k.x+=k.vx;k.y+=k.vy;k.r+=k.vr;k.vx*=.995;k.life++;
-      if(k.y>floor-k.c.height*.3){k.y=floor-k.c.height*.3;k.vy*=-.32;k.vx*=.7;k.vr*=.6;if(Math.abs(k.vy)<1.2*dpr){k.vy=0;k.rest=true;k.r=Math.round(k.r/Math.PI)*Math.PI+(Math.random()-.5)*.25}}
-      if(k.x<-200||k.x>cv.width+200)k.rest=true;moving=true}
-    if(chunks.length>160)chunks.splice(0,chunks.length-160);
-    if(shake>0)shake=Math.max(0,shake-.6);draw();requestAnimationFrame(step)}
-  /* how much is torn off: sample the hole mask at low res */
-  function measure(){const s=document.createElement('canvas');s.width=48;s.height=28;const g=s.getContext('2d');const zh=zone.offsetHeight/H;g.drawImage(holes,0,0,holes.width,holes.height*zh,0,0,48,28);
-    const d=g.getImageData(0,0,48,28).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i]>100)n++;return n/(48*28)}
-  function progress(){cleared=measure();meter.style.setProperty('--p',Math.min(1,cleared/.35));
-    FIND.forEach((f,i)=>{if(cleared>(i+1)*.06&&!pins[i]){pins[i]=1;const p=document.createElement('div');p.className='rpin'+(f[1]>.5?' l':'');p.style.left=f[1]*100+'%';p.style.top=(f[2]*zone.offsetHeight/H*100)+'%';p.innerHTML=`<i></i><span>${f[0]}</span>`;hero.appendChild(p);if(M&&!reduce)M.animate(p,{scale:[.4,1],opacity:[0,1]},{type:'spring',stiffness:500,damping:18})}});
-    if(cleared>.32&&!done){done=true;found.hidden=false;if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}}
-  let down=false;
-  const pos=e=>{const r=hero.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
-  zone.addEventListener('pointerdown',e=>{down=true;zone.setPointerCapture(e.pointerId);stopAuto();hint.classList.add('gone');const[px,py]=pos(e);last=[px,py,performance.now()];tear(px,py,0,0,true)});
-  zone.addEventListener('pointermove',e=>{if(!down&&e.pointerType!=='mouse')return;const[px,py]=pos(e);
-    if(!down){/* mouse hover still tears lightly, so desktop users feel it instantly */if(!last){last=[px,py,performance.now()];return}}
-    const[lx,ly,lt]=last||[px,py,performance.now()],dist=Math.hypot(px-lx,py-ly),now=performance.now(),dt=Math.max(8,now-lt);
-    const need=down?14:34;if(dist<need)return;const vx=(px-lx)/dt*16,vy=(py-ly)/dt*16,steps=Math.min(6,Math.floor(dist/need));
-    for(let i=1;i<=steps;i++)tear(lx+(px-lx)*i/steps,ly+(py-ly)*i/steps,vx,vy,false);last=[px,py,now];hint.classList.add('gone')});
-  const up=()=>{down=false;last=null;progress()};zone.addEventListener('pointerup',up);zone.addEventListener('pointercancel',up);zone.addEventListener('pointerleave',()=>{if(!down)last=null});
-  setInterval(()=>{if(tears)progress()},400);
-  /* a ghost hand tears a strip on its own once, so nobody has to guess what to do */
+  const cv=$('#ripCv'),x=cv.getContext('2d'),zone=$('#ripZone'),over=$('#hOver'),hint=$('#ripHint'),meter=$('#ripMeter'),found=$('#ripFound'),cap=$('#fixCap'),fixed=$('#ripFixed');
+  const dpr=Math.min(1.5,devicePixelRatio||1);
+  /* roof outline per photo, as fractions of the photo (x,y). Anything outside (sky, trees, gutter) can't be torn. */
+  const ROOF={sp1:[[0.113,0.368],[0.320,0.195],[0.581,0.205],[0.749,0.364],[0.680,0.364],[0.661,0.341],[0.538,0.536],[0.476,0.536],[0.472,0.390],[0.305,0.375],[0.218,0.332],[0.182,0.368]],fa1:[[0.103,0.592],[0.250,0.322],[0.385,0.314],[0.481,0.202],[0.621,0.202],[0.832,0.394],[0.658,0.390],[0.581,0.255],[0.509,0.390],[0.320,0.406],[0.320,0.592],[0.280,0.592],[0.280,0.436],[0.233,0.390],[0.188,0.436],[0.188,0.592]],s1:[[0,.37],[.37,.175],[.68,.175],[1,.36],[1,.93],[0,.93]],w1:[[0,.38],[.33,.175],[.70,.175],[1,.33],[1,.9],[0,.9]],f1:[[0,.37],[.37,.18],[.70,.18],[1,.35],[1,.82],[0,.82]],_:[[0,.36],[.35,.18],[.68,.18],[1,.35],[1,.9],[0,.9]]};
+  const mk=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,w|0);c.height=Math.max(1,h|0);return c};
+  let top=null,holes=null,hx=null,maskC=null,hm=null,roofC=null,lipC=null,pile=null,pileA=1,mArr=null,mW=0,mH=0,rt=0,rb=0;
+  let full=false,actT=0;const CAP=.45;let chunks=[],tears=0,shake=0,last=null,done=false,visible=true,auto=null,pins=[],pts=[],dirty=true,frame=0,down=false,spawnN=0,measured=-1,fixAnim=false;
+  const FX={on:false,L:null,p:[0,0,0],full:false};
+  const FIND=['Soft, rotted decking','Torn felt paper','Water stains','Exposed nails'];
+  function cover(img,w,h){const iw=img.naturalWidth,ih=img.naturalHeight;
+    /* phones show the whole house (CSS sizes the photo, we read its box); desktop fills the screen */
+    if(getComputedStyle(over).objectFit!=='cover'){const hr=hero.getBoundingClientRect(),r=over.getBoundingClientRect(),k=w/hr.width;return[(r.left-hr.left)*k,(r.top-hr.top)*k,r.width*k,r.width*ih/iw*k]}
+    const s=Math.max(w/iw,h/ih),dw=iw*s,dh=ih*s;return[(w-dw)/2,(h-dh)*.4,dw,dh]}
+  function build(){const r=hero.getBoundingClientRect();if(!r.width||!r.height)return;const nw=Math.round(r.width*dpr),nh=Math.round(r.height*dpr);
+    if(top&&nw===cv.width&&nh===cv.height&&top.__src===over.currentSrc)return;
+    cv.width=nw;cv.height=nh;top=mk(nw,nh);top.__src=over.currentSrc;const t=top.getContext('2d');let T=null;
+    if(over.complete&&over.naturalWidth){T=cover(over,nw,nh);t.drawImage(over,...T)}
+    maskC=mk(nw,nh);const m=maskC.getContext('2d');const key=((over.currentSrc||over.src||'').match(/\/(\w+?)(?:-m)?\.webp/)||[])[1];const poly=ROOF[key]||ROOF._;
+    if(T){const[a,b,c,d]=T;m.fillStyle='#000';m.beginPath();poly.forEach(([u,v])=>m.lineTo(a+u*c,b+v*d));m.closePath();m.fill();
+      const ys=poly.map(p=>b+p[1]*d);rt=Math.max(0,Math.min(...ys));rb=Math.min(nh,Math.max(...ys))}
+    mW=Math.ceil(nw/8);mH=Math.ceil(nh/8);const sm=mk(mW,mH),sg=sm.getContext('2d');sg.drawImage(maskC,0,0,mW,mH);const md=sg.getImageData(0,0,mW,mH).data;mArr=new Uint8Array(mW*mH);for(let i=0;i<mArr.length;i++)mArr[i]=md[i*4+3]>127?1:0;
+    const oh=holes;holes=mk(nw,nh);hx=holes.getContext('2d');if(oh)hx.drawImage(oh,0,0,nw,nh);
+    const op=pile;pile=mk(nw,nh);if(op)pile.getContext('2d').drawImage(op,0,0,nw,nh);
+    hm=mk(nw,nh);roofC=mk(nw,nh);lipC=mk(nw/4,nh/4);if(FX.L)FX.L=layers();dirty=true;kick()}
+  const onRoof=(cx,cy)=>{if(!mArr)return false;const i=(cy/8|0)*mW+(cx/8|0);return cx>=0&&cy>=0&&cx<cv.width&&cy<cv.height&&mArr[i]===1};
+  /* one torn hole (canvas px). Every 2nd tear throws a chunk; at most 30 flying at once. */
+  function tear(cx,cy,vx,vy,big){if(full||FX.on||!onRoof(cx,cy))return;const s=(big?1.5:1)*Math.max(24*dpr,Math.min(cv.width,cv.height)*.042);
+    hx.fillStyle='#000';hx.beginPath();for(let i=0;i<11;i++){const a=i/11*Math.PI*2,rr=s*(.65+Math.random()*.55);hx.lineTo(cx+Math.cos(a)*rr*1.5,cy+Math.sin(a)*rr*.8)}hx.closePath();hx.fill();
+    pts.push([cx,cy]);if(pts.length>400)pts.splice(0,100);
+    if(!reduce&&(big||spawnN++%2===0)&&chunks.length<30){const cw=Math.round(s*2.4),ch=Math.round(s*1.4),pd=Math.round(12*dpr),c=mk(cw+pd*2,ch+pd*2),g=c.getContext('2d');
+      const shape=()=>{g.beginPath();for(let i=0;i<9;i++){const a=i/9*Math.PI*2;g.lineTo(pd+cw/2+Math.cos(a)*cw/2*(.72+Math.random()*.28),pd+ch/2+Math.sin(a)*ch/2*(.72+Math.random()*.28))}g.closePath()};
+      shape();g.save();g.shadowColor='rgba(0,0,0,.5)';g.shadowBlur=8*dpr;g.shadowOffsetY=5*dpr;g.fillStyle='#2b2e31';g.fill();g.restore();g.save();g.clip();g.drawImage(top,cx-cw/2,cy-ch/2,cw,ch,pd,pd,cw,ch);g.fillStyle='rgba(0,0,0,.16)';g.fillRect(pd,pd+ch*.7,cw,ch*.3);g.restore();
+      chunks.push({c,x:cx,y:cy,vx:vx*.9+(Math.random()-.5)*7*dpr,vy:vy*.6-(6+Math.random()*8)*dpr,r:0,vr:(Math.random()-.5)*.3})}
+    tears++;dirty=true; if(navigator.vibrate&&down&&tears%8===0)try{navigator.vibrate(8)}catch(e){}kick()}
+  function compose(){const r=roofC.getContext('2d'),h=hm.getContext('2d'),l=lipC.getContext('2d'),w=cv.width,H2=cv.height;
+    h.globalCompositeOperation='source-over';h.clearRect(0,0,w,H2);h.drawImage(holes,0,0);h.globalCompositeOperation='destination-in';h.drawImage(maskC,0,0);h.globalCompositeOperation='source-over';
+    r.globalCompositeOperation='source-over';r.clearRect(0,0,w,H2);r.drawImage(top,0,0);r.globalCompositeOperation='destination-out';r.drawImage(hm,0,0);
+    l.clearRect(0,0,lipC.width,lipC.height);l.filter='blur(2px)';l.drawImage(hm,0,0,lipC.width,lipC.height);l.filter='none';
+    r.globalCompositeOperation='source-atop';r.globalAlpha=.7;r.drawImage(lipC,0,0,w,H2);r.globalAlpha=1;
+    if(FX.L){r.globalCompositeOperation='destination-over';for(let i=2;i>=0;i--){const p=FX.p[i];if(p<=0||(i===2&&FX.full))continue;r.save();r.beginPath();const y=rb-(rb-rt)*p;r.rect(0,y,w,H2-y);r.clip();r.drawImage(FX.L[i],0,0);r.restore()}}
+    if(FX.L&&FX.full&&FX.p[2]>0){r.globalCompositeOperation='source-over';r.save();r.beginPath();const y=rb-(rb-rt)*FX.p[2];r.rect(0,y,w,H2-y);r.clip();r.drawImage(FX.L[2],0,0);r.restore()}
+    r.globalCompositeOperation='source-over'}
+  function draw(){x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,cv.width,cv.height);const sx=shake?(Math.random()-.5)*shake*dpr:0,sy=shake?(Math.random()-.5)*shake*dpr:0;x.setTransform(1,0,0,1,sx,sy);
+    x.drawImage(roofC,0,0);if(pileA>0){x.globalAlpha=pileA;x.drawImage(pile,0,0);x.globalAlpha=1}
+    for(const k of chunks){x.save();x.translate(k.x,k.y);x.rotate(k.r);x.drawImage(k.c,-k.c.width/2,-k.c.height/2);x.restore()}}
+  function kick(){if(!frame&&visible)frame=requestAnimationFrame(step)}
+  function step(){frame=0;if(!top)return;const g=.55*dpr,floor=cv.height-6*dpr,pg=pile.getContext('2d');
+    for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];k.vy+=g;k.x+=k.vx;k.y+=k.vy;k.r+=k.vr;k.vx*=.995;const b=floor-k.c.height*.3;
+      if(k.y>b){k.y=b;k.vy*=-.3;k.vx*=.7;k.vr*=.6;if(Math.abs(k.vy)<1.2*dpr){k.r=Math.round(k.r/Math.PI)*Math.PI+(Math.random()-.5)*.25;pg.save();pg.translate(k.x,k.y);pg.rotate(k.r);pg.drawImage(k.c,-k.c.width/2,-k.c.height/2);pg.restore();chunks.splice(i,1);continue}}
+      if(k.x<-300||k.x>cv.width+300)chunks.splice(i,1)}
+    if(dirty){compose();dirty=false}draw();if(shake>0)shake=Math.max(0,shake-.6);if(chunks.length||shake>0||fixAnim)kick()}
+  /* how much of the roof (inside the drag area) is torn off */
+  function measure(){const a=mk(64,40),b=mk(64,40),ga=a.getContext('2d'),gb=b.getContext('2d'),zh=Math.min(cv.height,zone.offsetHeight*cv.height/hero.offsetHeight);
+    ga.drawImage(hm,0,0,cv.width,zh,0,0,64,40);gb.drawImage(maskC,0,0,cv.width,zh,0,0,64,40);const da=ga.getImageData(0,0,64,40).data,db=gb.getImageData(0,0,64,40).data;let n=0,d=0;
+    for(let i=3;i<da.length;i+=4){if(db[i]>127){d++;if(da[i]>127)n++}}return d?n/d:0}
+  function pinAt(label){if(!pts.length)return;let best=null,bd=-1;const edge=innerWidth<900?.2:.08;for(let j=0;j<pts.length;j+=3){const p=pts[j];if(p[0]<cv.width*edge||p[0]>cv.width*(1-edge))continue;let md=1e9;for(const q of pins)md=Math.min(md,Math.hypot(p[0]-q[0],p[1]-q[1]));if(md>bd){bd=md;best=p}}
+    if(!best||(pins.length&&bd<cv.width*(innerWidth<900?.38:.14)))return false;pins.push(best);const el=document.createElement('div');const fx=best[0]/cv.width;el.className='rpin'+(fx>.5?' l':'');el.style.left=fx*100+'%';el.style.top=best[1]/cv.height*100+'%';el.innerHTML=`<div class="rp"><i></i><span>${label}</span></div>`;hero.appendChild(el);
+    if(M&&!reduce)M.animate(el.firstChild,{scale:[.4,1],opacity:[0,1]},{type:'spring',stiffness:500,damping:18})}
+  function progress(){if(!hm||measured===tears)return;measured=tears;if(dirty){compose();dirty=false}const c=measure();meter.style.setProperty('--p',Math.min(1,c/CAP));
+    while(pins.length<(innerWidth<900?2:FIND.length)&&c>(pins.length+1)*.06){if(pinAt(FIND[pins.length])===false)break}
+    if(c>=CAP&&!full){full=true;meter.classList.add('full');showAct()}}
+
+  /* input: anywhere on the roof with a mouse; inside the drag area with a finger (so the page still scrolls below it) */
+  const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+  const skip=t=>t.closest('a,button,input,select,textarea,label,#ripFound,#ripFixed,#fixShow,#fixCap,.bar');
+  let fadeT=0;
+  hero.addEventListener('pointerdown',e=>{if(FX.on||e.button>0||skip(e.target))return;if(e.pointerType!=='mouse'&&!zone.contains(e.target))return;
+    const[px,py]=pos(e);e.preventDefault();clearTimeout(fadeT);hero.classList.add('tearing');down=true;try{hero.setPointerCapture(e.pointerId)}catch(_){}stopAuto();hint.classList.add('gone');last=[px,py,performance.now()];tear(px,py,0,0,true);if(!actT)actT=setTimeout(showAct,5000)});
+  hero.addEventListener('pointermove',e=>{if(!down||FX.on)return;const[px,py]=pos(e),[lx,ly,lt]=last,dist=Math.hypot(px-lx,py-ly),now=performance.now(),dt=Math.max(8,now-lt),need=16*dpr;if(dist<need)return;
+    const vx=(px-lx)/dt*16,vy=(py-ly)/dt*16,n=Math.min(5,Math.floor(dist/need));for(let i=1;i<=n;i++)tear(lx+(px-lx)*i/n,ly+(py-ly)*i/n,vx,vy,false);last=[px,py,now]});
+  const up=()=>{if(!down)return;down=false;last=null;progress();clearTimeout(fadeT);fadeT=setTimeout(()=>{if(!done)hero.classList.remove('tearing')},1400)};
+  hero.addEventListener('pointerup',up);hero.addEventListener('pointercancel',up);
+  setInterval(()=>{if(tears&&!FX.on)progress()},450);
+  /* ghost hand: tears one strip across the middle of the roof so nobody has to guess */
   function stopAuto(){if(auto){cancelAnimationFrame(auto);auto=null;hint.classList.remove('demo')}}
-  function demo(){if(reduce)return;hint.classList.add('demo');const t0=performance.now(),zh=zone.offsetHeight;let lp=null;
-    const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=W*(.25+.5*t),py=zh*(.55+.12*Math.sin(t*6));hint.style.left=px+'px';hint.style.top=py+'px';
-      if(lp&&Math.hypot(px-lp[0],py-lp[1])>16){tear(px,py,(px-lp[0])*.6,0,false);lp=[px,py]}else if(!lp)lp=[px,py];auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
-  $('#ripReset').onclick=()=>{hx.clearRect(0,0,holes.width,holes.height);chunks=[];tears=0;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone')};
+  function demo(){if(reduce||!top)return;hint.classList.add('demo');const t0=performance.now(),k=hero.offsetWidth/cv.width,zb=zone.offsetHeight/k,y0=Math.min(rt+(rb-rt)*.45,zb*.8);let lp=null;
+    const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=cv.width*(.28+.44*t),py=y0+Math.sin(t*6)*(rb-rt)*.05;hint.style.left=px*k+'px';hint.style.top=py*k+'px';
+      auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
+  /* ACT 2: after 5 s of tearing (or a full bar) the visitor gets "Clean it up". It clears every shingle and every piece of debris, then the repair plays as real photos of the same house: 3 s a slide, swipeable; a swipe hands control to the visitor. */
+  function showAct(){if(done||FX.on)return;done=true;hero.classList.add('found','tearing');found.hidden=false;if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  const show=$('#fixShow'),dots=$('#fixDots'),capT=$('#fixCapT');
+  const layers=()=>{const u=dpr*Math.max(.8,Math.min(1.3,cv.width/dpr/1000)),dn=$('#hDone');let last=null;FX.full=false;
+    /* the finished roof is a real photo of the same house when the season has one: it rolls up the whole roof, gutter to ridge */
+    if(dn&&dn.complete&&dn.naturalWidth&&dn.dataset.ok==='1'){last=mk(cv.width,cv.height);const g=last.getContext('2d');g.drawImage(dn,...cover(dn,cv.width,cv.height));g.globalCompositeOperation='destination-in';g.drawImage(maskC,0,0);FX.full=true}
+    const clipR=c=>{const g=c.getContext('2d');g.globalCompositeOperation='destination-in';g.drawImage(maskC,0,0);return c};
+    return[clipR(RT.ply(cv.width,cv.height,u)),clipR(RT.felt(cv.width,cv.height,u)),last||clipR(RT.shingles(cv.width,cv.height,u,false,true))]};
+  function stagesNow(){const st=(window.RL_STAGES||[]).filter(s=>s&&s.img);return st}
+  function cleanUp(){if(FX.on)return;FX.on=true;stopAuto();found.hidden=true;$$('.rpin').forEach(p=>p.remove());pins=[];hero.classList.add('fixing');
+    for(const k of chunks)k.vx=(k.x>cv.width/2?1:-1)*24*dpr;fixAnim=true;const t0=performance.now();
+    const go=now=>{const t=Math.min(1,(now-t0)/900);pileA=1-t;
+      /* every last shingle comes off: the hole mask grows to the whole roof */
+      hx.globalAlpha=.25;hx.drawImage(maskC,0,0);hx.globalAlpha=1;dirty=true;kick();
+      if(t<1)requestAnimationFrame(go);else{fixAnim=false;chunks=[];pile.getContext('2d').clearRect(0,0,cv.width,cv.height);hx.drawImage(maskC,0,0);dirty=true;kick();startShow()}};requestAnimationFrame(go)}
+  let si=0,sTimer=0,manual=false,slides=[];
+  function startShow(){let st=stagesNow();
+    if(!st.length){st=[{cap:'Tear-off and clean-up: every old shingle and nail gone'},{cap:'Rotted decking cut out, new plywood nailed down',p:[1,0,0]},{cap:'Ice and water shield, then synthetic underlayment',p:[1,1,0]},{cap:'New impact-rated shingles, nailed to the high-wind pattern',p:[1,1,1]}];
+      FX.L=layers()}
+    slides=st;show.innerHTML='';slides.forEach((s,i)=>{if(!s.img)return;const im=new Image();im.className='ph stg';im.alt=s.cap;im.src=`img/${s.img}.webp`;im.srcset=`img/${s.img}-m.webp 800w, img/${s.img}.webp 1376w`;im.sizes='100vw';im.dataset.i=i;show.appendChild(im)});
+    dots.innerHTML=slides.map((_,i)=>`<button type="button" aria-label="Step ${i+1}" data-i="${i}"></button>`).join('');$$('#fixDots button').forEach(b=>b.onclick=()=>{manual=true;go(+b.dataset.i)});
+    cap.hidden=false;show.hidden=false;manual=false;go(0)}
+  function go(i){si=Math.max(0,Math.min(slides.length-1,i));clearTimeout(sTimer);
+    $$('#fixShow .stg').forEach(im=>im.classList.toggle('on',+im.dataset.i===si));if(!slides[si].img){FX.p=slides[si].p||[0,0,0];dirty=true;kick()}
+    capT.innerHTML=`<small>Step ${si+1} of ${slides.length}</small>${slides[si].cap}`;$$('#fixDots button').forEach((b,k)=>b.classList.toggle('on',k===si));
+    $('#fixPrev').disabled=si===0;$('#fixNext').textContent=si===slides.length-1?'Done':'Next';
+    if(si===slides.length-1){if(!manual)sTimer=setTimeout(finish,3000)}else if(!manual)sTimer=setTimeout(()=>go(si+1),3000)}
+  $('#fixPrev').onclick=()=>{manual=true;go(si-1)};$('#fixNext').onclick=()=>{manual=true;if(si===slides.length-1)finish();else go(si+1)};
+  {let sx=null;show.addEventListener('pointerdown',e=>{sx=e.clientX});show.addEventListener('pointerup',e=>{if(sx==null)return;const d=e.clientX-sx;sx=null;if(Math.abs(d)>40){manual=true;go(si+(d<0?1:-1))}});
+   show.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});show.addEventListener('touchend',e=>{if(sx==null)return;const d=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(d)>40){manual=true;go(si+(d<0?1:-1))}},{passive:true})}
+  function finish(){clearTimeout(sTimer);cap.hidden=true;fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  window.__rip=()=>({tears,full,done,c:measure(),slides:slides.length,si,manual});
+  $('#ripClean').onclick=cleanUp;
+  $('#ripAgain').onclick=()=>{clearTimeout(sTimer);FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;show.hidden=true;show.innerHTML='';cap.hidden=true;hero.classList.remove('fixing','tearing');$('#ripReset').click()};
+  $('#ripReset').onclick=()=>{clearTimeout(actT);actT=0;full=false;meter.classList.remove('full');hero.classList.remove('tearing');hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);pile.getContext('2d').clearRect(0,0,pile.width,pile.height);pileA=1;chunks=[];pts=[];tears=0;measured=-1;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone');dirty=true;kick()};
   const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
   if(over.complete&&over.naturalWidth)ready();else over.addEventListener('load',ready,{once:true});
-  over.addEventListener('load',()=>{if(top)build()});
-  addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(build,150)});
-  new IntersectionObserver(es=>{const was=run;run=es[0].isIntersecting;if(run&&!was)requestAnimationFrame(step)}).observe(hero);requestAnimationFrame(step);
+  over.addEventListener('load',()=>{if(top){top.__src='';build()}});
+  let rz=0;new ResizeObserver(()=>{clearTimeout(rz);rz=setTimeout(build,120)}).observe(hero);
+  new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible){dirty=true;kick()}}).observe(hero);
   if(M&&!reduce)M.animate('.hcopy > *',{opacity:[.001,1],y:[24,0]},{duration:.7,delay:M.stagger(.08,{startDelay:.15}),ease:[.2,.8,.2,1]})})();
+
 
 /* ---------- before / after ---------- */
 (function(){const ba=$('#ba'),r=$('#baR');if(!ba)return;const set=v=>ba.style.setProperty('--cut',v+'%');r.oninput=()=>set(r.value);set(50);
@@ -800,41 +972,82 @@ $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
 addEventListener('scroll',()=>$('#bar').classList.toggle('solid',!$('#hero')||scrollY>innerHeight*.6),{passive:true});$('#bar').classList.toggle('solid',!$('#hero'));
 
 function push(o){upsert(o)}
-/* ---------- instant roof quote: no contact info needed to see the price ---------- */
-const QT={mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitch:'u',mat:'arch',layers:false,
+/* ---------- instant quote, job-specific: no contact info needed to see the price ---------- */
+const QT={job:'replace',mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitch:'u',mat:'arch',layers:false,
+  issue:'boot',spots:'1',storm:'repair',gft:'',gunsure:false,guard:true,fascia:false,vent:{ridge:true,soffit:true,fan:false},
+  JOBS:[['replace','Roof replacement'],['repair','Leak or roof repair'],['storm','Storm or hail damage'],['gutters','Gutters'],['vent','Attic ventilation'],['commercial','Commercial roof']],
   // residential $ per square (100 sq ft) installed, Texas 2025-26 estimates; commercial $ per sq ft
-  RES:{arch:['Architectural shingles',550,850,'Most popular. 30-year shingle, 10-year workmanship.'],impact:['Class 4 impact shingles',650,950,'Top hail rating. Ask your insurer about a discount.'],metal:['Standing-seam metal',1000,1800,'Lasts 40+ years, reflects Houston heat.'],tile:['Concrete tile',900,1600,'Heavy, long-lasting, classic look.'],flat:['Flat or low-slope (TPO)',600,1400,'Patios, additions, modern homes.']},
+  RES:{arch:['Architectural shingles',550,850,'Most popular. 30-year shingle, 10-year workmanship.'],impact:['Class 4 impact shingles',650,950,'Top hail rating. Ask your insurer about a discount.'],metal:['Standing-seam metal',1000,1800,'Lasts 40+ years, reflects Houston heat.'],tile:['Concrete tile',900,1600,'Heavy, long-lasting, classic look.'],flat:['Flat or low-slope (TPO)',600,1400,'Patios, additions and flat sections.']},
   COM:{tpo:['TPO single-ply',4.5,8,'Most common for warehouses and retail.'],epdm:['EPDM rubber',3,7,'Budget-friendly, proven on flat roofs.'],pvc:['PVC single-ply',7,13,'Best for restaurants and chemical exposure.'],coat:['Silicone roof coating',2,4,'Restores an aging roof without a tear-off.'],metal:['Metal roof',7,14,'Long life for warehouses and churches.']},
-  PITCH:{u:['Not sure',1.15],flat:['Flat',1],low:['Gentle',1.06],med:['Medium',1.15],steep:['Steep',1.35]}};
+  PITCH:{u:['Not sure',1.15],flat:['Flat',1],low:['Gentle',1.06],med:['Medium',1.15],steep:['Steep',1.35]},
+  ISSUE:{boot:['Leak around a pipe or vent',250,450,'Cracked rubber pipe boots are the #1 Houston leak.'],flash:['Leak at a chimney, wall or skylight',400,1200,'Flashing resealed or replaced.'],shingle:['Missing or blown-off shingles',350,900,'Matched as closely as possible.'],valley:['Leak where two slopes meet',600,1500,'Valleys carry the most water.'],unsure:['Not sure where it’s coming from',350,1500,'We trace it from the attic and the roof.']},
+  SPOTS:{'1':['One spot',1],'2':['2–3 spots',2.2],'4':['More than 3',3.6]},
+  STORM:{tarp:['Emergency tarp',350,900,'Often reimbursed by insurance as mitigation.'],repair:['Storm repair',500,3000,'A section of shingles, vents or flashing.'],replace:['Full replacement',0,0,'When the damage is spread across the roof.']},
+  INC:{replace:['Free inspection and photo report','Tear-off, new underlayment and drip edge','City of Houston permit pulled for you','Manufacturer warranty plus 10-year workmanship'],
+    repair:['Free leak inspection with photos','We find the real source, not just the stain','Matched materials, sealed flashing','1-year leak-free warranty on the repair'],
+    storm:['Free storm inspection within 48 hours','Dated photo file for your insurance claim','We meet your adjuster on the roof','You pay only your deductible if approved'],
+    gutters:['Free measure and photo check','6-inch seamless gutters, formed on site','Downspouts and extensions away from the slab','10-year workmanship warranty'],
+    vent:['Free attic check with temperature reading','Balanced intake and exhaust','Leak-free at every vent we cut','10-year workmanship warranty'],
+    commercial:['Site visit with core sample and moisture scan','Written repair / coat / replace options','Board-ready condition report','Manufacturer warranty options']}};
 const qmoney=n=>'$'+(Math.round(n/100)*100).toLocaleString('en-US');
-function qCalc(){const raw=parseFloat(String(QT.size).replace(/[^\d.]/g,''));let sqft,note;
-  if(QT.mode==='com'){sqft=QT.unsure||!raw?20000:(QT.unit==='squares'?raw*100:raw);note=QT.unsure||!raw?'Based on a typical 20,000 sq ft commercial roof until we measure yours.':`${Math.round(sqft).toLocaleString()} sq ft of roof.`;
-    const m=QT.COM[QT.mat]||QT.COM.tpo,tear=QT.layers&&QT.mat!=='coat'?1.5:0;return{name:m[0],desc:m[3],lo:sqft*(m[1]+tear),hi:sqft*(m[2]+tear),note,sqft}}
-  const pf=QT.PITCH[QT.pitch][1];
+function roofSqft(){const raw=parseFloat(String(QT.size).replace(/[^\d.]/g,''));const pf=QT.PITCH[QT.pitch][1];let sqft,note;
   if(QT.unsure||!raw){sqft=2400*0.85*pf;note='Based on a typical 2,400 sq ft Houston home until we measure yours.'}
   else if(QT.unit==='home'){sqft=raw*0.85*pf;note=`Roof estimated from a ${Math.round(raw).toLocaleString()} sq ft home.`}
-  else if(QT.unit==='squares'){sqft=raw*100;note=`${raw} squares of roof.`}
-  else{sqft=raw;note=`${Math.round(raw).toLocaleString()} sq ft of roof.`}
-  const sq=sqft/100,m=QT.RES[QT.mat]||QT.RES.arch,extra=QT.layers?100:0,steep=QT.pitch==='steep'?1.06:1;
-  return{name:m[0],desc:m[3],lo:sq*(m[1]+extra)*steep,hi:sq*(m[2]+extra)*steep,note,sqft}}
-function qRender(){const mats=QT.mode==='com'?QT.COM:QT.RES;if(!mats[QT.mat])QT.mat=Object.keys(mats)[0];
+  else if(QT.unit==='squares'){sqft=raw*100;note=`${raw} squares of roof.`}else{sqft=raw;note=`${Math.round(raw).toLocaleString()} sq ft of roof.`}return[sqft,note]}
+function qCalc(){const j=QT.job;
+  if(j==='commercial'){const raw=parseFloat(String(QT.size).replace(/[^\d.]/g,''));const sqft=QT.unsure||!raw?20000:(QT.unit==='squares'?raw*100:raw);const note=QT.unsure||!raw?'Based on a typical 20,000 sq ft commercial roof until we measure yours.':`${Math.round(sqft).toLocaleString()} sq ft of roof.`;
+    const m=QT.COM[QT.mat]||QT.COM.tpo,tear=QT.layers&&QT.mat!=='coat'?1.5:0;return{job:j,name:m[0],desc:m[3],lo:sqft*(m[1]+tear),hi:sqft*(m[2]+tear),note,sqft}}
+  if(j==='repair'){const m=QT.ISSUE[QT.issue],k=QT.SPOTS[QT.spots][1];return{job:j,name:'Roof repair: '+m[0].toLowerCase(),desc:m[3],lo:m[1]*k,hi:m[2]*k,note:QT.SPOTS[QT.spots][0]+'. '+m[3]}}
+  if(j==='storm'){if(QT.storm!=='replace'){const m=QT.STORM[QT.storm];return{job:j,name:m[0],desc:m[3],lo:m[1],hi:m[2],note:m[3]}}
+    const[sq,n]=roofSqft(),r=QT.RES.impact;return{job:j,name:'Storm replacement (impact shingles)',lo:sq/100*r[1],hi:sq/100*r[2],note:n+' If insurance approves, you pay your deductible.'}}
+  if(j==='gutters'){const raw=parseFloat(String(QT.gft).replace(/[^\d.]/g,''));const ft=QT.gunsure||!raw?150:raw,dn=Math.max(2,Math.round(ft/35));
+    let lo=ft*9+dn*90,hi=ft*14+dn*150;if(QT.guard){lo+=ft*7;hi+=ft*15}if(QT.fascia){lo+=ft*.2*8;hi+=ft*.2*20}
+    return{job:j,name:'Seamless gutters'+(QT.guard?' + guards':''),lo,hi,note:(QT.gunsure||!raw?'Based on a typical 150 ft of roof edge until we measure yours.':`${Math.round(ft)} ft of gutter.`)+` About ${dn} downspouts.`}}
+  if(j==='vent'){const V=QT.vent;let lo=0,hi=0,n=[];if(V.ridge){lo+=400;hi+=1200;n.push('ridge vent')}if(V.soffit){lo+=300;hi+=1300;n.push('soffit vents + baffles')}if(V.fan){lo+=500;hi+=900;n.push('solar attic fan')}
+    if(!n.length){lo=150;hi=300;n.push('attic check')}return{job:j,name:'Attic ventilation',lo,hi,note:'Includes '+n.join(', ')+'.'}}
+  const[sqft,note]=roofSqft(),sq=sqft/100,m=QT.RES[QT.mat]||QT.RES.arch,extra=QT.layers?100:0,steep=QT.pitch==='steep'?1.06:1;
+  return{job:j,name:m[0],desc:m[3],lo:sq*(m[1]+extra)*steep,hi:sq*(m[2]+extra)*steep,note,sqft}}
+const qchip=(attr,v,t,cur)=>`<button type="button" role="radio" aria-checked="${v===cur}" data-${attr}="${v}">${t}</button>`;
+function qRender(){const j=QT.job,roofy=j==='replace'||j==='commercial'||(j==='storm'&&QT.storm==='replace');QT.mode=j==='commercial'?'com':'res';
+  $('#qJobs').innerHTML=QT.JOBS.map(([k,t])=>qchip('job',k,t,j)).join('');
+  $$('#qJobs [data-job]').forEach(b=>b.onclick=()=>{QT.job=b.dataset.job;QT.unit='roof';qRender()});
+  $('#qRoof').hidden=!roofy;
+  const mats=QT.mode==='com'?QT.COM:QT.RES;if(!mats[QT.mat])QT.mat=Object.keys(mats)[0];
   $('#qMats').innerHTML=Object.entries(mats).map(([k,m])=>`<label class="qmat ${QT.mat===k?'on':''}"><input type="radio" name="qmat" value="${k}" ${QT.mat===k?'checked':''}><b>${m[0]}</b><small>${m[3]}</small></label>`).join('');
+  $('#qMats').closest('.field').hidden=j==='storm';
   $('#qPitchF').hidden=QT.mode==='com';$('#qUnit').innerHTML=(QT.mode==='com'?[['roof','Roof sq ft'],['squares','Squares']]:[['roof','Roof sq ft'],['home','Home sq ft'],['squares','Squares']]).map(([v,t])=>`<option value="${v}" ${QT.unit===v?'selected':''}>${t}</option>`).join('');
   $('#qLayersL').textContent=QT.mode==='com'?'Tear off the old roof first':'Remove an extra layer of old shingles';
-  $$('#qMats input').forEach(i=>i.onchange=()=>{QT.mat=i.value;qRender()});qOut()}
+  $$('#qMats input').forEach(i=>i.onchange=()=>{QT.mat=i.value;qRender()});
+  let o='';
+  if(j==='repair')o=`<div class="field"><span class="flabel">What’s going on?</span><div class="qmats">${Object.entries(QT.ISSUE).map(([k,m])=>`<label class="qmat ${QT.issue===k?'on':''}"><input type="radio" name="qiss" value="${k}" ${QT.issue===k?'checked':''}><b>${m[0]}</b><small>${m[3]}</small></label>`).join('')}</div></div><div class="field"><span class="flabel">How many spots?</span><div class="chips">${Object.entries(QT.SPOTS).map(([k,s])=>qchip('spots',k,s[0],QT.spots)).join('')}</div></div>`;
+  if(j==='storm')o=`<div class="field"><span class="flabel">What do you need?</span><div class="chips">${Object.entries(QT.STORM).map(([k,s])=>qchip('storm',k,s[0],QT.storm)).join('')}</div></div><p class="qhint">The inspection and photo file are free. In Texas a roofer can’t waive or pay your deductible.</p>`;
+  if(j==='gutters')o=`<div class="field"><label for="qG">How many feet of gutter?</label><input id="qG" inputmode="decimal" placeholder="e.g. 160" value="${esc(QT.gft)}"><label class="tog2"><input type="checkbox" id="qGu" ${QT.gunsure?'checked':''}> Not sure, use a typical home</label></div><label class="tog2"><input type="checkbox" id="qGg" ${QT.guard?'checked':''}> Add leaf guards</label><label class="tog2"><input type="checkbox" id="qGf" ${QT.fascia?'checked':''}> Some fascia boards are rotted</label>`;
+  if(j==='vent')o=`<div class="field"><span class="flabel">What should we add?</span>${[['ridge','Ridge vent (exhaust along the top)'],['soffit','Soffit vents + baffles (intake at the eaves)'],['fan','Solar attic fan']].map(([k,t])=>`<label class="tog2"><input type="checkbox" data-vent="${k}" ${QT.vent[k]?'checked':''}> ${t}</label>`).join('')}<small class="muted2">Not sure? Leave the first two on; that’s what most Houston attics are missing.</small></div>`;
+  $('#qOther').innerHTML=o;
+  $$('#qOther [name=qiss]').forEach(i=>i.onchange=()=>{QT.issue=i.value;qRender()});
+  $$('#qOther [data-spots]').forEach(b=>b.onclick=()=>{QT.spots=b.dataset.spots;qRender()});
+  $$('#qOther [data-storm]').forEach(b=>b.onclick=()=>{QT.storm=b.dataset.storm;qRender()});
+  if($('#qG')){$('#qG').oninput=e=>{QT.gft=e.target.value;if(e.target.value){QT.gunsure=false;$('#qGu').checked=false}qOut()};$('#qGu').onchange=e=>{QT.gunsure=e.target.checked;qOut()};$('#qGg').onchange=e=>{QT.guard=e.target.checked;qOut()};$('#qGf').onchange=e=>{QT.fascia=e.target.checked;qOut()}}
+  $$('#qOther [data-vent]').forEach(i=>i.onchange=()=>{QT.vent[i.dataset.vent]=i.checked;qOut()});
+  $('#qInc').innerHTML=(QT.INC[j]||QT.INC.replace).map(t=>`<li>${t}</li>`).join('');
+  qOut()}
 let qPrev=[0,0];
 function qOut(){const r=qCalc();$('#qName').textContent=r.name;$('#qNote').textContent=r.note+' Final price after a free inspection.';
   const el=$('#qPrice'),[a,b]=qPrev;qPrev=[r.lo,r.hi];
   if(M&&!reduce)M.animate(0,1,{duration:.45,ease:[.2,.8,.2,1],onUpdate:t=>{el.textContent=qmoney(a+(r.lo-a)*t)+' – '+qmoney(b+(r.hi-b)*t)}});else el.textContent=qmoney(r.lo)+' – '+qmoney(r.hi);
   const body=`Hi Ridgeline, I got an instant quote on your site: ${r.name}, ${qmoney(r.lo)}–${qmoney(r.hi)}${QT.addr?' for '+QT.addr:''}. Can we set up the free inspection?`;
-  const t=$('#qText');t.dataset.body=body;t.href=smsHref(body);try{localStorage.setItem('rl-quote',JSON.stringify({...r,mode:QT.mode,addr:QT.addr}))}catch(x){}}
-function qInit(){$$('[data-qmode]').forEach(b=>b.onclick=()=>{QT.mode=b.dataset.qmode;QT.unit='roof';$$('[data-qmode]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));qRender()});
+  const t=$('#qText');t.dataset.body=body;t.href=smsHref(body);try{localStorage.setItem('rl-quote',JSON.stringify({...r,range:qmoney(r.lo)+'–'+qmoney(r.hi),mode:QT.mode,addr:QT.addr}))}catch(x){}}
+function qInit(){
   $('#qAddr').oninput=e=>{QT.addr=e.target.value;qOut()};$('#qSize').oninput=e=>{QT.size=e.target.value;if(e.target.value){QT.unsure=false;$('#qUnsure').checked=false}qOut()};
   $('#qUnit').onchange=e=>{QT.unit=e.target.value;qOut()};$('#qUnsure').onchange=e=>{QT.unsure=e.target.checked;qOut()};$('#qLayers').onchange=e=>{QT.layers=e.target.checked;qOut()};
   $$('[data-pitch]').forEach(b=>b.onclick=()=>{QT.pitch=b.dataset.pitch;$$('[data-pitch]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));qOut()});
-  $('#qBook').onclick=()=>bookSheet({quote:qCalc(),mode:QT.mode,addr:QT.addr});qRender()}
-if($('#qMats'))qInit();if(location.search.includes('mode=com')){const t=$('[data-qmode="com"]');if(t)t.click()}
-$$('[data-quote]').forEach(b=>b.addEventListener('click',e=>{const m=b.dataset.quote;if(m==='com'||m==='res'){const t=$(`[data-qmode="${m}"]`);if(t)t.click()}}));
+  $('#qBook').onclick=()=>bookSheet({quote:qCalc(),mode:QT.mode,addr:QT.addr});
+  const MAP={'roof-replacement':'replace','roof-repair':'repair','storm-damage':'storm','insurance-claims':'storm','gutters':'gutters','attic-ventilation':'vent','commercial-roofing':'commercial',com:'commercial'};
+  const q=new URLSearchParams(location.search),jq=q.get('job')||q.get('mode');if(jq){const k=MAP[jq]||jq;if(QT.JOBS.some(x=>x[0]===k))QT.job=k}
+  qRender()}
+window.setJob=k=>{QT.job=k;if($('#qMats'))qRender()};
+if($('#qMats'))qInit();
+$$('[data-quote]').forEach(b=>b.addEventListener('click',()=>{const m=b.dataset.quote;window.setJob(m==='com'?'commercial':m==='res'?'replace':m)}));
 
 /* ---------- booking: contact (skipped if we already have it) → optional details → pick a time ---------- */
 function me(){try{return JSON.parse(localStorage.getItem('rl-me')||'null')}catch(x){return null}}

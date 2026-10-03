@@ -461,6 +461,28 @@ footer .wrap{display:block}
  .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,.35) 0%,rgba(31,42,51,0) 14%,rgba(31,42,51,0) 54%,rgba(31,42,51,.85) 66%,var(--slate) 100%)}
 }
 @media (max-width:899px){.rpin,.rpin.l{transform:translate(-50%,calc(-100% + 7px))}.rpin .rp,.rpin.l .rp{flex-direction:column-reverse;gap:4px}}
+/* job picker */
+.qjobs{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media (min-width:700px){.qjobs{grid-template-columns:repeat(3,1fr)}}
+.qjobs button{min-height:52px;padding:8px 12px;border-radius:14px;border:2px solid var(--line);background:#fff;font:800 15px/1.2 var(--body);color:var(--ink);cursor:pointer;text-align:left}
+.qjobs button[aria-checked="true"]{border-color:var(--slate);background:var(--slate);color:#fff}
+.qhint{font-size:15px;color:var(--soft);margin:4px 0 12px}
+#qOther .tog2{margin:6px 0}
+/* v6 fix flow */
+#fixShow{position:absolute;inset:0;z-index:3;touch-action:pan-y;cursor:grab}
+#fixShow .stg{opacity:0;transition:opacity .6s ease;pointer-events:none}
+#fixShow .stg.on{opacity:1}
+#fixCap{left:16px;right:16px;margin:0 auto;width:min(560px,calc(100% - 32px));transform:none;display:grid;gap:10px;text-align:left}
+#fixCapT{font-size:17px}
+.fixnav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fixnav .btn{min-height:40px;font-size:15px}.fixnav .btn-line{color:#fff;border-color:rgba(255,255,255,.6)}.fixnav .btn:disabled{opacity:.35}
+#fixDots{display:flex;gap:6px}#fixDots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.35);cursor:pointer}#fixDots button.on{background:var(--hivis);width:26px;border-radius:6px}
+.fixhint{color:#AEBBC4;font-size:13px}
+#ripMeter.full{background:var(--hivis);color:var(--slate)}#ripMeter.full i{background:var(--slate)}
+.hero.fixing #ripMeter,.hero.fixing .riplabel{opacity:0}
+
+.hero.fixing #ripZone{pointer-events:none}
+.hero.fixing #fixShow{z-index:5}
+#fixCap small.fixhint{color:#AEBBC4;font-size:13px;text-transform:none;letter-spacing:0;margin:0;font-weight:600}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
@@ -481,8 +503,9 @@ footer .wrap{display:block}
     <div class="riplabel" aria-hidden="true"><b>Rip it off.</b> Drag across the roof.</div>
     <div id="ripMeter" aria-hidden="true">Old roof removed<i></i></div>
     <div id="ripHint" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 34V12a4 4 0 0 1 8 0v16-4a4 4 0 0 1 8 0v4-2a4 4 0 0 1 8 0v4a4 4 0 0 1 8 0v10c0 10-6 18-16 18h-4c-6 0-10-3-13-8l-7-11a4 4 0 0 1 6-5z" fill="#fff" stroke="#1F2A33" stroke-width="3" stroke-linejoin="round"/></svg></div>
-    <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><p>Soft decking and water stains don’t show from the street. Want to see how we’d fix it?</p><div class="row"><button class="btn btn-main" type="button" id="ripFix">Watch us fix it</button><a class="btn btn-line" href="#quote">See my price</a></div><button class="linkbtn" type="button" id="ripReset">Put the old shingles back</button></div>
-    <div id="fixCap" hidden role="status" aria-live="polite"></div>
+    <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><p>Soft decking and water stains don’t show from the street. Let’s fix it.</p><div class="row"><button class="btn btn-main" type="button" id="ripClean">Clean it up</button><a class="btn btn-line" href="#quote">See my price</a></div><button class="linkbtn" type="button" id="ripReset">Put the old shingles back</button></div>
+    <div id="fixShow" hidden aria-live="polite"></div>
+    <div id="fixCap" hidden><div id="fixCapT"></div><div class="fixnav"><button type="button" class="btn btn-line btn-sm" id="fixPrev">Back</button><div id="fixDots"></div><button type="button" class="btn btn-main btn-sm" id="fixNext">Next</button></div><small class="fixhint">Swipe to go at your own pace</small></div>
     <div id="ripFixed" hidden role="status"><b>Fixed. New roof, one day.</b><p>New decking, sealed underlayment, impact-rated shingles and a 10-year leak-free warranty. Permit pulled for you.</p><div class="row"><a class="btn btn-main" href="#quote">See my price</a><a class="btn btn-line" href="#whatwedo">How we do it</a></div><button class="linkbtn" type="button" id="ripAgain">Rip it again</button></div>
     <div class="hcopy">
       <h1 id="h1">Houston roofing company.</h1>
@@ -495,20 +518,20 @@ footer .wrap{display:block}
 <section class="sec quote" id="quote" aria-labelledby="qH">
     <div class="wrap qgrid">
       <div class="qform">
-        <h2 id="qH">Instant roof quote</h2>
-        <p class="lede">Roof replacement cost in Houston, right now. No phone number needed.</p>
-        <div class="seg2 qmode" role="radiogroup" aria-label="Property type"><button type="button" role="radio" aria-checked="true" data-qmode="res">Home</button><button type="button" role="radio" aria-checked="false" data-qmode="com">Commercial building</button></div>
+        <h2 id="qH">Instant quote</h2>
+        <p class="lede">Pick the job, see the price. No phone number needed.</p>
+        <div class="field"><span class="flabel">What do you need?</span><div class="qjobs" id="qJobs" role="radiogroup" aria-label="Job"></div></div>
         <div class="field"><label for="qAddr">Address (optional)</label><input id="qAddr" autocomplete="street-address" placeholder="Street, city"></div>
-        <div class="field"><label for="qSize">How big is it?</label><div class="qsize"><input id="qSize" inputmode="decimal" placeholder="Type a number, e.g. 2400"><select id="qUnit" aria-label="Unit"></select></div>
+        <div id="qRoof"><div class="field"><label for="qSize">How big is it?</label><div class="qsize"><input id="qSize" inputmode="decimal" placeholder="Type a number, e.g. 2400"><select id="qUnit" aria-label="Unit"></select></div>
           <label class="tog2"><input type="checkbox" id="qUnsure"> Not sure, use a typical size</label></div>
         <div class="field" id="qPitchF"><span class="flabel">Roof slope (optional)</span><div class="chips" role="radiogroup" aria-label="Roof slope"><button type="button" role="radio" aria-checked="true" data-pitch="u">Not sure</button><button type="button" role="radio" aria-checked="false" data-pitch="flat">Flat</button><button type="button" role="radio" aria-checked="false" data-pitch="low">Gentle</button><button type="button" role="radio" aria-checked="false" data-pitch="med">Medium</button><button type="button" role="radio" aria-checked="false" data-pitch="steep">Steep</button></div></div>
         <div class="field"><span class="flabel">Material</span><div class="qmats" id="qMats"></div></div>
-        <label class="tog2"><input type="checkbox" id="qLayers"> <span id="qLayersL">Remove an extra layer of old shingles</span></label>
+        <label class="tog2"><input type="checkbox" id="qLayers"> <span id="qLayersL">Remove an extra layer of old shingles</span></label></div><div id="qOther"></div>
       </div>
       <aside class="qres" aria-live="polite">
         <p class="qlabel">Your estimate</p><p class="qname" id="qName"></p><p class="qprice" id="qPrice">$0</p><p class="qnote" id="qNote"></p>
-        <ul class="qinc"><li>Free inspection and photo report</li><li>Tear-off, new underlayment and drip edge</li><li>City of Houston permit pulled for you</li><li>Manufacturer warranty plus 10-year workmanship</li></ul>
-        <button class="btn btn-main" type="button" id="qBook">Lock in this price: book a free inspection</button>
+        <ul class="qinc" id="qInc"></ul>
+        <button class="btn btn-main" type="button" id="qBook">Lock in this price</button>
         <a class="btn btn-line light" href="#" id="qText" data-sms="quote">Text us about this quote</a>
         <p class="qfine">Estimates use typical Houston installed prices for 2026. Financing available, check your rate at the inspection.</p>
       </aside>
@@ -926,7 +949,7 @@ function apply(){const sea=PICK.season==='auto'?seasonNow():PICK.season,reg=PICK
   const pair=ok(s.before)&&ok(s.under)?[s.before,s.under]:[fb.before,fb.under];
   if($('#hOver')){const hh=$('#hero');if(hh)hh.style.setProperty('--hbg',`url(img/${pair[0]}-m.webp)`);src($('#hOver'),pair[0]);src($('#hUnder'),pair[1]);const dn=$('#hDone');if(dn){if(s.done&&ok(s.done)){dn.dataset.ok='1';src(dn,s.done)}else dn.dataset.ok='0'}}
   if($('#why'))$('#why').textContent=s.why;
-  SMS.hero=`Hi Ridgeline, I’d like a free roof inspection before ${s.sms}. My address is `;refreshSms(document);
+  window.RL_STAGES=(s.stages||[]).map(([img,cap])=>({img:ok(img)?img:null,cap}));SMS.hero=`Hi Ridgeline, I’d like a free roof inspection before ${s.sms}. My address is `;refreshSms(document);
   try{localStorage.setItem('rl-pick2',JSON.stringify(PICK))}catch(x){}}
 $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="dH">Demo settings</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
     <p class="muted">For showing clients. The live site picks these by date and city on its own.</p>
@@ -971,7 +994,7 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
   const ROOF={sp1:[[0.113,0.368],[0.320,0.195],[0.581,0.205],[0.749,0.364],[0.680,0.364],[0.661,0.341],[0.538,0.536],[0.476,0.536],[0.472,0.390],[0.305,0.375],[0.218,0.332],[0.182,0.368]],fa1:[[0.103,0.592],[0.250,0.322],[0.385,0.314],[0.481,0.202],[0.621,0.202],[0.832,0.394],[0.658,0.390],[0.581,0.255],[0.509,0.390],[0.320,0.406],[0.320,0.592],[0.280,0.592],[0.280,0.436],[0.233,0.390],[0.188,0.436],[0.188,0.592]],s1:[[0,.37],[.37,.175],[.68,.175],[1,.36],[1,.93],[0,.93]],w1:[[0,.38],[.33,.175],[.70,.175],[1,.33],[1,.9],[0,.9]],f1:[[0,.37],[.37,.18],[.70,.18],[1,.35],[1,.82],[0,.82]],_:[[0,.36],[.35,.18],[.68,.18],[1,.35],[1,.9],[0,.9]]};
   const mk=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,w|0);c.height=Math.max(1,h|0);return c};
   let top=null,holes=null,hx=null,maskC=null,hm=null,roofC=null,lipC=null,pile=null,pileA=1,mArr=null,mW=0,mH=0,rt=0,rb=0;
-  let chunks=[],tears=0,shake=0,last=null,done=false,visible=true,auto=null,pins=[],pts=[],dirty=true,frame=0,down=false,spawnN=0,measured=-1,fixAnim=false;
+  let full=false,actT=0;const CAP=.45;let chunks=[],tears=0,shake=0,last=null,done=false,visible=true,auto=null,pins=[],pts=[],dirty=true,frame=0,down=false,spawnN=0,measured=-1,fixAnim=false;
   const FX={on:false,L:null,p:[0,0,0],full:false};
   const FIND=['Soft, rotted decking','Torn felt paper','Water stains','Exposed nails'];
   function cover(img,w,h){const iw=img.naturalWidth,ih=img.naturalHeight;
@@ -991,7 +1014,7 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
     hm=mk(nw,nh);roofC=mk(nw,nh);lipC=mk(nw/4,nh/4);if(FX.L)FX.L=layers();dirty=true;kick()}
   const onRoof=(cx,cy)=>{if(!mArr)return false;const i=(cy/8|0)*mW+(cx/8|0);return cx>=0&&cy>=0&&cx<cv.width&&cy<cv.height&&mArr[i]===1};
   /* one torn hole (canvas px). Every 2nd tear throws a chunk; at most 30 flying at once. */
-  function tear(cx,cy,vx,vy,big){if(!onRoof(cx,cy))return;const s=(big?1.5:1)*Math.max(24*dpr,Math.min(cv.width,cv.height)*.042);
+  function tear(cx,cy,vx,vy,big){if(full||FX.on||!onRoof(cx,cy))return;const s=(big?1.5:1)*Math.max(24*dpr,Math.min(cv.width,cv.height)*.042);
     hx.fillStyle='#000';hx.beginPath();for(let i=0;i<11;i++){const a=i/11*Math.PI*2,rr=s*(.65+Math.random()*.55);hx.lineTo(cx+Math.cos(a)*rr*1.5,cy+Math.sin(a)*rr*.8)}hx.closePath();hx.fill();
     pts.push([cx,cy]);if(pts.length>400)pts.splice(0,100);
     if(!reduce&&(big||spawnN++%2===0)&&chunks.length<30){const cw=Math.round(s*2.4),ch=Math.round(s*1.4),pd=Math.round(12*dpr),c=mk(cw+pd*2,ch+pd*2),g=c.getContext('2d');
@@ -1023,59 +1046,68 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
   function pinAt(label){if(!pts.length)return;let best=null,bd=-1;const edge=innerWidth<900?.2:.08;for(let j=0;j<pts.length;j+=3){const p=pts[j];if(p[0]<cv.width*edge||p[0]>cv.width*(1-edge))continue;let md=1e9;for(const q of pins)md=Math.min(md,Math.hypot(p[0]-q[0],p[1]-q[1]));if(md>bd){bd=md;best=p}}
     if(!best||(pins.length&&bd<cv.width*(innerWidth<900?.38:.14)))return false;pins.push(best);const el=document.createElement('div');const fx=best[0]/cv.width;el.className='rpin'+(fx>.5?' l':'');el.style.left=fx*100+'%';el.style.top=best[1]/cv.height*100+'%';el.innerHTML=`<div class="rp"><i></i><span>${label}</span></div>`;hero.appendChild(el);
     if(M&&!reduce)M.animate(el.firstChild,{scale:[.4,1],opacity:[0,1]},{type:'spring',stiffness:500,damping:18})}
-  function progress(){if(!hm||measured===tears)return;measured=tears;if(dirty){compose();dirty=false}const c=measure();meter.style.setProperty('--p',Math.min(1,c/.32));
+  function progress(){if(!hm||measured===tears)return;measured=tears;if(dirty){compose();dirty=false}const c=measure();meter.style.setProperty('--p',Math.min(1,c/CAP));
     while(pins.length<(innerWidth<900?2:FIND.length)&&c>(pins.length+1)*.06){if(pinAt(FIND[pins.length])===false)break}
-    if(c>.3&&!done&&!FX.on){done=true;found.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}}
+    if(c>=CAP&&!full){full=true;meter.classList.add('full');showAct()}}
 
-  /* once the visitor starts tearing, the crew takes over: the rest of the roof comes off in ~3 seconds */
-  let autoRip=0,autoUsed=false;
-  function startAutoRip(){if(autoUsed||!top)return;autoUsed=true;const t0=performance.now(),k=hero.offsetWidth/cv.width,zb=Math.min(rb,zone.offsetHeight/k),y0=rt+(zb-rt)*.12,y1=zb-(zb-rt)*.06,rows=Math.max(4,Math.round((y1-y0)/(48*dpr))),dur=reduce?0:3000;let lp=null;
-    const path=t=>{const r=Math.min(rows-1,Math.floor(t*rows)),f=t*rows-r,dir=r%2?-1:1,xx=cv.width*(dir>0?.04+.92*f:.96-.92*f);return[xx,y0+(y1-y0)*(r+.5)/rows+Math.sin(f*9)*10*dpr]};
-    if(!dur){for(let i=0;i<=rows*40;i++){const[px,py]=path(i/(rows*40));tear(px,py,0,0,true)}measured=-1;progress();return}
-    const f=now=>{const t=Math.min(1,(now-t0)/dur);const[px,py]=path(t);
-      if(lp){const d=Math.hypot(px-lp[0],py-lp[1]),n=Math.min(8,Math.floor(d/(16*dpr)));if(n>0){for(let i=1;i<=n;i++)tear(lp[0]+(px-lp[0])*i/n,lp[1]+(py-lp[1])*i/n,(px-lp[0])*.25,0,i===n&&Math.random()<.3);lp=[px,py]}}else lp=[px,py];
-      if(t<1)autoRip=requestAnimationFrame(f);else{autoRip=0;measured=-1;progress();if(!done){done=true;found.hidden=false;hero.classList.add('found')}}};autoRip=requestAnimationFrame(f)}
   /* input: anywhere on the roof with a mouse; inside the drag area with a finger (so the page still scrolls below it) */
   const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
-  const skip=t=>t.closest('a,button,input,select,textarea,label,#ripFound,#ripFixed,.bar');
+  const skip=t=>t.closest('a,button,input,select,textarea,label,#ripFound,#ripFixed,#fixShow,#fixCap,.bar');
   let fadeT=0;
   hero.addEventListener('pointerdown',e=>{if(FX.on||e.button>0||skip(e.target))return;if(e.pointerType!=='mouse'&&!zone.contains(e.target))return;
-    const[px,py]=pos(e);e.preventDefault();clearTimeout(fadeT);hero.classList.add('tearing');down=true;try{hero.setPointerCapture(e.pointerId)}catch(_){}stopAuto();hint.classList.add('gone');last=[px,py,performance.now()];tear(px,py,0,0,true);startAutoRip()});
+    const[px,py]=pos(e);e.preventDefault();clearTimeout(fadeT);hero.classList.add('tearing');down=true;try{hero.setPointerCapture(e.pointerId)}catch(_){}stopAuto();hint.classList.add('gone');last=[px,py,performance.now()];tear(px,py,0,0,true);if(!actT)actT=setTimeout(showAct,5000)});
   hero.addEventListener('pointermove',e=>{if(!down||FX.on)return;const[px,py]=pos(e),[lx,ly,lt]=last,dist=Math.hypot(px-lx,py-ly),now=performance.now(),dt=Math.max(8,now-lt),need=16*dpr;if(dist<need)return;
     const vx=(px-lx)/dt*16,vy=(py-ly)/dt*16,n=Math.min(5,Math.floor(dist/need));for(let i=1;i<=n;i++)tear(lx+(px-lx)*i/n,ly+(py-ly)*i/n,vx,vy,false);last=[px,py,now]});
-  const up=()=>{if(!down)return;down=false;last=null;progress();clearTimeout(fadeT);fadeT=setTimeout(()=>hero.classList.remove('tearing'),autoRip?3400:1400)};
+  const up=()=>{if(!down)return;down=false;last=null;progress();clearTimeout(fadeT);fadeT=setTimeout(()=>{if(!done)hero.classList.remove('tearing')},1400)};
   hero.addEventListener('pointerup',up);hero.addEventListener('pointercancel',up);
   setInterval(()=>{if(tears&&!FX.on)progress()},450);
   /* ghost hand: tears one strip across the middle of the roof so nobody has to guess */
   function stopAuto(){if(auto){cancelAnimationFrame(auto);auto=null;hint.classList.remove('demo')}}
   function demo(){if(reduce||!top)return;hint.classList.add('demo');const t0=performance.now(),k=hero.offsetWidth/cv.width,zb=zone.offsetHeight/k,y0=Math.min(rt+(rb-rt)*.45,zb*.8);let lp=null;
     const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=cv.width*(.28+.44*t),py=y0+Math.sin(t*6)*(rb-rt)*.05;hint.style.left=px*k+'px';hint.style.top=py*k+'px';
-      if(lp&&Math.hypot(px-lp[0],py-lp[1])>18*dpr){tear(px,py,(px-lp[0])*.6,0,false);lp=[px,py]}else if(!lp)lp=[px,py];auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
-  /* WATCH US FIX IT: holes fill back up layer by layer, from the gutter up */
-  const STEPS=[['Step 1 of 4','Tear-off and clean-up: old shingles and debris gone'],['Step 2 of 4','Rotted decking cut out, new plywood nailed down'],['Step 3 of 4','Ice and water shield, then synthetic underlayment'],['Step 4 of 4','New impact-rated shingles, nailed to the high-wind pattern']];
+      auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
+  /* ACT 2: after 5 s of tearing (or a full bar) the visitor gets "Clean it up". It clears every shingle and every piece of debris, then the repair plays as real photos of the same house: 3 s a slide, swipeable; a swipe hands control to the visitor. */
+  function showAct(){if(done||FX.on)return;done=true;hero.classList.add('found','tearing');found.hidden=false;if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  const show=$('#fixShow'),dots=$('#fixDots'),capT=$('#fixCapT');
   const layers=()=>{const u=dpr*Math.max(.8,Math.min(1.3,cv.width/dpr/1000)),dn=$('#hDone');let last=null;FX.full=false;
     /* the finished roof is a real photo of the same house when the season has one: it rolls up the whole roof, gutter to ridge */
     if(dn&&dn.complete&&dn.naturalWidth&&dn.dataset.ok==='1'){last=mk(cv.width,cv.height);const g=last.getContext('2d');g.drawImage(dn,...cover(dn,cv.width,cv.height));g.globalCompositeOperation='destination-in';g.drawImage(maskC,0,0);FX.full=true}
     const clipR=c=>{const g=c.getContext('2d');g.globalCompositeOperation='destination-in';g.drawImage(maskC,0,0);return c};
     return[clipR(RT.ply(cv.width,cv.height,u)),clipR(RT.felt(cv.width,cv.height,u)),last||clipR(RT.shingles(cv.width,cv.height,u,false,true))]};
-  function fixIt(){if(FX.on)return;FX.on=true;stopAuto();hero.classList.add('fixing');found.hidden=true;$$('.rpin').forEach(p=>p.remove());pins=[];
-    FX.L=layers();FX.p=[0,0,0];const say=i=>{cap.hidden=false;cap.innerHTML=`<small>${STEPS[i][0]}</small>${STEPS[i][1]}`;if(M&&!reduce)M.animate(cap,{opacity:[0,1],y:[8,0]},{duration:.3})};
-    if(reduce){FX.p=[1,1,1];chunks=[];pileA=0;dirty=true;kick();finish();return}
-    say(0);const t0=performance.now(),D=[1000,1500,1500,1700];let phase=0;fixAnim=true;for(const k of chunks)k.vx=(k.x>cv.width/2?1:-1)*20*dpr;
-    const tick=now=>{const t=now-t0;if(t<D[0])pileA=1-t/D[0];else if(phase===0){phase=1;chunks=[];pileA=0;pile.getContext('2d').clearRect(0,0,cv.width,cv.height);pileA=1;say(1)}
-      const a=t-D[0],b=a-D[1],c=b-D[2];FX.p=[clamp(a/D[1]),clamp(b/D[2]),clamp(c/D[3])];if(phase===1&&b>0){phase=2;say(2)}if(phase===2&&c>0){phase=3;say(3)}dirty=true;kick();
-      if(c<D[3]+200)requestAnimationFrame(tick);else{fixAnim=false;finish()}};requestAnimationFrame(tick)}
-  function finish(){FX.p=[1,1,1];dirty=true;kick();cap.hidden=true;fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
-  window.__rip=()=>({pts:pts.length,pins:pins.map(p=>p.map(Math.round)),w:cv.width,h:cv.height,rt,rb,xs:[Math.min(...pts.map(p=>p[0])),Math.max(...pts.map(p=>p[0]))],c:measure()});
-  $('#ripFix').onclick=fixIt;
-  $('#ripAgain').onclick=()=>{FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;hero.classList.remove('fixing');$('#ripReset').click()};
-  $('#ripReset').onclick=()=>{if(autoRip){cancelAnimationFrame(autoRip);autoRip=0}autoUsed=false;hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);pile.getContext('2d').clearRect(0,0,pile.width,pile.height);pileA=1;chunks=[];pts=[];tears=0;measured=-1;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone');dirty=true;kick()};
+  function stagesNow(){const st=(window.RL_STAGES||[]).filter(s=>s&&s.img);return st}
+  function cleanUp(){if(FX.on)return;FX.on=true;stopAuto();found.hidden=true;$$('.rpin').forEach(p=>p.remove());pins=[];hero.classList.add('fixing');
+    for(const k of chunks)k.vx=(k.x>cv.width/2?1:-1)*24*dpr;fixAnim=true;const t0=performance.now();
+    const go=now=>{const t=Math.min(1,(now-t0)/900);pileA=1-t;
+      /* every last shingle comes off: the hole mask grows to the whole roof */
+      hx.globalAlpha=.25;hx.drawImage(maskC,0,0);hx.globalAlpha=1;dirty=true;kick();
+      if(t<1)requestAnimationFrame(go);else{fixAnim=false;chunks=[];pile.getContext('2d').clearRect(0,0,cv.width,cv.height);hx.drawImage(maskC,0,0);dirty=true;kick();startShow()}};requestAnimationFrame(go)}
+  let si=0,sTimer=0,manual=false,slides=[];
+  function startShow(){let st=stagesNow();
+    if(!st.length){st=[{cap:'Tear-off and clean-up: every old shingle and nail gone'},{cap:'Rotted decking cut out, new plywood nailed down',p:[1,0,0]},{cap:'Ice and water shield, then synthetic underlayment',p:[1,1,0]},{cap:'New impact-rated shingles, nailed to the high-wind pattern',p:[1,1,1]}];
+      FX.L=layers()}
+    slides=st;show.innerHTML='';slides.forEach((s,i)=>{if(!s.img)return;const im=new Image();im.className='ph stg';im.alt=s.cap;im.src=`img/${s.img}.webp`;im.srcset=`img/${s.img}-m.webp 800w, img/${s.img}.webp 1376w`;im.sizes='100vw';im.dataset.i=i;show.appendChild(im)});
+    dots.innerHTML=slides.map((_,i)=>`<button type="button" aria-label="Step ${i+1}" data-i="${i}"></button>`).join('');$$('#fixDots button').forEach(b=>b.onclick=()=>{manual=true;go(+b.dataset.i)});
+    cap.hidden=false;show.hidden=false;manual=false;go(0)}
+  function go(i){si=Math.max(0,Math.min(slides.length-1,i));clearTimeout(sTimer);
+    $$('#fixShow .stg').forEach(im=>im.classList.toggle('on',+im.dataset.i===si));if(!slides[si].img){FX.p=slides[si].p||[0,0,0];dirty=true;kick()}
+    capT.innerHTML=`<small>Step ${si+1} of ${slides.length}</small>${slides[si].cap}`;$$('#fixDots button').forEach((b,k)=>b.classList.toggle('on',k===si));
+    $('#fixPrev').disabled=si===0;$('#fixNext').textContent=si===slides.length-1?'Done':'Next';
+    if(si===slides.length-1){if(!manual)sTimer=setTimeout(finish,3000)}else if(!manual)sTimer=setTimeout(()=>go(si+1),3000)}
+  $('#fixPrev').onclick=()=>{manual=true;go(si-1)};$('#fixNext').onclick=()=>{manual=true;if(si===slides.length-1)finish();else go(si+1)};
+  {let sx=null;show.addEventListener('pointerdown',e=>{sx=e.clientX});show.addEventListener('pointerup',e=>{if(sx==null)return;const d=e.clientX-sx;sx=null;if(Math.abs(d)>40){manual=true;go(si+(d<0?1:-1))}});
+   show.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});show.addEventListener('touchend',e=>{if(sx==null)return;const d=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(d)>40){manual=true;go(si+(d<0?1:-1))}},{passive:true})}
+  function finish(){clearTimeout(sTimer);cap.hidden=true;fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  window.__rip=()=>({tears,full,done,c:measure(),slides:slides.length,si,manual});
+  $('#ripClean').onclick=cleanUp;
+  $('#ripAgain').onclick=()=>{clearTimeout(sTimer);FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;show.hidden=true;show.innerHTML='';cap.hidden=true;hero.classList.remove('fixing','tearing');$('#ripReset').click()};
+  $('#ripReset').onclick=()=>{clearTimeout(actT);actT=0;full=false;meter.classList.remove('full');hero.classList.remove('tearing');hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);pile.getContext('2d').clearRect(0,0,pile.width,pile.height);pileA=1;chunks=[];pts=[];tears=0;measured=-1;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone');dirty=true;kick()};
   const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
   if(over.complete&&over.naturalWidth)ready();else over.addEventListener('load',ready,{once:true});
   over.addEventListener('load',()=>{if(top){top.__src='';build()}});
   let rz=0;new ResizeObserver(()=>{clearTimeout(rz);rz=setTimeout(build,120)}).observe(hero);
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible){dirty=true;kick()}}).observe(hero);
   if(M&&!reduce)M.animate('.hcopy > *',{opacity:[.001,1],y:[24,0]},{duration:.7,delay:M.stagger(.08,{startDelay:.15}),ease:[.2,.8,.2,1]})})();
+
 
 /* ---------- before / after ---------- */
 (function(){const ba=$('#ba'),r=$('#baR');if(!ba)return;const set=v=>ba.style.setProperty('--cut',v+'%');r.oninput=()=>set(r.value);set(50);
@@ -1085,41 +1117,82 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
 addEventListener('scroll',()=>$('#bar').classList.toggle('solid',!$('#hero')||scrollY>innerHeight*.6),{passive:true});$('#bar').classList.toggle('solid',!$('#hero'));
 
 function push(o){upsert(o)}
-/* ---------- instant roof quote: no contact info needed to see the price ---------- */
-const QT={mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitch:'u',mat:'arch',layers:false,
+/* ---------- instant quote, job-specific: no contact info needed to see the price ---------- */
+const QT={job:'replace',mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitch:'u',mat:'arch',layers:false,
+  issue:'boot',spots:'1',storm:'repair',gft:'',gunsure:false,guard:true,fascia:false,vent:{ridge:true,soffit:true,fan:false},
+  JOBS:[['replace','Roof replacement'],['repair','Leak or roof repair'],['storm','Storm or hail damage'],['gutters','Gutters'],['vent','Attic ventilation'],['commercial','Commercial roof']],
   // residential $ per square (100 sq ft) installed, Texas 2025-26 estimates; commercial $ per sq ft
-  RES:{arch:['Architectural shingles',550,850,'Most popular. 30-year shingle, 10-year workmanship.'],impact:['Class 4 impact shingles',650,950,'Top hail rating. Ask your insurer about a discount.'],metal:['Standing-seam metal',1000,1800,'Lasts 40+ years, reflects Houston heat.'],tile:['Concrete tile',900,1600,'Heavy, long-lasting, classic look.'],flat:['Flat or low-slope (TPO)',600,1400,'Patios, additions, modern homes.']},
+  RES:{arch:['Architectural shingles',550,850,'Most popular. 30-year shingle, 10-year workmanship.'],impact:['Class 4 impact shingles',650,950,'Top hail rating. Ask your insurer about a discount.'],metal:['Standing-seam metal',1000,1800,'Lasts 40+ years, reflects Houston heat.'],tile:['Concrete tile',900,1600,'Heavy, long-lasting, classic look.'],flat:['Flat or low-slope (TPO)',600,1400,'Patios, additions and flat sections.']},
   COM:{tpo:['TPO single-ply',4.5,8,'Most common for warehouses and retail.'],epdm:['EPDM rubber',3,7,'Budget-friendly, proven on flat roofs.'],pvc:['PVC single-ply',7,13,'Best for restaurants and chemical exposure.'],coat:['Silicone roof coating',2,4,'Restores an aging roof without a tear-off.'],metal:['Metal roof',7,14,'Long life for warehouses and churches.']},
-  PITCH:{u:['Not sure',1.15],flat:['Flat',1],low:['Gentle',1.06],med:['Medium',1.15],steep:['Steep',1.35]}};
+  PITCH:{u:['Not sure',1.15],flat:['Flat',1],low:['Gentle',1.06],med:['Medium',1.15],steep:['Steep',1.35]},
+  ISSUE:{boot:['Leak around a pipe or vent',250,450,'Cracked rubber pipe boots are the #1 Houston leak.'],flash:['Leak at a chimney, wall or skylight',400,1200,'Flashing resealed or replaced.'],shingle:['Missing or blown-off shingles',350,900,'Matched as closely as possible.'],valley:['Leak where two slopes meet',600,1500,'Valleys carry the most water.'],unsure:['Not sure where it’s coming from',350,1500,'We trace it from the attic and the roof.']},
+  SPOTS:{'1':['One spot',1],'2':['2–3 spots',2.2],'4':['More than 3',3.6]},
+  STORM:{tarp:['Emergency tarp',350,900,'Often reimbursed by insurance as mitigation.'],repair:['Storm repair',500,3000,'A section of shingles, vents or flashing.'],replace:['Full replacement',0,0,'When the damage is spread across the roof.']},
+  INC:{replace:['Free inspection and photo report','Tear-off, new underlayment and drip edge','City of Houston permit pulled for you','Manufacturer warranty plus 10-year workmanship'],
+    repair:['Free leak inspection with photos','We find the real source, not just the stain','Matched materials, sealed flashing','1-year leak-free warranty on the repair'],
+    storm:['Free storm inspection within 48 hours','Dated photo file for your insurance claim','We meet your adjuster on the roof','You pay only your deductible if approved'],
+    gutters:['Free measure and photo check','6-inch seamless gutters, formed on site','Downspouts and extensions away from the slab','10-year workmanship warranty'],
+    vent:['Free attic check with temperature reading','Balanced intake and exhaust','Leak-free at every vent we cut','10-year workmanship warranty'],
+    commercial:['Site visit with core sample and moisture scan','Written repair / coat / replace options','Board-ready condition report','Manufacturer warranty options']}};
 const qmoney=n=>'$'+(Math.round(n/100)*100).toLocaleString('en-US');
-function qCalc(){const raw=parseFloat(String(QT.size).replace(/[^\d.]/g,''));let sqft,note;
-  if(QT.mode==='com'){sqft=QT.unsure||!raw?20000:(QT.unit==='squares'?raw*100:raw);note=QT.unsure||!raw?'Based on a typical 20,000 sq ft commercial roof until we measure yours.':`${Math.round(sqft).toLocaleString()} sq ft of roof.`;
-    const m=QT.COM[QT.mat]||QT.COM.tpo,tear=QT.layers&&QT.mat!=='coat'?1.5:0;return{name:m[0],desc:m[3],lo:sqft*(m[1]+tear),hi:sqft*(m[2]+tear),note,sqft}}
-  const pf=QT.PITCH[QT.pitch][1];
+function roofSqft(){const raw=parseFloat(String(QT.size).replace(/[^\d.]/g,''));const pf=QT.PITCH[QT.pitch][1];let sqft,note;
   if(QT.unsure||!raw){sqft=2400*0.85*pf;note='Based on a typical 2,400 sq ft Houston home until we measure yours.'}
   else if(QT.unit==='home'){sqft=raw*0.85*pf;note=`Roof estimated from a ${Math.round(raw).toLocaleString()} sq ft home.`}
-  else if(QT.unit==='squares'){sqft=raw*100;note=`${raw} squares of roof.`}
-  else{sqft=raw;note=`${Math.round(raw).toLocaleString()} sq ft of roof.`}
-  const sq=sqft/100,m=QT.RES[QT.mat]||QT.RES.arch,extra=QT.layers?100:0,steep=QT.pitch==='steep'?1.06:1;
-  return{name:m[0],desc:m[3],lo:sq*(m[1]+extra)*steep,hi:sq*(m[2]+extra)*steep,note,sqft}}
-function qRender(){const mats=QT.mode==='com'?QT.COM:QT.RES;if(!mats[QT.mat])QT.mat=Object.keys(mats)[0];
+  else if(QT.unit==='squares'){sqft=raw*100;note=`${raw} squares of roof.`}else{sqft=raw;note=`${Math.round(raw).toLocaleString()} sq ft of roof.`}return[sqft,note]}
+function qCalc(){const j=QT.job;
+  if(j==='commercial'){const raw=parseFloat(String(QT.size).replace(/[^\d.]/g,''));const sqft=QT.unsure||!raw?20000:(QT.unit==='squares'?raw*100:raw);const note=QT.unsure||!raw?'Based on a typical 20,000 sq ft commercial roof until we measure yours.':`${Math.round(sqft).toLocaleString()} sq ft of roof.`;
+    const m=QT.COM[QT.mat]||QT.COM.tpo,tear=QT.layers&&QT.mat!=='coat'?1.5:0;return{job:j,name:m[0],desc:m[3],lo:sqft*(m[1]+tear),hi:sqft*(m[2]+tear),note,sqft}}
+  if(j==='repair'){const m=QT.ISSUE[QT.issue],k=QT.SPOTS[QT.spots][1];return{job:j,name:'Roof repair: '+m[0].toLowerCase(),desc:m[3],lo:m[1]*k,hi:m[2]*k,note:QT.SPOTS[QT.spots][0]+'. '+m[3]}}
+  if(j==='storm'){if(QT.storm!=='replace'){const m=QT.STORM[QT.storm];return{job:j,name:m[0],desc:m[3],lo:m[1],hi:m[2],note:m[3]}}
+    const[sq,n]=roofSqft(),r=QT.RES.impact;return{job:j,name:'Storm replacement (impact shingles)',lo:sq/100*r[1],hi:sq/100*r[2],note:n+' If insurance approves, you pay your deductible.'}}
+  if(j==='gutters'){const raw=parseFloat(String(QT.gft).replace(/[^\d.]/g,''));const ft=QT.gunsure||!raw?150:raw,dn=Math.max(2,Math.round(ft/35));
+    let lo=ft*9+dn*90,hi=ft*14+dn*150;if(QT.guard){lo+=ft*7;hi+=ft*15}if(QT.fascia){lo+=ft*.2*8;hi+=ft*.2*20}
+    return{job:j,name:'Seamless gutters'+(QT.guard?' + guards':''),lo,hi,note:(QT.gunsure||!raw?'Based on a typical 150 ft of roof edge until we measure yours.':`${Math.round(ft)} ft of gutter.`)+` About ${dn} downspouts.`}}
+  if(j==='vent'){const V=QT.vent;let lo=0,hi=0,n=[];if(V.ridge){lo+=400;hi+=1200;n.push('ridge vent')}if(V.soffit){lo+=300;hi+=1300;n.push('soffit vents + baffles')}if(V.fan){lo+=500;hi+=900;n.push('solar attic fan')}
+    if(!n.length){lo=150;hi=300;n.push('attic check')}return{job:j,name:'Attic ventilation',lo,hi,note:'Includes '+n.join(', ')+'.'}}
+  const[sqft,note]=roofSqft(),sq=sqft/100,m=QT.RES[QT.mat]||QT.RES.arch,extra=QT.layers?100:0,steep=QT.pitch==='steep'?1.06:1;
+  return{job:j,name:m[0],desc:m[3],lo:sq*(m[1]+extra)*steep,hi:sq*(m[2]+extra)*steep,note,sqft}}
+const qchip=(attr,v,t,cur)=>`<button type="button" role="radio" aria-checked="${v===cur}" data-${attr}="${v}">${t}</button>`;
+function qRender(){const j=QT.job,roofy=j==='replace'||j==='commercial'||(j==='storm'&&QT.storm==='replace');QT.mode=j==='commercial'?'com':'res';
+  $('#qJobs').innerHTML=QT.JOBS.map(([k,t])=>qchip('job',k,t,j)).join('');
+  $$('#qJobs [data-job]').forEach(b=>b.onclick=()=>{QT.job=b.dataset.job;QT.unit='roof';qRender()});
+  $('#qRoof').hidden=!roofy;
+  const mats=QT.mode==='com'?QT.COM:QT.RES;if(!mats[QT.mat])QT.mat=Object.keys(mats)[0];
   $('#qMats').innerHTML=Object.entries(mats).map(([k,m])=>`<label class="qmat ${QT.mat===k?'on':''}"><input type="radio" name="qmat" value="${k}" ${QT.mat===k?'checked':''}><b>${m[0]}</b><small>${m[3]}</small></label>`).join('');
+  $('#qMats').closest('.field').hidden=j==='storm';
   $('#qPitchF').hidden=QT.mode==='com';$('#qUnit').innerHTML=(QT.mode==='com'?[['roof','Roof sq ft'],['squares','Squares']]:[['roof','Roof sq ft'],['home','Home sq ft'],['squares','Squares']]).map(([v,t])=>`<option value="${v}" ${QT.unit===v?'selected':''}>${t}</option>`).join('');
   $('#qLayersL').textContent=QT.mode==='com'?'Tear off the old roof first':'Remove an extra layer of old shingles';
-  $$('#qMats input').forEach(i=>i.onchange=()=>{QT.mat=i.value;qRender()});qOut()}
+  $$('#qMats input').forEach(i=>i.onchange=()=>{QT.mat=i.value;qRender()});
+  let o='';
+  if(j==='repair')o=`<div class="field"><span class="flabel">What’s going on?</span><div class="qmats">${Object.entries(QT.ISSUE).map(([k,m])=>`<label class="qmat ${QT.issue===k?'on':''}"><input type="radio" name="qiss" value="${k}" ${QT.issue===k?'checked':''}><b>${m[0]}</b><small>${m[3]}</small></label>`).join('')}</div></div><div class="field"><span class="flabel">How many spots?</span><div class="chips">${Object.entries(QT.SPOTS).map(([k,s])=>qchip('spots',k,s[0],QT.spots)).join('')}</div></div>`;
+  if(j==='storm')o=`<div class="field"><span class="flabel">What do you need?</span><div class="chips">${Object.entries(QT.STORM).map(([k,s])=>qchip('storm',k,s[0],QT.storm)).join('')}</div></div><p class="qhint">The inspection and photo file are free. In Texas a roofer can’t waive or pay your deductible.</p>`;
+  if(j==='gutters')o=`<div class="field"><label for="qG">How many feet of gutter?</label><input id="qG" inputmode="decimal" placeholder="e.g. 160" value="${esc(QT.gft)}"><label class="tog2"><input type="checkbox" id="qGu" ${QT.gunsure?'checked':''}> Not sure, use a typical home</label></div><label class="tog2"><input type="checkbox" id="qGg" ${QT.guard?'checked':''}> Add leaf guards</label><label class="tog2"><input type="checkbox" id="qGf" ${QT.fascia?'checked':''}> Some fascia boards are rotted</label>`;
+  if(j==='vent')o=`<div class="field"><span class="flabel">What should we add?</span>${[['ridge','Ridge vent (exhaust along the top)'],['soffit','Soffit vents + baffles (intake at the eaves)'],['fan','Solar attic fan']].map(([k,t])=>`<label class="tog2"><input type="checkbox" data-vent="${k}" ${QT.vent[k]?'checked':''}> ${t}</label>`).join('')}<small class="muted2">Not sure? Leave the first two on; that’s what most Houston attics are missing.</small></div>`;
+  $('#qOther').innerHTML=o;
+  $$('#qOther [name=qiss]').forEach(i=>i.onchange=()=>{QT.issue=i.value;qRender()});
+  $$('#qOther [data-spots]').forEach(b=>b.onclick=()=>{QT.spots=b.dataset.spots;qRender()});
+  $$('#qOther [data-storm]').forEach(b=>b.onclick=()=>{QT.storm=b.dataset.storm;qRender()});
+  if($('#qG')){$('#qG').oninput=e=>{QT.gft=e.target.value;if(e.target.value){QT.gunsure=false;$('#qGu').checked=false}qOut()};$('#qGu').onchange=e=>{QT.gunsure=e.target.checked;qOut()};$('#qGg').onchange=e=>{QT.guard=e.target.checked;qOut()};$('#qGf').onchange=e=>{QT.fascia=e.target.checked;qOut()}}
+  $$('#qOther [data-vent]').forEach(i=>i.onchange=()=>{QT.vent[i.dataset.vent]=i.checked;qOut()});
+  $('#qInc').innerHTML=(QT.INC[j]||QT.INC.replace).map(t=>`<li>${t}</li>`).join('');
+  qOut()}
 let qPrev=[0,0];
 function qOut(){const r=qCalc();$('#qName').textContent=r.name;$('#qNote').textContent=r.note+' Final price after a free inspection.';
   const el=$('#qPrice'),[a,b]=qPrev;qPrev=[r.lo,r.hi];
   if(M&&!reduce)M.animate(0,1,{duration:.45,ease:[.2,.8,.2,1],onUpdate:t=>{el.textContent=qmoney(a+(r.lo-a)*t)+' – '+qmoney(b+(r.hi-b)*t)}});else el.textContent=qmoney(r.lo)+' – '+qmoney(r.hi);
   const body=`Hi Ridgeline, I got an instant quote on your site: ${r.name}, ${qmoney(r.lo)}–${qmoney(r.hi)}${QT.addr?' for '+QT.addr:''}. Can we set up the free inspection?`;
-  const t=$('#qText');t.dataset.body=body;t.href=smsHref(body);try{localStorage.setItem('rl-quote',JSON.stringify({...r,mode:QT.mode,addr:QT.addr}))}catch(x){}}
-function qInit(){$$('[data-qmode]').forEach(b=>b.onclick=()=>{QT.mode=b.dataset.qmode;QT.unit='roof';$$('[data-qmode]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));qRender()});
+  const t=$('#qText');t.dataset.body=body;t.href=smsHref(body);try{localStorage.setItem('rl-quote',JSON.stringify({...r,range:qmoney(r.lo)+'–'+qmoney(r.hi),mode:QT.mode,addr:QT.addr}))}catch(x){}}
+function qInit(){
   $('#qAddr').oninput=e=>{QT.addr=e.target.value;qOut()};$('#qSize').oninput=e=>{QT.size=e.target.value;if(e.target.value){QT.unsure=false;$('#qUnsure').checked=false}qOut()};
   $('#qUnit').onchange=e=>{QT.unit=e.target.value;qOut()};$('#qUnsure').onchange=e=>{QT.unsure=e.target.checked;qOut()};$('#qLayers').onchange=e=>{QT.layers=e.target.checked;qOut()};
   $$('[data-pitch]').forEach(b=>b.onclick=()=>{QT.pitch=b.dataset.pitch;$$('[data-pitch]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));qOut()});
-  $('#qBook').onclick=()=>bookSheet({quote:qCalc(),mode:QT.mode,addr:QT.addr});qRender()}
-if($('#qMats'))qInit();if(location.search.includes('mode=com')){const t=$('[data-qmode="com"]');if(t)t.click()}
-$$('[data-quote]').forEach(b=>b.addEventListener('click',e=>{const m=b.dataset.quote;if(m==='com'||m==='res'){const t=$(`[data-qmode="${m}"]`);if(t)t.click()}}));
+  $('#qBook').onclick=()=>bookSheet({quote:qCalc(),mode:QT.mode,addr:QT.addr});
+  const MAP={'roof-replacement':'replace','roof-repair':'repair','storm-damage':'storm','insurance-claims':'storm','gutters':'gutters','attic-ventilation':'vent','commercial-roofing':'commercial',com:'commercial'};
+  const q=new URLSearchParams(location.search),jq=q.get('job')||q.get('mode');if(jq){const k=MAP[jq]||jq;if(QT.JOBS.some(x=>x[0]===k))QT.job=k}
+  qRender()}
+window.setJob=k=>{QT.job=k;if($('#qMats'))qRender()};
+if($('#qMats'))qInit();
+$$('[data-quote]').forEach(b=>b.addEventListener('click',()=>{const m=b.dataset.quote;window.setJob(m==='com'?'commercial':m==='res'?'replace':m)}));
 
 /* ---------- booking: contact (skipped if we already have it) → optional details → pick a time ---------- */
 function me(){try{return JSON.parse(localStorage.getItem('rl-me')||'null')}catch(x){return null}}
