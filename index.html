@@ -451,6 +451,8 @@ footer .wrap{display:block}
 .wwd-note{font-size:14px;color:var(--soft);margin:14px 0 0}
 #fixCap{left:16px;right:16px;margin:0 auto;width:fit-content;transform:none}
 @media (max-width:520px){.layers li{grid-template-columns:96px 1fr;gap:14px}.layers b{font-size:19px}.layers em{width:26px;height:26px;margin-right:6px}}
+.hero.ripon{cursor:grab}.hero.ripon.tearing{cursor:grabbing}.hero.ripon .hcta,.hero.ripon .bar{cursor:auto}
+.rpin .rp{display:flex;align-items:center;gap:8px}.rpin.l .rp{flex-direction:row-reverse}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
@@ -951,81 +953,109 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
   if(k==='old'){g.drawImage(RT.shingles(w,h,u,true),0,0);g.save();g.beginPath();for(let i=0;i<14;i++){const a=i/14*Math.PI*2,r=RT.rnd(70,110);g.lineTo(w*.55+Math.cos(a)*r*1.5,h*.55+Math.sin(a)*r*.75)}g.closePath();g.clip();g.drawImage(RT.ply(w,h,u),0,0);g.fillStyle='rgba(60,35,15,.55)';g.beginPath();g.ellipse(w*.58,h*.58,80,40,.3,0,7);g.fill();g.restore()}
   else if(k==='ply')g.drawImage(RT.ply(w,h,u),0,0);else if(k==='felt')g.drawImage(RT.felt(w,h,u),0,0);
   else{g.drawImage(RT.shingles(w,h,u,false),0,0);if(k==='done'){g.fillStyle='#FFD400';g.beginPath();g.arc(w-60,60,34,0,7);g.fill();g.strokeStyle='#1F2A33';g.lineWidth=7;g.lineCap='round';g.lineJoin='round';g.beginPath();g.moveTo(w-76,60);g.lineTo(w-64,72);g.lineTo(w-44,48);g.stroke()}}});
-/* ---------- RIP IT OFF: drag across the roof to tear the old shingles off. Chunks fly with real physics and pile up; what's underneath is the rot. ---------- */
+/* ---------- RIP IT OFF v2: tear only the roof (per-photo roof outline), exact finger alignment, cached compositing, capped debris that settles into one pile ---------- */
 (function rip(){const hero=$('#hero');if(!hero)return;
-  const cv=$('#ripCv'),x=cv.getContext('2d'),zone=$('#ripZone'),over=$('#hOver'),under=$('#hUnder'),hint=$('#ripHint'),meter=$('#ripMeter'),found=$('#ripFound');
-  const dpr=Math.min(2,devicePixelRatio||1);let W=0,H=0,top=null,holes=null,hx=null,chunks=[],tears=0,shake=0,last=null,done=false,run=true,cleared=0,auto=null,pins=[];
-  const FIND=[['Soft, rotted decking',.52,.52],['Torn felt paper',.36,.34],['Water stains',.66,.4],['Exposed nails',.44,.62]];
+  const cv=$('#ripCv'),x=cv.getContext('2d'),zone=$('#ripZone'),over=$('#hOver'),hint=$('#ripHint'),meter=$('#ripMeter'),found=$('#ripFound'),cap=$('#fixCap'),fixed=$('#ripFixed');
+  const dpr=Math.min(1.5,devicePixelRatio||1);
+  /* roof outline per photo, as fractions of the photo (x,y). Anything outside (sky, trees, gutter) can't be torn. */
+  const ROOF={s1:[[0,.37],[.37,.175],[.68,.175],[1,.36],[1,.93],[0,.93]],w1:[[0,.38],[.33,.175],[.70,.175],[1,.33],[1,.9],[0,.9]],f1:[[0,.37],[.37,.18],[.70,.18],[1,.35],[1,.82],[0,.82]],_:[[0,.36],[.35,.18],[.68,.18],[1,.35],[1,.9],[0,.9]]};
+  const mk=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,w|0);c.height=Math.max(1,h|0);return c};
+  let top=null,holes=null,hx=null,maskC=null,hm=null,roofC=null,lipC=null,pile=null,pileA=1,mArr=null,mW=0,mH=0,rt=0,rb=0;
+  let chunks=[],tears=0,shake=0,last=null,done=false,visible=true,auto=null,pins=[],pts=[],dirty=true,frame=0,down=false,spawnN=0,measured=-1,fixAnim=false;
+  const FX={on:false,L:null,p:[0,0,0]};
+  const FIND=['Soft, rotted decking','Torn felt paper','Water stains','Exposed nails'];
   function cover(img,w,h){const iw=img.naturalWidth,ih=img.naturalHeight,s=Math.max(w/iw,h/ih),dw=iw*s,dh=ih*s;return[(w-dw)/2,(h-dh)*.4,dw,dh]}
-  function build(){const r=hero.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;
-    top=document.createElement('canvas');top.width=cv.width;top.height=cv.height;const t=top.getContext('2d');if(over.complete&&over.naturalWidth){const[a,b,c,d]=cover(over,cv.width,cv.height);t.drawImage(over,a,b,c,d)}
-    const k=holes;holes=document.createElement('canvas');holes.width=cv.width;holes.height=cv.height;hx=holes.getContext('2d');if(k)hx.drawImage(k,0,0,cv.width,cv.height);draw()}
-  /* a torn hole: jagged, shingle-row shaped, wider than tall */
-  function tear(px,py,vx,vy,big){const s=(big?1.6:1)*Math.max(26,Math.min(W,H)*.045)*dpr,cx=px*dpr,cy=py*dpr;
-    hx.fillStyle='#000';hx.beginPath();const n=11;for(let i=0;i<n;i++){const a=i/n*Math.PI*2,rr=s*(.65+Math.random()*.55);hx.lineTo(cx+Math.cos(a)*rr*1.5,cy+Math.sin(a)*rr*.8)}hx.closePath();hx.fill();
-    /* the piece that came off becomes a flying chunk cut from the roof photo */
-    if(!reduce&&chunks.length<220){const cw=Math.round(s*2.6),ch=Math.round(s*1.5),c=document.createElement('canvas');c.width=cw;c.height=ch;const g=c.getContext('2d');
-      g.beginPath();for(let i=0;i<9;i++){const a=i/9*Math.PI*2;g.lineTo(cw/2+Math.cos(a)*cw/2*(.7+Math.random()*.3),ch/2+Math.sin(a)*ch/2*(.7+Math.random()*.3))}g.closePath();g.clip();
-      g.drawImage(top,cx-cw/2,cy-ch/2,cw,ch,0,0,cw,ch);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(0,ch*.7,cw,ch*.3);
-      chunks.push({c,x:cx,y:cy,vx:(vx*.9+(Math.random()-.5)*7)*dpr,vy:(vy*.6-6-Math.random()*8)*dpr,r:0,vr:(Math.random()-.5)*.35,rest:false,life:0})}
-    tears++;if(!reduce)shake=Math.min(10,shake+2.2);if(navigator.vibrate&&down&&tears%6===0)try{navigator.vibrate(8)}catch(e){}}
-  function draw(){x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,cv.width,cv.height);
-    const sx=shake?(Math.random()-.5)*shake*dpr:0,sy=shake?(Math.random()-.5)*shake*dpr:0;x.setTransform(1,0,0,1,sx,sy);
-    x.drawImage(top,0,0);x.globalCompositeOperation='destination-out';x.drawImage(holes,0,0);
-    /* torn edges: dark lip around every hole so it reads as thickness */
-    x.globalCompositeOperation='source-atop';x.save();x.filter='blur('+(5*dpr)+'px)';x.globalAlpha=.75;x.drawImage(holes,0,0);x.restore();if(FX.L){x.globalCompositeOperation='destination-over';for(let i=2;i>=0;i--){const p=FX.p[i];if(p<=0)continue;x.save();x.beginPath();const zb=zone.offsetHeight*dpr;x.rect(0,zb*(1-p),cv.width,cv.height);x.clip();x.drawImage(FX.L[i],0,0);x.restore()}}x.globalCompositeOperation='source-over';
-    for(const k of chunks){x.save();x.translate(k.x,k.y);x.rotate(k.r);x.shadowColor='rgba(0,0,0,.55)';x.shadowBlur=14*dpr;x.shadowOffsetY=8*dpr;x.drawImage(k.c,-k.c.width/2,-k.c.height/2);x.restore()}}
-  function step(){if(!run)return;const g=.55*dpr,floor=cv.height-6*dpr;let moving=false;
-    for(const k of chunks){if(k.rest)continue;k.vy+=g;k.x+=k.vx;k.y+=k.vy;k.r+=k.vr;k.vx*=.995;k.life++;
-      if(k.y>floor-k.c.height*.3){k.y=floor-k.c.height*.3;k.vy*=-.32;k.vx*=.7;k.vr*=.6;if(Math.abs(k.vy)<1.2*dpr){k.vy=0;k.rest=true;k.r=Math.round(k.r/Math.PI)*Math.PI+(Math.random()-.5)*.25}}
-      if(k.x<-200||k.x>cv.width+200)k.rest=true;moving=true}
-    if(chunks.length>160)chunks.splice(0,chunks.length-160);
-    if(shake>0)shake=Math.max(0,shake-.6);draw();requestAnimationFrame(step)}
-  /* how much is torn off: sample the hole mask at low res */
-  function measure(){const s=document.createElement('canvas');s.width=48;s.height=28;const g=s.getContext('2d');const zh=zone.offsetHeight/H;g.drawImage(holes,0,0,holes.width,holes.height*zh,0,0,48,28);
-    const d=g.getImageData(0,0,48,28).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i]>100)n++;return n/(48*28)}
-  function progress(){cleared=measure();meter.style.setProperty('--p',Math.min(1,cleared/.35));
-    FIND.forEach((f,i)=>{if(cleared>(i+1)*.06&&!pins[i]){pins[i]=1;const p=document.createElement('div');p.className='rpin'+(f[1]>.5?' l':'');p.style.left=f[1]*100+'%';p.style.top=(f[2]*zone.offsetHeight/H*100)+'%';p.innerHTML=`<i></i><span>${f[0]}</span>`;hero.appendChild(p);if(M&&!reduce)M.animate(p,{scale:[.4,1],opacity:[0,1]},{type:'spring',stiffness:500,damping:18})}});
-    if(cleared>.32&&!done){done=true;found.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}}
-  let down=false;
-  const pos=e=>{const r=hero.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
-  let fadeT=0;zone.addEventListener('pointerdown',e=>{if(FX.on)return;clearTimeout(fadeT);hero.classList.add('tearing');down=true;zone.setPointerCapture(e.pointerId);stopAuto();hint.classList.add('gone');const[px,py]=pos(e);last=[px,py,performance.now()];tear(px,py,0,0,true)});
-  zone.addEventListener('pointermove',e=>{if(FX.on)return;if(!down&&e.pointerType!=='mouse')return;const[px,py]=pos(e);
-    if(!down){/* mouse hover still tears lightly, so desktop users feel it instantly */if(!last){last=[px,py,performance.now()];return}}
-    const[lx,ly,lt]=last||[px,py,performance.now()],dist=Math.hypot(px-lx,py-ly),now=performance.now(),dt=Math.max(8,now-lt);
-    const need=down?14:34;if(dist<need)return;const vx=(px-lx)/dt*16,vy=(py-ly)/dt*16,steps=Math.min(6,Math.floor(dist/need));
-    for(let i=1;i<=steps;i++)tear(lx+(px-lx)*i/steps,ly+(py-ly)*i/steps,vx,vy,false);last=[px,py,now];hint.classList.add('gone')});
-  const up=()=>{down=false;last=null;progress();clearTimeout(fadeT);fadeT=setTimeout(()=>hero.classList.remove('tearing'),1400)};zone.addEventListener('pointerup',up);zone.addEventListener('pointercancel',up);zone.addEventListener('pointerleave',()=>{if(!down)last=null});
-  setInterval(()=>{if(tears)progress()},400);
-  /* a ghost hand tears a strip on its own once, so nobody has to guess what to do */
-  function stopAuto(){if(auto){cancelAnimationFrame(auto);auto=null;hint.classList.remove('demo')}}
-  function demo(){if(reduce)return;hint.classList.add('demo');const t0=performance.now(),zh=zone.offsetHeight;let lp=null;
-    const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=W*(.25+.5*t),py=zh*(.55+.12*Math.sin(t*6));hint.style.left=px+'px';hint.style.top=py+'px';
-      if(lp&&Math.hypot(px-lp[0],py-lp[1])>16){tear(px,py,(px-lp[0])*.6,0,false);lp=[px,py]}else if(!lp)lp=[px,py];auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
+  function build(){const r=hero.getBoundingClientRect();if(!r.width||!r.height)return;const nw=Math.round(r.width*dpr),nh=Math.round(r.height*dpr);
+    if(top&&nw===cv.width&&nh===cv.height&&top.__src===over.currentSrc)return;
+    cv.width=nw;cv.height=nh;top=mk(nw,nh);top.__src=over.currentSrc;const t=top.getContext('2d');let T=null;
+    if(over.complete&&over.naturalWidth){T=cover(over,nw,nh);t.drawImage(over,...T)}
+    maskC=mk(nw,nh);const m=maskC.getContext('2d');const key=((over.currentSrc||over.src||'').match(/\/(\w+?)(?:-m)?\.webp/)||[])[1];const poly=ROOF[key]||ROOF._;
+    if(T){const[a,b,c,d]=T;m.fillStyle='#000';m.beginPath();poly.forEach(([u,v])=>m.lineTo(a+u*c,b+v*d));m.closePath();m.fill();
+      const ys=poly.map(p=>b+p[1]*d);rt=Math.max(0,Math.min(...ys));rb=Math.min(nh,Math.max(...ys))}
+    mW=Math.ceil(nw/8);mH=Math.ceil(nh/8);const sm=mk(mW,mH),sg=sm.getContext('2d');sg.drawImage(maskC,0,0,mW,mH);const md=sg.getImageData(0,0,mW,mH).data;mArr=new Uint8Array(mW*mH);for(let i=0;i<mArr.length;i++)mArr[i]=md[i*4+3]>127?1:0;
+    const oh=holes;holes=mk(nw,nh);hx=holes.getContext('2d');if(oh)hx.drawImage(oh,0,0,nw,nh);
+    const op=pile;pile=mk(nw,nh);if(op)pile.getContext('2d').drawImage(op,0,0,nw,nh);
+    hm=mk(nw,nh);roofC=mk(nw,nh);lipC=mk(nw/4,nh/4);if(FX.L)FX.L=layers();dirty=true;kick()}
+  const onRoof=(cx,cy)=>{if(!mArr)return false;const i=(cy/8|0)*mW+(cx/8|0);return cx>=0&&cy>=0&&cx<cv.width&&cy<cv.height&&mArr[i]===1};
+  /* one torn hole (canvas px). Every 2nd tear throws a chunk; at most 30 flying at once. */
+  function tear(cx,cy,vx,vy,big){if(!onRoof(cx,cy))return;const s=(big?1.5:1)*Math.max(24*dpr,Math.min(cv.width,cv.height)*.042);
+    hx.fillStyle='#000';hx.beginPath();for(let i=0;i<11;i++){const a=i/11*Math.PI*2,rr=s*(.65+Math.random()*.55);hx.lineTo(cx+Math.cos(a)*rr*1.5,cy+Math.sin(a)*rr*.8)}hx.closePath();hx.fill();
+    pts.push([cx,cy]);if(pts.length>400)pts.splice(0,100);
+    if(!reduce&&(big||spawnN++%2===0)&&chunks.length<30){const cw=Math.round(s*2.4),ch=Math.round(s*1.4),pd=Math.round(12*dpr),c=mk(cw+pd*2,ch+pd*2),g=c.getContext('2d');
+      const shape=()=>{g.beginPath();for(let i=0;i<9;i++){const a=i/9*Math.PI*2;g.lineTo(pd+cw/2+Math.cos(a)*cw/2*(.72+Math.random()*.28),pd+ch/2+Math.sin(a)*ch/2*(.72+Math.random()*.28))}g.closePath()};
+      shape();g.save();g.shadowColor='rgba(0,0,0,.5)';g.shadowBlur=8*dpr;g.shadowOffsetY=5*dpr;g.fillStyle='#2b2e31';g.fill();g.restore();g.save();g.clip();g.drawImage(top,cx-cw/2,cy-ch/2,cw,ch,pd,pd,cw,ch);g.fillStyle='rgba(0,0,0,.16)';g.fillRect(pd,pd+ch*.7,cw,ch*.3);g.restore();
+      chunks.push({c,x:cx,y:cy,vx:vx*.9+(Math.random()-.5)*7*dpr,vy:vy*.6-(6+Math.random()*8)*dpr,r:0,vr:(Math.random()-.5)*.3})}
+    tears++;dirty=true;if(!reduce)shake=Math.min(8,shake+1.6);if(navigator.vibrate&&down&&tears%8===0)try{navigator.vibrate(8)}catch(e){}kick()}
+  function compose(){const r=roofC.getContext('2d'),h=hm.getContext('2d'),l=lipC.getContext('2d'),w=cv.width,H2=cv.height;
+    h.globalCompositeOperation='source-over';h.clearRect(0,0,w,H2);h.drawImage(holes,0,0);h.globalCompositeOperation='destination-in';h.drawImage(maskC,0,0);h.globalCompositeOperation='source-over';
+    r.globalCompositeOperation='source-over';r.clearRect(0,0,w,H2);r.drawImage(top,0,0);r.globalCompositeOperation='destination-out';r.drawImage(hm,0,0);
+    l.clearRect(0,0,lipC.width,lipC.height);l.filter='blur(2px)';l.drawImage(hm,0,0,lipC.width,lipC.height);l.filter='none';
+    r.globalCompositeOperation='source-atop';r.globalAlpha=.7;r.drawImage(lipC,0,0,w,H2);r.globalAlpha=1;
+    if(FX.L){r.globalCompositeOperation='destination-over';for(let i=2;i>=0;i--){const p=FX.p[i];if(p<=0)continue;r.save();r.beginPath();const y=rb-(rb-rt)*p;r.rect(0,y,w,H2-y);r.clip();r.drawImage(FX.L[i],0,0);r.restore()}}
+    r.globalCompositeOperation='source-over'}
+  function draw(){x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,cv.width,cv.height);const sx=shake?(Math.random()-.5)*shake*dpr:0,sy=shake?(Math.random()-.5)*shake*dpr:0;x.setTransform(1,0,0,1,sx,sy);
+    x.drawImage(roofC,0,0);if(pileA>0){x.globalAlpha=pileA;x.drawImage(pile,0,0);x.globalAlpha=1}
+    for(const k of chunks){x.save();x.translate(k.x,k.y);x.rotate(k.r);x.drawImage(k.c,-k.c.width/2,-k.c.height/2);x.restore()}}
+  function kick(){if(!frame&&visible)frame=requestAnimationFrame(step)}
+  function step(){frame=0;if(!top)return;const g=.55*dpr,floor=cv.height-6*dpr,pg=pile.getContext('2d');
+    for(let i=chunks.length-1;i>=0;i--){const k=chunks[i];k.vy+=g;k.x+=k.vx;k.y+=k.vy;k.r+=k.vr;k.vx*=.995;const b=floor-k.c.height*.3;
+      if(k.y>b){k.y=b;k.vy*=-.3;k.vx*=.7;k.vr*=.6;if(Math.abs(k.vy)<1.2*dpr){k.r=Math.round(k.r/Math.PI)*Math.PI+(Math.random()-.5)*.25;pg.save();pg.translate(k.x,k.y);pg.rotate(k.r);pg.drawImage(k.c,-k.c.width/2,-k.c.height/2);pg.restore();chunks.splice(i,1);continue}}
+      if(k.x<-300||k.x>cv.width+300)chunks.splice(i,1)}
+    if(dirty){compose();dirty=false}draw();if(shake>0)shake=Math.max(0,shake-.6);if(chunks.length||shake>0||fixAnim)kick()}
+  /* how much of the roof (inside the drag area) is torn off */
+  function measure(){const a=mk(64,40),b=mk(64,40),ga=a.getContext('2d'),gb=b.getContext('2d'),zh=Math.min(cv.height,zone.offsetHeight*cv.height/hero.offsetHeight);
+    ga.drawImage(hm,0,0,cv.width,zh,0,0,64,40);gb.drawImage(maskC,0,0,cv.width,zh,0,0,64,40);const da=ga.getImageData(0,0,64,40).data,db=gb.getImageData(0,0,64,40).data;let n=0,d=0;
+    for(let i=3;i<da.length;i+=4){if(db[i]>127){d++;if(da[i]>127)n++}}return d?n/d:0}
+  function pinAt(label){if(!pts.length)return;let best=null,bd=-1;for(let j=0;j<pts.length;j+=3){const p=pts[j];if(p[0]<cv.width*.08||p[0]>cv.width*.92)continue;let md=1e9;for(const q of pins)md=Math.min(md,Math.hypot(p[0]-q[0],p[1]-q[1]));if(md>bd){bd=md;best=p}}
+    if(!best)best=pts[pts.length-1];pins.push(best);const el=document.createElement('div');const fx=best[0]/cv.width;el.className='rpin'+(fx>.5?' l':'');el.style.left=fx*100+'%';el.style.top=best[1]/cv.height*100+'%';el.innerHTML=`<div class="rp"><i></i><span>${label}</span></div>`;hero.appendChild(el);
+    if(M&&!reduce)M.animate(el.firstChild,{scale:[.4,1],opacity:[0,1]},{type:'spring',stiffness:500,damping:18})}
+  function progress(){if(!hm||measured===tears)return;measured=tears;if(dirty){compose();dirty=false}const c=measure();meter.style.setProperty('--p',Math.min(1,c/.32));
+    while(pins.length<FIND.length&&c>(pins.length+1)*.06)pinAt(FIND[pins.length]);
+    if(c>.3&&!done&&!FX.on){done=true;found.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}}
 
-  /* WATCH US FIX IT: the holes fill back up layer by layer, from the eaves up, like a real crew works */
-  const FX={on:false,L:null,p:[0,0,0]},cap=$('#fixCap'),fixed=$('#ripFixed');
+  /* once the visitor starts tearing, the crew takes over: the rest of the roof comes off in ~3 seconds */
+  let autoRip=0,autoUsed=false;
+  function startAutoRip(){if(autoUsed||!top)return;autoUsed=true;const t0=performance.now(),k=hero.offsetWidth/cv.width,zb=Math.min(rb,zone.offsetHeight/k),y0=rt+(zb-rt)*.12,y1=zb-(zb-rt)*.06,rows=Math.max(4,Math.round((y1-y0)/(48*dpr))),dur=reduce?0:3000;let lp=null;
+    const path=t=>{const r=Math.min(rows-1,Math.floor(t*rows)),f=t*rows-r,dir=r%2?-1:1,xx=cv.width*(dir>0?.04+.92*f:.96-.92*f);return[xx,y0+(y1-y0)*(r+.5)/rows+Math.sin(f*9)*10*dpr]};
+    if(!dur){for(let i=0;i<=rows*40;i++){const[px,py]=path(i/(rows*40));tear(px,py,0,0,true)}measured=-1;progress();return}
+    const f=now=>{const t=Math.min(1,(now-t0)/dur);const[px,py]=path(t);
+      if(lp){const d=Math.hypot(px-lp[0],py-lp[1]),n=Math.min(8,Math.floor(d/(16*dpr)));if(n>0){for(let i=1;i<=n;i++)tear(lp[0]+(px-lp[0])*i/n,lp[1]+(py-lp[1])*i/n,(px-lp[0])*.25,0,i===n&&Math.random()<.3);lp=[px,py]}}else lp=[px,py];
+      if(t<1)autoRip=requestAnimationFrame(f);else{autoRip=0;measured=-1;progress();if(!done){done=true;found.hidden=false;hero.classList.add('found')}}};autoRip=requestAnimationFrame(f)}
+  /* input: anywhere on the roof with a mouse; inside the drag area with a finger (so the page still scrolls below it) */
+  const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+  const skip=t=>t.closest('a,button,input,select,textarea,label,#ripFound,#ripFixed,.bar');
+  let fadeT=0;
+  hero.addEventListener('pointerdown',e=>{if(FX.on||e.button>0||skip(e.target))return;if(e.pointerType!=='mouse'&&!zone.contains(e.target))return;
+    const[px,py]=pos(e);if(!onRoof(px,py))return;e.preventDefault();clearTimeout(fadeT);hero.classList.add('tearing');down=true;try{hero.setPointerCapture(e.pointerId)}catch(_){}stopAuto();hint.classList.add('gone');last=[px,py,performance.now()];tear(px,py,0,0,true);startAutoRip()});
+  hero.addEventListener('pointermove',e=>{if(!down||FX.on)return;const[px,py]=pos(e),[lx,ly,lt]=last,dist=Math.hypot(px-lx,py-ly),now=performance.now(),dt=Math.max(8,now-lt),need=16*dpr;if(dist<need)return;
+    const vx=(px-lx)/dt*16,vy=(py-ly)/dt*16,n=Math.min(5,Math.floor(dist/need));for(let i=1;i<=n;i++)tear(lx+(px-lx)*i/n,ly+(py-ly)*i/n,vx,vy,false);last=[px,py,now]});
+  const up=()=>{if(!down)return;down=false;last=null;progress();clearTimeout(fadeT);fadeT=setTimeout(()=>hero.classList.remove('tearing'),autoRip?3400:1400)};
+  hero.addEventListener('pointerup',up);hero.addEventListener('pointercancel',up);
+  setInterval(()=>{if(tears&&!FX.on)progress()},450);
+  /* ghost hand: tears one strip across the middle of the roof so nobody has to guess */
+  function stopAuto(){if(auto){cancelAnimationFrame(auto);auto=null;hint.classList.remove('demo')}}
+  function demo(){if(reduce||!top)return;hint.classList.add('demo');const t0=performance.now(),k=hero.offsetWidth/cv.width,zb=zone.offsetHeight/k,y0=Math.min(rt+(rb-rt)*.45,zb*.8);let lp=null;
+    const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=cv.width*(.28+.44*t),py=y0+Math.sin(t*6)*(rb-rt)*.05;hint.style.left=px*k+'px';hint.style.top=py*k+'px';
+      if(lp&&Math.hypot(px-lp[0],py-lp[1])>18*dpr){tear(px,py,(px-lp[0])*.6,0,false);lp=[px,py]}else if(!lp)lp=[px,py];auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
+  /* WATCH US FIX IT: holes fill back up layer by layer, from the gutter up */
   const STEPS=[['Step 1 of 4','Tear-off and clean-up: old shingles and debris gone'],['Step 2 of 4','Rotted decking cut out, new plywood nailed down'],['Step 3 of 4','Ice and water shield, then synthetic underlayment'],['Step 4 of 4','New impact-rated shingles, nailed to the high-wind pattern']];
-  function fixIt(){if(FX.on)return;FX.on=true;stopAuto();hero.classList.add('fixing');found.hidden=true;$$('.rpin').forEach(p=>p.remove());
-    const u=dpr*Math.max(.8,Math.min(1.3,W/1000));FX.L=[RT.ply(cv.width,cv.height,u),RT.felt(cv.width,cv.height,u),RT.shingles(cv.width,cv.height,u,false,true)];FX.p=[0,0,0];
-    const say=i=>{cap.hidden=false;cap.innerHTML=`<small>${STEPS[i][0]}</small>${STEPS[i][1]}`;if(M&&!reduce)M.animate(cap,{opacity:[0,1],y:[8,0]},{duration:.3})};
-    if(reduce){FX.p=[1,1,1];chunks=[];draw();finish();return}
-    say(0);const t0=performance.now();const sweep=chunks.map(k=>({k,vx:(k.x>cv.width/2?1:-1)*RT.rnd(14,24)*dpr}));
-    const D=[1100,1500,1500,1700];let phase=0;
-    const tick=now=>{const t=now-t0;
-      if(t<D[0]){for(const s of sweep){s.k.rest=false;s.k.x+=s.vx;s.k.vy=-1}}else if(phase===0){phase=1;chunks=[];say(1)}
-      const a=t-D[0],b=a-D[1],c=b-D[2];FX.p[0]=clamp(a/D[1]);FX.p[1]=clamp(b/D[2]);FX.p[2]=clamp(c/D[3]);
-      if(phase===1&&b>0){phase=2;say(2)}if(phase===2&&c>0){phase=3;say(3)}
-      if(c<D[3]+250)requestAnimationFrame(tick);else finish()};requestAnimationFrame(tick)}
-  function finish(){FX.p=[1,1,1];cap.hidden=true;fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  const layers=()=>{const u=dpr*Math.max(.8,Math.min(1.3,cv.width/dpr/1000));return[RT.ply(cv.width,cv.height,u),RT.felt(cv.width,cv.height,u),RT.shingles(cv.width,cv.height,u,false,true)]};
+  function fixIt(){if(FX.on)return;FX.on=true;stopAuto();hero.classList.add('fixing');found.hidden=true;$$('.rpin').forEach(p=>p.remove());pins=[];
+    FX.L=layers();FX.p=[0,0,0];const say=i=>{cap.hidden=false;cap.innerHTML=`<small>${STEPS[i][0]}</small>${STEPS[i][1]}`;if(M&&!reduce)M.animate(cap,{opacity:[0,1],y:[8,0]},{duration:.3})};
+    if(reduce){FX.p=[1,1,1];chunks=[];pileA=0;dirty=true;kick();finish();return}
+    say(0);const t0=performance.now(),D=[1000,1500,1500,1700];let phase=0;fixAnim=true;for(const k of chunks)k.vx=(k.x>cv.width/2?1:-1)*20*dpr;
+    const tick=now=>{const t=now-t0;if(t<D[0])pileA=1-t/D[0];else if(phase===0){phase=1;chunks=[];pileA=0;pile.getContext('2d').clearRect(0,0,cv.width,cv.height);pileA=1;say(1)}
+      const a=t-D[0],b=a-D[1],c=b-D[2];FX.p=[clamp(a/D[1]),clamp(b/D[2]),clamp(c/D[3])];if(phase===1&&b>0){phase=2;say(2)}if(phase===2&&c>0){phase=3;say(3)}dirty=true;kick();
+      if(c<D[3]+200)requestAnimationFrame(tick);else{fixAnim=false;finish()}};requestAnimationFrame(tick)}
+  function finish(){FX.p=[1,1,1];dirty=true;kick();cap.hidden=true;fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
   $('#ripFix').onclick=fixIt;
   $('#ripAgain').onclick=()=>{FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;hero.classList.remove('fixing');$('#ripReset').click()};
-  $('#ripReset').onclick=()=>{hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);chunks=[];tears=0;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone')};
+  $('#ripReset').onclick=()=>{if(autoRip){cancelAnimationFrame(autoRip);autoRip=0}autoUsed=false;hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);pile.getContext('2d').clearRect(0,0,pile.width,pile.height);pileA=1;chunks=[];pts=[];tears=0;measured=-1;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone');dirty=true;kick()};
   const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
   if(over.complete&&over.naturalWidth)ready();else over.addEventListener('load',ready,{once:true});
-  over.addEventListener('load',()=>{if(top)build()});
-  addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(build,150)});
-  new IntersectionObserver(es=>{const was=run;run=es[0].isIntersecting;if(run&&!was)requestAnimationFrame(step)}).observe(hero);requestAnimationFrame(step);
+  over.addEventListener('load',()=>{if(top){top.__src='';build()}});
+  let rz=0;new ResizeObserver(()=>{clearTimeout(rz);rz=setTimeout(build,120)}).observe(hero);
+  new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible){dirty=true;kick()}}).observe(hero);
   if(M&&!reduce)M.animate('.hcopy > *',{opacity:[.001,1],y:[24,0]},{duration:.7,delay:M.stagger(.08,{startDelay:.15}),ease:[.2,.8,.2,1]})})();
 
 /* ---------- before / after ---------- */
