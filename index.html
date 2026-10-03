@@ -514,6 +514,16 @@ footer .wrap{display:block}
  #fixCap{top:calc(64px + env(safe-area-inset-top,0px) + 78vw - 84px)!important}
  #fixCapT{font-size:13px!important}#fixCapT small{display:inline!important;margin-right:6px}
 }
+/* before/after on the hero after the fix */
+#cmpHandle{position:absolute;top:0;bottom:0;left:0;width:0;z-index:6;touch-action:none;cursor:ew-resize}
+#cmpHandle::before{content:'';position:absolute;top:0;bottom:0;left:-1.5px;width:3px;background:#fff;box-shadow:0 0 12px rgba(0,0,0,.45)}
+#cmpHandle::after{content:'';position:absolute;top:0;bottom:0;left:-28px;width:56px}
+#cmpHandle i{position:absolute;top:38%;left:-26px;width:52px;height:52px;border-radius:50%;background:var(--hivis);box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#cmpHandle i::before{content:'‹ ›';position:absolute;inset:0;display:grid;place-items:center;font:900 22px var(--body);color:var(--slate);letter-spacing:4px}
+#cmpHandle .ct{position:absolute;top:calc(84px + env(safe-area-inset-top,0px));padding:5px 10px;border-radius:999px;background:rgba(31,42,51,.88);color:#fff;font-weight:800;font-size:13px;white-space:nowrap}
+#cmpHandle .ct.b{right:12px}#cmpHandle .ct.a{left:12px}
+@media (max-width:899px){#cmpHandle i{top:30%}#cmpHandle .ct{top:calc(74px + env(safe-area-inset-top,0px) + 40px)}}
+@media (max-width:899px){#cmpHandle{top:calc(64px + env(safe-area-inset-top,0px));bottom:auto;height:78vw}#cmpHandle .ct{top:12px}#cmpHandle i{top:40%}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
@@ -537,7 +547,8 @@ footer .wrap{display:block}
     <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><p>Soft decking and water stains don’t show from the street. Let’s fix it.</p><div class="row"><button class="btn btn-main" type="button" id="ripFix">Watch us fix it</button><a class="btn btn-line" href="#quote">See my price</a></div><button class="linkbtn" type="button" id="ripReset">Put the old shingles back</button></div>
     <canvas id="fixCv" hidden aria-hidden="true"></canvas><div id="fixShow" hidden aria-live="polite"></div>
     <div id="fixCap" hidden><div id="fixCapT"></div><div class="fixnav"><button type="button" class="btn btn-line btn-sm" id="fixPrev">Back</button><div id="fixDots"></div><button type="button" class="btn btn-main btn-sm" id="fixNext">Next</button></div><small class="fixhint">Swipe to go at your own pace</small></div>
-    <div id="ripFixed" hidden role="status"><b>Fixed. New roof, one day.</b><p>New decking, sealed underlayment, impact-rated shingles and a 10-year leak-free warranty. Permit pulled for you.</p><div class="row"><a class="btn btn-main" href="#quote">See my price</a><a class="btn btn-line" href="#whatwedo">How we do it</a></div><button class="linkbtn" type="button" id="ripAgain">Rip it again</button></div>
+    <div id="ripFixed" hidden role="status"><b>Fixed. New roof, one day.</b><p>New decking, sealed underlayment, impact-rated shingles and a 10-year leak-free warranty. Permit pulled for you.</p><div class="row"><a class="btn btn-main" href="#quote">See my price</a><button class="btn btn-line" type="button" id="cmpBtn">Compare before &amp; after</button></div><button class="linkbtn" type="button" id="ripAgain">Rip it again</button></div>
+    <div id="cmpHandle" hidden role="slider" aria-label="Drag to compare the old roof and the new roof" tabindex="0"><span class="ct b">Before</span><span class="ct a">After</span><i></i></div>
     <div class="hcopy">
       <h1 id="h1">Houston roofing company.</h1>
       <p class="sub">See your roof price in 60 seconds. Free inspection with photos in 48 hours.</p>
@@ -1145,10 +1156,19 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   $('#fixPrev').onclick=()=>{manual=true;go(si-1)};$('#fixNext').onclick=()=>{manual=true;if(si===slides.length-1)finish();else go(si+1)};
   {let sx=null;const sw=d=>{if(Math.abs(d)>40){manual=true;go(si+(d<0?1:-1))}};show.addEventListener('pointerdown',e=>{sx=e.clientX});show.addEventListener('pointerup',e=>{if(sx==null)return;const d=e.clientX-sx;sx=null;sw(d)});
    show.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});show.addEventListener('touchend',e=>{if(sx==null)return;const d=e.changedTouches[0].clientX-sx;sx=null;sw(d)},{passive:true})}
-  function finish(){clearTimeout(sTimer);cap.hidden=true;fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  /* BEFORE / AFTER: the new roof stays on screen; the visitor can drag a handle to compare with the roof they started with */
+  const cmp=$('#cmpHandle');let cut=0,cmpOn=false;
+  function drawCmp(){if(!frames.length)return;const last=frames[frames.length-1],W2=fx.width,H2=fx.height;fg.clearRect(0,0,W2,H2);fg.drawImage(last,0,0);if(cut>0){fg.save();fg.beginPath();fg.rect(0,0,W2*cut,H2);fg.clip();fg.drawImage(top,0,0);fg.restore()}cmp.style.left=(cut*100)+'%'}
+  function setCut(v,anim){v=Math.max(0,Math.min(1,v));if(anim&&M&&!reduce){const a=cut;M.animate(0,1,{duration:.6,ease:[.3,.7,.2,1],onUpdate:t=>{cut=a+(v-a)*t;drawCmp()}})}else{cut=v;drawCmp()}}
+  function startCmp(){if(cmpOn)return;cmpOn=true;cmp.hidden=false;hero.classList.add('cmp');setCut(.5,true);$('#cmpBtn').textContent='Show the new roof'}
+  function stopCmp(){setCut(0,true);$('#cmpBtn').textContent='Compare before & after';cmpOn=false;setTimeout(()=>{if(!cmpOn){cmp.hidden=true;hero.classList.remove('cmp')}},650)}
+  $('#cmpBtn').onclick=()=>cmpOn?stopCmp():startCmp();
+  {let drag=false;const mv=e=>{if(!drag)return;const r=hero.getBoundingClientRect();setCut((e.clientX-r.left)/r.width)};
+   cmp.addEventListener('pointerdown',e=>{drag=true;cmp.setPointerCapture(e.pointerId);e.preventDefault()});cmp.addEventListener('pointermove',mv);cmp.addEventListener('pointerup',()=>drag=false);cmp.addEventListener('pointercancel',()=>drag=false)}
+  function finish(){clearTimeout(sTimer);cap.hidden=true;show.hidden=true;cancelAnimationFrame(anim);cut=0;drawCmp();fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
   window.__rip=()=>({tears,full,done,c:measure(),slides:slides.length,si,manual});
   $('#ripFix').onclick=fixIt;
-  $('#ripAgain').onclick=()=>{clearTimeout(sTimer);cancelAnimationFrame(anim);FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;show.hidden=true;fx.hidden=true;cap.hidden=true;hero.classList.remove('fixing','tearing');$('#ripReset').click()};
+  $('#ripAgain').onclick=()=>{clearTimeout(sTimer);cmpOn=false;cut=0;cmp.hidden=true;hero.classList.remove('cmp');$('#cmpBtn').textContent='Compare before & after';cancelAnimationFrame(anim);FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;show.hidden=true;fx.hidden=true;cap.hidden=true;hero.classList.remove('fixing','tearing');$('#ripReset').click()};
 
   $('#ripReset').onclick=()=>{clearTimeout(actT);actT=0;full=false;meter.classList.remove('full');hero.classList.remove('tearing');hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);pile.getContext('2d').clearRect(0,0,pile.width,pile.height);pileA=1;chunks=[];pts=[];tears=0;measured=-1;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone');dirty=true;kick()};
   const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
