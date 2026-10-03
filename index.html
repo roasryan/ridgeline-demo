@@ -404,6 +404,28 @@ footer .wrap{display:block}
 .topic .ic{grid-column:1;grid-row:1/3}.topic b{grid-column:2;grid-row:1}.topic span{grid-column:2;grid-row:2}.topic .go{font-style:normal}
 @media (max-width:520px){.topic .ic{grid-row:1/4}.topic .go{grid-row:3;grid-column:2}}
 @media (max-width:640px){.ostack li{grid-template-columns:1fr}.ostack li em{grid-row:auto;grid-column:1}.thumbbar .btn{font-size:17px;padding:0 12px}}
+
+/* more room to rip: copy gets out of the way while tearing, smaller copy block */
+.hero .hcopy,.riplabel,#ripMeter{transition:opacity .35s,transform .35s}
+.hero.tearing .hcopy{opacity:0;transform:translateY(16px);pointer-events:none}.hero.tearing .hcopy>*{pointer-events:none}
+.hero.tearing .riplabel{opacity:0}
+.hero .hcopy h1{font-size:clamp(44px,5.6vw,80px)}
+.hero .hcopy .sub{font-size:clamp(19px,2vw,26px)}
+@media (min-width:900px){.hero .hcopy .why{display:none}.hero .shade{background:linear-gradient(180deg,rgba(31,42,51,.45) 0%,rgba(31,42,51,0) 18%,rgba(31,42,51,0) 60%,rgba(31,42,51,.85) 90%,var(--slate) 100%)}}
+@media (max-width:899px){
+ .hero{min-height:0;height:100svh}
+ #ripZone{height:64%}
+ .hero .hcopy{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
+ .hero .hcopy h1{font-size:clamp(32px,9vw,42px);max-width:none}
+ .hero .hcopy .sub{font-size:17px;margin-top:8px}
+ .hero .hcopy .proof1{font-size:13px;margin-top:8px}
+ .hero .hcopy .hcta{margin-top:12px}.hero .hcopy .hcta .btn-main{min-height:56px;font-size:19px}
+ .hero .hcopy .hcta .btn-line{display:none}
+ .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,.45) 0%,rgba(31,42,51,0) 16%,rgba(31,42,51,0) 56%,rgba(31,42,51,.9) 72%,var(--slate) 100%)}
+ #ripFound{top:calc(64% + 8px)}
+}
+
+@media (max-width:899px){.hero.found .hcopy{opacity:0;pointer-events:none}.hero.found .hcopy>*{pointer-events:none}.hero.found .riplabel{opacity:0}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
@@ -893,23 +915,23 @@ $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
     const d=g.getImageData(0,0,48,28).data;let n=0;for(let i=3;i<d.length;i+=4)if(d[i]>100)n++;return n/(48*28)}
   function progress(){cleared=measure();meter.style.setProperty('--p',Math.min(1,cleared/.35));
     FIND.forEach((f,i)=>{if(cleared>(i+1)*.06&&!pins[i]){pins[i]=1;const p=document.createElement('div');p.className='rpin'+(f[1]>.5?' l':'');p.style.left=f[1]*100+'%';p.style.top=(f[2]*zone.offsetHeight/H*100)+'%';p.innerHTML=`<i></i><span>${f[0]}</span>`;hero.appendChild(p);if(M&&!reduce)M.animate(p,{scale:[.4,1],opacity:[0,1]},{type:'spring',stiffness:500,damping:18})}});
-    if(cleared>.32&&!done){done=true;found.hidden=false;if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}}
+    if(cleared>.32&&!done){done=true;found.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}}
   let down=false;
   const pos=e=>{const r=hero.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
-  zone.addEventListener('pointerdown',e=>{down=true;zone.setPointerCapture(e.pointerId);stopAuto();hint.classList.add('gone');const[px,py]=pos(e);last=[px,py,performance.now()];tear(px,py,0,0,true)});
+  let fadeT=0;zone.addEventListener('pointerdown',e=>{clearTimeout(fadeT);hero.classList.add('tearing');down=true;zone.setPointerCapture(e.pointerId);stopAuto();hint.classList.add('gone');const[px,py]=pos(e);last=[px,py,performance.now()];tear(px,py,0,0,true)});
   zone.addEventListener('pointermove',e=>{if(!down&&e.pointerType!=='mouse')return;const[px,py]=pos(e);
     if(!down){/* mouse hover still tears lightly, so desktop users feel it instantly */if(!last){last=[px,py,performance.now()];return}}
     const[lx,ly,lt]=last||[px,py,performance.now()],dist=Math.hypot(px-lx,py-ly),now=performance.now(),dt=Math.max(8,now-lt);
     const need=down?14:34;if(dist<need)return;const vx=(px-lx)/dt*16,vy=(py-ly)/dt*16,steps=Math.min(6,Math.floor(dist/need));
     for(let i=1;i<=steps;i++)tear(lx+(px-lx)*i/steps,ly+(py-ly)*i/steps,vx,vy,false);last=[px,py,now];hint.classList.add('gone')});
-  const up=()=>{down=false;last=null;progress()};zone.addEventListener('pointerup',up);zone.addEventListener('pointercancel',up);zone.addEventListener('pointerleave',()=>{if(!down)last=null});
+  const up=()=>{down=false;last=null;progress();clearTimeout(fadeT);fadeT=setTimeout(()=>hero.classList.remove('tearing'),1400)};zone.addEventListener('pointerup',up);zone.addEventListener('pointercancel',up);zone.addEventListener('pointerleave',()=>{if(!down)last=null});
   setInterval(()=>{if(tears)progress()},400);
   /* a ghost hand tears a strip on its own once, so nobody has to guess what to do */
   function stopAuto(){if(auto){cancelAnimationFrame(auto);auto=null;hint.classList.remove('demo')}}
   function demo(){if(reduce)return;hint.classList.add('demo');const t0=performance.now(),zh=zone.offsetHeight;let lp=null;
     const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=W*(.25+.5*t),py=zh*(.55+.12*Math.sin(t*6));hint.style.left=px+'px';hint.style.top=py+'px';
       if(lp&&Math.hypot(px-lp[0],py-lp[1])>16){tear(px,py,(px-lp[0])*.6,0,false);lp=[px,py]}else if(!lp)lp=[px,py];auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
-  $('#ripReset').onclick=()=>{hx.clearRect(0,0,holes.width,holes.height);chunks=[];tears=0;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone')};
+  $('#ripReset').onclick=()=>{hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);chunks=[];tears=0;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone')};
   const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
   if(over.complete&&over.naturalWidth)ready();else over.addEventListener('load',ready,{once:true});
   over.addEventListener('load',()=>{if(top)build()});
