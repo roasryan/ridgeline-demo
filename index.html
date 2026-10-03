@@ -1048,7 +1048,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
     mW=Math.ceil(nw/8);mH=Math.ceil(nh/8);const sm=mk(mW,mH),sg=sm.getContext('2d');sg.drawImage(maskC,0,0,mW,mH);const md=sg.getImageData(0,0,mW,mH).data;mArr=new Uint8Array(mW*mH);for(let i=0;i<mArr.length;i++)mArr[i]=md[i*4+3]>127?1:0;
     const oh=holes;holes=mk(nw,nh);hx=holes.getContext('2d');if(oh)hx.drawImage(oh,0,0,nw,nh);
     const op=pile;pile=mk(nw,nh);if(op)pile.getContext('2d').drawImage(op,0,0,nw,nh);
-    hm=mk(nw,nh);roofC=mk(nw,nh);lipC=mk(nw/4,nh/4);if(FX.L)FX.L=layers();dirty=true;kick()}
+    hm=mk(nw,nh);roofC=mk(nw,nh);lipC=mk(nw/4,nh/4);dirty=true;kick();if(window.__rebuildFix)window.__rebuildFix()}
   const onRoof=(cx,cy)=>{if(!mArr)return false;const i=(cy/8|0)*mW+(cx/8|0);return cx>=0&&cy>=0&&cx<cv.width&&cy<cv.height&&mArr[i]===1};
   /* one torn hole (canvas px). Every 2nd tear throws a chunk; at most 30 flying at once. */
   function tear(cx,cy,vx,vy,big){if(full||FX.on||!onRoof(cx,cy))return;const s=(big?1.5:1)*Math.max(24*dpr,Math.min(cv.width,cv.height)*.042);
@@ -1162,6 +1162,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   function setCut(v,anim){v=Math.max(0,Math.min(1,v));if(anim&&M&&!reduce){const a=cut;M.animate(0,1,{duration:.6,ease:[.3,.7,.2,1],onUpdate:t=>{cut=a+(v-a)*t;drawCmp()}})}else{cut=v;drawCmp()}}
   function startCmp(){if(cmpOn)return;cmpOn=true;cmp.hidden=false;hero.classList.add('cmp');setCut(.5,true);$('#cmpBtn').textContent='Show the new roof'}
   function stopCmp(){setCut(0,true);$('#cmpBtn').textContent='Compare before & after';cmpOn=false;setTimeout(()=>{if(!cmpOn){cmp.hidden=true;hero.classList.remove('cmp')}},650)}
+  window.__rebuildFix=async()=>{if(!frames.length)return;cancelAnimationFrame(anim);frames=await buildFrames();fx.width=cv.width;fx.height=cv.height;if(!fixed.hidden)drawCmp();else fg.drawImage(frames[Math.min(frames.length-1,si+1)],0,0)};
   $('#cmpBtn').onclick=()=>cmpOn?stopCmp():startCmp();
   {let drag=false;const mv=e=>{if(!drag)return;const r=hero.getBoundingClientRect();setCut((e.clientX-r.left)/r.width)};
    cmp.addEventListener('pointerdown',e=>{drag=true;cmp.setPointerCapture(e.pointerId);e.preventDefault()});cmp.addEventListener('pointermove',mv);cmp.addEventListener('pointerup',()=>drag=false);cmp.addEventListener('pointercancel',()=>drag=false)}
@@ -1184,7 +1185,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   let hinted=false;new IntersectionObserver(es=>{if(es[0].isIntersecting&&!hinted&&M&&!reduce){hinted=true;M.animate(50,22,{duration:.7,ease:[.3,.7,.2,1],onUpdate:v=>set(v)}).then(()=>M.animate(22,50,{duration:.8,ease:[.3,.7,.2,1],onUpdate:v=>set(v)}))}},{threshold:.6}).observe(ba)})();
 
 /* ---------- top bar turns solid after the hero ---------- */
-addEventListener('scroll',()=>$('#bar').classList.toggle('solid',!$('#hero')||scrollY>innerHeight*.6),{passive:true});$('#bar').classList.toggle('solid',!$('#hero'));
+{const sb=()=>$('#bar').classList.toggle('solid',!$('#hero')||innerWidth<900||scrollY>innerHeight*.6);addEventListener('scroll',sb,{passive:true});addEventListener('resize',sb);sb()}
 
 function push(o){upsert(o)}
 /* ---------- instant quote, job-specific: no contact info needed to see the price ---------- */
