@@ -483,6 +483,8 @@ footer .wrap{display:block}
 .hero.fixing #ripZone{pointer-events:none}
 .hero.fixing #fixShow{z-index:5}
 #fixCap small.fixhint{color:#AEBBC4;font-size:13px;text-transform:none;letter-spacing:0;margin:0;font-weight:600}
+#fixCv{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+@media (min-width:900px){#fixCap{left:auto;right:5vw;bottom:9vh;top:auto;width:460px;margin:0}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
@@ -503,8 +505,8 @@ footer .wrap{display:block}
     <div class="riplabel" aria-hidden="true"><b>Rip it off.</b> Drag across the roof.</div>
     <div id="ripMeter" aria-hidden="true">Old roof removed<i></i></div>
     <div id="ripHint" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 34V12a4 4 0 0 1 8 0v16-4a4 4 0 0 1 8 0v4-2a4 4 0 0 1 8 0v4a4 4 0 0 1 8 0v10c0 10-6 18-16 18h-4c-6 0-10-3-13-8l-7-11a4 4 0 0 1 6-5z" fill="#fff" stroke="#1F2A33" stroke-width="3" stroke-linejoin="round"/></svg></div>
-    <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><p>Soft decking and water stains don’t show from the street. Let’s fix it.</p><div class="row"><button class="btn btn-main" type="button" id="ripClean">Clean it up</button><a class="btn btn-line" href="#quote">See my price</a></div><button class="linkbtn" type="button" id="ripReset">Put the old shingles back</button></div>
-    <div id="fixShow" hidden aria-live="polite"></div>
+    <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><p>Soft decking and water stains don’t show from the street. Let’s fix it.</p><div class="row"><button class="btn btn-main" type="button" id="ripFix">Watch us fix it</button><a class="btn btn-line" href="#quote">See my price</a></div><button class="linkbtn" type="button" id="ripReset">Put the old shingles back</button></div>
+    <canvas id="fixCv" hidden aria-hidden="true"></canvas><div id="fixShow" hidden aria-live="polite"></div>
     <div id="fixCap" hidden><div id="fixCapT"></div><div class="fixnav"><button type="button" class="btn btn-line btn-sm" id="fixPrev">Back</button><div id="fixDots"></div><button type="button" class="btn btn-main btn-sm" id="fixNext">Next</button></div><small class="fixhint">Swipe to go at your own pace</small></div>
     <div id="ripFixed" hidden role="status"><b>Fixed. New roof, one day.</b><p>New decking, sealed underlayment, impact-rated shingles and a 10-year leak-free warranty. Permit pulled for you.</p><div class="row"><a class="btn btn-main" href="#quote">See my price</a><a class="btn btn-line" href="#whatwedo">How we do it</a></div><button class="linkbtn" type="button" id="ripAgain">Rip it again</button></div>
     <div class="hcopy">
@@ -994,7 +996,7 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
   const ROOF={sp1:[[0.113,0.368],[0.320,0.195],[0.581,0.205],[0.749,0.364],[0.680,0.364],[0.661,0.341],[0.538,0.536],[0.476,0.536],[0.472,0.390],[0.305,0.375],[0.218,0.332],[0.182,0.368]],fa1:[[0.103,0.592],[0.250,0.322],[0.385,0.314],[0.481,0.202],[0.621,0.202],[0.832,0.394],[0.658,0.390],[0.581,0.255],[0.509,0.390],[0.320,0.406],[0.320,0.592],[0.280,0.592],[0.280,0.436],[0.233,0.390],[0.188,0.436],[0.188,0.592]],s1:[[0,.37],[.37,.175],[.68,.175],[1,.36],[1,.93],[0,.93]],w1:[[0,.38],[.33,.175],[.70,.175],[1,.33],[1,.9],[0,.9]],f1:[[0,.37],[.37,.18],[.70,.18],[1,.35],[1,.82],[0,.82]],_:[[0,.36],[.35,.18],[.68,.18],[1,.35],[1,.9],[0,.9]]};
   const mk=(w,h)=>{const c=document.createElement('canvas');c.width=Math.max(1,w|0);c.height=Math.max(1,h|0);return c};
   let top=null,holes=null,hx=null,maskC=null,hm=null,roofC=null,lipC=null,pile=null,pileA=1,mArr=null,mW=0,mH=0,rt=0,rb=0;
-  let full=false,actT=0;const CAP=.45;let chunks=[],tears=0,shake=0,last=null,done=false,visible=true,auto=null,pins=[],pts=[],dirty=true,frame=0,down=false,spawnN=0,measured=-1,fixAnim=false;
+  let full=false,actT=0;const CAP=.85;let chunks=[],tears=0,shake=0,last=null,done=false,visible=true,auto=null,pins=[],pts=[],dirty=true,frame=0,down=false,spawnN=0,measured=-1,fixAnim=false;
   const FX={on:false,L:null,p:[0,0,0],full:false};
   const FIND=['Soft, rotted decking','Torn felt paper','Water stains','Exposed nails'];
   function cover(img,w,h){const iw=img.naturalWidth,ih=img.naturalHeight;
@@ -1040,7 +1042,7 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
       if(k.x<-300||k.x>cv.width+300)chunks.splice(i,1)}
     if(dirty){compose();dirty=false}draw();if(shake>0)shake=Math.max(0,shake-.6);if(chunks.length||shake>0||fixAnim)kick()}
   /* how much of the roof (inside the drag area) is torn off */
-  function measure(){const a=mk(64,40),b=mk(64,40),ga=a.getContext('2d'),gb=b.getContext('2d'),zh=Math.min(cv.height,zone.offsetHeight*cv.height/hero.offsetHeight);
+  function measure(){const a=mk(64,40),b=mk(64,40),ga=a.getContext('2d'),gb=b.getContext('2d'),zh=cv.height;
     ga.drawImage(hm,0,0,cv.width,zh,0,0,64,40);gb.drawImage(maskC,0,0,cv.width,zh,0,0,64,40);const da=ga.getImageData(0,0,64,40).data,db=gb.getImageData(0,0,64,40).data;let n=0,d=0;
     for(let i=3;i<da.length;i+=4){if(db[i]>127){d++;if(da[i]>127)n++}}return d?n/d:0}
   function pinAt(label){if(!pts.length)return;let best=null,bd=-1;const edge=innerWidth<900?.2:.08;for(let j=0;j<pts.length;j+=3){const p=pts[j];if(p[0]<cv.width*edge||p[0]>cv.width*(1-edge))continue;let md=1e9;for(const q of pins)md=Math.min(md,Math.hypot(p[0]-q[0],p[1]-q[1]));if(md>bd){bd=md;best=p}}
@@ -1048,7 +1050,7 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
     if(M&&!reduce)M.animate(el.firstChild,{scale:[.4,1],opacity:[0,1]},{type:'spring',stiffness:500,damping:18})}
   function progress(){if(!hm||measured===tears)return;measured=tears;if(dirty){compose();dirty=false}const c=measure();meter.style.setProperty('--p',Math.min(1,c/CAP));
     while(pins.length<(innerWidth<900?2:FIND.length)&&c>(pins.length+1)*.06){if(pinAt(FIND[pins.length])===false)break}
-    if(c>=CAP&&!full){full=true;meter.classList.add('full');showAct()}}
+    if(c>=CAP&&!full){full=true;meter.classList.add('full');/* the last scraps come off by themselves */hx.drawImage(maskC,0,0);dirty=true;kick();showAct()}}
 
   /* input: anywhere on the roof with a mouse; inside the drag area with a finger (so the page still scrolls below it) */
   const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
@@ -1066,40 +1068,66 @@ $$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.get
   function demo(){if(reduce||!top)return;hint.classList.add('demo');const t0=performance.now(),k=hero.offsetWidth/cv.width,zb=zone.offsetHeight/k,y0=Math.min(rt+(rb-rt)*.45,zb*.8);let lp=null;
     const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=cv.width*(.28+.44*t),py=y0+Math.sin(t*6)*(rb-rt)*.05;hint.style.left=px*k+'px';hint.style.top=py*k+'px';
       auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
-  /* ACT 2: after 5 s of tearing (or a full bar) the visitor gets "Clean it up". It clears every shingle and every piece of debris, then the repair plays as real photos of the same house: 3 s a slide, swipeable; a swipe hands control to the visitor. */
-  function showAct(){if(done||FX.on)return;done=true;hero.classList.add('found','tearing');found.hidden=false;if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
-  const show=$('#fixShow'),dots=$('#fixDots'),capT=$('#fixCapT');
   const layers=()=>{const u=dpr*Math.max(.8,Math.min(1.3,cv.width/dpr/1000)),dn=$('#hDone');let last=null;FX.full=false;
     /* the finished roof is a real photo of the same house when the season has one: it rolls up the whole roof, gutter to ridge */
     if(dn&&dn.complete&&dn.naturalWidth&&dn.dataset.ok==='1'){last=mk(cv.width,cv.height);const g=last.getContext('2d');g.drawImage(dn,...cover(dn,cv.width,cv.height));g.globalCompositeOperation='destination-in';g.drawImage(maskC,0,0);FX.full=true}
     const clipR=c=>{const g=c.getContext('2d');g.globalCompositeOperation='destination-in';g.drawImage(maskC,0,0);return c};
     return[clipR(RT.ply(cv.width,cv.height,u)),clipR(RT.felt(cv.width,cv.height,u)),last||clipR(RT.shingles(cv.width,cv.height,u,false,true))]};
-  function stagesNow(){const st=(window.RL_STAGES||[]).filter(s=>s&&s.img);return st}
-  function cleanUp(){if(FX.on)return;FX.on=true;stopAuto();found.hidden=true;$$('.rpin').forEach(p=>p.remove());pins=[];hero.classList.add('fixing');
-    for(const k of chunks)k.vx=(k.x>cv.width/2?1:-1)*24*dpr;fixAnim=true;const t0=performance.now();
-    const go=now=>{const t=Math.min(1,(now-t0)/900);pileA=1-t;
-      /* every last shingle comes off: the hole mask grows to the whole roof */
-      hx.globalAlpha=.25;hx.drawImage(maskC,0,0);hx.globalAlpha=1;dirty=true;kick();
-      if(t<1)requestAnimationFrame(go);else{fixAnim=false;chunks=[];pile.getContext('2d').clearRect(0,0,cv.width,cv.height);hx.drawImage(maskC,0,0);dirty=true;kick();startShow()}};requestAnimationFrame(go)}
-  let si=0,sTimer=0,manual=false,slides=[];
-  function startShow(){let st=stagesNow();
-    if(!st.length){st=[{cap:'Tear-off and clean-up: every old shingle and nail gone'},{cap:'Rotted decking cut out, new plywood nailed down',p:[1,0,0]},{cap:'Ice and water shield, then synthetic underlayment',p:[1,1,0]},{cap:'New impact-rated shingles, nailed to the high-wind pattern',p:[1,1,1]}];
-      FX.L=layers()}
-    slides=st;show.innerHTML='';slides.forEach((s,i)=>{if(!s.img)return;const im=new Image();im.className='ph stg';im.alt=s.cap;im.src=`img/${s.img}.webp`;im.srcset=`img/${s.img}-m.webp 800w, img/${s.img}.webp 1376w`;im.sizes='100vw';im.dataset.i=i;show.appendChild(im)});
+  /* ACT 2: after 5 s of tearing (or once the whole roof is off) the visitor gets "Watch us fix it".
+     Each repair step plays as a motion graphic over real photos of the same house: crews peel the old roof off in strips,
+     lay plywood sheet by sheet, roll underlayment course by course and lay shingles course by course. 3 s a step, swipeable;
+     a swipe hands control to the visitor. */
+  function showAct(){if(done||FX.on)return;done=true;hero.classList.add('found','tearing');found.hidden=false;if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  const show=$('#fixShow'),dots=$('#fixDots'),capT=$('#fixCapT'),fx=$('#fixCv'),fg=fx.getContext('2d');
+  const STEP_DEF=[['tear','Tear-off: every old shingle, nail and the rotted felt comes off'],['ply','Rotted decking cut out, new plywood nailed down sheet by sheet'],['felt','Ice and water shield at the edges, synthetic underlayment rolled course by course'],['shingle','New impact-rated shingles laid course by course, ridge cap last']];
+  let slides=[],si=-1,sTimer=0,manual=false,anim=0,frames=[];
+  const imgLoad=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=src});
+  /* every frame is a full-size canvas in the same geometry as the hero photo, so steps line up pixel for pixel */
+  function frameFromImg(im){const c=mk(cv.width,cv.height),g=c.getContext('2d');g.drawImage(im,...cover(im,cv.width,cv.height));return c}
+  function frameNow(){const c=mk(cv.width,cv.height),g=c.getContext('2d'),u=$('#hUnder');if(u.complete&&u.naturalWidth)g.drawImage(u,...cover(u,cv.width,cv.height));g.drawImage(cv,0,0);return c}
+  function frameLayer(i){/* drawn stand-in until the real photo exists: the old-roof photo with a drawn layer on the roof */const c=mk(cv.width,cv.height),g=c.getContext('2d');g.drawImage(top,0,0);const L=layers();g.drawImage(L[i],0,0);return c}
+  async function buildFrames(){const st=(window.RL_STAGES||[]);const out=[frameNow()];
+    for(let i=0;i<4;i++){const s=st[i];let f=null;if(s&&s.img){const im=await imgLoad(`img/${s.img}.webp`);if(im)f=frameFromImg(im)}
+      if(!f)f=i===0?(()=>{const c=mk(cv.width,cv.height),g=c.getContext('2d'),u=$('#hUnder');g.drawImage(top,0,0);g.save();g.drawImage(maskC,0,0);g.globalCompositeOperation='source-in';if(u.naturalWidth)g.drawImage(u,...cover(u,cv.width,cv.height));g.restore();const t=mk(cv.width,cv.height),tg=t.getContext('2d');tg.drawImage(top,0,0);tg.globalCompositeOperation='destination-out';tg.drawImage(maskC,0,0);tg.globalCompositeOperation='source-over';tg.drawImage(c,0,0);return t})():frameLayer(i-1);
+      out.push(f)}return out}
+  /* the reveal shapes for each kind of work, in roof space (rt..rb) */
+  function plan(kind){const W=cv.width,rh=rb-rt,P=[];const rnd=(a,b)=>a+Math.random()*(b-a);
+    if(kind==='tear'){/* ragged strips peel off from the ridge down */const n=9;for(let r=0;r<n;r++){const y=rt+rh*r/n,h=rh/n*1.25;for(let x=-W*.05;x<W;x+=W/7){P.push({t:(r+rnd(0,.9))/n,x,y,w:W/7*rnd(1,1.35),h,rag:true})}}}
+    if(kind==='ply'){/* 4x8 sheets, staggered rows, bottom row first */const sh=rh/6,sw=sh*2;for(let r=0;r<7;r++){const y=rb-sh*(r+1),off=r%2?sw/2:0;for(let x=-off;x<W;x+=sw)P.push({t:(r+rnd(0,.85))/7,x,y,w:sw-2*dpr,h:sh-2*dpr,sheet:true})}}
+    if(kind==='felt'){/* rolls run left to right, bottom course first */const n=6;for(let r=0;r<n;r++)P.push({t:r/n,roll:true,x:0,y:rb-rh*(r+1)/n-2*dpr,w:W,h:rh/n+4*dpr,dur:1/n})}
+    if(kind==='shingle'){/* courses bottom to top, each laid left to right */const n=12;for(let r=0;r<n;r++)P.push({t:r/n,roll:true,x:0,y:rb-rh*(r+1)/n-1*dpr,w:W,h:rh/n+2*dpr,dur:1.6/n})}
+    return P.sort((a,b)=>a.t-b.t)}
+  function play(i,instant){cancelAnimationFrame(anim);const from=frames[i],to=frames[i+1],kind=STEP_DEF[i][0],P=plan(kind),D=reduce||instant?0:2600,t0=performance.now();fx.width=cv.width;fx.height=cv.height;
+    const tick=now=>{const t=D?Math.min(1,(now-t0)/D):1;fg.globalCompositeOperation='source-over';fg.clearRect(0,0,fx.width,fx.height);fg.drawImage(from,0,0);
+      /* build the revealed region, then paint the next stage only there (and only on the roof) */
+      const m=mk(fx.width,fx.height),mg=m.getContext('2d');mg.fillStyle='#000';
+      for(const p of P){if(p.roll){const k=Math.max(0,Math.min(1,(t-p.t)/(p.dur||.2)));if(k>0)mg.fillRect(p.x,p.y,p.w*k,p.h)}
+        else if(t>=p.t){const k=Math.min(1,(t-p.t)/.08);mg.globalAlpha=p.sheet?k:1;if(p.rag){mg.beginPath();mg.moveTo(p.x,p.y);for(let s=0;s<=6;s++)mg.lineTo(p.x+p.w*s/6,p.y+(Math.random()-.5)*p.h*.25);for(let s=6;s>=0;s--)mg.lineTo(p.x+p.w*s/6,p.y+p.h+(Math.random()-.5)*p.h*.25);mg.fill()}else mg.fillRect(p.x,p.y,p.w,p.h);mg.globalAlpha=1}}
+      if(t>=1){mg.fillRect(0,0,fx.width,fx.height)}
+      mg.globalCompositeOperation='destination-in';mg.drawImage(maskC,0,0);
+      const n=mk(fx.width,fx.height),ng=n.getContext('2d');ng.drawImage(to,0,0);ng.globalCompositeOperation='destination-in';ng.drawImage(m,0,0);fg.drawImage(n,0,0);
+      /* a working edge: a soft shadow line where the crew is right now */
+      if(t<1&&!reduce){const cur=P.filter(p=>p.roll&&t>=p.t&&t<p.t+(p.dur||.2)).pop();if(cur){const k=(t-cur.t)/(cur.dur||.2),ex=cur.x+cur.w*k;fg.save();fg.beginPath();fg.rect(0,cur.y,fx.width,cur.h);fg.clip();const g=fg.createLinearGradient(ex-14*dpr,0,ex+6*dpr,0);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.35)');fg.fillStyle=g;fg.fillRect(ex-14*dpr,cur.y,20*dpr,cur.h);fg.restore()}}
+      if(t<1)anim=requestAnimationFrame(tick);else{fg.drawImage(to,0,0)}};
+    anim=requestAnimationFrame(tick)}
+  async function fixIt(){if(FX.on)return;FX.on=true;stopAuto();clearTimeout(actT);found.hidden=true;$$('.rpin').forEach(p=>p.remove());pins=[];hero.classList.add('fixing');
+    for(const k of chunks)k.vx=(k.x>cv.width/2?1:-1)*24*dpr;fixAnim=true;setTimeout(()=>{fixAnim=false;chunks=[];pile.getContext('2d').clearRect(0,0,cv.width,cv.height);dirty=true;kick()},700);
+    frames=await buildFrames();slides=STEP_DEF;fx.hidden=false;
     dots.innerHTML=slides.map((_,i)=>`<button type="button" aria-label="Step ${i+1}" data-i="${i}"></button>`).join('');$$('#fixDots button').forEach(b=>b.onclick=()=>{manual=true;go(+b.dataset.i)});
-    cap.hidden=false;show.hidden=false;manual=false;go(0)}
-  function go(i){si=Math.max(0,Math.min(slides.length-1,i));clearTimeout(sTimer);
-    $$('#fixShow .stg').forEach(im=>im.classList.toggle('on',+im.dataset.i===si));if(!slides[si].img){FX.p=slides[si].p||[0,0,0];dirty=true;kick()}
-    capT.innerHTML=`<small>Step ${si+1} of ${slides.length}</small>${slides[si].cap}`;$$('#fixDots button').forEach((b,k)=>b.classList.toggle('on',k===si));
+    cap.hidden=false;show.hidden=false;manual=false;si=-1;go(0)}
+  function go(i){i=Math.max(0,Math.min(slides.length-1,i));clearTimeout(sTimer);
+    if(i===si+1)play(i,false);else{cancelAnimationFrame(anim);fx.width=cv.width;fx.height=cv.height;fg.drawImage(frames[i+1],0,0);if(i<si){/* going back: show the step from its start, then replay */fg.drawImage(frames[i],0,0);setTimeout(()=>play(i,false),120)}}
+    si=i;capT.innerHTML=`<small>Step ${si+1} of ${slides.length}</small>${slides[si][1]}`;$$('#fixDots button').forEach((b,k)=>b.classList.toggle('on',k===si));
     $('#fixPrev').disabled=si===0;$('#fixNext').textContent=si===slides.length-1?'Done':'Next';
-    if(si===slides.length-1){if(!manual)sTimer=setTimeout(finish,3000)}else if(!manual)sTimer=setTimeout(()=>go(si+1),3000)}
+    if(!manual)sTimer=setTimeout(()=>si===slides.length-1?finish():go(si+1),3000)}
   $('#fixPrev').onclick=()=>{manual=true;go(si-1)};$('#fixNext').onclick=()=>{manual=true;if(si===slides.length-1)finish();else go(si+1)};
-  {let sx=null;show.addEventListener('pointerdown',e=>{sx=e.clientX});show.addEventListener('pointerup',e=>{if(sx==null)return;const d=e.clientX-sx;sx=null;if(Math.abs(d)>40){manual=true;go(si+(d<0?1:-1))}});
-   show.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});show.addEventListener('touchend',e=>{if(sx==null)return;const d=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(d)>40){manual=true;go(si+(d<0?1:-1))}},{passive:true})}
+  {let sx=null;const sw=d=>{if(Math.abs(d)>40){manual=true;go(si+(d<0?1:-1))}};show.addEventListener('pointerdown',e=>{sx=e.clientX});show.addEventListener('pointerup',e=>{if(sx==null)return;const d=e.clientX-sx;sx=null;sw(d)});
+   show.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});show.addEventListener('touchend',e=>{if(sx==null)return;const d=e.changedTouches[0].clientX-sx;sx=null;sw(d)},{passive:true})}
   function finish(){clearTimeout(sTimer);cap.hidden=true;fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
   window.__rip=()=>({tears,full,done,c:measure(),slides:slides.length,si,manual});
-  $('#ripClean').onclick=cleanUp;
-  $('#ripAgain').onclick=()=>{clearTimeout(sTimer);FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;show.hidden=true;show.innerHTML='';cap.hidden=true;hero.classList.remove('fixing','tearing');$('#ripReset').click()};
+  $('#ripFix').onclick=fixIt;
+  $('#ripAgain').onclick=()=>{clearTimeout(sTimer);cancelAnimationFrame(anim);FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;show.hidden=true;fx.hidden=true;cap.hidden=true;hero.classList.remove('fixing','tearing');$('#ripReset').click()};
+
   $('#ripReset').onclick=()=>{clearTimeout(actT);actT=0;full=false;meter.classList.remove('full');hero.classList.remove('tearing');hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);pile.getContext('2d').clearRect(0,0,pile.width,pile.height);pileA=1;chunks=[];pts=[];tears=0;measured=-1;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone');dirty=true;kick()};
   const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
   if(over.complete&&over.naturalWidth)ready();else over.addEventListener('load',ready,{once:true});
