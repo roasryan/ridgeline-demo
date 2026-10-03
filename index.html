@@ -3,9 +3,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1F2A33">
 <title>Houston Roofing Company | Instant Roof Quote | Ridgeline Roofing</title>
-<meta name="description" content="Houston roofing company for roof repair, roof replacement and storm damage. See your roof price in 60 seconds, then book a free inspection with photos in 48 hours.">
+<meta name="description" content="Houston roofing company for roof repair, roof replacement and storm damage. See your roof price in 60 seconds, then book a free inspection with photos within 24 hours of your inspection.">
 <link rel="canonical" href="https://roasryan.github.io/ridgeline-demo/">
-<meta property="og:title" content="Houston Roofing Company | Instant Roof Quote | Ridgeline Roofing"><meta property="og:description" content="Houston roofing company for roof repair, roof replacement and storm damage. See your roof price in 60 seconds, then book a free inspection with photos in 48 hours."><meta property="og:type" content="website">
+<meta property="og:title" content="Houston Roofing Company | Instant Roof Quote | Ridgeline Roofing"><meta property="og:description" content="Houston roofing company for roof repair, roof replacement and storm damage. See your roof price in 60 seconds, then book a free inspection with photos within 24 hours of your inspection."><meta property="og:type" content="website">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "RoofingContractor", "name": "Ridgeline Roofing (demo)", "telephone": "+1-346-774-0053", "url": "https://roasryan.github.io/ridgeline-demo/", "areaServed": ["Houston", "Katy", "Sugar Land", "Pearland", "The Woodlands", "Cypress", "Spring", "Kingwood", "League City", "Missouri City", "Bellaire", "Humble", "Friendswood", "Tomball", "Richmond", "Rosenberg"], "address": {"@type": "PostalAddress", "addressLocality": "Houston", "addressRegion": "TX", "addressCountry": "US"}, "priceRange": "$$"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does a roof replacement cost in Houston?", "acceptedAnswer": {"@type": "Answer", "text": "Most Houston homes land between $9,000 and $22,000 for architectural shingles. Use the instant quote for your home."}}, {"@type": "Question", "name": "Does insurance cover roof replacement in Texas?", "acceptedAnswer": {"@type": "Answer", "text": "Usually when hail or wind caused the damage, not age. You pay your deductible; it’s illegal in Texas for a roofer to waive it."}}, {"@type": "Question", "name": "Repair or replace?", "acceptedAnswer": {"@type": "Answer", "text": "Under about 15 years old with damage in one spot: usually repair. Older with wear everywhere: usually replace."}}, {"@type": "Question", "name": "Do you do commercial roofs?", "acceptedAnswer": {"@type": "Answer", "text": "Yes: TPO, EPDM, PVC, coatings, metal and maintenance plans."}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -545,38 +545,131 @@ footer .wrap{display:block}
  .hero .riplabel{top:calc(var(--bh,64px) + 78vw + 10px)!important;left:12px!important;right:12px!important;background:#1F2A33;border-radius:16px;padding:16px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35);font-size:16px;justify-content:flex-start}
 }
 @media (max-width:899px){.hero::before{background:var(--slate);filter:none}}
+/* ================= v8 top: hero in a box + inspection form ================= */
+.top{background:var(--slate);color:#fff;padding:calc(var(--bh,64px) + 22px) 16px 40px}
+.topgrid{display:grid;gap:22px;align-items:start}
+@media (min-width:1000px){.topgrid{grid-template-columns:minmax(0,1.35fr) minmax(360px,.85fr);gap:36px}.tform{position:sticky;top:calc(var(--bh,64px) + 16px)}}
+.tleft h1{font-size:clamp(34px,4.6vw,60px);max-width:none}
+.tsub{margin:10px 0 0;color:#DDE4E8;font:600 clamp(17px,1.6vw,21px)/1.35 var(--body);max-width:46ch}
+.tleft .proof1{margin:10px 0 16px}
+.top .hero{position:relative!important;height:auto!important;min-height:0!important;padding:0!important;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#111;box-shadow:0 18px 50px rgba(0,0,0,.45);color:#fff}
+.top .hero::before{display:none!important}
+.top .hero .shade{display:none!important}
+.top .hero .ph{position:absolute!important;inset:0!important;left:0!important;top:0!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:cover!important;object-position:50% 50%!important}
+.top #ripZone{top:0!important;left:0!important;right:0!important;height:100%!important}
+.top #cmpHandle{top:0!important;bottom:0!important;height:auto!important}
+.top #cmpHandle .ct{top:10px!important}
+.top #cmpHandle i{top:42%!important}
+.top #ripMeter{top:10px!important;right:10px!important;display:block!important}
+.top .rpin span{font-size:13px}
+/* the action slot under the box: same place, same shape at every stage */
+.heroact{margin-top:12px;min-height:76px}
+.heroact .riplabel,.heroact #ripFound,.heroact #ripFixed,.heroact #fixCap{position:static!important;inset:auto!important;transform:none!important;width:auto!important;max-width:none!important;margin:0!important;box-shadow:none!important;border-radius:16px!important;padding:12px 14px!important;display:grid;gap:8px;opacity:1!important}
+.heroact .riplabel{background:#2B3944;color:#fff;font-size:16px;font-weight:700;display:block!important;white-space:normal}
+.heroact .riplabel b{color:var(--hivis)}
+.hero.tearing~.heroact .riplabel,.hero.found~.heroact .riplabel,.hero.fixing~.heroact .riplabel{display:none!important}
+.heroact #ripFound,.heroact #ripFixed{background:#fff;color:var(--ink)}
+.heroact #ripFound[hidden],.heroact #ripFixed[hidden],.heroact #fixCap[hidden]{display:none!important}
+.heroact #ripFound b,.heroact #ripFixed b{display:block!important;font-size:17px!important}
+.heroact .row{display:flex;gap:10px;flex-wrap:nowrap;margin:0!important}
+.heroact .row .btn{flex:1;min-height:46px!important;font-size:15px!important;padding:0 12px!important}
+.heroact .btn-line{color:var(--ink)}
+.heroact .linkbtn{display:inline!important;justify-self:start;padding:0}
+.heroact #fixCap{background:#2B3944;color:#fff}
+.heroact #fixCap small{display:inline!important}
+/* form card */
+.icard{background:#fff;color:var(--ink);border-radius:20px;padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.ikick{margin:0;color:var(--chalk);font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.05em}
+.icard h2{font-size:clamp(26px,2.6vw,34px);margin:4px 0 10px;max-width:none}
+.iperks{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px;font-size:15px;color:var(--soft)}
+.iperks li{position:relative;padding-left:24px}
+.iperks li::before{content:'';position:absolute;left:0;top:4px;width:16px;height:16px;border-radius:5px;background:var(--hivis) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' fill='none' stroke='%231F2A33' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/13px no-repeat}
+.iperks b{color:var(--ink)}
+#iForm .field{margin:0 0 10px}
+#iForm label,#iForm .flabel{display:block;font-weight:800;font-size:14px;margin-bottom:4px}
+#iForm input,#iForm select{width:100%;min-height:48px;border:2px solid var(--line);border-radius:12px;padding:0 12px;font:500 16px var(--body);background:#fff;color:var(--ink)}
+#iForm input:focus,#iForm select:focus{border-color:var(--chalk);outline:none}
+#iForm .bad{border-color:var(--bad)!important}
+#iForm .two{gap:10px}
+#iForm .chips{gap:6px}#iForm .chips button{min-height:40px;padding:0 12px;font-size:14px}
+.ibtn{width:100%;min-height:58px!important;font-size:19px!important;margin-top:4px}
+.ifine{font-size:13px;color:var(--soft);margin:8px 0 0;text-align:center}.ifine a{color:var(--ink);font-weight:700}
+#iErr{color:var(--bad);font-weight:700;font-size:14px;margin:4px 0}
+#iDone h2{margin-bottom:6px}.idsub{margin:0 0 8px;color:var(--soft);font-size:15px}
+.ibubble{background:#E9EDEF;border-radius:18px 18px 18px 4px;padding:12px 14px;font-size:15px;line-height:1.4;margin-bottom:6px}.ibubble small{display:block;font-weight:800;color:var(--soft);font-size:12px;margin-bottom:2px}
+.idemo{font-size:12px;color:var(--soft);margin:0 0 12px}
+#iDone .row{display:flex;gap:10px;flex-wrap:wrap}#iDone .row .btn{flex:1;min-height:48px;font-size:15px}#iDone .btn-line{color:var(--ink)}
+@media (max-width:999px){.top{padding-top:calc(var(--bh,64px) + 14px)}.tleft h1{font-size:clamp(30px,8.5vw,40px)}.top .hero{border-radius:14px}.icard{padding:16px}}
+.icard.done>.ikick,.icard.done>h2,.icard.done>.iperks{display:none}
+.heroact #fixCap .btn-line{color:#fff!important;border-color:rgba(255,255,255,.6)!important}
+.heroact #fixCapT small{margin-right:8px}
+.links{gap:20px!important}.links a,.links button{white-space:nowrap;font-size:15px!important}
+@media (max-width:1240px) and (min-width:1100px){.links a[href="roof-replacement-cost.html"],.links a[href="reviews.html"]{display:none}}
+@media (max-width:999px){.top #ripMeter{display:none!important}.tsub{font-size:16px}.tleft .proof1{font-size:13px;margin:8px 0 12px}.heroact{min-height:0}}
+#inspect,#quote{scroll-margin-top:calc(var(--bh,64px) + 12px)}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
   <a class="logo" href="index.html" aria-label="Ridgeline Roofing, home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>Ridgeline</a>
   <nav class="links" aria-label="Main"><a href="roofing-services.html">Services</a><a href="commercial-roofing.html">Commercial</a><a href="insurance-claims.html">Insurance claims</a><a href="roof-replacement-cost.html">Cost guide</a><a href="reviews.html">Reviews</a><a href="roof-care-club.html">Roof Care Club</a><button type="button" data-login>Customer login</button></nav>
-  <div class="acts"><a class="btn ghost" href="#" data-sms="fab">Text us</a><a class="btn btn-main bar-cta" href="#quote">Get my quote</a><button class="btn ghost menu-btn" type="button" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button></div>
+  <div class="acts"><a class="btn ghost" href="#" data-sms="fab">Text us</a><a class="btn btn-main bar-cta" href="#inspect">Free inspection</a><button class="btn ghost menu-btn" type="button" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Menu</button></div>
 </header>
-<div class="thumbbar" id="thumbbar"><a class="btn ghost-d" href="#" data-sms="fab">Text us</a><a class="btn btn-main" href="#quote">Get my quote today</a></div>
+<div class="thumbbar" id="thumbbar"><a class="btn ghost-d" href="#" data-sms="fab">Text us</a><a class="btn btn-main" href="#inspect">Free inspection</a></div>
 
 <main id="top">
-  <section class="hero" id="hero" aria-labelledby="h1">
-    <img class="ph under" id="hUnder" src="img/fa2.webp" alt="Under the old shingles: water-stained, rotting roof decking" aria-hidden="false">
-    <img id="hDone" alt="" aria-hidden="true" hidden data-ok="0">
-    <img class="ph over" id="hOver" src="img/fa1.webp" alt="A two-story brick Houston home with an old, worn shingle roof and storm clouds rolling in" fetchpriority="high">
-    <canvas id="ripCv" aria-hidden="true"></canvas>
-    <div class="shade"></div>
-    <div id="ripZone" aria-label="Drag across the roof to tear off the old shingles" role="img"></div>
-    <div class="riplabel" aria-hidden="true"><b>Rip it off.</b> Drag across the roof.</div>
-    <div id="ripMeter" aria-hidden="true">Old roof removed<i></i></div>
-    <div id="ripHint" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 34V12a4 4 0 0 1 8 0v16-4a4 4 0 0 1 8 0v4-2a4 4 0 0 1 8 0v4a4 4 0 0 1 8 0v10c0 10-6 18-16 18h-4c-6 0-10-3-13-8l-7-11a4 4 0 0 1 6-5z" fill="#fff" stroke="#1F2A33" stroke-width="3" stroke-linejoin="round"/></svg></div>
-    <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><p>Soft decking and water stains don’t show from the street. Let’s fix it.</p><div class="row"><button class="btn btn-main" type="button" id="ripFix">Watch us fix it</button><a class="btn btn-line" href="#quote">See my price</a></div><button class="linkbtn" type="button" id="ripReset">Put the old shingles back</button></div>
-    <canvas id="fixCv" hidden aria-hidden="true"></canvas><div id="fixShow" hidden aria-live="polite"></div>
-    <div id="fixCap" hidden><div id="fixCapT"></div><div class="fixnav"><button type="button" class="btn btn-line btn-sm" id="fixPrev">Back</button><div id="fixDots"></div><button type="button" class="btn btn-main btn-sm" id="fixNext">Next</button></div><small class="fixhint">Swipe to go at your own pace</small></div>
-    <div id="ripFixed" hidden role="status"><b>Fixed. New roof, one day.</b><p>New decking, sealed underlayment, impact-rated shingles and a 10-year leak-free warranty. Permit pulled for you.</p><div class="row"><a class="btn btn-main" href="#quote">See my price</a><button class="btn btn-line" type="button" id="cmpBtn">Compare before &amp; after</button></div><button class="linkbtn" type="button" id="ripAgain">Rip it again</button></div>
-    <div id="cmpHandle" hidden role="slider" aria-label="Drag to compare the old roof and the new roof" tabindex="0"><span class="ct b">Before</span><span class="ct a">After</span><i></i></div>
-    <div class="hcopy">
+  <section class="top" aria-labelledby="h1">
+   <div class="wrap topgrid">
+    <div class="tleft">
       <h1 id="h1">Houston roofing company.</h1>
-      <p class="sub">See your roof price in 60 seconds. Free inspection with photos in 48 hours.</p>
+      <p class="tsub">See what’s under your shingles, then get a free inspection. Photo report within 24 hours of your visit.</p>
       <p class="proof1"><span class="st">★ 4.9</span> 212 Google reviews (sample) · Since 2009 · We pull the City of Houston permit</p>
-      <p class="why" id="why">Hurricane season. Find the leaks before the storm does.</p>
-      <div class="hcta"><a class="btn btn-main" href="#quote">Get my quote today</a><button class="btn btn-line light" type="button" data-start>Book a free inspection</button></div>
+      <div class="hero" id="hero">
+        <img class="ph under" id="hUnder" src="img/fa2.webp" alt="Under the old shingles: water-stained, rotting roof decking">
+        <img id="hDone" alt="" aria-hidden="true" hidden data-ok="0">
+        <img class="ph over" id="hOver" src="img/fa1.webp" alt="A two-story brick Houston home with an old, worn shingle roof and storm clouds rolling in" fetchpriority="high">
+        <canvas id="ripCv" aria-hidden="true"></canvas>
+        <div class="shade"></div>
+        <div id="ripZone" aria-label="Drag across the roof to tear off the old shingles" role="img"></div>
+        <div id="ripMeter" aria-hidden="true">Old roof removed<i></i></div>
+        <div id="ripHint" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 34V12a4 4 0 0 1 8 0v16-4a4 4 0 0 1 8 0v4-2a4 4 0 0 1 8 0v4a4 4 0 0 1 8 0v10c0 10-6 18-16 18h-4c-6 0-10-3-13-8l-7-11a4 4 0 0 1 6-5z" fill="#fff" stroke="#1F2A33" stroke-width="3" stroke-linejoin="round"/></svg></div>
+        <canvas id="fixCv" hidden aria-hidden="true"></canvas><div id="fixShow" hidden aria-live="polite"></div>
+        <div id="cmpHandle" hidden role="slider" aria-label="Drag to compare the old roof and the new roof" tabindex="0"><span class="ct b">Before</span><span class="ct a">After</span><i></i></div>
+      </div>
+      <div class="heroact">
+        <div class="riplabel"><b>Rip it off.</b> Drag across the roof to see what’s hiding under it.</div>
+        <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><div class="row"><button class="btn btn-main" type="button" id="ripFix">Watch us fix it</button><a class="btn btn-line" href="#inspect">Free inspection</a></div><button class="linkbtn" type="button" id="ripReset">Put the old shingles back</button></div>
+        <div id="fixCap" hidden><div id="fixCapT"></div><div class="fixnav"><button type="button" class="btn btn-line btn-sm" id="fixPrev">Back</button><div id="fixDots"></div><button type="button" class="btn btn-main btn-sm" id="fixNext">Next</button></div></div>
+        <div id="ripFixed" hidden role="status"><b>Fixed. New roof, one day.</b><div class="row"><a class="btn btn-main" href="#inspect">Book my free inspection</a><button class="btn btn-line" type="button" id="cmpBtn">Compare before &amp; after</button></div><button class="linkbtn" type="button" id="ripAgain">Rip it again</button></div>
+      </div>
+      <p class="why" id="why" hidden></p>
     </div>
+    <aside class="tform" id="inspect" aria-labelledby="iH">
+      <div class="icard" id="iCard">
+        <p class="ikick">Free roof inspection</p>
+        <h2 id="iH">Book it in 60 seconds</h2>
+        <ul class="iperks">
+          <li><b>Text confirmation in seconds</b> with your time and your inspector’s name</li>
+          <li><b>Photo report within 24 hours</b> of your inspection, or $50 off any repair</li>
+          <li><b>You don’t need to be home.</b> We check from the roof and the attic access</li>
+          <li><b>Insurance-ready damage file</b> and your instant-quote price held 30 days</li>
+        </ul>
+        <form id="iForm" novalidate>
+          <div class="two"><div class="field"><label for="iName">Full name</label><input id="iName" autocomplete="name" required></div>
+          <div class="field"><label for="iPhone">Mobile</label><input id="iPhone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="(346) 555-0123"></div></div>
+          <div class="field"><label for="iEmail">Email</label><input id="iEmail" type="email" inputmode="email" autocomplete="email" required></div>
+          <div class="field"><label for="iAddr">Property address</label><input id="iAddr" autocomplete="street-address" required placeholder="Street, city, ZIP"></div>
+          <div class="field"><label for="iIssue">What’s going on?</label><select id="iIssue" required><option value="">Choose one</option><option>Leak or water stain</option><option>Storm or hail damage</option><option>Old roof, thinking about replacing</option><option>Missing or damaged shingles</option><option>Gutters</option><option>Attic heat or ventilation</option><option>Insurance claim help</option><option>Commercial roof</option><option>Not sure, just want it checked</option></select></div>
+          <div class="field"><span class="flabel">Pick a day</span><div class="chips" id="iDays" role="radiogroup" aria-label="Day"></div></div>
+          <div class="field"><span class="flabel">Pick a time</span><div class="chips" id="iSlots" role="radiogroup" aria-label="Time"></div></div>
+          <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="iBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
+          <p class="err" id="iErr" role="alert" hidden></p>
+          <button class="btn btn-main ibtn" type="submit">Book my free inspection</button>
+          <p class="ifine">No cost, no obligation. We’ll never sell your info. <a href="#quote">Rather see a price first?</a></p>
+        </form>
+        <div id="iDone" hidden></div>
+      </div>
+    </aside>
+   </div>
   </section>
 <section class="sec quote" id="quote" aria-labelledby="qH">
     <div class="wrap qgrid">
@@ -620,7 +713,7 @@ footer .wrap{display:block}
     <div class="wrap ogrid">
       <div>
         <h2 id="oH">The Storm-Ready Roof Check</h2>
-        <p class="lede">Everything you need to know about your roof, on your phone, in 48 hours. Free, because the homeowners who see the photos usually let us fix it.</p>
+        <p class="lede">Everything you need to know about your roof, on your phone within 24 hours of your inspection. Free, because the homeowners who see the photos usually let us fix it.</p>
         <ul class="ostack">
           <li><b>40-point roof inspection</b><span>Shingles, flashing, pipe boots, vents, gutters and the attic. You don’t need to be home.</span><em>$250 value</em></li>
           <li><b>Photo report on your phone</b><span>Every problem marked on a photo, in plain words, with what it costs to fix and what happens if you wait.</span><em>$150 value</em></li>
@@ -632,7 +725,7 @@ footer .wrap{display:block}
         <div class="ototal"><s>Total value $969</s><strong>Yours: $0</strong></div>
       </div>
       <div>
-        <div class="guar"><div><b>48-hour guarantee</b><span>We inspect within 48 hours of your request or $50 comes off any repair we do.</span></div><div><b>Price-lock guarantee</b><span>The price on your written quote holds for 30 days. No surprise add-ons; decking is priced per sheet up front.</span></div><div><b>Leak-free for 10 years</b><span>If our workmanship leaks in 10 years, we fix it free. In writing.</span></div></div>
+        <div class="guar"><div><b>24-hour photo report</b><span>Your photo report lands within 24 hours of your inspection, or $50 comes off any repair we do.</span></div><div><b>Price-lock guarantee</b><span>The price on your written quote holds for 30 days. No surprise add-ons; decking is priced per sheet up front.</span></div><div><b>Leak-free for 10 years</b><span>If our workmanship leaks in 10 years, we fix it free. In writing.</span></div></div>
         <div class="scar" aria-label="Inspections left this week (sample)"><span>This week: 4 of 12 inspection spots left</span><span class="dots"><i></i><i></i><i></i><i></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i></span><small>Sample. The owner sets the real weekly number so every roof gets a full hour.</small></div>
         <div class="hcta"><button class="btn btn-main" type="button" data-start>Claim my free roof check</button><a class="btn btn-line light" href="#quote">See my price first</a></div>
       </div>
@@ -649,7 +742,7 @@ footer .wrap{display:block}
     <div class="wrap">
       <h2 id="whatH">What we fix</h2>
       <p class="lede">Roof repair, roof replacement and storm damage for Houston homes and businesses. Pick one to see everything about it.</p>
-      <ul class="topics"><li class="topic"><a href="roof-replacement.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16 16 5l13 11"/><path d="M7 14v13h18V14"/><path d="M11 20h10M11 24h10"/></svg></span><b>Roof replacement</b><span>New roof in a day, permit pulled, 10-year leak-free warranty.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="roof-repair.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c4 6 7 10 7 14a7 7 0 0 1-14 0c0-4 3-8 7-14z"/><path d="M13 19l2 2 4-4"/></svg></span><b>Leak repair</b><span>We fix where the water gets in, not where the stain shows.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="storm-damage.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15a6 6 0 1 1 11-4 5 5 0 1 1 3 9H9"/><path d="M15 20l-3 5h4l-2 4"/></svg></span><b>Storm and hail damage</b><span>Photos in 48 hours. Tarp the same or next day.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="insurance-claims.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l10 4v8c0 7-5 11-10 14C11 26 6 22 6 15V7z"/><path d="M11 16l3 3 7-7"/></svg></span><b>Insurance claims</b><span>What’s covered in Texas, and how we document it for your adjuster.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="gutters.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h24v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M22 18v10"/><path d="M10 23v2M14 25v2"/></svg></span><b>Gutters and guards</b><span>6-inch seamless gutters for Houston downpours.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="attic-ventilation.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 16 6l13 11"/><path d="M10 21c2-2 4 2 6 0s4 2 6 0"/><path d="M10 26c2-2 4 2 6 0s4 2 6 0"/></svg></span><b>Attic ventilation</b><span>A cooler attic and shingles that last longer.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="commercial-roofing.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 28V12l8-5v5l8-5v5l8-5v21z"/><path d="M9 22h3M15 22h3M21 22h3"/></svg></span><b>Commercial roofing</b><span>TPO, coatings, metal and maintenance plans.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="roof-replacement-cost.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12"/><path d="M20 11.5c-1-1.2-2.4-1.8-4-1.8-2.2 0-4 1.2-4 3s1.8 2.6 4 3.2 4 1.4 4 3.3-1.8 3-4 3c-1.7 0-3.2-.6-4.2-1.8M16 7v3M16 22v3"/></svg></span><b>What a roof costs</b><span>Real Houston prices by material and home size.</span><em class="go">Learn more →</em></a></li></ul>
+      <ul class="topics"><li class="topic"><a href="roof-replacement.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16 16 5l13 11"/><path d="M7 14v13h18V14"/><path d="M11 20h10M11 24h10"/></svg></span><b>Roof replacement</b><span>New roof in a day, permit pulled, 10-year leak-free warranty.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="roof-repair.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4c4 6 7 10 7 14a7 7 0 0 1-14 0c0-4 3-8 7-14z"/><path d="M13 19l2 2 4-4"/></svg></span><b>Leak repair</b><span>We fix where the water gets in, not where the stain shows.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="storm-damage.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15a6 6 0 1 1 11-4 5 5 0 1 1 3 9H9"/><path d="M15 20l-3 5h4l-2 4"/></svg></span><b>Storm and hail damage</b><span>Photo report within 24 hours. Tarp the same or next day.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="insurance-claims.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3l10 4v8c0 7-5 11-10 14C11 26 6 22 6 15V7z"/><path d="M11 16l3 3 7-7"/></svg></span><b>Insurance claims</b><span>What’s covered in Texas, and how we document it for your adjuster.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="gutters.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h24v5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M22 18v10"/><path d="M10 23v2M14 25v2"/></svg></span><b>Gutters and guards</b><span>6-inch seamless gutters for Houston downpours.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="attic-ventilation.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 16 6l13 11"/><path d="M10 21c2-2 4 2 6 0s4 2 6 0"/><path d="M10 26c2-2 4 2 6 0s4 2 6 0"/></svg></span><b>Attic ventilation</b><span>A cooler attic and shingles that last longer.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="commercial-roofing.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 28V12l8-5v5l8-5v5l8-5v21z"/><path d="M9 22h3M15 22h3M21 22h3"/></svg></span><b>Commercial roofing</b><span>TPO, coatings, metal and maintenance plans.</span><em class="go">Learn more →</em></a></li><li class="topic"><a href="roof-replacement-cost.html"><span class="ic"><svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#FFD400" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12"/><path d="M20 11.5c-1-1.2-2.4-1.8-4-1.8-2.2 0-4 1.2-4 3s1.8 2.6 4 3.2 4 1.4 4 3.3-1.8 3-4 3c-1.7 0-3.2-.6-4.2-1.8M16 7v3M16 22v3"/></svg></span><b>What a roof costs</b><span>Real Houston prices by material and home size.</span><em class="go">Learn more →</em></a></li></ul>
     </div>
   </section>
 <section class="sec how" id="how" aria-labelledby="howH">
@@ -700,8 +793,8 @@ footer .wrap{display:block}
   <section class="sec end" aria-labelledby="endH">
     <div class="wrap">
       <h2 id="endH">Know what’s on your roof this week.</h2>
-      <p class="lede">If we’re not there within 48 hours, $50 comes off any repair we do.</p>
-      <a class="btn btn-main" href="#quote">Get my quote today</a>
+      <p class="lede">Photo report within 24 hours of your inspection, or $50 off any repair.</p>
+      <a class="btn btn-main" href="#inspect">Book my free inspection</a>
       <div class="proof"><span><b>4.9</b> from 212 Google reviews (sample)</span><span><b>10-year</b> workmanship warranty</span><span>We work with your insurance</span></div>
     </div>
   </section>
@@ -1200,7 +1293,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   over.addEventListener('load',()=>{if(top){top.__src='';build()}});
   let rz=0;new ResizeObserver(()=>{clearTimeout(rz);rz=setTimeout(build,120)}).observe(hero);
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible){dirty=true;kick()}}).observe(hero);
-  if(M&&!reduce)M.animate('.hcopy > *',{opacity:[.001,1],y:[24,0]},{duration:.7,delay:M.stagger(.08,{startDelay:.15}),ease:[.2,.8,.2,1]})})();
+  if(M&&!reduce)M.animate('.tleft > *',{opacity:[.001,1],y:[24,0]},{duration:.7,delay:M.stagger(.08,{startDelay:.15}),ease:[.2,.8,.2,1]})})();
 
 
 /* ---------- before / after ---------- */
@@ -1208,7 +1301,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   let hinted=false;new IntersectionObserver(es=>{if(es[0].isIntersecting&&!hinted&&M&&!reduce){hinted=true;M.animate(50,22,{duration:.7,ease:[.3,.7,.2,1],onUpdate:v=>set(v)}).then(()=>M.animate(22,50,{duration:.8,ease:[.3,.7,.2,1],onUpdate:v=>set(v)}))}},{threshold:.6}).observe(ba)})();
 
 /* ---------- top bar turns solid after the hero ---------- */
-{const sb=()=>$('#bar').classList.toggle('solid',!$('#hero')||innerWidth<900||scrollY>innerHeight*.6);addEventListener('scroll',sb,{passive:true});addEventListener('resize',sb);sb()}
+{const sb=()=>$('#bar').classList.toggle('solid',true);addEventListener('scroll',sb,{passive:true});addEventListener('resize',sb);sb()}
 
 function push(o){upsert(o)}
 /* ---------- instant quote, job-specific: no contact info needed to see the price ---------- */
@@ -1224,7 +1317,7 @@ const QT={job:'replace',mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitc
   STORM:{tarp:['Emergency tarp',350,900,'Often reimbursed by insurance as mitigation.'],repair:['Storm repair',500,3000,'A section of shingles, vents or flashing.'],replace:['Full replacement',0,0,'When the damage is spread across the roof.']},
   INC:{replace:['Free inspection and photo report','Tear-off, new underlayment and drip edge','City of Houston permit pulled for you','Manufacturer warranty plus 10-year workmanship'],
     repair:['Free leak inspection with photos','We find the real source, not just the stain','Matched materials, sealed flashing','1-year leak-free warranty on the repair'],
-    storm:['Free storm inspection within 48 hours','Dated photo file for your insurance claim','We meet your adjuster on the roof','You pay only your deductible if approved'],
+    storm:['Free storm inspection, photo report within 24 hours','Dated photo file for your insurance claim','We meet your adjuster on the roof','You pay only your deductible if approved'],
     gutters:['Free measure and photo check','6-inch seamless gutters, formed on site','Downspouts and extensions away from the slab','10-year workmanship warranty'],
     vent:['Free attic check with temperature reading','Balanced intake and exhaust','Leak-free at every vent we cut','10-year workmanship warranty'],
     commercial:['Site visit with core sample and moisture scan','Written repair / coat / replace options','Board-ready condition report','Manufacturer warranty options']}};
@@ -1275,7 +1368,7 @@ function qOut(){const r=qCalc();$('#qName').textContent=r.name;$('#qNote').textC
   const el=$('#qPrice'),[a,b]=qPrev;qPrev=[r.lo,r.hi];
   if(M&&!reduce)M.animate(0,1,{duration:.45,ease:[.2,.8,.2,1],onUpdate:t=>{el.textContent=qmoney(a+(r.lo-a)*t)+' – '+qmoney(b+(r.hi-b)*t)}});else el.textContent=qmoney(r.lo)+' – '+qmoney(r.hi);
   const body=`Hi Ridgeline, I got an instant quote on your site: ${r.name}, ${qmoney(r.lo)}–${qmoney(r.hi)}${QT.addr?' for '+QT.addr:''}. Can we set up the free inspection?`;
-  const t=$('#qText');t.dataset.body=body;t.href=smsHref(body);try{localStorage.setItem('rl-quote',JSON.stringify({...r,range:qmoney(r.lo)+'–'+qmoney(r.hi),mode:QT.mode,addr:QT.addr}))}catch(x){}}
+  const t=$('#qText');t.dataset.body=body;t.href=smsHref(body);try{let t=false;try{t=!!JSON.parse(localStorage.getItem('rl-quote')||'{}').touched}catch(y){}localStorage.setItem('rl-quote',JSON.stringify({...r,touched:t,range:qmoney(r.lo)+'–'+qmoney(r.hi),mode:QT.mode,addr:QT.addr}))}catch(x){}}
 function qInit(){
   $('#qAddr').oninput=e=>{QT.addr=e.target.value;qOut()};$('#qSize').oninput=e=>{QT.size=e.target.value;if(e.target.value){QT.unsure=false;$('#qUnsure').checked=false}qOut()};
   $('#qUnit').onchange=e=>{QT.unit=e.target.value;qOut()};$('#qUnsure').onchange=e=>{QT.unsure=e.target.checked;qOut()};$('#qLayers').onchange=e=>{QT.layers=e.target.checked;qOut()};
@@ -1326,6 +1419,42 @@ function bookSheet(opts={}){const known=me(),com=opts.mode==='com';const D={name
   render()}
 const startSheet=()=>bookSheet({});
 $$('[data-start]').forEach(b=>b.onclick=()=>startSheet());
+/* ---------- free inspection form on the homepage: full details + day/time, then an instant confirmation ---------- */
+(function(){const f=$('#iForm');if(!f)return;let day=0,slot=0,best='Text';
+  const fmt=d=>d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  $('#iDays').innerHTML=days.slice(0,6).map((d,i)=>`<button type="button" role="radio" aria-checked="${i===0}" data-d="${i}">${fmt(d)}</button>`).join('');
+  $('#iSlots').innerHTML=SL.map((s,i)=>`<button type="button" role="radio" aria-checked="${i===0}" data-s="${i}">${s}</button>`).join('');
+  const pick=(sel,attr,set)=>$$(sel+' button').forEach(b=>b.onclick=()=>{set(b.dataset[attr]);$$(sel+' button').forEach(x=>x.setAttribute('aria-checked',String(x===b)))});
+  pick('#iDays','d',v=>day=+v);pick('#iSlots','s',v=>slot=+v);pick('#iBest','best',v=>best=v);
+  /* prefill from what we already know (an earlier booking or the instant quote) */
+  try{const m=JSON.parse(localStorage.getItem('rl-me')||'null');if(m){if(m.name)$('#iName').value=m.name;if(m.phone)$('#iPhone').value=m.phone;if(m.email)$('#iEmail').value=m.email}
+    const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q&&q.addr)$('#iAddr').value=q.addr;
+    const J={repair:'Leak or water stain',storm:'Storm or hail damage',replace:'Old roof, thinking about replacing',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof'};if(q&&q.touched&&J[q.job])$('#iIssue').value=J[q.job]}catch(x){}
+  /* when the visitor uses the instant quote, carry the job into the form */
+  const qs=$('#quote');if(qs)['input','click'].forEach(ev=>qs.addEventListener(ev,()=>{setTimeout(()=>{try{const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q){q.touched=true;localStorage.setItem('rl-quote',JSON.stringify(q));const J={repair:'Leak or water stain',storm:'Storm or hail damage',replace:'Old roof, thinking about replacing',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof'};if(J[q.job])$('#iIssue').value=J[q.job];if(q.addr&&!$('#iAddr').value)$('#iAddr').value=q.addr}}catch(x){}},50)}));
+  f.addEventListener('submit',e=>{e.preventDefault();const v=id=>$(id).value.trim(),err=$('#iErr');
+    const D={name:v('#iName'),phone:v('#iPhone'),email:v('#iEmail'),addr:v('#iAddr'),issue:v('#iIssue')};
+    const bad=!D.name?'#iName':!phoneOk(D.phone)?'#iPhone':!/^\S+@\S+\.\S+$/.test(D.email)?'#iEmail':D.addr.length<5?'#iAddr':!D.issue?'#iIssue':null;
+    $$('#iForm .bad').forEach(x=>x.classList.remove('bad'));
+    if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':'Add a 10-digit mobile number.','#iEmail':'Add a valid email.','#iAddr':'Add the property address.','#iIssue':'Pick what’s going on.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
+    err.hidden=true;const appt={t:days[day].getTime(),slot:SL[slot],confirmed:false};
+    let q=null;try{q=JSON.parse(localStorage.getItem('rl-quote')||'null')}catch(x){}
+    const c=upsert({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best});
+    Object.assign(c,{email:D.email,contactPref:best});if(q)c.quote=q;save();
+    try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:best}))}catch(x){}
+    const first=D.name.split(' ')[0],when=`${fmt(days[day])}, ${SL[slot]}`;
+    $('#iDone').innerHTML=`<p class="ikick">You’re booked</p><h2>See you ${fmt(days[day])}, ${esc(first)}.</h2>
+      <p class="idsub">Here’s the text that just went to ${esc(D.phone)}:</p>
+      <div class="ibubble"><small>Ridgeline Roofing</small>Hi ${esc(first)}, you’re booked for a free roof inspection at ${esc(D.addr)} on ${when}. Your inspector is Marcus. You don’t need to be home. Your photo report arrives within 24 hours of the visit. Reply C to change the time.</div>
+      <p class="idemo">Demo: on a live site this text sends automatically and the owner gets the lead on their phone.</p>
+      <ul class="iperks"><li><b>Inspection:</b> ${when}</li><li><b>Issue:</b> ${esc(D.issue)}</li>${q&&q.touched&&q.range?`<li><b>Your price held 30 days:</b> ${esc(q.name)}, ${esc(q.range)}</li>`:''}<li><b>We’ll reach you by:</b> ${best.toLowerCase()}</li></ul>
+      <div class="row"><a class="btn btn-main" href="#quote">See my price while you wait</a><button class="btn btn-line" type="button" id="iEdit">Change something</button></div>`;
+    f.hidden=true;$('#iDone').hidden=false;$('#iCard').classList.add('done');$('#iEdit').onclick=()=>{f.hidden=false;$('#iDone').hidden=true;$('#iCard').classList.remove('done')};
+    if(M&&!reduce)M.animate('#iDone',{opacity:[0,1],y:[16,0]},{duration:.35});$('#inspect').scrollIntoView({block:'start',behavior:reduce?'auto':'smooth'})});
+  /* any "Book a free inspection" button on the homepage jumps to this form instead of a pop-up */
+  $$('[data-start]').forEach(b=>b.onclick=e=>{e.preventDefault();$('#inspect').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(()=>$('#iName').focus({preventScroll:true}),500)});
+})();
+
 
 
 
@@ -1334,7 +1463,7 @@ $('#menuBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
     <nav class="menu"><a class="btn-main" href="${HOME}#quote" data-go="nav">Get my quote today</a><button type="button" data-go="start">Book a free inspection</button><a href="roofing-services.html">All services</a><a href="roof-replacement.html">Roof replacement</a><a href="roof-repair.html">Leak repair</a><a href="storm-damage.html">Storm and hail damage</a><a href="insurance-claims.html">Insurance claims</a><a href="commercial-roofing.html">Commercial roofing</a><a href="roof-replacement-cost.html">Roof cost guide</a><a href="reviews.html">Reviews</a><a href="roof-care-club.html">Roof Care Club</a><a href="faq.html">Questions</a><a href="#" data-sms="fab">Text us</a><button type="button" data-go="login">Customer login</button></nav></div></div>`,'#layer .menu .btn-main');
   refreshSms(document);
   $$('#layer [data-go]').forEach(x=>x.addEventListener('click',()=>{const g=x.dataset.go;close();if(g==='start')startSheet();if(g==='login')loginSheet()}))};
-addEventListener('scroll',()=>$('#thumbbar').classList.toggle('on',scrollY>(($('#hero')?innerHeight*.8:120))),{passive:true});
+addEventListener('scroll',()=>{const i=$('#inspect');const r=i?i.getBoundingClientRect():null;$('#thumbbar').classList.toggle('on',scrollY>120&&!(r&&r.top<innerHeight&&r.bottom>0))},{passive:true});
 let plan='m';$$('[data-plan]').forEach(b=>b.onclick=()=>{plan=b.dataset.plan;$$('[data-plan]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));$('#pPrice').textContent=plan==='m'?'$12':'$129';$('#pPer').textContent=plan==='m'?'a month, cancel anytime':'a year, saves $15'});
 if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="jH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="jH">Join the Roof Care Club</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
     <p class="muted">${plan==='m'?'$12 a month':'$129 a year'}. Your first checkup gets scheduled right after.</p>
