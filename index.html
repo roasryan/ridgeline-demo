@@ -1,734 +1,245 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Demo roofing website built by Unplanned Studio.">
-<title>Ridgeline Roofing Site</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<meta name="description" content="Free roof inspection in Houston. Photos on your phone in 48 hours.">
+<meta name="theme-color" content="#1F2A33">
+<title>Ridgeline Roofing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/motion@12.23.12/dist/motion.js"></script>
 <style>
-/* Layout: storm-night page lit like a street at 2 a.m. Hero = rain on a roof under a sodium streetlight; the one bold moment is a sticky cutaway where scrolling strips the roof and rebuilds it. Everything else is quiet, left-aligned and fast. */
-:root{
-  --night:#0E1318; --deck:#161D24; --raised:#1E2730; --line:#2C3843; --text:#E6ECEF; --muted:#9AA8B4;
-  --sodium:#F2B544; --on-sodium:#1C1404; --water:#6DB0E4; --ok:#63C792;
-  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif; --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r-sm:10px; --r-md:16px; --ease:cubic-bezier(.2,.8,.2,1);
-  color-scheme:dark;
-}
-*{box-sizing:border-box}[hidden]{display:none!important}
-html{scroll-behavior:smooth}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{background:var(--night);color:var(--text);font:17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:clip}
+:root{--slate:#1F2A33;--slate2:#2B3944;--concrete:#E9EDEF;--paper:#FFFFFF;--hivis:#FFD400;--chalk:#3D7BFF;--ink:#1F2A33;--soft:#5B6B77;--line:#CDD5DA;--ok:#1E9E63;--bad:#D9452B;
+  --text:#F4F7F8;--muted:#AEBBC4;--deck:#24313B;--raised:#2E3D48;--night:#1F2A33;--sodium:#FFD400;--on-sodium:#1F2A33;
+  --display:'Archivo',system-ui,sans-serif;--body:'Archivo',system-ui,sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--concrete);color:var(--ink);font:400 18px/1.55 var(--body);font-variation-settings:'wdth' 100}
+img{display:block;max-width:100%}
 a{color:inherit}
-h1,h2,h3{font-family:var(--display);margin:0;line-height:.95;text-wrap:balance;font-weight:800;letter-spacing:.005em}
-h2{font-size:clamp(40px,6vw,68px)}
-h3{font-size:26px;font-weight:800;line-height:1.05}
-p{margin:0}
-.wrap{max-width:1180px;margin:0 auto;padding-inline:20px}
-.kicker{font-size:15px;color:var(--sodium);font-weight:700}
+:focus-visible{outline:3px solid var(--chalk);outline-offset:3px}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:var(--display);font-variation-settings:'wdth' 125;font-weight:850;letter-spacing:-.01em;line-height:.98;margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 24px;border-radius:14px;border:0;font:800 18px var(--body);font-variation-settings:'wdth' 110;text-decoration:none;cursor:pointer;transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn-main{background:var(--hivis);color:var(--slate)}
+.btn-line{background:transparent;color:inherit;border:2px solid currentColor}
+.btn-sm{min-height:44px;padding:0 16px;font-size:16px;border-radius:12px}
+/* top bar: logo + one button */
+.bar{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;color:#fff;transition:background .25s}
+.bar.solid{background:rgba(31,42,51,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.logo{display:flex;align-items:center;gap:10px;font:900 22px var(--display);font-variation-settings:'wdth' 125;text-decoration:none;color:#fff}
+.logo svg{width:30px;height:30px}
+.bar .btn{min-height:44px;font-size:16px;padding:0 18px;background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.5)}
+/* hero: the roof is the interface */
+.hero{position:relative;height:100svh;min-height:600px;overflow:hidden;background:var(--slate);color:#fff;touch-action:pan-y}
+.hero .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 40%}
+.hero .under{-webkit-mask-image:radial-gradient(circle var(--r,120px) at var(--x,60%) var(--y,40%),#000 62%,transparent 100%);mask-image:radial-gradient(circle var(--r,120px) at var(--x,60%) var(--y,40%),#000 62%,transparent 100%)}
+.lens{position:absolute;left:0;top:0;width:calc(var(--r,120px)*2*.86);height:calc(var(--r,120px)*2*.86);margin:calc(var(--r,120px)*-.86) 0 0 calc(var(--r,120px)*-.86);border-radius:50%;border:2px solid rgba(255,255,255,.85);box-shadow:0 0 0 1px rgba(0,0,0,.25),0 0 60px rgba(255,212,0,.25);pointer-events:none;transform:translate(var(--px,60vw),var(--py,40vh))}
+.lens span{position:absolute;left:50%;top:100%;transform:translate(-50%,10px);white-space:nowrap;background:var(--slate);color:#fff;font-size:14px;font-weight:700;padding:6px 10px;border-radius:8px}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(31,42,51,.55) 0%,rgba(31,42,51,0) 22%,rgba(31,42,51,0) 42%,rgba(31,42,51,.88) 74%,var(--slate) 100%);pointer-events:none}
+.hcopy{position:absolute;left:0;right:0;bottom:0;padding:0 16px calc(28px + env(safe-area-inset-bottom,0px));max-width:1180px;margin:0 auto;pointer-events:none}
+.hcopy>*{pointer-events:auto}
+.hcopy h1{font-size:clamp(46px,9vw,112px);max-width:11ch}
+.hcopy .sub{font:700 clamp(22px,3vw,34px)/1.15 var(--display);font-variation-settings:'wdth' 100;margin:14px 0 0;max-width:22ch;color:#fff}
+.hcopy .why{margin:14px 0 0;color:#D6DEE3;max-width:40ch}
+.hcta{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-top:22px}
+.hcta .btn-main{min-height:64px;font-size:21px;padding:0 30px;border-radius:16px;box-shadow:0 12px 40px rgba(255,212,0,.25)}
+.hcta small{color:#D6DEE3;font-size:15px}
+@media (max-width:640px){.hcta .btn-main{width:100%}}
+/* before / after */
+.sec{padding:88px 16px}
+.wrap{max-width:1180px;margin:0 auto}
+.sec h2{font-size:clamp(36px,5.4vw,64px);max-width:16ch}
+.sec .lede{color:var(--soft);margin:14px 0 0;max-width:46ch}
+.ba{position:relative;margin-top:32px;aspect-ratio:4/3;max-height:78vh;width:100%;border-radius:18px;overflow:hidden;background:#cfd6da;touch-action:pan-y;user-select:none;-webkit-user-select:none;box-shadow:0 30px 60px rgba(31,42,51,.18)}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.ba .after{clip-path:inset(0 0 0 var(--cut,50%))}
+.ba .handle{position:absolute;top:0;bottom:0;left:var(--cut,50%);width:0;pointer-events:none}
+.ba .handle::before{content:'';position:absolute;top:0;bottom:0;left:-1.5px;width:3px;background:#fff;box-shadow:0 0 12px rgba(0,0,0,.35)}
+.ba .knob{position:absolute;top:50%;left:0;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;background:var(--hivis);color:var(--slate);display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.ba .tagb,.ba .taga{position:absolute;top:14px;padding:6px 12px;border-radius:999px;font-weight:800;font-size:15px;background:rgba(31,42,51,.85);color:#fff}
+.ba .tagb{left:14px}.ba .taga{right:14px}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0;touch-action:pan-y}
+.cap{display:flex;justify-content:space-between;gap:16px;margin-top:12px;color:var(--soft);font-size:16px}
+/* how it works: a real sequence */
+.how{background:var(--paper)}
+.steps{list-style:none;margin:40px 0 0;padding:0;display:grid;gap:28px;counter-reset:s}
+@media (min-width:860px){.steps{grid-template-columns:repeat(3,1fr);gap:36px}}
+.steps li{counter-increment:s;display:grid;gap:8px;border-top:3px solid var(--slate);padding-top:16px}
+.steps li::before{content:counter(s);font:900 64px/1 var(--display);font-variation-settings:'wdth' 125;color:var(--chalk)}
+.steps b{font:850 26px/1.1 var(--display);font-variation-settings:'wdth' 110}
+.steps span{color:var(--soft)}
+/* end */
+.end{background:var(--slate);color:#fff;text-align:left}
+.end .lede{color:#C7D1D8}
+.end .btn-main{min-height:64px;font-size:21px;margin-top:28px;padding:0 30px}
+.proof{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px 28px;color:#C7D1D8;font-size:16px}
+.proof b{color:#fff}
+footer{background:#18222A;color:#AEBBC4;padding:28px 16px calc(28px + env(safe-area-inset-bottom,0px));font-size:15px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center;justify-content:space-between}
+footer nav{display:flex;flex-wrap:wrap;gap:8px 20px}
+footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;cursor:pointer;padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+/* sheets (dark) */
+.scrim{position:fixed;inset:0;background:rgba(10,14,18,.55);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--deck);color:var(--text);border:1px solid #3A4A56;width:100%;max-width:540px;max-height:90dvh;overflow:auto;border-radius:22px 22px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom,0px));display:grid;gap:14px}
+@media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:22px}}
+.sheet h3{font-size:28px}.sheet p{margin:0}
 .muted{color:var(--muted)}
-button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--sodium);outline-offset:3px;border-radius:6px}
-.btn{appearance:none;border:0;border-radius:var(--r-sm);padding:15px 22px;font-weight:700;font-size:17px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;min-height:48px;touch-action:manipulation;transition:transform .18s var(--ease),background .18s,border-color .18s}
-.btn:active{transform:scale(.97)}
-.btn-main{background:var(--sodium);color:var(--on-sodium)}
-.btn-main:hover{background:#FFC65C}
-.btn-line{background:transparent;color:var(--text);border:1.5px solid var(--line)}
-.btn-line:hover{border-color:var(--muted)}
-.btn-sm{padding:10px 14px;font-size:15px;min-height:44px}
-
-.ribbon{background:var(--raised);color:var(--muted);font-size:14px;text-align:center;padding:8px 16px}
-.ribbon b{color:var(--text)}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(14,19,24,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.top .wrap{display:flex;align-items:center;gap:20px;padding-block:12px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:800 26px/1 var(--display);letter-spacing:.02em}
-.brand svg{width:34px;height:34px;flex:none}
-.top nav{display:flex;gap:24px;margin-left:auto;font-size:16px}
-.top nav a{text-decoration:none;color:var(--muted)}.top nav a:hover{color:var(--text)}
-.top .phone{font-weight:700;font-variant-numeric:tabular-nums}
-.login{font-size:15px;color:var(--muted);background:none;border:0;cursor:pointer;padding:8px 0;text-decoration:underline;text-underline-offset:3px}
-@media (max-width:960px){.top nav{display:none}.top .phone{margin-left:auto}}
-@media (max-width:560px){.top .login{display:none}.top .phone{font-size:15px}}
-
-/* hero */
-.hero{position:relative;min-height:min(760px,92dvh);display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
-#rain{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
-.hero-photo{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;object-position:60% 40%;filter:brightness(.92)}
-.hero::before{content:'';position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(10,15,20,.9) 0%,rgba(10,15,20,.62) 30%,rgba(10,15,20,.12) 62%,rgba(10,15,20,0) 100%),linear-gradient(0deg,var(--night) 0%,rgba(14,19,24,0) 30%)}
-@media (max-width:900px){.hero::before{background:linear-gradient(0deg,var(--night) 8%,rgba(10,15,20,.84) 50%,rgba(10,15,20,.64) 100%)}}
-.hero .wrap{width:100%;padding-block:44px 64px}
-.hero h1{font-size:clamp(48px,7.2vw,96px);font-weight:900;max-width:14ch;line-height:.9}
-.hero .lede{font-size:clamp(18px,1.9vw,21px);color:#C9D3DA;max-width:42ch;margin-top:22px}
-.hero .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
-.hero .facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:34px;color:var(--muted);font-size:15px}
-.hero .facts b{color:var(--text)}
-.fade-top{position:absolute;inset:auto 0 0 0;height:140px;background:linear-gradient(to bottom,transparent,var(--night));z-index:-1}
-
-section{padding-block:88px}
-.head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:16px 48px;align-items:end;margin-bottom:36px}
-.head p.sub{color:var(--muted);max-width:48ch}
-@media (max-width:820px){.head{grid-template-columns:1fr}}
-
-/* leaking now */
-.leak{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:36px;align-items:start}
-@media (max-width:860px){.leak{grid-template-columns:1fr}}
-.leak ol{margin:0;padding:0;list-style:none;display:grid;gap:2px;counter-reset:l}
-.leak li{counter-increment:l;display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;padding:18px 0;border-top:1px solid var(--line)}
-.leak li:before{content:counter(l);font:800 34px/1 var(--display);color:var(--water)}
-.leak li b{display:block;font-size:18px;margin-bottom:2px}
-.leak li span{color:var(--muted)}
-
-/* cutaway */
-.story{position:relative;height:440vh;background:linear-gradient(var(--night),#0B1014 30%,var(--night))}
-.stage{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;height:100dvh;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:40px;align-items:center;max-width:1180px;margin:0 auto;padding:72px 20px 24px}
-.roofbox{position:relative;perspective:1100px;min-width:0}
-.photos{position:relative;aspect-ratio:1200/896;overflow:hidden;border-radius:8px;background:#0B1014;box-shadow:0 40px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.05)}
-.photos .zoom{position:absolute;inset:0;transform-origin:50% 40%;will-change:transform}
-.photos img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;-webkit-mask-size:100% 100%;mask-size:100% 100%}
-.photos .seam{position:absolute;pointer-events:none;opacity:0;background:linear-gradient(90deg,transparent,rgba(242,181,68,.9),transparent);height:2px;left:0;right:0;box-shadow:0 0 18px rgba(242,181,68,.8)}
-.photos .seam.v{width:2px;height:auto;top:0;bottom:0;right:auto;background:linear-gradient(180deg,transparent,rgba(242,181,68,.9),transparent)}
-.pin{position:absolute;z-index:3;transform:translate(-9px,-50%);pointer-events:none;opacity:0;display:flex;align-items:center;gap:8px}
-.pin.left{flex-direction:row-reverse;transform:translate(calc(-100% + 9px),-50%)}
-.pin i{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 6px rgba(242,181,68,.35),0 2px 10px rgba(0,0,0,.6);background:var(--sodium)}
-.pin span{background:rgba(14,19,24,.9);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:700;white-space:nowrap}
-.svc{display:none;margin-top:22px}
-@media (min-width:901px){[data-bg="diagram"] .hero .hero-grid h1{font-size:clamp(34px,3.6vw,48px);max-width:18ch}[data-bg="diagram"] .hero-copy .promise{display:none}[data-bg="diagram"] .svc{margin-top:16px}}
-[data-bg="diagram"] .svc{display:block}
-[data-bg="diagram"] .hero-photo{display:none}
-[data-bg="diagram"] .hero{background:radial-gradient(ellipse at 70% 30%,rgba(242,181,68,.08),transparent 60%),linear-gradient(rgba(109,176,228,.05) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,rgba(109,176,228,.05) 1px,transparent 1px) 0 0/28px 28px,var(--night)}
-[data-bg="diagram"] .hero::before{display:none}
-.house{display:block;width:100%;height:auto;overflow:visible}
-.house .ln{fill:none;stroke:#5E7486;stroke-width:1.6}
-.house .fillw{fill:#121920}
-.house .wall{fill:#121920;stroke:#5E7486;stroke-width:1.6}
-.house .roof{fill:url(#shg);stroke:#5E7486;stroke-width:1.8;transition:stroke .25s}
-.house .cut{fill:#0B1014;stroke:#3D4E5B;stroke-dasharray:4 4}
-.house .joist{stroke:#3D4E5B;stroke-width:3}
-.house .air{fill:none;stroke:#3D4E5B;stroke-width:2;stroke-dasharray:6 6}
-.house .flash{stroke:#5E7486;stroke-width:3;stroke-linecap:round}
-.house .drop{fill:#3D4E5B}
-.house .hail circle{fill:#5E7486}
-.house .gut path{fill:#1A232B;stroke:#5E7486;stroke-width:1.4}
-.house .clip rect,.house .clip path{fill:#1A232B;stroke:#5E7486;stroke-width:1.5}
-.house .clip path{fill:none}
-.house .hs{cursor:pointer;outline:none}
-.house .hs circle{fill:#0E1318;stroke:var(--sodium);stroke-width:2;transition:fill .2s}
-.house .hs text{fill:var(--sodium);font:800 15px var(--body);text-anchor:middle;pointer-events:none}
-.house .hs:hover circle,.house .hs:focus-visible circle{fill:#2A2416}
-.house .hs.on circle{fill:var(--sodium)}.house .hs.on text{fill:var(--on-sodium)}
-.house .hs:focus-visible circle{stroke-width:4}
-[data-svc-on="roof"] .hl-roof{stroke:var(--sodium)}
-[data-svc-on="hail"] .hl-hail circle{fill:#E8EEF2}
-[data-svc-on="leak"] .hl-leak{stroke:var(--sodium);fill:#6DB0E4}
-[data-svc-on="leak"] path.hl-leak.flash{stroke:var(--sodium)}
-[data-svc-on="vent"] .hl-vent{stroke:var(--sodium);animation:air 1s linear infinite}
-[data-svc-on="vent"] .hl-vent-s{stroke:var(--sodium)}
-[data-svc-on="gutter"] .hl-gutter path{stroke:var(--sodium)}
-[data-svc-on="claim"] .hl-claim rect,[data-svc-on="claim"] .hl-claim path{stroke:var(--sodium)}
-@keyframes air{to{stroke-dashoffset:-24}}
-@media (prefers-reduced-motion:reduce){[data-svc-on="vent"] .hl-vent{animation:none}}
-.svc-info{display:grid;gap:4px;margin-top:10px;background:rgba(22,29,36,.85);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-.svc-info b{font:800 22px/1.1 var(--display);color:var(--text)}
-.svc-info span{color:#C9D3DA;font-size:15.5px}
-.svc-info .kicker{order:0;margin:0}
-.svc-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-@media (max-width:900px){.hero-copy .svc{order:5;margin-top:4px}.hero-copy .promise{order:6}.hero-copy .hero-links{order:7}}
-.bgpick{display:inline-flex;align-items:center;gap:6px;margin-left:10px;white-space:nowrap}
-.bgpick select{background:var(--night);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:4px 8px;font:inherit;font-size:14px;min-height:32px}
-.qr{display:flex;gap:14px;align-items:center;background:#fff;border-radius:12px;padding:10px}
-.qr svg{width:132px;height:132px;flex:none}
-.qr p{color:#1A232B;font-size:14.5px;margin:0}
-.smsrow{display:flex;flex-wrap:wrap;gap:8px}
-
-.photo-credit{margin:8px 2px 0;font-size:12px;color:var(--muted)}
-.roofbox .tag{position:absolute;left:4%;top:4%;background:rgba(14,19,24,.88);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:14px;font-weight:700}
-.roofbox .tag i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--sodium);margin-right:8px;vertical-align:1px}
-.steps-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:4px;min-width:0}
-.steps-list li{padding:10px 0 10px 18px;border-left:2px solid var(--line);color:var(--muted);transition:color .25s,border-color .25s}
-.steps-list li b{display:block;font:800 22px/1.05 var(--display);color:inherit;letter-spacing:.01em}
-.steps-list li span{display:block;font-size:15.5px;line-height:1.45;margin-top:4px;max-height:0;overflow:hidden;opacity:0;transition:max-height .35s var(--ease),opacity .3s}
-.steps-list li.on{color:var(--text);border-color:var(--sodium)}
-.steps-list li.on span{max-height:120px;opacity:1;color:#C9D3DA}
-.progress{height:3px;background:var(--line);border-radius:2px;margin-top:16px;overflow:hidden}
-.progress i{display:block;height:100%;width:0;background:var(--sodium)}
-.scrollhint{font-size:14px;color:var(--muted);margin-top:10px}
-@media (max-width:860px){
-  .story{height:560vh}
-  .stage{grid-template-columns:1fr;align-content:center;gap:18px;padding-top:70px}
-  .roofbox canvas{transform:rotateX(10deg)}
-  .steps-list li:not(.on){display:none}
-  .steps-list li{border-left:0;padding:0}
-}
-@media (prefers-reduced-motion:reduce){.steps-list li span{transition:none}}
-
-/* weather tabs */
-.wx-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-.wx-tabs button{background:var(--deck);border:1.5px solid var(--line);color:var(--muted);border-radius:999px;padding:10px 18px;font-weight:700;cursor:pointer;min-height:44px}
-.wx-tabs button[aria-selected="true"]{background:var(--text);color:var(--night);border-color:var(--text)}
-.wx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
-@media (max-width:820px){.wx{grid-template-columns:1fr}}
-.wx div{border-top:2px solid var(--sodium);padding-top:16px}
-.wx div p{color:var(--muted);margin-top:8px}
-
-/* roof check */
-.check{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:28px;align-items:start}
-@media (max-width:900px){.check{grid-template-columns:1fr}}
-.panel{background:var(--deck);border:1px solid var(--line);border-radius:var(--r-md);padding:26px;min-width:0}
-.bar{display:flex;gap:6px;margin-bottom:22px}
-.bar i{flex:1;height:4px;border-radius:2px;background:var(--line);transition:background .3s}
-.bar i.on{background:var(--sodium)}
-.q-title{font:800 30px/1 var(--display);margin-bottom:16px}
-.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-@media (max-width:520px){.opts{grid-template-columns:1fr}}
-.opt{position:relative}
-.opt input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0}
-.opt label{display:flex;flex-direction:column;gap:4px;height:100%;border:1.5px solid var(--line);border-radius:12px;padding:15px 16px;cursor:pointer;transition:border-color .18s,background .18s,transform .18s var(--ease)}
-.opt label:hover{border-color:var(--muted)}
-.opt label:active{transform:scale(.98)}
-.opt input:checked+label{border-color:var(--sodium);background:rgba(242,181,68,.09)}
-.opt input:focus-visible+label{outline:3px solid var(--sodium);outline-offset:2px}
-.opt b{font-size:17px}
-.opt small{color:var(--muted);font-size:15px;line-height:1.4}
-.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field{display:grid;gap:6px;min-width:0}.field>*{min-width:0}
 .field label,.flabel{font-weight:700;font-size:15px}
-.field input,.field textarea{background:var(--night);border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;width:100%;min-width:0;min-height:48px}
-.field textarea{min-height:96px;resize:vertical}
-.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-@media (max-width:520px){.two{grid-template-columns:1fr}}
-.rng{display:flex;align-items:center;gap:14px}
-.rng input{flex:1;accent-color:var(--sodium);min-height:32px;min-width:0}
-.rng output{font-weight:700;min-width:104px;text-align:right;font-variant-numeric:tabular-nums}
-.pills{display:flex;flex-wrap:wrap;gap:8px;position:relative}
-.pills input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0}
-.pills label{border:1.5px solid var(--line);border-radius:999px;padding:10px 16px;font-weight:700;font-size:15px;cursor:pointer;min-height:44px;display:inline-flex;align-items:center}
-.pills input:checked+label{background:var(--text);color:var(--night);border-color:var(--text)}
-.pills input:focus-visible+label{outline:3px solid var(--sodium);outline-offset:2px}
-.stack{display:flex;flex-direction:column;gap:18px}
-.nav-q{display:flex;justify-content:space-between;gap:10px;margin-top:24px}
-.side{position:sticky;top:96px}
-.side h3{margin-bottom:10px}
-.side ul{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
-.side li,.inc li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;color:#C9D3DA;font-size:15.5px}
-.side li svg,.inc li svg{margin-top:4px}
-.answer{display:flex;flex-direction:column;gap:18px}
-.verdict{font:800 clamp(32px,4vw,42px)/1 var(--display)}
-.price{font:900 clamp(44px,7vw,76px)/.9 var(--display);font-variant-numeric:tabular-nums;color:var(--sodium)}
-.read{background:var(--night);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
-.read p{color:#C9D3DA}
-.inc{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-
-/* booking + club */
-.book{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
-@media (max-width:900px){.book{grid-template-columns:1fr}}
-.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;max-width:100%}
-.day{flex:0 0 auto;border:1.5px solid var(--line);background:var(--night);border-radius:12px;padding:10px 14px;text-align:center;cursor:pointer;min-width:74px}
-.day small{display:block;color:var(--muted);font-size:13px}
-.day b{font:800 28px/1.1 var(--display)}
-.day[aria-pressed="true"]{border-color:var(--sodium);background:rgba(242,181,68,.09)}
-.slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.slot{position:relative;border:1.5px solid var(--line);background:var(--night);border-radius:12px;padding:13px;font-weight:700;cursor:pointer;min-height:48px}
-.slot[aria-pressed="true"]{background:var(--text);color:var(--night);border-color:var(--text)}
-.slot:disabled{opacity:.4;cursor:not-allowed;text-decoration:line-through}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.done{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
-.done .big{font:800 34px/1 var(--display)}
-.okpill{display:inline-flex;gap:8px;align-items:center;background:rgba(99,199,146,.14);color:var(--ok);font-weight:700;font-size:14px;border-radius:999px;padding:6px 12px}
-.club{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:40px;align-items:start}
-@media (max-width:900px){.club{grid-template-columns:1fr}}
-.perks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 28px;margin-top:30px}
-@media (max-width:560px){.perks{grid-template-columns:1fr}}
-.perks div{border-top:1px solid var(--line);padding-top:14px}
-.perks p{color:var(--muted);margin-top:6px;font-size:15.5px}
-.plan{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1.5px solid var(--line);border-radius:12px;padding:15px 16px;cursor:pointer}
-.plan:has(input:checked){border-color:var(--sodium);background:rgba(242,181,68,.08)}
-.plan input{accent-color:var(--sodium);width:18px;height:18px;margin-right:8px}
-.plan b{font:800 30px var(--display)}
-
-/* reviews / faq / footer */
-.reviews{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
-@media (max-width:900px){.reviews{grid-template-columns:1fr}}
-.rev{border-top:1px solid var(--line);padding-top:18px;display:flex;flex-direction:column;gap:12px;margin:0}
-.rev blockquote{margin:0;font-size:18px}
-.rev cite{font-style:normal;color:var(--muted);font-size:15px}
-.faq{display:grid;gap:10px;max-width:820px}
-.faq details{border-bottom:1px solid var(--line);padding:16px 0}
-.faq summary{font-weight:700;font-size:18px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";font:800 26px/1 var(--display);color:var(--sodium)}
-.faq details[open] summary::after{content:"\2013"}
-.faq p{color:var(--muted);margin-top:10px;max-width:62ch}
-footer{border-top:1px solid var(--line);padding-block:40px 130px;color:var(--muted);font-size:15px}
-footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px}
-
-/* floating + sheets */
-.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-.fab .owner{background:var(--raised);color:var(--text);border:1px solid var(--line)}
-.count{background:var(--sodium);color:var(--on-sodium);border-radius:999px;padding:1px 8px;font-size:13px}
-.scrim{position:fixed;inset:0;background:rgba(4,6,8,.6);z-index:40;display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--deck);border:1px solid var(--line);width:100%;max-width:540px;max-height:88dvh;overflow:auto;border-radius:20px 20px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
-@media (min-width:700px){.scrim{align-items:center}.sheet{border-radius:20px}}
-.drawer-bg{position:fixed;inset:0;background:rgba(4,6,8,.6);z-index:40}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(430px,100%);background:var(--night);border-left:1px solid var(--line);z-index:41;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
-.drawer header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line)}
-.drawer .body{padding:18px 20px calc(30px + env(safe-area-inset-bottom,0px));overflow:auto;display:flex;flex-direction:column;gap:12px}
-.note{background:var(--deck);border:1px solid var(--line);border-radius:14px;padding:13px 15px;display:grid;gap:4px}
-.note b{color:var(--sodium);font-size:14px}
-.note small{color:var(--muted)}
-.note.fresh{border-color:var(--sodium)}
-.bub{background:var(--raised);border-radius:16px 16px 16px 4px;padding:12px 14px;max-width:88%}
-.bub.me{background:var(--sodium);color:var(--on-sodium);border-radius:16px 16px 4px 16px;align-self:flex-end}
-.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--night);padding:12px 16px;border-radius:12px;font-weight:700;font-size:15px;z-index:60;max-width:calc(100% - 32px)}
-.copyrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.copyrow code{font:700 18px var(--body);background:var(--night);border-radius:8px;padding:8px 12px;font-variant-numeric:tabular-nums}
+.field input,.field textarea,.field select{background:#1A242C;color:var(--text);border:1.5px solid #3A4A56;border-radius:12px;padding:13px 14px;width:100%;min-width:0;min-height:52px;font:17px var(--body)}
+.field select{appearance:none;-webkit-appearance:none}
+.field input:focus,.field textarea:focus{border-color:var(--hivis);outline:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media (max-width:420px){.two{grid-template-columns:1fr}}
 .err{color:#FF9B85;font-weight:700}
-.hero{align-items:flex-start;min-height:0;padding-block:0}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:48px;align-items:start}
-.hero .hero-grid h1{font-size:clamp(38px,4.8vw,64px);max-width:15ch;margin-top:10px}
-@media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:18px}.hero-copy{display:contents}
-  .hero-copy .kicker{order:1}.hero .hero-grid h1{order:2;margin-top:0}.hero-copy .lede{order:3;margin-top:0}.hero-grid .lead{order:4}.hero-copy .promise{order:5;margin-top:6px}.hero-copy .hero-links{order:6;margin-top:0}}
-.promise{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:10px}
-.promise li{display:grid;grid-template-columns:14px minmax(0,1fr);gap:12px;color:#C9D3DA}
-.promise li:before{content:"";width:8px;height:8px;margin-top:9px;background:var(--sodium);transform:rotate(45deg)}
-.promise b{color:var(--text)}
-.hero-links{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:24px;font-size:15.5px}
-.hero-links a{color:var(--muted);text-underline-offset:3px}
-.hero-links a:hover{color:var(--text)}
-.lead{background:rgba(22,29,36,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 30px 60px rgba(0,0,0,.45)}
-.lead-h{font-size:34px}
-.upl{display:flex;align-items:center;gap:10px;border:1.5px dashed var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;color:var(--muted);min-height:48px;position:relative}
-.upl:hover{border-color:var(--muted);color:var(--text)}
+.okpill{display:inline-flex;gap:8px;align-items:center;background:rgba(30,158,99,.18);color:#6BE0A6;font-weight:700;font-size:15px;border-radius:999px;padding:6px 12px;width:max-content}
+.upl{display:flex;align-items:center;gap:10px;border:1.5px dashed #3A4A56;border-radius:12px;padding:13px 14px;cursor:pointer;color:var(--muted);min-height:52px;position:relative}
 .upl input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0}
-.upl:focus-within{outline:3px solid var(--sodium);outline-offset:2px}
-.thumbs{display:flex;flex-wrap:wrap;gap:8px}
-.thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
-.other-box{margin-top:12px}
-.unsure{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;cursor:pointer}
-.unsure input{accent-color:var(--sodium);width:20px;height:20px}
-.told{border-left:2px solid var(--sodium);padding:4px 0 4px 14px;color:#C9D3DA;font-size:15.5px;display:grid;gap:6px}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px}.thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.day{flex:none;width:62px;min-height:68px;border-radius:12px;border:1.5px solid #3A4A56;background:#1A242C;color:var(--text);display:grid;place-items:center;cursor:pointer;font:inherit}
+.day small{font-size:13px;color:var(--muted)}.day b{font-size:20px}
+.day[aria-pressed="true"],.slot[aria-pressed="true"]{border-color:var(--hivis);background:rgba(255,212,0,.12)}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slot{min-height:48px;border-radius:12px;border:1.5px solid #3A4A56;background:#1A242C;color:var(--text);font:700 15px var(--body);cursor:pointer}
+.smsrow{display:flex;flex-wrap:wrap;gap:8px}
+.copyrow code{font:700 18px var(--body);background:#1A242C;border-radius:8px;padding:8px 12px}
+.qr{display:flex;gap:14px;align-items:center;background:#fff;border-radius:12px;padding:10px}.qr svg{width:132px;height:132px;flex:none}.qr p{color:#1A232B;font-size:14.5px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#fff;color:var(--slate);padding:12px 16px;border-radius:12px;font-weight:700;font-size:15px;z-index:60;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.demo-note{font-size:13px;color:#7F8E99}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+/* owner view + customer portal */
+.app{position:fixed;inset:0;z-index:35;background:var(--night);overflow:auto;-webkit-overflow-scrolling:touch}
+.app-open{overflow:hidden}.app-open .fab{display:none}
+.apphead{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px 12px;background:rgba(14,19,24,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid #3A4A56}
+.apphead h2{font-size:30px;margin:2px 0 0}.apphead .kicker{font-size:13px}
+.appbody{max-width:760px;margin:0 auto;padding:16px 16px 60px;display:grid;gap:14px}
+.otabs{position:sticky;top:76px;z-index:2;display:flex;gap:6px;padding:8px 16px;background:var(--night);border-bottom:1px solid #3A4A56;max-width:100%;overflow-x:auto}
+.otabs button{flex:1;min-height:44px;border-radius:10px;border:1px solid #3A4A56;background:var(--deck);color:var(--muted);font:700 15px var(--body);cursor:pointer}
+.otabs button[aria-current="page"]{background:var(--sodium);color:var(--on-sodium);border-color:var(--sodium)}
+.osec{font:800 22px/1.1 var(--display);margin:10px 0 0;display:flex;align-items:center;gap:8px}
+.cnt{font:700 13px var(--body);background:var(--raised);border-radius:999px;padding:2px 9px;color:var(--muted)}
+.orow{background:var(--deck);border:1px solid #3A4A56;border-radius:14px;padding:14px;display:grid;gap:10px;cursor:pointer}
+.orow:hover{border-color:#3A4855}.orow.late{border-left:3px solid #E5684B}.orow.fresh{border-color:var(--sodium)}
+.orow-m{display:grid;gap:3px;min-width:0}.orow-m b{font-size:17px}.orow-m small{color:var(--muted);font-size:14px}.orow-m p{margin:4px 0 0;color:#C9D3DA;font-size:15px}
+.oacts{display:flex;flex-wrap:wrap;gap:8px}
+.oright{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+@media (min-width:640px){.orow{grid-template-columns:minmax(0,1fr) auto;align-items:center}.oacts{justify-content:flex-end;max-width:360px}.oright{align-items:flex-end}}
+.chip{display:inline-block;font-size:13px;font-weight:700;border-radius:999px;padding:4px 10px;background:var(--raised);color:#C9D3DA}
+.chip.st-lead{background:rgba(229,104,75,.16);color:#FFB4A3}.chip.st-booked,.chip.st-inspected{background:rgba(109,176,228,.15);color:#A9D2F2}
+.chip.st-estimate,.chip.st-approved{background:rgba(242,181,68,.15);color:var(--sodium)}.chip.st-paid{background:rgba(99,199,146,.15);color:var(--ok)}
+.warnpill{display:inline-flex;font-size:13px;font-weight:700;border-radius:999px;padding:4px 10px;background:rgba(242,181,68,.14);color:var(--sodium);width:max-content}
+.okpill.sm{font-size:13px;padding:4px 10px;width:max-content}
+.samp{font-size:11px;font-weight:700;color:var(--muted);border:1px solid #3A4A56;border-radius:6px;padding:0 5px;vertical-align:2px}
+.osearch{display:flex;gap:8px}.osearch input{flex:1;min-width:0;min-height:44px;border-radius:10px;border:1px solid #3A4A56;background:var(--deck);color:var(--text);padding:0 12px;font:16px var(--body)}
+.seg{display:flex;gap:6px}.seg button{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid #3A4A56;background:var(--deck);color:var(--muted);font:700 14px var(--body);cursor:pointer}
+.seg button[aria-pressed="true"]{border-color:var(--sodium);color:var(--text)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tile{background:var(--deck);border:1px solid #3A4A56;border-radius:14px;padding:14px;display:grid;gap:4px;align-content:start}
+.tile small{color:var(--muted);font-size:13.5px}.tile b{font:800 32px/1 var(--display);color:var(--text);font-variant-numeric:tabular-nums}.tile span{font-size:13px;color:var(--muted)}
+.obars{display:grid;gap:8px}.obar{display:grid;grid-template-columns:120px minmax(0,1fr) 32px;align-items:center;gap:10px;font-size:14.5px}
+.obar span{color:#C9D3DA;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.obar i{display:block;height:14px;border-radius:0 4px 4px 0;background:var(--sodium)}.obar b{text-align:right;font-variant-numeric:tabular-nums}
+.tog{display:flex;gap:10px;align-items:center;min-height:44px;font-weight:700;cursor:pointer}.tog input{width:20px;height:20px;accent-color:var(--sodium);flex:none}
+.tog.off{color:var(--muted);cursor:default}.tog small{font-weight:400}
+.pbox{background:var(--night);border:1px solid #3A4A56;border-radius:12px;padding:6px 12px 12px;display:grid;gap:6px}
+.vis{display:grid;gap:2px}.visrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid #3A4A56;padding:2px 0}
+.estopt{border:1px solid #3A4A56;border-radius:12px;padding:10px 12px;display:grid;gap:8px}
+.track{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.track li{display:grid;justify-items:center;gap:6px;font-size:13px;color:var(--muted);text-align:center;position:relative}
+.track li i{width:16px;height:16px;border-radius:50%;border:2px solid #3A4A56;background:var(--night)}
+.track li.done i{background:var(--ok);border-color:var(--ok)}.track li.now i{background:var(--sodium);border-color:var(--sodium);box-shadow:0 0 0 5px rgba(242,181,68,.2)}.track li.now{color:var(--text);font-weight:700}
+.pcard{background:var(--deck);border:1px solid #3A4A56;border-radius:16px;padding:16px;display:grid;gap:8px}
+.pcard h3{margin:0;font-size:24px}.pcard p{margin:0}.pbig{font:800 36px/1 var(--display)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}.pgrid img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px}
+.popt{border:1px solid #3A4A56;border-radius:12px;padding:12px;display:grid;gap:8px}.popt.on{border-color:var(--ok)}
+.popt-h{display:flex;justify-content:space-between;gap:10px;font-size:17px}.popt-h span{font-weight:800}.popt ul{margin:0;padding-left:18px;color:#C9D3DA;font-size:15px}
+.pup{border-left:2px solid #3A4A56;padding-left:12px;display:grid;gap:6px}.pup small{color:var(--muted)}.pup img{width:100%;max-width:360px;border-radius:10px}
+.ownerlink{color:var(--muted);margin-left:10px;white-space:nowrap}
 
+.app .kicker,.sheet .kicker{font-size:14px;font-weight:700;color:var(--hivis);margin:0}
+.app{color:var(--text)}
+.app h2{font-size:30px}
 </style>
 
-<div class="ribbon">Demo site for <b>Ridgeline Roofing</b>, a made-up Houston roofer, built by Unplanned Studio.<label class="bgpick">Background <select id="bgSel"><option value="auto" id="bgAuto">This season</option><option value="hurricane">Hurricane season</option><option value="hail">Spring hail</option><option value="heat">Summer heat</option><option value="freeze">Winter freeze</option><option value="diagram">Diagram of services</option></select></label></div>
-
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="Ridgeline Roofing, back to top">
-      <svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="8" fill="#1E2730"/><path d="M5 21 17 10l12 11" stroke="#F2B544" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 21v7h14v-7" stroke="#E6ECEF" stroke-width="2.4" fill="none" stroke-linejoin="round"/></svg>
-      Ridgeline
-    </a>
-    <nav aria-label="Main"><a href="#inside">Under your roof</a><a href="#check">Free roof check</a><a href="#club">Roof Care Club</a><a href="#faq">Questions</a></nav>
-    <a class="phone" href="#" data-sms="fab" style="color:inherit;text-decoration:none"><span data-phone>(346) 774-0053</span></a>
-    <button class="login" type="button" data-login>Customer login</button>
-  </div>
+<header class="bar" id="bar">
+  <a class="logo" href="#top" aria-label="Ridgeline Roofing, home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>Ridgeline</a>
+  <a class="btn" href="#" data-sms="fab">Text us</a>
 </header>
 
 <main id="top">
-  <section class="hero" aria-labelledby="h1">
-    <img class="hero-photo" src="img/s6.webp" srcset="img/s6-m.webp 800w, img/s6.webp 1200w" sizes="100vw" alt="" fetchpriority="high">
-    <canvas id="rain" aria-hidden="true"></canvas>
-    <div class="fade-top" aria-hidden="true"></div>
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="kicker hero-in">For Houston homeowners</p>
-        <h1 id="h1" class="hero-in">Free roof inspection. Photos on your phone in 48 hours.</h1>
-        <p class="lede hero-in">We check the roof, the attic and the gutters, then text you photos of everything we find. If a storm did the damage, we meet your insurance adjuster. What happens next is up to you.</p>
-        <div class="svc hero-in" id="svc">
-          <svg class="house" viewBox="0 0 600 350" role="img" aria-labelledby="svcCap">
-            <title id="svcCap">Diagram of a house showing what Ridgeline works on: the roof, storm and hail damage, leaks around flashing, attic vents, gutters and insurance claims.</title>
-            <defs>
-              <pattern id="shg" width="18" height="10" patternUnits="userSpaceOnUse"><path d="M0 9.5H18M9 0V9.5" stroke="#34444F" stroke-width="1" fill="none"/></pattern>
-              <clipPath id="roofClip"><polygon points="90,205 210,95 390,95 510,205"/></clipPath>
-            </defs>
-            <line x1="14" y1="330" x2="586" y2="330" class="ln"/>
-            <rect x="148" y="98" width="28" height="56" class="ln fillw hl-leak-c"/>
-            <rect x="144" y="94" width="36" height="7" class="ln fillw"/>
-            <polygon points="90,205 210,95 390,95 510,205" class="roof hl-roof"/>
-            <g clip-path="url(#roofClip)"><polygon points="215,205 268,140 352,140 352,205" class="cut"/>
-              <path d="M240 205V176M268 205V140M296 205V140M324 205V140M352 205V140" class="joist"/>
-              <path d="M98 200C170 186 230 160 300 100" class="air hl-vent"/></g>
-            <rect x="250" y="88" width="100" height="7" rx="1.5" class="ln fillw hl-vent-s"/>
-            <path d="M146 154L178 124" class="flash hl-leak"/>
-            <path d="M166 218c0 0-5 7-5 10a5 5 0 0 0 10 0c0-3-5-10-5-10z" class="drop hl-leak"/>
-            <g class="hail hl-hail"><circle cx="430" cy="128" r="3"/><circle cx="452" cy="150" r="3.5"/><circle cx="470" cy="172" r="3"/><circle cx="418" cy="160" r="2.5"/><circle cx="486" cy="190" r="3"/><circle cx="440" cy="186" r="2.5"/></g>
-            <rect x="120" y="205" width="360" height="125" class="wall"/>
-            <rect x="150" y="240" width="52" height="40" class="ln"/><rect x="398" y="240" width="52" height="40" class="ln"/><rect x="280" y="262" width="40" height="68" class="ln"/>
-            <g class="gut hl-gutter"><path d="M82 203h28v10H82zM490 203h28v10h-28zM506 213h7v117h-7zM88 213h7v117h-7z"/></g>
-            <g class="clip hl-claim"><rect x="538" y="236" width="42" height="54" rx="4"/><rect x="550" y="230" width="18" height="10" rx="2"/><path d="M546 254h26M546 264h26M546 274h16"/></g>
-            <g class="hs" data-svc="roof" transform="translate(320,160)" tabindex="0" role="button" aria-label="Roof replacement"><circle r="14"/><text y="5">1</text></g>
-            <g class="hs" data-svc="hail" transform="translate(458,118)" tabindex="0" role="button" aria-label="Storm and hail damage"><circle r="14"/><text y="5">2</text></g>
-            <g class="hs" data-svc="leak" transform="translate(126,128)" tabindex="0" role="button" aria-label="Leaks and flashing"><circle r="14"/><text y="5">3</text></g>
-            <g class="hs" data-svc="vent" transform="translate(300,66)" tabindex="0" role="button" aria-label="Attic ventilation"><circle r="14"/><text y="5">4</text></g>
-            <g class="hs" data-svc="gutter" transform="translate(546,206)" tabindex="0" role="button" aria-label="Gutters"><circle r="14"/><text y="5">5</text></g>
-            <g class="hs" data-svc="claim" transform="translate(559,312)" tabindex="0" role="button" aria-label="Insurance claims"><circle r="14"/><text y="5">6</text></g>
-          </svg>
-          <div class="svc-info" aria-live="polite"><p class="kicker" style="font-size:13px">What we do · tap a number</p><b id="svcT">Roof replacement</b><span id="svcD"></span>
-            <div class="svc-act"><button class="btn btn-line btn-sm" type="button" id="svcAdd">Add to my request</button><a class="btn btn-main btn-sm" id="svcSms" data-sms="svc" href="#">Text us about this</a></div></div>
-        </div>
-        <ul class="promise hero-in">
-          <li><span><b>Within 48 hours</b> or $50 off any repair we do</span></li>
-          <li><span><b>Photo report</b> on your phone the same day</span></li>
-          <li><span><b>Insurance claims</b> handled with you, start to finish</span></li>
-          <li><span><b>10-year</b> workmanship warranty on every roof</span></li>
-        </ul>
-        <p class="hero-links hero-in"><a href="#inside">See what’s under a roof</a><a href="#leak">Leaking right now?</a><a href="#check">Check your roof yourself</a></p>
-      </div>
-      <form class="panel lead hero-in" id="lf" novalidate aria-labelledby="lfH">
-        <div class="stack" id="lfields">
-          <div><h2 id="lfH" class="lead-h">Get my free inspection</h2><p class="muted" style="margin-top:6px">Takes 30 seconds. We text you back to pick a time.</p></div>
-          <div class="two"><div class="field"><label for="ln">Name</label><input id="ln" autocomplete="name"></div><div class="field"><label for="lph">Mobile</label><input id="lph" type="tel" autocomplete="tel" inputmode="tel"></div></div>
-          <div class="field"><label for="lmsg">What’s going on? In your own words</label><textarea id="lmsg" rows="3" placeholder="Water stain in the upstairs bedroom after Tuesday’s storm. Roof is about 15 years old."></textarea></div>
-          <div class="field"><span class="flabel">Photos (optional)</span><label class="upl" for="lfile"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span id="lfileL">Add photos of the roof, ceiling or damage</span><input id="lfile" type="file" accept="image/*" multiple></label><div class="thumbs" id="lthumbs"></div></div>
-          <p class="err" id="lerr" role="alert" hidden></p>
-          <button class="btn btn-main" type="submit">Get my free inspection</button>
-          <p class="muted" style="font-size:14.5px">Prefer to talk? Call or <a href="#" data-sms="hero" style="color:var(--text);font-weight:700">text <span data-phone>(346) 774-0053</span></a>, 7 AM to 7 PM.</p>
-        </div>
-        <div class="done" id="ldone" hidden><span class="okpill">Request received</span><p class="big" id="lwho"></p><p class="muted">We’ll text you within 15 minutes during business hours to pick a time. Want to choose now?</p><a class="btn btn-line btn-sm" href="#book">Pick a time myself</a></div>
-      </form>
+  <section class="hero" id="hero" aria-labelledby="h1">
+    <img class="ph over" id="hOver" src="img/s6.webp" alt="A finished charcoal shingle roof on a Houston home" fetchpriority="high">
+    <img class="ph under" id="hUnder" src="img/s2.webp" alt="" aria-hidden="true">
+    <div class="lens" id="lens" aria-hidden="true"><span id="lensT">Touch the roof</span></div>
+    <div class="shade"></div>
+    <div class="hcopy">
+      <h1 id="h1">Free roof inspection.</h1>
+      <p class="sub">Photos on your phone in 48 hours.</p>
+      <p class="why" id="why">Hurricane season. Find the leaks before the storm does.</p>
+      <div class="hcta"><button class="btn btn-main" type="button" data-start>Get my free inspection</button><small>48 hours or $50 off. No pressure to buy.</small></div>
     </div>
   </section>
 
-  <section id="leak" aria-labelledby="leakH">
-    <div class="wrap leak">
-      <div>
-        <p class="kicker">Leaking right now?</p>
-        <h2 id="leakH" style="margin-top:10px">Do these four things tonight</h2>
-        <p class="muted" style="margin-top:16px;max-width:38ch">Most leak damage happens in the first few hours, inside the house. None of this needs a roofer.</p>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:24px"><a class="btn btn-main" href="#" data-sms="leak">Text us a photo</a></div>
+  <section class="sec" aria-labelledby="baH">
+    <div class="wrap">
+      <h2 id="baH">Drag to fix this roof.</h2>
+      <p class="lede" id="baL">Same house, same camera. Before we came out, and after.</p>
+      <div class="ba" id="ba">
+        <img id="baB" src="img/s1.webp" alt="Before: a worn roof with streaks and lifted shingles">
+        <img class="after" id="baA" src="img/s5.webp" alt="After: new charcoal shingles">
+        <span class="tagb">Before</span><span class="taga">After</span>
+        <div class="handle"><div class="knob" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M9 6 3 12l6 6M15 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+        <input type="range" min="0" max="100" value="50" id="baR" aria-label="Slide between the roof before and after">
       </div>
-      <ol>
-        <li><div><b>Catch it and move things</b><span>Put a bucket under the drip and move furniture, rugs and electronics out of the way.</span></div></li>
-        <li><div><b>Drain a bulging ceiling</b><span>If drywall is sagging with water, poke a small hole at the lowest point over the bucket. It keeps the whole ceiling from coming down.</span></div></li>
-        <li><div><b>Take photos now</b><span>Photograph the stain, the drip and anything wet. Your insurance company will ask for them.</span></div></li>
-        <li><div><b>Stay off the roof</b><span>Wet shingles are slick, even for pros. We tarp roofs after storms, usually the same or next day.</span></div></li>
+      <div class="cap"><span id="capB">Worn shingles, water getting in</span><span id="capA">New roof, storm ready</span></div>
+    </div>
+  </section>
+
+  <section class="sec how" aria-labelledby="howH">
+    <div class="wrap">
+      <h2 id="howH">How it works</h2>
+      <ol class="steps">
+        <li><b>Tell us where</b><span>Name and number. Takes 30 seconds.</span></li>
+        <li><b>We check the roof</b><span>Within 48 hours. You don’t need to be home.</span></li>
+        <li><b>You get the photos</b><span>Every problem we find, on your phone. You decide what happens next.</span></li>
       </ol>
     </div>
   </section>
 
-  <div class="story" id="inside" aria-labelledby="insideH">
-    <div class="stage">
-      <div class="roofbox">
-        <div class="photos" id="roof" role="img" aria-label="Photos of the same roof as you scroll: weathered shingles, the tear-off that shows rotted wood, new decking, waterproof underlayment, new shingles, and the finished roof in a rainstorm.">
-          <div class="zoom"><img src="img/s1.webp" srcset="img/s1-m.webp 800w, img/s1.webp 1200w" sizes="(max-width:900px) 100vw, 640px" alt="" decoding="async"><img src="img/s2.webp" srcset="img/s2-m.webp 800w, img/s2.webp 1200w" sizes="(max-width:900px) 100vw, 640px" alt="" decoding="async"><img src="img/s3.webp" srcset="img/s3-m.webp 800w, img/s3.webp 1200w" sizes="(max-width:900px) 100vw, 640px" alt="" loading="lazy" decoding="async"><img src="img/s4.webp" srcset="img/s4-m.webp 800w, img/s4.webp 1200w" sizes="(max-width:900px) 100vw, 640px" alt="" loading="lazy" decoding="async"><img src="img/s5.webp" srcset="img/s5-m.webp 800w, img/s5.webp 1200w" sizes="(max-width:900px) 100vw, 640px" alt="" loading="lazy" decoding="async"><img src="img/s6.webp" srcset="img/s6-m.webp 800w, img/s6.webp 1200w" sizes="(max-width:900px) 100vw, 640px" alt="" loading="lazy" decoding="async"></div><div class="seam" id="seam"></div>
-          <div class="pin" id="note"><i></i><span></span></div>
-        </div>
-        <div class="tag" id="roofTag"><i></i><span>Looks fine from the street</span></div>
-      </div>
-      <div>
-        <p class="kicker" id="insideH">What’s under your roof</p>
-        <ol class="steps-list" id="steps">
-          <li class="on"><b>Looks fine from the street</b><span>A 15-year-old roof can look normal from the driveway. Those dark streaks are where the granules are gone. Keep scrolling.</span></li>
-          <li><b>What the tear-off found</b><span>Under the old shingles: torn felt and a big patch of soft, rotted wood. This is what was leaking into the attic.</span></li>
-          <li><b>We cut out the rot</b><span>Every soft board comes out and new decking goes in. We text you photos before anything covers it.</span></li>
-          <li><b>Waterproof layers</b><span>Ice and water shield along the edge, then synthetic underlayment that keeps the deck dry even if a shingle blows off.</span></li>
-          <li><b>New impact shingles</b><span>Class 4 shingles with six nails each, a ridge vent on top and new metal drip edge.</span></li>
-          <li><b>Storm ready</b><span>Same roof, first big storm. Water runs off into the gutter instead of into the house.</span></li>
-        </ol>
-        <div class="progress" aria-hidden="true"><i id="prog"></i></div>
-        <p class="scrollhint" id="hint">Scroll to take the roof apart</p>
-        <a class="btn btn-line btn-sm" href="#" data-sms="story" style="margin-top:12px">Worried about yours? Text us</a>
-        <p class="photo-credit">Illustrative photos of one roof, made for this demo.</p>
-      </div>
-    </div>
-  </div>
-
-  <section aria-labelledby="wxH">
+  <section class="sec end" aria-labelledby="endH">
     <div class="wrap">
-      <div class="head"><div><p class="kicker">Built for Houston weather</p><h2 id="wxH" style="margin-top:10px">What we add for the storms you actually get</h2></div><p class="sub">Every roof gets the basics. These are the extras we recommend by threat, and we’ll tell you which ones your house needs.</p></div>
-      <div class="wx-tabs" role="tablist" aria-label="Weather">
-        <button role="tab" aria-selected="true" data-wx="hurricane" id="tab-hurricane" aria-controls="wxPanel">Hurricanes</button>
-        <button role="tab" aria-selected="false" data-wx="hail" id="tab-hail" aria-controls="wxPanel">Hail</button>
-        <button role="tab" aria-selected="false" data-wx="freeze" id="tab-freeze" aria-controls="wxPanel">Freezes</button>
-        <button role="tab" aria-selected="false" data-wx="heat" id="tab-heat" aria-controls="wxPanel">Summer heat</button>
-      </div>
-      <div class="wx" id="wxPanel" role="tabpanel" aria-labelledby="tab-hurricane">
-        <div><h3>Six nails per shingle</h3><p>Rated for 130 mph winds instead of the usual four nails.</p></div>
-        <div><h3>Sealed roof deck</h3><p>Tape over every seam in the decking so wind-driven rain can’t get in if shingles blow off.</p></div>
-        <div><h3>Hurricane-rated edges</h3><p>Starter strips and drip edge that keep wind from lifting the first row.</p></div>
-      </div>
-      <a class="btn btn-line" href="#" data-sms="wx" id="wxSms" style="margin-top:20px">Ask about hurricane prep</a>
-    </div>
-  </section>
-
-  <section id="check" style="background:#121920" aria-labelledby="checkH">
-    <div class="wrap">
-      <div class="head"><div><p class="kicker">Free roof check</p><h2 id="checkH" style="margin-top:10px">Tell us about your roof, get a straight answer</h2></div><p class="sub">A few quick taps. You get our honest read on your roof and a price range at the end. No email needed to see it.</p></div>
-      <div class="check">
-        <form class="panel" id="qf" novalidate>
-          <div class="bar" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-          <div id="qbody"></div>
-          <div class="nav-q"><button class="btn btn-line" type="button" id="qback">Back</button><button class="btn btn-main" type="button" id="qnext">Next</button></div>
-        </form>
-        <aside class="panel side" aria-label="What you get">
-          <h3>You decide what happens next</h3>
-          <p class="muted">Your answer shows on screen. Book only if you want to.</p>
-          <ul>
-            <li><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5 7 13l8-9" stroke="#63C792" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg><span>Our read on your roof from its age and what you’ve noticed</span></li>
-            <li><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5 7 13l8-9" stroke="#63C792" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg><span>A price range from real Houston jobs, shown at the end</span></li>
-            <li><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5 7 13l8-9" stroke="#63C792" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg><span>Book a free inspection, or just keep the answer</span></li>
-          </ul>
-        </aside>
-      </div>
-    </div>
-  </section>
-
-  <section id="book" aria-labelledby="bookH">
-    <div class="wrap">
-      <div class="head"><div><p class="kicker">Free inspection</p><h2 id="bookH" style="margin-top:10px">Pick a time that works</h2></div><p class="sub">About 45 minutes. We check the roof, the attic and the gutters, and text you photos of everything we find.</p></div>
-      <div class="book">
-        <div class="panel stack">
-          <span class="flabel">Day</span><div class="days" id="days" role="group" aria-label="Day"></div>
-          <span class="flabel">Arrival window</span><div class="slots" id="slots" role="group" aria-label="Arrival window"></div>
-        </div>
-        <form class="panel" id="bf" novalidate>
-          <div class="stack" id="bfields">
-            <div class="two"><div class="field"><label for="bname">Name</label><input id="bname" autocomplete="name"></div><div class="field"><label for="bphone">Mobile</label><input id="bphone" type="tel" autocomplete="tel" inputmode="tel"></div></div>
-            <div class="field"><label for="baddr">Address</label><input id="baddr" autocomplete="street-address"></div>
-            <div class="field"><label for="bnote">Anything we should know? (optional)</label><textarea id="bnote" placeholder="Gate code, dogs, where the leak is"></textarea></div>
-            <p class="err" id="berr" role="alert" hidden></p>
-            <button class="btn btn-main" type="submit">Book my inspection</button>
-          </div>
-          <div class="done" id="bdone" hidden><span class="okpill">Booked</span><p class="big" id="bwhen"></p><p class="muted">We text you the day before and again when we’re on the way.</p><button class="btn btn-line btn-sm" type="button" id="bchange">Change the time</button></div>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <section id="club" style="background:#121920" aria-labelledby="clubH">
-    <div class="wrap club">
-      <div>
-        <p class="kicker">Roof Care Club</p>
-        <h2 id="clubH" style="margin-top:10px">We check your roof so you don’t have to think about it</h2>
-        <p class="muted" style="margin-top:16px;max-width:52ch">Hail in spring, hurricanes in the fall, 140-degree attics all summer. Members get small problems fixed before they turn into ceiling stains.</p>
-        <div class="perks">
-          <div><h3>Yearly roof checkup</h3><p>21 points from shingles to attic, with photos sent to your phone.</p></div>
-          <div><h3>We come after storms</h3><p>Hail or high wind in your ZIP code and we check within 72 hours. You don’t have to call.</p></div>
-          <div><h3>15% off repairs</h3><p>Every repair, every time, for as long as you’re a member.</p></div>
-          <div><h3>First in line</h3><p>After a big storm, members are scheduled first.</p></div>
-        </div>
-        <a class="btn btn-line btn-sm" href="#" data-sms="club" style="margin-top:18px">Questions? Text us</a>
-      </div>
-      <form class="panel" id="cf" novalidate>
-        <div class="stack" id="cfields">
-          <h3>Join in a minute</h3>
-          <label class="plan" for="pm"><span><input type="radio" name="plan" id="pm" value="m" checked>Monthly</span><span><b>$12</b> <span class="muted">a month</span></span></label>
-          <label class="plan" for="py"><span><input type="radio" name="plan" id="py" value="y">Yearly, save $15</span><span><b>$129</b> <span class="muted">a year</span></span></label>
-          <div class="two"><div class="field"><label for="cname">Name</label><input id="cname" autocomplete="name"></div><div class="field"><label for="cphone">Mobile</label><input id="cphone" type="tel" autocomplete="tel" inputmode="tel"></div></div>
-          <div class="field"><label for="caddr">Home address</label><input id="caddr" autocomplete="street-address"></div>
-          <p class="err" id="cerr" role="alert" hidden></p>
-          <button class="btn btn-main" type="submit">Continue to secure checkout</button>
-          <p class="muted" style="font-size:14.5px">Cancel any time from your customer portal. Cards are handled by Stripe or QuickBooks and never stored by us.</p>
-        </div>
-        <div class="done" id="cdone" hidden><span class="okpill">Welcome to the club</span><p class="big" id="cwho"></p><p class="muted">On the live site this opens a secure Stripe or QuickBooks checkout. This demo stops here and never asks for a card.</p></div>
-      </form>
-    </div>
-  </section>
-
-  <section aria-labelledby="revH">
-    <div class="wrap">
-      <div class="head"><div><p class="kicker">Neighbors</p><h2 id="revH" style="margin-top:10px">What homeowners say</h2></div><p class="sub">Sample reviews written for this demo.</p></div>
-      <div class="reviews">
-        <figure class="rev"><blockquote>They sent photos of the rotted wood before covering it. I’d never have known it was there.</blockquote><cite>Sample review, Cypress</cite></figure>
-        <figure class="rev"><blockquote>After the April hail they met our adjuster at the house. We paid our deductible and that was it.</blockquote><cite>Sample review, Katy</cite></figure>
-        <figure class="rev"><blockquote>Booked from my phone at 11pm. The inspection was the next afternoon.</blockquote><cite>Sample review, Pearland</cite></figure>
-      </div>
-    </div>
-  </section>
-
-  <section id="faq" style="padding-top:0" aria-labelledby="faqH">
-    <div class="wrap">
-      <h2 id="faqH" style="margin-bottom:24px">Questions people ask us</h2>
-      <div class="faq">
-        <details><summary>How close is the roof check price to the real one?</summary><p>For most homes it lands within 10 percent. The free inspection confirms the size, the pitch and whether any decking needs replacing before you sign anything.</p></details>
-        <details><summary>Will insurance pay for a new roof?</summary><p>If hail or wind damaged it, often yes. We document the damage with photos and meet your adjuster. You pay your deductible if the claim is approved.</p></details>
-        <details><summary>How long does a new roof take?</summary><p>One or two days for most homes, a little longer if we find rotted decking. We text you before we start and when we finish.</p></details>
-        <details><summary>Do you offer financing?</summary><p>Yes. Ask at your inspection and we’ll show you monthly payment options.</p></details>
-      </div>
+      <h2 id="endH">Know what’s on your roof this week.</h2>
+      <p class="lede">If we’re not there within 48 hours, $50 comes off any repair we do.</p>
+      <button class="btn btn-main" type="button" data-start>Get my free inspection</button>
+      <div class="proof"><span><b>4.9</b> from 212 Houston homeowners (sample)</span><span><b>10-year</b> workmanship warranty</span><span>We work with your insurance</span></div>
     </div>
   </section>
 </main>
 
-<footer><div class="wrap"><div><b style="color:var(--text)">Ridgeline Roofing</b>, a made-up company for this demo<br>Houston, Texas, <a href="#" data-sms="footer" style="color:inherit"><span data-phone>(346) 774-0053</span></a></div><div><button class="login" type="button" data-login>Customer login</button></div></div></footer>
-
-<div class="fab"><button class="btn btn-sm owner" type="button" id="ownerBtn">What the owner sees <span class="count" id="ocount">3</span></button><a class="btn btn-main btn-sm" href="#" data-sms="fab">Text us</a></div>
+<footer>
+  <div class="wrap">
+    <div><b style="color:#fff">Ridgeline Roofing</b>, a made-up Houston roofer for this demo. <a href="#" data-sms="footer"><span data-phone>(346) 774-0053</span></a></div>
+    <nav aria-label="More"><button type="button" data-login>Customer login</button><a href="#owner">Owner login</a><button type="button" id="demoBtn">Demo settings</button></nav>
+  </div>
+</footer>
 <div id="layer"></div>
-
 <script>
 (function(){
 "use strict";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const M=window.Motion||null;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const money=n=>'$'+(Math.round(n/10)*10).toLocaleString('en-US');
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-const ease=t=>1-Math.pow(1-t,3);
-function rng(seed){let s=seed>>>0;return()=>{s=Math.imul(s^s>>>15,1|s)+0x6D2B79F5|0;s^=s+Math.imul(s^s>>>7,61|s);return((s^s>>>14)>>>0)/4294967296}}
-
-/* ---------- hero: rain on a roof under a streetlight ---------- */
-(function hero(){
-  const c=$('#rain'),x=c.getContext('2d');let W=0,H=0,drops=[],flash=0,run=true,tk=0;const dpr=Math.min(2,devicePixelRatio||1);
-  function size(){const r=c.getBoundingClientRect();W=r.width;H=r.height;c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);x.setTransform(dpr,0,0,dpr,0,0);drops=Array.from({length:Math.round(W*H/5200)},()=>({x:Math.random()*W*1.1,y:Math.random()*H,l:10+Math.random()*16,v:9+Math.random()*7}))}
-  function scene(){x.clearRect(0,0,W,H);if(window.heroFx==='rain'&&flash>0){x.fillStyle=`rgba(200,215,240,${flash*.22})`;x.fillRect(0,0,W,H)}}
-  function rain(){const m=window.heroFx||'rain';if(m==='none')return;if(m==='rain'){x.strokeStyle='rgba(190,212,235,.28)';x.lineWidth=1.1;x.beginPath();drops.forEach(d=>{x.moveTo(d.x,d.y);x.lineTo(d.x-d.l*.18,d.y+d.l)});x.stroke();return}
-    x.fillStyle=m==='hail'?'rgba(240,245,250,.85)':'rgba(235,242,248,.6)';drops.forEach((d,i)=>{if(i%(m==='hail'?5:4))return;x.beginPath();x.arc(d.x,d.y,m==='hail'?1.6+d.l/10:.8+d.l/14,0,7);x.fill()})}
-  function frame(){if(!run)return;scene();rain();tk++;const m=window.heroFx||'rain',sp=m==='snow'?.07:m==='hail'?1.25:1;if(m!=='none')drops.forEach((d,i)=>{d.y+=d.v*sp;d.x-=m==='snow'?Math.sin((tk+i*37)/60)*.3:d.v*sp*.18;if(d.y>H){d.y=-20;d.x=Math.random()*W*1.15}});
-    if(flash>0)flash-=.04;else if(window.heroFx==='rain'&&Math.random()<.002)flash=1;requestAnimationFrame(frame)}
-  size();addEventListener('resize',()=>{size();if(reduce){scene();rain()}});
-  if(reduce){scene();rain()}else{scene();rain();new IntersectionObserver(e=>{const was=run;run=e[0].isIntersecting;if(run&&!was)frame()}).observe(c);run=false}
-  if(M&&!reduce){M.animate('.hero-in',{opacity:[.001,1],y:[18,0]},{duration:.7,delay:M.stagger(.09,{startDelay:.1}),ease:[.2,.8,.2,1]})}
-})();
-
-/* ---------- the cutaway: scroll through real photos of one roof ---------- */
-(function cutaway(){
-  const box=$('#roof'),zoom=box.querySelector('.zoom'),imgs=[...zoom.querySelectorAll('img')],seam=$('#seam'),note=$('#note'),noteT=note.querySelector('span');
-  const steps=$$('#steps li'),tagT=$('#roofTag span'),tagI=$('#roofTag i'),prog=$('#prog'),hint=$('#hint');let cur=-1;
-  const N=imgs.length,SEG=1/N;
-  /* how each photo arrives: tear-off wipes down, decking wipes across, layers build up, storm fades in */
-  const mode=[null,'down','right','up','up','fade'];
-  const notes=[[57,30,'Granules worn off'],[60,40,'Soft, rotted wood'],[40,58,'New decking'],[38,84,'Ice & water shield'],[56,18,'Ridge vent'],[52,62,'Off to the gutter']];
-  const prog_i=(p,i)=>ease(clamp((p-(i-.35)*SEG)/(SEG*.55)));
-  function mask(el,dir,t){let v='none';if(dir&&t<1){const e=(t*112-8).toFixed(1),f=(t*112).toFixed(1);v=`linear-gradient(${{down:'to bottom',up:'to top',right:'to right'}[dir]},#000 ${e}%,transparent ${f}%)`}el.style.webkitMaskImage=v;el.style.maskImage=v}
-  function draw(p){
-    const s=Math.min(N-1,Math.floor(p/SEG+.35));let wiping=null;
-    imgs.forEach((im,i)=>{if(!i)return;const t=prog_i(p,i);im.style.visibility=t>0?'visible':'hidden';
-      if(mode[i]==='fade'){im.style.opacity=t}else{mask(im,mode[i],t);if(t>0&&t<1)wiping=[mode[i],t]}});
-    if(wiping){const[d,t]=wiping,pos=(t*112-4);seam.className='seam'+(d==='right'?' v':'');seam.style.opacity=1;
-      if(d==='right'){seam.style.left=pos+'%';seam.style.top=''}else{seam.style.left='';seam.style.top=(d==='down'?pos:100-pos)+'%'}}else seam.style.opacity=0;
-    zoom.style.transform=reduce?'':`scale(${(1.01+((p/SEG)%1)*.05).toFixed(4)})`;
-    const local=(p/SEG)%1,na=s===0?clamp((.62-local)*4):clamp((local-.25)*5)*clamp((1-local)*6);
-    if(s!==cur){cur=s;const[nx,ny,nt,left]=notes[s];note.style.left=nx+'%';note.style.top=ny+'%';note.classList.toggle('left',nx>50);noteT.textContent=nt;
-      steps.forEach((li,i)=>li.classList.toggle('on',i===s));tagT.textContent=steps[s].querySelector('b').textContent;
-      tagI.style.background=s===N-1?'#63C792':s===1?'#E5684B':'#F2B544';
-      hint.textContent=s===N-1?'Your turn: check your own roof below':s===0?'Scroll to take the roof apart':'Keep scrolling'}
-    note.style.opacity=(s===N-1&&local>.5?clamp((local-.25)*5):na).toFixed(2);
-    prog.style.width=(p*100).toFixed(1)+'%';
-  }
-  draw(0);
-  const story=$('#inside');
-  if(M&&M.scroll){M.scroll(p=>draw(p),{target:story,offset:['start start','end end']})}
-  else{const on=()=>{const r=story.getBoundingClientRect(),t=r.height-innerHeight;draw(clamp(-r.top/t))};addEventListener('scroll',on,{passive:true});on()}
-})();
-
-/* ---------- weather tabs ---------- */
-const WX={hurricane:[['Six nails per shingle','Rated for 130 mph winds instead of the usual four nails.'],['Sealed roof deck','Tape over every seam in the decking so wind-driven rain can’t get in if shingles blow off.'],['Hurricane-rated edges','Starter strips and drip edge that keep wind from lifting the first row.']],
-  hail:[['Class 4 impact shingles','The highest hail rating. Many Texas insurers give a discount for them.'],['Photo record of your roof','We keep dated photos so a future claim is easy to prove.'],['Storm check within 72 hours','Club members get checked after any hail in their ZIP code.']],
-  freeze:[['Ice and water shield at the edges','Stops water from backing up under shingles when gutters freeze, like in 2021.'],['Pipe and vent boots','Rubber boots crack in the cold. We replace them with longer-lasting ones.'],['Attic airflow check','Good venting keeps ice from forming along the eaves.']],
-  heat:[['Ridge vent','Lets attic heat escape so shingles don’t bake from underneath.'],['Cool-rated shingles','Lighter shingles that reflect sun and can lower your power bill.'],['Soffit vent check','Fresh air in at the bottom, hot air out at the top.']]};
-function wx(k){const ws=$('#wxSms');if(ws){const n={hurricane:'hurricane prep',hail:'hail protection',freeze:'freeze protection',heat:'beating the heat'}[k];ws.textContent='Ask about '+n;ws.dataset.body=`Hi Ridgeline, I’d like to ask about ${n} for my roof.`;ws.href=smsHref(ws.dataset.body)}$('#wxPanel').innerHTML=WX[k].map(([a,b])=>`<div><h3>${a}</h3><p>${b}</p></div>`).join('');$('#wxPanel').setAttribute('aria-labelledby','tab-'+k);$$('[data-wx]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.wx===k)));if(M&&!reduce)M.animate('#wxPanel > div',{opacity:[.001,1],y:[10,0]},{duration:.3,delay:M.stagger(.05)})}
-$$('[data-wx]').forEach(b=>b.onclick=()=>wx(b.dataset.wx));
-
-/* ---------- owner feed + helpers ---------- */
-const feed=[{k:'Sample: missed call',t:'Yesterday 7:42 PM',b:'Missed call from (281) 555-0177. They got an automatic text with a link to the roof check and booked Thursday 10 to noon.'},
-  {k:'Sample: past customers',t:'Monday',b:'Text sent to 86 homeowners whose roofs are 8+ years old: “Free roof checkup before hurricane season?” 11 replied, 6 booked.'},
-  {k:'Sample: new member',t:'Last week',b:'Linda P. joined the Roof Care Club, yearly plan, paid by card.'}];
-function toast(m){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);if(M&&!reduce)M.animate(t,{opacity:[.001,1],y:[10,0]},{duration:.2});setTimeout(()=>t.remove(),2800)}
-function push(k,b){feed.unshift({k,t:'Just now',b,fresh:true});$('#ocount').textContent=feed.length;toast('Sent to the owner’s phone. Tap “What the owner sees”.')}
-const phoneOk=v=>v.replace(/\D/g,'').length>=10;
-
-/* ---------- free roof check: the price only shows at the end ---------- */
-const Q={need:'old',needOther:'',sqft:2400,sizeUnsure:false,addr:'',stories:'1',shape:'1.15',age:'17',signs:[],signOther:'',mat:'arch',notes:'',photos:[]};
-const STEPS=['need','home','age','mat','notes','answer'];let si=0;
 const esc=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const opt=(name,v,title,sub,type)=>{type=type||'radio';const on=type==='radio'?Q[name]===v:Q[name].includes(v);return `<div class="opt"><input type="${type}" name="${name}" id="${name}-${v}" value="${v}" ${on?'checked':''}><label for="${name}-${v}"><b>${title}</b>${sub?`<small>${sub}</small>`:''}</label></div>`};
-const pill=(name,v,t)=>`<input type="radio" name="${name}" id="${name}-${v}" value="${v}" ${Q[name]===v?'checked':''}><label for="${name}-${v}">${t}</label>`;
-const own=(key,label,ph,rows)=>`<div class="field"><label for="q-${key}">${label}</label><textarea id="q-${key}" data-q="${key}" rows="${rows||2}" placeholder="${ph}">${esc(Q[key])}</textarea></div>`;
-const RATES={arch:[520,610,'architectural shingles'],impact:[640,760,'Class 4 impact shingles'],metal:[1050,1300,'standing-seam metal'],help:[520,760,'your choice of material']};
-const check='<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5 7 13l8-9" stroke="#63C792" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>';
-function squares(){const sq=Q.sizeUnsure?2400:Q.sqft,sh=Q.shape==='u'?1.25:+Q.shape;return Math.max(10,Math.round(sq/(+Q.stories)*sh*1.1/100))}
-function verdict(){const age=Q.age==='u'?15:+Q.age,bad=Q.signs.filter(x=>x!=='none').length;
-  if(Q.need==='leak'||Q.signs.includes('stain'))return ['Find the leak first','Water is already getting in. Most leaks come from a pipe boot, flashing or a few shingles, and on a roof under about 15 years old a repair is usually enough.','repair'];
-  if(Q.need==='storm')return ['Get it checked for storm damage','Hail bruises shingles in ways you can’t see from the ground. If we find damage, insurance often covers it and you pay your deductible.','storm'];
-  if(Q.need==='other'&&!bad)return ['Let’s take a look','From what you described, the best next step is a free inspection so we can see it in person.','inspect'];
-  if(age>=20||(age>=15&&bad>=1))return ['Plan on a new roof soon','At this age with these signs, your shingles are near the end of their life. Repairs would buy months, not years.','replace'];
-  if(age>=13||bad>=2)return ['Time for a close look','Your roof is at the age where problems start. An inspection tells you whether a repair or a new roof makes more sense.','replace'];
-  if(Q.need==='sell')return ['Get a report before the sale','Buyers’ inspectors look at the roof first. A report now avoids surprises at closing.','inspect'];
-  return ['Your roof is probably fine','At this age with no warning signs, a checkup every year or two is all it needs.','inspect']}
-function seq(){return Q.need==='leak'?['need','age','notes','answer']:Q.need==='sell'?['need','home','age','notes','answer']:STEPS}
-function thumbs(){return Q.photos.map((u,i)=>`<img src="${u}" alt="Your photo ${i+1}">`).join('')}
-function renderQ(){const S=seq(),k=S[si];let h='';
-  if(k==='need')h=`<p class="q-title">What’s going on with your roof?</p><div class="opts">${opt('need','leak','It’s leaking','A drip or a stain on the ceiling')}${opt('need','storm','A storm hit it','Hail or high wind recently')}${opt('need','old','It’s getting old','Thinking about replacing it')}${opt('need','sell','Buying or selling','Need to know its condition')}${opt('need','other','Something else','Tell us below')}</div>
-    <div class="other-box">${own('needOther',Q.need==='other'?'Tell us what’s going on':'Want to add anything? (optional)','Skylight drips when it rains sideways, or a tree branch hit the roof',2)}</div>`;
-  if(k==='home')h=`<p class="q-title">Tell us about the house</p><div class="stack">
-    <label class="unsure" for="q-unsure"><input type="checkbox" id="q-unsure" ${Q.sizeUnsure?'checked':''}>I’m not sure how big it is</label>
-    <div class="field" id="sizeBox" ${Q.sizeUnsure?'hidden':''}><label for="sqft">Home size</label><div class="rng"><input type="range" id="sqft" min="900" max="5000" step="50" value="${Q.sqft}"><output id="sqo" for="sqft">${Q.sqft.toLocaleString('en-US')} sq ft</output></div></div>
-    <div class="field" id="addrBox" ${Q.sizeUnsure?'':'hidden'}><label for="q-addr">Your address, and we’ll measure it from satellite photos</label><input id="q-addr" data-q="addr" autocomplete="street-address" value="${esc(Q.addr)}"></div>
-    <div class="field"><span class="flabel" id="stL">Stories</span><div class="pills" role="radiogroup" aria-labelledby="stL">${pill('stories','1','One')}${pill('stories','2','Two')}${pill('stories','3','Three')}</div></div>
-    <div class="field"><span class="flabel" id="shL">Roof shape</span><div class="pills" role="radiogroup" aria-labelledby="shL">${pill('shape','1.15','Two sides')}${pill('shape','1.25','Slopes on all four sides')}${pill('shape','1.38','Lots of angles')}${pill('shape','u','Not sure')}</div></div></div>`;
-  if(k==='age')h=`<p class="q-title">How old is it, and what have you noticed?</p><div class="stack"><div class="field"><span class="flabel" id="agL">Roof age</span><div class="pills" role="radiogroup" aria-labelledby="agL">${pill('age','3','Under 5 years')}${pill('age','8','5 to 10')}${pill('age','13','10 to 15')}${pill('age','17','15 to 20')}${pill('age','22','Over 20')}${pill('age','u','Not sure')}</div></div>
-    <div class="opts">${opt('signs','granules','Grit in the gutters','Shingles losing their granules','checkbox')}${opt('signs','curl','Curling or missing shingles','Edges lifting, bare spots','checkbox')}${opt('signs','stain','Ceiling stain','Brown ring or soft drywall','checkbox')}${opt('signs','other','Something else','Describe it below','checkbox')}${opt('signs','none','Nothing I’ve noticed','That’s good news','checkbox')}</div>
-    <div id="signBox" ${Q.signs.includes('other')?'':'hidden'}>${own('signOther','What did you notice?','Sagging spot near the chimney, or the attic smells musty',2)}</div></div>`;
-  if(k==='mat')h=`<p class="q-title">If it ever needs replacing, what would you want?</p><div class="opts">${opt('mat','arch','Architectural shingles','What most Houston homes have. 30-year rated.')}${opt('mat','impact','Impact-resistant shingles','Built for hail. Can lower insurance premiums.')}${opt('mat','metal','Standing-seam metal','Lasts about 50 years and reflects summer heat.')}${opt('mat','help','Help me decide','We’ll bring samples of all three.')}</div>`;
-  if(k==='notes')h=`<p class="q-title">Anything else we should know?</p><div class="stack">${own('notes','In your own words (optional)','When it started, where you see it, what you’ve already tried, questions you have',4)}
-    <div class="field"><span class="flabel">Photos (optional)</span><label class="upl" for="q-file"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>Add photos of the roof, attic or ceiling</span><input id="q-file" type="file" accept="image/*" multiple></label><div class="thumbs" id="q-thumbs">${thumbs()}</div></div>
-    <p class="muted" style="font-size:15px">Skip this if you like. Your answer is one tap away.</p></div>`;
-  if(k==='answer'){const [v,why,kind]=verdict(),s=squares(),r=RATES[Q.mat],st=+Q.stories,f=st===1?1:st===2?1.06:1.12;let lo=0,hi=0,line='',inc=[];
-    if(kind==='replace'){lo=s*r[0]*f;hi=s*r[1]*f;line=`New roof in ${r[2]}, about ${s} squares (a square is 100 sq ft of roof)${Q.sizeUnsure?'. Based on a typical 2,400 sq ft Houston home until we measure yours':''}`;inc=['Tear-off and haul-away','Rotted decking photographed before it’s replaced','Ice and water shield, synthetic underlayment, drip edge','Permit, cleanup and a 10-year workmanship warranty']}
-    else if(kind==='repair'){lo=350;hi=1400;line='Leak repair. Most homes land in this range.';inc=['We find the source, not just the stain','Matched shingles where possible','Photos before and after','1-year warranty on the repair']}
-    else if(kind==='storm'){line='Storm inspection and insurance help';inc=['Photo report your adjuster can use','We meet the adjuster at your house','You pay your deductible if the claim is approved']}
-    else{line='Roof inspection';inc=['Shingles, flashing, vents and gutters','Attic check for leaks and airflow','Photo report texted to you']}
-    const told=[Q.needOther,Q.signOther,Q.notes].map(x=>x.trim()).filter(Boolean);
-    h=`<div class="answer"><p class="kicker">Your roof check</p><p class="verdict">${v}</p><div class="read"><p>${why}</p></div>
-      ${told.length||Q.photos.length?`<div class="told"><b style="color:var(--text)">What you told us</b>${told.map(t=>`<span>“${esc(t)}”</span>`).join('')}${Q.photos.length?`<div class="thumbs">${thumbs()}</div><span class="muted">We’ll look at your ${Q.photos.length} photo${Q.photos.length>1?'s':''} before we come out.</span>`:''}</div>`:''}
-      <div><p class="muted">${line}</p><p class="price" id="price" data-lo="${lo}" data-hi="${hi}">${hi?money(lo)+' to '+money(hi):'Free'}</p></div>
-      <ul class="inc">${inc.map(i=>`<li>${check}<span>${i}</span></li>`).join('')}</ul>
-      <p class="muted" style="font-size:15px">${hi?'Final price after a free inspection. Most homes land within 10 percent.':'No charge, and no pressure to buy anything.'}</p>
-      <div style="display:flex;flex-wrap:wrap;gap:10px"><a class="btn btn-main" href="#book">Book a free inspection</a><button class="btn btn-line" type="button" id="sendMe">Text me this</button><a class="btn btn-line" href="#" data-sms="quote" data-body="${esc(`Hi Ridgeline, I did the free roof check on your site. Result: ${v}. ${line}: ${hi?money(lo)+' to '+money(hi):'free'}. Can we set up an inspection? My address is `)}">Text us this result</a></div>
-      <div id="sendBox" class="stack" hidden><div class="two"><div class="field"><label for="qn">Name</label><input id="qn" autocomplete="name"></div><div class="field"><label for="qp">Mobile</label><input id="qp" type="tel" autocomplete="tel" inputmode="tel"></div></div><p class="err" id="sendErr" role="alert" hidden></p><button class="btn btn-main" type="button" id="sendGo">Send it to my phone</button></div></div>`}
-  $('#qbody').innerHTML=h;
-  $$('.bar i').forEach((b,i)=>{b.hidden=i>=S.length;b.classList.toggle('on',i<=si)});
-  $('#qback').style.visibility=si?'visible':'hidden';$('#qnext').hidden=k==='answer';$('#qnext').textContent=S[si+1]==='answer'?'See my answer':'Next';
-  if(M&&!reduce)M.animate('#qbody',{opacity:[.001,1],x:[14,0]},{duration:.25,ease:[.2,.8,.2,1]});
-  $$('#qbody [data-q]').forEach(el=>el.addEventListener('input',()=>{Q[el.dataset.q]=el.value}));
-  if(k==='home'){const sl=$('#sqft');sl.oninput=()=>{Q.sqft=+sl.value;$('#sqo').textContent=Q.sqft.toLocaleString('en-US')+' sq ft'};
-    $('#q-unsure').onchange=e=>{Q.sizeUnsure=e.target.checked;$('#sizeBox').hidden=Q.sizeUnsure;$('#addrBox').hidden=!Q.sizeUnsure;if(Q.sizeUnsure)$('#q-addr').focus()}}
-  if(k==='notes'){$('#q-file').onchange=e=>{[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{Q.photos.push(r.result);$('#q-thumbs').innerHTML=thumbs()};r.readAsDataURL(f)})}}
-  if(k==='answer'){const pe=$('#price'),lo=+pe.dataset.lo,hi=+pe.dataset.hi;
-    if(hi&&M&&!reduce){M.animate(0,1,{duration:.9,ease:[.2,.8,.2,1],onUpdate:t=>{pe.textContent=money(lo*t)+' to '+money(hi*t)}});M.animate('.answer > *',{opacity:[.001,1],y:[12,0]},{duration:.35,delay:M.stagger(.06)})}
-    $('#sendMe').onclick=()=>{$('#sendBox').hidden=false;$('#qn').focus()};
-    $('#sendGo').onclick=()=>{const n=$('#qn').value.trim(),p=$('#qp').value.trim();if(!n||!phoneOk(p)){$('#sendErr').textContent='Add your name and a 10-digit mobile number.';$('#sendErr').hidden=false;return}
-      $('#bname').value=n;$('#bphone').value=p;$('#sendBox').innerHTML='<span class="okpill">On its way to your phone</span>';
-      const told=[Q.needOther,Q.signOther,Q.notes].map(x=>x.trim()).filter(Boolean);
-      push('Roof check sent',`${n}, ${p}${Q.addr?'\n'+Q.addr:''}\n${$('.verdict').textContent}: ${$('#price').textContent}${told.length?'\nIn their words: “'+told.join(' / ')+'”':''}${Q.photos.length?`\n${Q.photos.length} photo${Q.photos.length>1?'s':''} attached`:''}`)}}
-}
-$('#qf').addEventListener('change',e=>{const t=e.target;
-  if(t.name==='signs'){if(t.value==='none'&&t.checked)$$('input[name="signs"]').forEach(c=>{if(c.value!=='none')c.checked=false});else if(t.checked){const n=$('#signs-none');if(n)n.checked=false}Q.signs=$$('input[name="signs"]:checked').map(c=>c.value);const sb=$('#signBox');if(sb){sb.hidden=!Q.signs.includes('other');if(!sb.hidden)$('#q-signOther').focus()}}
-  else if(t.name&&t.name in Q&&t.type==='radio'){Q[t.name]=t.value;if(t.name==='need'){si=0;const lab=$('label[for="q-needOther"]');if(lab)lab.textContent=t.value==='other'?'Tell us what’s going on':'Want to add anything? (optional)';if(t.value==='other')$('#q-needOther').focus()}}});
-$('#qnext').onclick=()=>{if(seq()[si]==='need'&&Q.need==='other'&&!Q.needOther.trim()){$('#q-needOther').focus();$('#q-needOther').setAttribute('aria-invalid','true');return}si=Math.min(seq().length-1,si+1);renderQ();$('#qf').scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'})};
-$('#qback').onclick=()=>{si=Math.max(0,si-1);renderQ()};
-
-/* ---------- hero lead form: open text, optional photos ---------- */
-const LP=[];
-$('#lfile').onchange=e=>{[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{LP.push(r.result);$('#lthumbs').innerHTML=LP.map((u,i)=>`<img src="${u}" alt="Your photo ${i+1}">`).join('');$('#lfileL').textContent=`${LP.length} photo${LP.length>1?'s':''} added. Add more?`};r.readAsDataURL(f)})};
-$('#lf').onsubmit=e=>{e.preventDefault();const n=$('#ln').value.trim(),p=$('#lph').value.trim(),m=$('#lmsg').value.trim(),er=$('#lerr');
-  if(!n||!phoneOk(p)){er.textContent='Add your name and a 10-digit mobile number so we can text you back.';er.hidden=false;(n?$('#lph'):$('#ln')).focus();return}
-  $('#lfields').hidden=true;$('#ldone').hidden=false;$('#lwho').textContent=`Thanks, ${n.split(' ')[0]}.`;$('#bname').value=n;$('#bphone').value=p;if(m&&!$('#bnote').value)$('#bnote').value=m;
-  if(M&&!reduce)M.animate('#ldone',{opacity:[.001,1],y:[10,0]},{duration:.3});
-  push('New inspection request',`${n}, ${p}${m?'\n“'+m+'”':''}${LP.length?`\n${LP.length} photo${LP.length>1?'s':''} attached`:''}`)};
-renderQ();
-
-/* ---------- booking ---------- */
-const SL=['8 to 10 AM','10 AM to noon','1 to 3 PM','3 to 5 PM'];let pd=0,ps=null;const days=[];{const d=new Date();d.setHours(12,0,0,0);while(days.length<7){d.setDate(d.getDate()+1);if(d.getDay())days.push(new Date(d))}}
-const taken=(i,j)=>(i*7+j*3)%5===0;
-function drawB(){$('#days').innerHTML=days.map((d,i)=>`<button type="button" class="day" data-d="${i}" aria-pressed="${pd===i}"><small>${d.toLocaleDateString('en-US',{weekday:'short'})}</small><b>${d.getDate()}</b><small>${d.toLocaleDateString('en-US',{month:'short'})}</small></button>`).join('');
-  $('#slots').innerHTML=SL.map((s,j)=>`<button type="button" class="slot" data-s="${j}" aria-pressed="${ps===j}" ${taken(pd,j)?'disabled':''}>${s}${taken(pd,j)?'<span class="sr">, taken</span>':''}</button>`).join('');
-  $$('[data-d]').forEach(b=>b.onclick=()=>{pd=+b.dataset.d;ps=null;drawB()});$$('[data-s]').forEach(b=>b.onclick=()=>{ps=+b.dataset.s;drawB()})}
-drawB();
-$('#bf').onsubmit=e=>{e.preventDefault();const n=$('#bname').value.trim(),p=$('#bphone').value.trim(),a=$('#baddr').value.trim(),er=$('#berr');
-  if(ps==null){er.textContent='Pick an arrival window first.';er.hidden=false;return}if(!n||!phoneOk(p)||!a){er.textContent='Add your name, a 10-digit mobile number and the address.';er.hidden=false;return}
-  const when=days[pd].toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})+', '+SL[ps];$('#bfields').hidden=true;$('#bdone').hidden=false;$('#bwhen').textContent=when;
-  if(M&&!reduce)M.animate('#bdone',{opacity:[.001,1],scale:[.97,1]},{duration:.3});push('New inspection booked',`${n}, ${p}\n${a}\n${when}${$('#bnote').value.trim()?'\n“'+$('#bnote').value.trim()+'”':''}`)};
-$('#bchange').onclick=()=>{$('#bfields').hidden=false;$('#bdone').hidden=true;$('#berr').hidden=true};
-
-/* ---------- club ---------- */
-$('#cf').onsubmit=e=>{e.preventDefault();const n=$('#cname').value.trim(),p=$('#cphone').value.trim(),a=$('#caddr').value.trim();if(!n||!phoneOk(p)||!a){$('#cerr').textContent='Add your name, a 10-digit mobile number and your home address.';$('#cerr').hidden=false;return}
-  const plan=$('#py').checked?'yearly plan, $129':'monthly plan, $12';$('#cfields').hidden=true;$('#cdone').hidden=false;$('#cwho').textContent=`${n.split(' ')[0]}, you picked the ${plan}.`;push('New Roof Care Club member',`${n}, ${p}\n${a}\n${plan}. First checkup to schedule.`)};
-
-/* ---------- sheets: text us, login, owner view ---------- */
-function open(html,focusSel){$('#layer').innerHTML=html;const esc=e=>{if(e.key==='Escape')close()};const close=()=>{$('#layer').innerHTML='';document.removeEventListener('keydown',esc)};document.addEventListener('keydown',esc);
-  $$('#layer [data-close]').forEach(b=>b.onclick=close);const sc=$('#layer .scrim');if(sc)sc.onclick=e=>{if(e.target===sc)close()};const db=$('#layer .drawer-bg');if(db)db.onclick=close;
-  const panel=$('#layer .sheet')||$('#layer .drawer');if(M&&!reduce&&panel)M.animate(panel,panel.classList.contains('drawer')?{x:[40,0],opacity:[.6,1]}:{y:[30,0],opacity:[.6,1]},{type:'spring',stiffness:420,damping:36});
+const phoneOk=v=>v.replace(/\D/g,'').length>=10;
+function toast(m){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);if(M&&!reduce)M.animate(t,{opacity:[.001,1],y:[10,0]},{duration:.2});setTimeout(()=>t.remove(),2800)}
+function open(html,focusSel){$('#layer').innerHTML=html;const escK=e=>{if(e.key==='Escape')close()};const close=()=>{$('#layer').innerHTML='';document.removeEventListener('keydown',escK)};document.addEventListener('keydown',escK);
+  $$('#layer [data-close]').forEach(b=>b.onclick=close);const sc=$('#layer .scrim');if(sc)sc.onclick=e=>{if(e.target===sc)close()};
+  const panel=$('#layer .sheet');if(M&&!reduce&&panel)M.animate(panel,{y:[40,0],opacity:[.6,1]},{type:'spring',stiffness:420,damping:36});
   const f=$(focusSel||'#layer button');if(f)f.focus();return close}
+const SL=['8 to 10 AM','10 AM to noon','1 to 3 PM','3 to 5 PM'];const days=[];{const d=new Date();d.setHours(12,0,0,0);while(days.length<7){d.setDate(d.getDate()+1);if(d.getDay())days.push(new Date(d))}}
+
 /* ---------- text us: opens the phone's Messages app with a message ready to send ---------- */
 /* The business's texting number: change this one line per client (demo uses Ryan's number). */
 const BIZ_PHONE='+13467740053';
@@ -763,43 +274,293 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-sms]');if(
   if(!isPhone()){e.preventDefault();smsSheet(body);return}
 });
 
-/* ---------- service diagram (Diagram background) ---------- */
-const SVC={roof:['Roof replacement','Tear-off down to the wood, rotted decking replaced, Class 4 shingles and a 10-year workmanship warranty.'],
-  hail:['Storm and hail damage','Storm check with photos within 48 hours. Tarp the same or next day if water is getting in.'],
-  leak:['Leaks and flashing','We trace the leak to where it starts, usually flashing, a vent or a chimney, and fix that, not just the stain.'],
-  vent:['Attic ventilation','Ridge and soffit vents let attic heat out, so shingles last longer and the AC works less.'],
-  gutter:['Gutters','Seamless gutters and downspouts sized for Houston downpours, with guards if you have trees.'],
-  claim:['Insurance claims','We document the damage, meet your adjuster and help with the paperwork, start to finish.']};
-function pickSvc(k){const svg=$('.house');if(!svg)return;svg.setAttribute('data-svc-on',k);$$('.house .hs').forEach(h=>h.classList.toggle('on',h.dataset.svc===k));
-  $('#svcT').textContent=SVC[k][0];$('#svcD').textContent=SVC[k][1];const a=$('#svcSms');a.dataset.body=`Hi Ridgeline, I’d like help with ${SVC[k][0].toLowerCase()} at my house. My address is `;a.dataset.k=k;refreshSms(a.parentNode)}
-$$('.house .hs').forEach(h=>{h.onclick=()=>pickSvc(h.dataset.svc);h.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickSvc(h.dataset.svc)}}});
-if($('#svcAdd'))$('#svcAdd').onclick=()=>{const k=$('#svcSms').dataset.k||'roof',t=$('#lmsg');const line='I need help with: '+SVC[k][0].toLowerCase()+'. ';if(!t.value.includes(line))t.value=(line+t.value).trim()+' ';t.focus();t.setSelectionRange(t.value.length,t.value.length);t.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'})};
-pickSvc('roof');
 
-/* ---------- hero background: storm, by season, or the diagram ---------- */
-const BG={hurricane:{img:'s6',fx:'rain',kick:'Hurricane season in Houston',wx:'hurricane'},hail:{img:'hail',fx:'hail',kick:'Hail season in Houston',wx:'hail'},
-  heat:{img:'heat',fx:'none',kick:'Summer in Houston',wx:'heat'},freeze:{img:'freeze',fx:'snow',kick:'Freeze season in Houston',wx:'freeze'},diagram:{fx:'none',kick:'For Houston homeowners',wx:null}};
-const seasonNow=()=>{const m=new Date().getMonth();return m===11||m<2?'freeze':m<5?'hail':m<8?'heat':'hurricane'};
-function setBg(v){const k=v==='auto'?seasonNow():v,b=BG[k];document.documentElement.dataset.bg=k;
-  if(b.img){const im=$('.hero-photo');im.src=`img/${b.img}.webp`;im.srcset=`img/${b.img}-m.webp 800w, img/${b.img}.webp 1200w`}
-  window.heroFx=b.fx;$('.hero .kicker').textContent=b.kick;if(b.wx)wx(b.wx);
-  SMS.hero=k==='diagram'?'Hi Ridgeline, I’d like a free roof inspection. My address is ':`Hi Ridgeline, I’d like a free roof inspection before ${{hurricane:'the next storm',hail:'the next hailstorm',heat:'summer gets worse',freeze:'the next freeze'}[k]}. My address is `;refreshSms(document)}
-const bgSel=$('#bgSel');let bgStart='auto';try{bgStart=localStorage.getItem('rl-bg')||'auto'}catch(x){}
-bgSel.value=bgStart;$('#bgAuto').textContent='This season ('+{hurricane:'hurricane',hail:'hail',heat:'heat',freeze:'freeze'}[seasonNow()]+')';
-bgSel.onchange=()=>{setBg(bgSel.value);try{localStorage.setItem('rl-bg',bgSel.value)}catch(x){}};setBg(bgStart);
 
+/* ---------- CRM data: one small store shared by the website, the owner view and the customer portal ---------- */
+/* Demo: saved in this browser only. Live: the same shape moves to a database + texting service. */
+const DAY=864e5,NOW=Date.now();
+const digits=v=>String(v||'').replace(/\D/g,'').slice(-10);
+const pretty=v=>{const d=digits(v);return d.length===10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:v};
+const first=n=>String(n||'').trim().split(/\s+/)[0]||'there';
+const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' hr ago':Math.round(m/1440)+' days ago'};
+const fmtDay=t=>new Date(t).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+const usd=n=>'$'+Math.round(n).toLocaleString('en-US');
+const STAGES=[['lead','New request'],['booked','Inspection booked'],['inspected','Inspected'],['estimate','Estimate sent'],['approved','Approved'],['work','Work in progress'],['invoiced','Invoiced'],['paid','Paid']];
+const stageIx=s=>STAGES.findIndex(x=>x[0]===s);
+const stageName=s=>(STAGES.find(x=>x[0]===s)||['',s])[1];
+const OWNER_KEY='owner';
+const SITE_URL=location.href.split('#')[0];
+function seedDB(){const c=(o)=>Object.assign({id:'c'+Math.random().toString(36).slice(2,8),sample:true,photos:[],updates:[],portal:false,show:{},notes:''},o);
+  const roofPics=['img/s2-m.webp','img/s1-m.webp'];
+  return{v:2,customers:[
+    c({name:'Linda Park',phone:'2815550177',addr:'4410 Bellfort Ave, Houston',source:'Website form',created:NOW-9*DAY,replied:NOW-9*DAY+6*6e4,stage:'estimate',portal:true,
+      appt:{t:NOW-6*DAY,slot:'8 to 10 AM',confirmed:true},report:{t:NOW-6*DAY,notes:'Soft decking over the back bedroom, about 3 sheets. Lifted tabs on the south side. Gutters fine.',photos:roofPics},
+      estimate:{t:NOW-5*DAY,status:'sent',opts:[{name:'Repair the leak area',price:1850,items:['Replace 3 sheets of decking','New underlayment and shingles over the area','Photo report when done']},{name:'Full roof replacement',price:14200,items:['Tear-off down to the wood','Class 4 impact shingles','Ridge vent and new drip edge','10-year workmanship warranty']}]},
+      show:{schedule:true,report:true,estimate:true}}),
+    c({name:'Marcus Webb',phone:'7135550199',addr:'812 Heights Blvd, Houston',source:'Roof check',created:NOW-3*36e5,stage:'lead',msg:'Stain on the living room ceiling after the storm Tuesday.'}),
+    c({name:'Priya Shah',phone:'8325550123',addr:'',source:'Google',created:NOW-50*6e4,stage:'lead',msg:'Need a quote for a new roof, house is 18 years old.'}),
+    c({name:'Dale Ortiz',phone:'2815550144',addr:'9021 Westview Dr, Houston',source:'Booking',created:NOW-2*DAY,replied:NOW-2*DAY+12*6e4,stage:'booked',appt:{t:NOW+1*DAY,slot:'10 AM to noon',confirmed:false},show:{schedule:true},portal:true}),
+    c({name:'Grace Kim',phone:'7135550111',addr:'55 Kirby Dr, Houston',source:'Referral',created:NOW-4*DAY,replied:NOW-4*DAY+30*6e4,stage:'booked',appt:{t:NOW+3*DAY,slot:'1 to 3 PM',confirmed:true},show:{schedule:true}}),
+    c({name:'Tom Reyes',phone:'2815550166',addr:'301 Elm St, Pasadena',source:'Facebook',created:NOW-14*DAY,replied:NOW-14*DAY+45*6e4,stage:'work',portal:true,
+      estimate:{t:NOW-10*DAY,status:'approved',signed:'Tom Reyes',opts:[{name:'Full roof replacement',price:16800,items:['Tear-off','Class 4 shingles','Ridge vent']}],pick:0},
+      updates:[{t:NOW-1*DAY,text:'Tear-off done. Two sheets of decking replaced over the garage.',photos:['img/s3-m.webp']},{t:NOW-2*36e5,text:'Underlayment is on. Shingles go on tomorrow morning.',photos:['img/s4-m.webp']}],
+      show:{estimate:true,updates:true}}),
+    c({name:'Ana Lopez',phone:'8325550188',addr:'77 Rice Blvd, Houston',source:'Website form',created:NOW-21*DAY,replied:NOW-21*DAY+8*6e4,stage:'paid',portal:true,club:{plan:'Yearly, $129'},
+      estimate:{t:NOW-18*DAY,status:'approved',signed:'Ana Lopez',opts:[{name:'Leak repair',price:2400,items:['Flashing and decking repair']}],pick:0},invoice:{t:NOW-12*DAY,amount:2400,status:'paid',paidT:NOW-11*DAY,desc:'Leak repair'},
+      show:{estimate:true,invoice:true,club:true}}),
+    c({name:'Ben Carter',phone:'7135550133',addr:'1200 Main St, Houston',source:'Google',created:NOW-12*DAY,replied:NOW-12*DAY+3*36e5,stage:'invoiced',portal:true,
+      estimate:{t:NOW-10*DAY,status:'approved',signed:'Ben Carter',opts:[{name:'Gutter replacement',price:3100,items:['Seamless gutters','Guards']}],pick:0},invoice:{t:NOW-2*DAY,amount:3100,status:'sent',desc:'Gutter replacement'},show:{invoice:true}}),
+    c({name:'Joy Nguyen',phone:'2815550122',addr:'',source:'Roof Care Club',created:NOW-16*DAY,replied:NOW-16*DAY+20*6e4,stage:'paid',club:{plan:'Monthly, $12'}}),
+    c({name:'Sam Brooks',phone:'8325550155',addr:'',source:'Facebook',created:NOW-25*DAY,replied:NOW-25*DAY+2*DAY,stage:'estimate',estimate:{t:NOW-8*DAY,status:'sent',opts:[{name:'Full roof replacement',price:12900,items:['Tear-off','New shingles']}]}})
+  ]}}
+let DB;try{DB=JSON.parse(localStorage.getItem('rl-db')||'null')}catch(x){}
+if(!DB||DB.v!==2)DB=seedDB();
+const save=()=>{try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}};save();
+const byPhone=p=>DB.customers.find(c=>c.phone===digits(p));
+const byId=id=>DB.customers.find(c=>c.id===id);
+function upsert(o){const p=digits(o.phone);let c=byPhone(p);
+  if(!c){c={id:'c'+Math.random().toString(36).slice(2,8),phone:p,name:o.name||'New customer',addr:'',source:o.source||'Website',created:Date.now(),stage:'lead',photos:[],updates:[],portal:false,show:{},notes:''};DB.customers.unshift(c)}
+  ['name','addr','msg','source'].forEach(k=>{if(o[k]&&(!c[k]||k!=='source'))c[k]=o[k]});if(o.photos&&o.photos.length)c.photos=(c.photos||[]).concat(o.photos);
+  if(o.appt){c.appt=o.appt;if(stageIx(c.stage)<1)c.stage='booked';c.show.schedule=true}
+  if(o.club){c.club=o.club;c.show.club=true}
+  c.fresh=true;save();return c}
+const ownerNote=m=>toast(m||'Sent to the owner’s phone.');
+
+/* ---------- customer side: login + stage-aware portal ---------- */
 function loginSheet(){const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="lH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="lH">Customer login</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
-    <p class="muted">No password to remember. Enter your mobile number and we text you a private link to your project: photos, updates, invoices and your Roof Care Club plan.</p>
-    <div class="field"><label for="lp">Mobile number</label><input id="lp" type="tel" autocomplete="tel" inputmode="tel"></div><button class="btn btn-main" type="button" id="lg">Text me my link</button></div></div>`,'#lp');
-  $('#lg').onclick=()=>{close();toast('On the live site, a private login link is texted to that number.')}}
+    <p class="muted">No password. Enter the mobile number you gave us and we’ll text you a 4-digit code.</p>
+    <div class="field"><label for="lp">Mobile number</label><input id="lp" type="tel" autocomplete="tel" inputmode="tel" placeholder="(281) 555-0177"></div>
+    <div class="field" id="lcodeF" hidden><label for="lcode">4-digit code</label><input id="lcode" inputmode="numeric" autocomplete="one-time-code" maxlength="4"></div>
+    <p class="err" id="lerr2" role="alert" hidden></p><p class="muted" id="lhint" style="font-size:14px" hidden></p>
+    <button class="btn btn-main" type="button" id="lg">Text me a code</button>
+    <p class="muted" style="font-size:14px">Demo: try <b style="color:var(--text)">(281) 555-0177</b>, a sample customer.</p></div></div>`,'#lp');
+  let who=null,code=null;
+  $('#lg').onclick=()=>{const er=$('#lerr2');er.hidden=true;
+    if(!who){const c=byPhone($('#lp').value);if(!digits($('#lp').value)||digits($('#lp').value).length<10){er.textContent='Enter your 10-digit mobile number.';er.hidden=false;return}
+      if(!c||!c.portal){er.innerHTML=`We don’t have a portal set up for that number yet. <a href="#" data-sms="fab" style="color:var(--text)">Text us</a> and we’ll set it up.`;refreshSms(document);er.hidden=false;return}
+      who=c;code=String(1000+Math.floor(Math.random()*9000));$('#lcodeF').hidden=false;$('#lhint').hidden=false;$('#lhint').textContent=`Demo: your code is ${code}. On the live site it arrives by text.`;$('#lg').textContent='Log in';$('#lcode').focus();return}
+    if($('#lcode').value.trim()!==code){er.textContent='That code doesn’t match. Check the text and try again.';er.hidden=false;return}
+    close();openPortal(who.id)}}
 $$('[data-login]').forEach(b=>b.onclick=loginSheet);
-$('#ownerBtn').onclick=()=>{const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  open(`<div class="drawer-bg"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="oH"><header><h3 id="oH">What the owner sees</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></header>
-    <div class="body"><p class="muted">Everything a customer does on the site lands on the owner’s phone and in their app. Try the roof check, booking, club or a text, then come back.</p>
-    ${feed.map(f=>`<div class="note ${f.fresh?'fresh':''}"><b>${esc(f.k)}</b><span style="white-space:pre-line">${esc(f.b)}</span><small>${esc(f.t)}</small></div>`).join('')}
-    <p class="kicker" style="margin-top:10px">Bringing past customers back</p>
-    <div class="bub me">Hi Linda, it’s Mark at Ridgeline. It’s been 2 years since your new roof. Want your free checkup before hurricane season? Reply YES and I’ll send times.</div>
-    <div class="bub">YES! Thursday morning works</div><div class="bub me">You’re set for Thursday 8 to 10 AM. See you then.</div>
-    <p class="muted" style="font-size:14.5px">Texts like this go out on a schedule the owner picks: yearly checkups, after storms, before a warranty runs out.</p></div></aside>`);feed.forEach(f=>f.fresh=false)};
+
+function full(id,html){let el=document.getElementById(id);if(!el){el=document.createElement('div');el.id=id;el.className='app';document.body.appendChild(el)}el.innerHTML=html;el.hidden=false;document.documentElement.classList.add('app-open');el.scrollTop=0;
+  if(M&&!reduce)M.animate(el,{opacity:[.001,1],y:[16,0]},{duration:.25});return el}
+function closeFull(id){const el=document.getElementById(id);if(el)el.hidden=true;if(!$$('.app').some(a=>!a.hidden))document.documentElement.classList.remove('app-open')}
+
+const PSTEPS=[['Request',['lead']],['Inspection',['booked','inspected']],['Estimate',['estimate','approved']],['Work',['work']],['Done',['invoiced','paid']]];
+function openPortal(id){const c=byId(id);if(!c)return;const s=c.show||{};const cur=PSTEPS.findIndex(p=>p[1].includes(c.stage));
+  const est=c.estimate&&s.estimate&&c.estimate.status!=='draft'?c.estimate:null,rep=c.report&&s.report?c.report:null,inv=c.invoice&&s.invoice&&c.invoice.status!=='draft'?c.invoice:null;
+  const ups=s.updates?(c.updates||[]):[],appt=c.appt&&s.schedule&&c.appt.t>Date.now()-DAY?c.appt:null;
+  const parts=[];
+  if(appt)parts.push(`<section class="pcard"><p class="kicker">Your inspection</p><h3>${fmtDay(appt.t)}, ${appt.slot}</h3><p class="muted">${esc(c.addr||'')}</p><p class="muted">We text you when we’re on the way. The inspection takes about 45 minutes and you don’t need to be home.</p>
+    <a class="btn btn-line btn-sm" href="#" data-sms="portal" data-body="Hi Ridgeline, it’s ${esc(c.name)}. I need a different time for my inspection on ${fmtDay(appt.t)}.">Need a different time? Text us</a></section>`);
+  if(rep)parts.push(`<section class="pcard"><p class="kicker">Inspection report · ${fmtDay(rep.t)}</p><h3>What we found</h3><p>${esc(rep.notes)}</p>${rep.photos.length?`<div class="pgrid">${rep.photos.map(u=>`<img src="${u}" alt="Inspection photo">`).join('')}</div>`:''}</section>`);
+  if(est){const ap=est.status==='approved';parts.push(`<section class="pcard"><p class="kicker">Estimate · ${fmtDay(est.t)}</p><h3>${ap?'Approved':'Your options'}</h3>
+    ${est.opts.map((o,i)=>`<div class="popt ${ap&&est.pick===i?'on':''}"><div class="popt-h"><b>${esc(o.name)}</b><span>${usd(o.price)}</span></div><ul>${o.items.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>${ap?'':`<button class="btn btn-main btn-sm" type="button" data-approve="${i}">Choose this option</button>`}</div>`).join('')}
+    ${ap?`<p class="muted">Signed by ${esc(est.signed)}. We’ll text you to schedule the work.</p>`:'<p class="muted">Questions first? <a href="#" data-sms="portal" data-body="Hi Ridgeline, I have a question about my estimate." style="color:var(--text)">Text us</a></p>'}</section>`)}
+  if(ups.length)parts.push(`<section class="pcard"><p class="kicker">Job updates</p>${ups.slice().reverse().map(u=>`<div class="pup"><small>${ago(u.t)}</small><p>${esc(u.text)}</p>${(u.photos||[]).map(p=>`<img src="${p}" alt="Job photo">`).join('')}</div>`).join('')}</section>`);
+  if(inv)parts.push(`<section class="pcard"><p class="kicker">Invoice · ${fmtDay(inv.t)}</p><h3>${esc(inv.desc||'Roof work')}</h3><p class="pbig">${usd(inv.amount)}</p>${inv.status==='paid'?`<span class="okpill">Paid ${fmtDay(inv.paidT)}. Thank you!</span>`:`<button class="btn btn-main" type="button" id="payInv">Pay ${usd(inv.amount)}</button><p class="muted" style="font-size:14px">Card or bank. On the live site this opens a secure checkout.</p>`}</section>`);
+  if(c.club&&s.club)parts.push(`<section class="pcard"><p class="kicker">Roof Care Club</p><h3>${esc(c.club.plan)}</h3><p class="muted">Yearly checkup, storm checks within 72 hours, 15% off repairs.</p></section>`);
+  if(c.stage==='paid')parts.push(`<section class="pcard"><p class="kicker">Warranty</p><h3>10-year workmanship warranty</h3><p class="muted">Keep this page. If anything we did leaks, text us and we come back free.</p></section>`);
+  const empty=!parts.length;
+  full('portal',`<header class="apphead"><div><p class="kicker">Ridgeline Roofing</p><h2>Hi, ${esc(first(c.name))}</h2></div><button class="btn btn-line btn-sm" type="button" id="pOut">Log out</button></header>
+    <div class="appbody"><ol class="track" aria-label="Where your project is">${PSTEPS.map((p,i)=>`<li class="${i<cur?'done':i===cur?'now':''}"><i></i><span>${p[0]}</span></li>`).join('')}</ol>
+    ${empty?`<section class="pcard"><h3>We’re on it</h3><p class="muted">We got your request and will text you shortly to set up your free inspection. Your report and photos will show up here after the visit.</p></section>`:parts.join('')}
+    <p class="muted" style="text-align:center;font-size:14px;margin-top:6px">Questions? <a href="#" data-sms="portal" data-body="Hi Ridgeline, it’s ${esc(c.name)}. " style="color:var(--text)">Text ${BIZ_PRETTY}</a></p></div>`);
+  refreshSms(document);
+  $('#pOut').onclick=()=>closeFull('portal');
+  $$('#portal [data-approve]').forEach(b=>b.onclick=()=>{const i=+b.dataset.approve,o=c.estimate.opts[i];const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sgH"><h3 id="sgH">Approve: ${esc(o.name)}</h3><p class="pbig">${usd(o.price)}</p>
+      <div class="field"><label for="sgn">Type your full name to sign</label><input id="sgn" autocomplete="name" value=""></div><p class="err" id="sge" role="alert" hidden></p>
+      <div class="smsrow"><button class="btn btn-main" type="button" id="sgo">Approve and sign</button><button class="btn btn-line" type="button" data-close>Not yet</button></div></div></div>`,'#sgn');
+    $('#sgo').onclick=()=>{const n=$('#sgn').value.trim();if(n.length<3){$('#sge').textContent='Type your full name.';$('#sge').hidden=false;return}
+      Object.assign(c.estimate,{status:'approved',pick:i,signed:n,signedT:Date.now()});c.stage='approved';c.fresh=true;save();close();ownerNote('Approved. The owner just got a text.');openPortal(c.id)}});
+  const pay=$('#payInv');if(pay)pay.onclick=()=>{Object.assign(c.invoice,{status:'paid',paidT:Date.now()});c.stage='paid';c.fresh=true;save();ownerNote('Payment received (demo).');openPortal(c.id)};
+}
+
+/* ---------- owner view: private link (#owner) ---------- */
+let oTab='today',oPeriod=30;
+const smsTo=(phone,body)=>`sms:+1${digits(phone)}?body=${encodeURIComponent(body)}`;
+const ownerName='Mark';
+function metrics(days){const since=Date.now()-days*DAY,C=DB.customers,inP=t=>t&&t>=since;
+  const leads=C.filter(c=>inP(c.created));const replied=leads.filter(c=>c.replied);const avgReply=replied.length?replied.reduce((a,c)=>a+(c.replied-c.created),0)/replied.length:0;
+  const booked=C.filter(c=>c.appt&&inP(c.created)).length,inspected=C.filter(c=>c.report&&inP(c.report.t)).length;
+  const sent=C.filter(c=>c.estimate&&c.estimate.status!=='draft'&&inP(c.estimate.t)),won=sent.filter(c=>c.estimate.status==='approved');
+  const pipe=C.filter(c=>c.estimate&&c.estimate.status==='sent').reduce((a,c)=>a+Math.max(...c.estimate.opts.map(o=>o.price)),0);
+  const paid=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&inP(c.invoice.paidT)).reduce((a,c)=>a+c.invoice.amount,0);
+  const owed=C.filter(c=>c.invoice&&c.invoice.status==='sent').reduce((a,c)=>a+c.invoice.amount,0);
+  const src={};leads.forEach(c=>src[c.source]=(src[c.source]||0)+1);
+  return{leads:leads.length,avgReply,booked,inspected,sent:sent.length,won:won.length,close:sent.length?Math.round(won.length/sent.length*100):null,pipe,paid,owed,portal:C.filter(c=>c.portal).length,club:C.filter(c=>c.club).length,src}}
+const fmtDur=ms=>{const m=Math.round(ms/6e4);return !ms?'n/a':m<60?m+' min':Math.round(m/6)/10+' hr'};
+function chip(c){return `<span class="chip st-${c.stage}">${stageName(c.stage)}</span>`}
+function oToday(){const C=DB.customers,now=Date.now();
+  const leads=C.filter(c=>c.stage==='lead').sort((a,b)=>a.created-b.created);
+  const up=C.filter(c=>c.appt&&c.appt.t>now-6*36e5&&c.stage==='booked').sort((a,b)=>a.appt.t-b.appt.t);
+  const nudge=C.filter(c=>c.estimate&&c.estimate.status==='sent'&&now-c.estimate.t>3*DAY);
+  const owed=C.filter(c=>c.invoice&&c.invoice.status==='sent');
+  const late=t=>now-t>36e5;
+  return `<h3 class="osec">New requests to answer <span class="cnt">${leads.length}</span></h3>${leads.length?leads.map(c=>`<article class="orow ${late(c.created)?'late':''}" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(c.source)} · ${ago(c.created)}${late(c.created)?' · answer soon':''}</small>${c.msg?`<p>“${esc(c.msg)}”</p>`:''}</div>
+      <div class="oacts"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, this is ${ownerName} with Ridgeline Roofing. Got your request for a free roof inspection. What day works best this week?`)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" data-book="${c.id}">Book inspection</button></div></article>`).join(''):'<p class="muted">All caught up.</p>'}
+    <h3 class="osec">Inspections coming up <span class="cnt">${up.length}</span></h3>${up.length?up.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${fmtDay(c.appt.t)}, ${c.appt.slot} · ${esc(c.addr||'No address yet')}</small>${c.appt.confirmed?'<span class="okpill sm">Confirmed</span>':'<span class="warnpill">Not confirmed yet</span>'}</div>
+      <div class="oacts">${c.appt.confirmed?'':`<a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. Confirming your free roof inspection ${fmtDay(c.appt.t)}, ${c.appt.slot}. Reply YES to confirm or text a better time.`)}">Text to confirm</a><button class="btn btn-line btn-sm" type="button" data-confirm="${c.id}">They confirmed</button>`}
+        <a class="btn btn-line btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, ${ownerName} from Ridgeline here. On my way, about 20 minutes out.`)}">On my way</a><button class="btn btn-line btn-sm" type="button" data-report="${c.id}">Done, add report</button></div></article>`).join(''):'<p class="muted">Nothing booked yet.</p>'}
+    ${nudge.length?`<h3 class="osec">Estimates waiting on an answer <span class="cnt">${nudge.length}</span></h3>${nudge.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>Sent ${ago(c.estimate.t)} · up to ${usd(Math.max(...c.estimate.opts.map(o=>o.price)))}</small></div><div class="oacts"><a class="btn btn-line btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, ${ownerName} with Ridgeline. Any questions on the estimate? Happy to walk through it. You can approve it from your portal: ${SITE_URL}`)}">Text a check-in</a></div></article>`).join('')}`:''}
+    ${owed.length?`<h3 class="osec">Invoices not paid yet <span class="cnt">${owed.length}</span></h3>${owed.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${usd(c.invoice.amount)} · sent ${ago(c.invoice.t)}</small></div><div class="oacts"><a class="btn btn-line btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, friendly reminder your Ridgeline invoice for ${usd(c.invoice.amount)} is ready in your portal: ${SITE_URL}`)}">Text a reminder</a></div></article>`).join('')}`:''}`}
+function oCustomers(q){const C=DB.customers.filter(c=>!q||(c.name+c.phone+c.addr).toLowerCase().includes(q.toLowerCase()));
+  return `<div class="osearch"><input id="oq" type="search" placeholder="Search name, phone or address" value="${esc(q||'')}" aria-label="Search customers"><button class="btn btn-main btn-sm" type="button" id="oadd">Add customer</button></div>
+    ${C.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}${c.sample?' <small class="samp">sample</small>':''}</b><small>${pretty(c.phone)}${c.addr?' · '+esc(c.addr):''}</small></div><div class="oright">${chip(c)}${c.portal?'<small class="muted">Portal on</small>':''}</div></article>`).join('')||'<p class="muted">No matches.</p>'}`}
+function oNumbers(){const m=metrics(oPeriod),src=Object.entries(m.src).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...src.map(s=>s[1]));
+  const tile=(l,v,h)=>`<div class="tile"><small>${l}</small><b>${v}</b>${h?`<span>${h}</span>`:''}</div>`;
+  return `<div class="seg" role="group" aria-label="Time range">${[7,30,90].map(d=>`<button type="button" data-per="${d}" aria-pressed="${oPeriod===d}">${d} days</button>`).join('')}</div>
+    <div class="tiles">${tile('New requests',m.leads)}${tile('Avg time to first reply',fmtDur(m.avgReply),m.avgReply>36e5?'Aim for under 5 min':'')}${tile('Inspections booked',m.booked)}${tile('Inspections done',m.inspected)}
+    ${tile('Estimates sent',m.sent)}${tile('Close rate',m.close==null?'n/a':m.close+'%',m.won+' approved')}${tile('Open estimates',usd(m.pipe),'waiting on an answer')}${tile('Collected',usd(m.paid),m.owed?usd(m.owed)+' still owed':'')}
+    ${tile('Customers with portal',m.portal)}${tile('Roof Care Club members',m.club)}</div>
+    <h3 class="osec">Where requests came from</h3><div class="obars">${src.map(([k,v])=>`<div class="obar" title="${esc(k)}: ${v}"><span>${esc(k)}</span><i style="width:${Math.max(4,v/mx*100)}%"></i><b>${v}</b></div>`).join('')||'<p class="muted">No requests in this range.</p>'}</div>
+    <p class="muted" style="font-size:14px">Sample numbers mixed with anything you submit on this demo.</p>`}
+function openOwner(){const body=oTab==='today'?oToday():oTab==='people'?oCustomers(''):oNumbers();
+  full('owner',`<header class="apphead"><div><p class="kicker">Ridgeline · Owner</p><h2>${oTab==='today'?'Today':oTab==='people'?'Customers':'Numbers'}</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
+    <nav class="otabs" aria-label="Owner sections">${[['today','Today'],['people','Customers'],['numbers','Numbers']].map(([k,l])=>`<button type="button" data-otab="${k}" aria-current="${oTab===k?'page':'false'}">${l}</button>`).join('')}</nav>
+    <div class="appbody" id="obody">${body}</div>`);
+  $('#oOut').onclick=()=>{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
+  $$('[data-otab]').forEach(b=>b.onclick=()=>{oTab=b.dataset.otab;openOwner()});
+  bindOwner()}
+function bindOwner(){const ob=$('#obody');
+  $$('#obody [data-open]').forEach(r=>r.addEventListener('click',e=>{if(e.target.closest('a,button'))return;custSheet(r.dataset.open)}));
+  $$('#obody [data-book]').forEach(b=>b.onclick=()=>bookSheet(b.dataset.book));
+  $$('#obody [data-confirm]').forEach(b=>b.onclick=()=>{byId(b.dataset.confirm).appt.confirmed=true;save();openOwner()});
+  $$('#obody [data-report]').forEach(b=>b.onclick=()=>reportSheet(b.dataset.report));
+  $$('#obody [data-per]').forEach(b=>b.onclick=()=>{oPeriod=+b.dataset.per;openOwner()});
+  const q=$('#oq');if(q){q.oninput=()=>{ob.innerHTML=oCustomers(q.value);bindOwner();const nq=$('#oq');nq.focus();nq.setSelectionRange(nq.value.length,nq.value.length)}}
+  const add=$('#oadd');if(add)add.onclick=addSheet;
+  $$('#obody a[href^="sms:"]').forEach(a=>a.addEventListener('click',e=>{if(!isPhone()){e.preventDefault();toast('Opens your texting app on your phone.')}}));
+  $$('#obody [data-open]').forEach(r=>{const c=byId(r.dataset.open);if(c&&c.fresh){r.classList.add('fresh');c.fresh=false}});save()}
+function sheetWrap(id,title,inner){return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="${id}"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="${id}">${title}</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>${inner}</div></div>`}
+function bookSheet(id){const c=byId(id);let d=0,s=null;const close=open(sheetWrap('bkH','Book '+esc(first(c.name))+'’s inspection',`<div class="days" id="odays"></div><div class="slots" id="oslots"></div><div class="field"><label for="oaddr">Address</label><input id="oaddr" value="${esc(c.addr||'')}" autocomplete="street-address"></div><p class="err" id="obe" role="alert" hidden></p><button class="btn btn-main" type="button" id="obk">Book it</button>`));
+  const draw=()=>{$('#odays').innerHTML=days.map((x,i)=>`<button type="button" class="day" data-od="${i}" aria-pressed="${d===i}"><small>${x.toLocaleDateString('en-US',{weekday:'short'})}</small><b>${x.getDate()}</b></button>`).join('');$('#oslots').innerHTML=SL.map((x,j)=>`<button type="button" class="slot" data-os="${j}" aria-pressed="${s===j}">${x}</button>`).join('');$$('[data-od]').forEach(b=>b.onclick=()=>{d=+b.dataset.od;draw()});$$('[data-os]').forEach(b=>b.onclick=()=>{s=+b.dataset.os;draw()})};draw();
+  $('#obk').onclick=()=>{if(s==null){$('#obe').textContent='Pick a time window.';$('#obe').hidden=false;return}c.addr=$('#oaddr').value.trim()||c.addr;c.appt={t:days[d].getTime(),slot:SL[s],confirmed:false};c.stage='booked';c.show.schedule=true;if(!c.replied)c.replied=Date.now();save();close();openOwner();toast('Booked. Text them to confirm from Today.')}}
+function reportSheet(id){const c=byId(id);const pics=[];const close=open(sheetWrap('rpH','Inspection report: '+esc(first(c.name)),`<div class="field"><label for="rpn">What you found, in plain words</label><textarea id="rpn" rows="4" placeholder="Soft decking over the back bedroom, about 3 sheets. Gutters fine."></textarea></div>
+    <div class="field"><span class="flabel">Photos</span><label class="upl" for="rpf"><span>Add photos from your phone</span><input id="rpf" type="file" accept="image/*" multiple></label><div class="thumbs" id="rpt"></div></div>
+    <label class="tog"><input type="checkbox" id="rpshow" checked> Show this report in ${esc(first(c.name))}’s portal</label><button class="btn btn-main" type="button" id="rps">Save report</button>`),'#rpn');
+  $('#rpf').onchange=e=>{[...e.target.files].slice(0,8).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*k;cv.height=im.height*k;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);pics.push(cv.toDataURL('image/jpeg',.7));$('#rpt').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('')};im.src=r.result};r.readAsDataURL(f)})};
+  $('#rps').onclick=()=>{c.report={t:Date.now(),notes:$('#rpn').value.trim()||'Inspection done.',photos:pics};c.stage='inspected';c.show.report=$('#rpshow').checked;c.portal=true;save();close();openOwner();toast('Report saved. Send an estimate from the customer page.')}}
+function addSheet(){const close=open(sheetWrap('adH','Add a customer',`<div class="field"><label for="an">Name</label><input id="an" autocomplete="off"></div><div class="field"><label for="ap">Mobile number</label><input id="ap" type="tel" inputmode="tel"></div><div class="field"><label for="aa">Address (optional)</label><input id="aa"></div>
+    <div class="field"><label for="as">How they found you</label><input id="as" list="srcs" placeholder="Neighbor, yard sign, Google…"><datalist id="srcs">${[...new Set(DB.customers.map(c=>c.source))].map(s=>`<option value="${esc(s)}">`).join('')}</datalist></div>
+    <label class="tog"><input type="checkbox" id="aport" checked> Let them log in to the customer portal with this number</label><p class="err" id="ae" role="alert" hidden></p><button class="btn btn-main" type="button" id="ago">Add customer</button>`),'#an');
+  $('#ago').onclick=()=>{const n=$('#an').value.trim(),p=$('#ap').value;if(!n||digits(p).length<10){$('#ae').textContent='Add a name and a 10-digit mobile number.';$('#ae').hidden=false;return}
+    const c=upsert({name:n,phone:p,addr:$('#aa').value.trim(),source:$('#as').value.trim()||'Owner added'});c.portal=$('#aport').checked;c.replied=c.replied||Date.now();save();close();custSheet(c.id)}}
+function custSheet(id){const c=byId(id);if(!c)return;const s=c.show=c.show||{};
+  const has={schedule:!!c.appt,report:!!c.report,estimate:!!(c.estimate&&c.estimate.status!=='draft'),updates:!!(c.updates&&c.updates.length),invoice:!!(c.invoice&&c.invoice.status!=='draft'),club:!!c.club};
+  const lab={schedule:'Inspection time',report:'Inspection report',estimate:'Estimate',updates:'Job updates and photos',invoice:'Invoice',club:'Roof Care Club plan'};
+  const make={report:'<button class="btn btn-line btn-sm" type="button" data-mk="report">Add report</button>',estimate:'<button class="btn btn-line btn-sm" type="button" data-mk="estimate">Write estimate</button>',updates:'<button class="btn btn-line btn-sm" type="button" data-mk="update">Post update</button>',invoice:'<button class="btn btn-line btn-sm" type="button" data-mk="invoice">Create invoice</button>',schedule:'<button class="btn btn-line btn-sm" type="button" data-mk="book">Book inspection</button>',club:''};
+  const invite=`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline Roofing. Your project page is ready: ${SITE_URL} Tap Customer login and use this phone number.`;
+  const close=open(sheetWrap('cuH',esc(c.name),`<p class="muted" style="margin-top:-6px">${pretty(c.phone)}${c.addr?' · '+esc(c.addr):''} · came from ${esc(c.source)}</p>
+    ${c.msg?`<p>“${esc(c.msg)}”</p>`:''}${c.photos&&c.photos.length?`<div class="thumbs">${c.photos.map(u=>`<img src="${u}" alt="">`).join('')}</div>`:''}
+    <div class="field"><label for="cst">Where they are</label><select id="cst">${STAGES.map(([k,l])=>`<option value="${k}" ${c.stage===k?'selected':''}>${l}</option>`).join('')}</select></div>
+    <div class="pbox"><label class="tog"><input type="checkbox" id="cport" ${c.portal?'checked':''}> Customer portal: they log in with ${pretty(c.phone)}</label>
+      ${c.portal?`<a class="btn btn-line btn-sm" href="${smsTo(c.phone,invite)}">Text them their login</a>`:''}</div>
+    <p class="kicker" style="margin-top:6px">What ${esc(first(c.name))} can see</p><p class="muted" style="font-size:14px;margin-top:-6px">Nothing shows until you create it and switch it on.</p>
+    <div class="vis">${Object.keys(lab).map(k=>`<div class="visrow"><label class="tog ${has[k]?'':'off'}"><input type="checkbox" data-show="${k}" ${has[k]&&s[k]?'checked':''} ${has[k]?'':'disabled'}> ${lab[k]}${has[k]?'':' <small>· not created yet</small>'}</label>${make[k]&&(k==='updates'||!has[k])?make[k]:''}</div>`).join('')}</div>
+    <div class="smsrow"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. `)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" id="cprev" ${c.portal?'':'disabled'}>See their portal</button></div>`));
+  $('#cst').onchange=e=>{c.stage=e.target.value;save()};
+  $('#cport').onchange=e=>{c.portal=e.target.checked;save();close();custSheet(c.id)};
+  $$('#layer [data-show]').forEach(x=>x.onchange=()=>{s[x.dataset.show]=x.checked;save()});
+  $$('#layer [data-mk]').forEach(b=>b.onclick=()=>{close();({report:reportSheet,estimate:estSheet,update:updSheet,invoice:invSheet,book:bookSheet})[b.dataset.mk](c.id)});
+  $('#cprev').onclick=()=>{close();openPortal(c.id)};
+  $$('#layer a[href^="sms:"]').forEach(a=>a.addEventListener('click',e=>{if(!isPhone()){e.preventDefault();toast('Opens your texting app on your phone.')}}));
+  openOwner()}
+function estSheet(id){const c=byId(id);const close=open(sheetWrap('esH','Estimate for '+esc(first(c.name)),`<p class="muted">Give one to three options. Plain words, one price each.</p>
+    ${[0,1,2].map(i=>`<div class="estopt"><div class="two"><div class="field"><label for="eo${i}">Option ${i+1}${i?' (optional)':''}</label><input id="eo${i}" placeholder="${['Repair the leak area','Full roof replacement',''][i]}"></div><div class="field"><label for="ep${i}">Price</label><input id="ep${i}" inputmode="decimal" placeholder="$"></div></div><div class="field"><label for="ei${i}">What’s included (one per line)</label><textarea id="ei${i}" rows="2"></textarea></div></div>`).join('')}
+    <label class="tog"><input type="checkbox" id="eshow" checked> Show in ${esc(first(c.name))}’s portal now</label><p class="err" id="ee" role="alert" hidden></p><button class="btn btn-main" type="button" id="ego">Save estimate</button>`),'#eo0');
+  $('#ego').onclick=()=>{const opts=[0,1,2].map(i=>({name:$('#eo'+i).value.trim(),price:+String($('#ep'+i).value).replace(/[^\d.]/g,''),items:$('#ei'+i).value.split('\n').map(x=>x.trim()).filter(Boolean)})).filter(o=>o.name&&o.price);
+    if(!opts.length){$('#ee').textContent='Add at least one option with a price.';$('#ee').hidden=false;return}
+    c.estimate={t:Date.now(),status:'sent',opts};c.stage='estimate';c.show.estimate=$('#eshow').checked;c.portal=true;save();close();custSheet(c.id);toast('Estimate saved. Text them their login to see it.')}}
+function updSheet(id){const c=byId(id);const pics=[];const close=open(sheetWrap('upH','Post an update',`<div class="field"><label for="upt">What happened today</label><textarea id="upt" rows="3" placeholder="Tear-off done. Shingles go on tomorrow."></textarea></div><div class="field"><span class="flabel">Photos</span><label class="upl" for="upf"><span>Add photos</span><input id="upf" type="file" accept="image/*" multiple></label><div class="thumbs" id="upth"></div></div><button class="btn btn-main" type="button" id="upgo">Post</button>`),'#upt');
+  $('#upf').onchange=e=>{[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*k;cv.height=im.height*k;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);pics.push(cv.toDataURL('image/jpeg',.7));$('#upth').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('')};im.src=r.result};r.readAsDataURL(f)})};
+  $('#upgo').onclick=()=>{const t=$('#upt').value.trim();if(!t&&!pics.length)return;c.updates=(c.updates||[]).concat([{t:Date.now(),text:t,photos:pics}]);c.show.updates=true;if(stageIx(c.stage)<stageIx('work'))c.stage='work';save();close();custSheet(c.id)}}
+function invSheet(id){const c=byId(id);const est=c.estimate&&c.estimate.status==='approved'?c.estimate.opts[c.estimate.pick||0]:null;const close=open(sheetWrap('ivH','Invoice for '+esc(first(c.name)),`<div class="field"><label for="ivd">For</label><input id="ivd" value="${esc(est?est.name:'')}"></div><div class="field"><label for="iva">Amount</label><input id="iva" inputmode="decimal" value="${est?est.price:''}"></div>
+    <label class="tog"><input type="checkbox" id="ivshow" checked> Show in their portal with a Pay button</label><p class="err" id="ive" role="alert" hidden></p><button class="btn btn-main" type="button" id="ivgo">Save invoice</button>`),'#ivd');
+  $('#ivgo').onclick=()=>{const a=+String($('#iva').value).replace(/[^\d.]/g,'');if(!a){$('#ive').textContent='Add the amount.';$('#ive').hidden=false;return}c.invoice={t:Date.now(),amount:a,desc:$('#ivd').value.trim(),status:'sent'};c.stage='invoiced';c.show.invoice=$('#ivshow').checked;c.portal=true;save();close();custSheet(c.id)}}
+function routeHash(){if(location.hash==='#'+OWNER_KEY){oTab='today';openOwner()}}
+
+addEventListener('hashchange',routeHash);
+
+/* ---------- season + region ---------- */
+const BIZ_CITY='Houston';
+const GULF=/Houston|Galveston|Corpus Christi|Beaumont|Brownsville|New Orleans|Baton Rouge|Lake Charles|Mobile|Biloxi|Gulfport|Pensacola|Panama City|Tampa|Sarasota|Fort Myers|Naples|Miami|Key West/i;
+const READY=new Set(["f1", "f2", "f3", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "w1", "w2", "w3", "w4"]);
+const SET={
+  hurricane:{hero:'s6',under:'s2',lens:'Rot under the shingles',before:'s1',after:'s5',why:'Hurricane season. Find the leaks before the storm does.',capB:'Worn shingles, water getting in',capA:'New roof, hurricane rated',sms:'the next storm'},
+  usWinter:{hero:'w4',under:'w2',lens:'Water behind the ice',before:'w1',after:'w4',why:'Ice dam season. Water backs up under the shingles at the edge.',capB:'Ice dam, water backing up',capA:'New roof, edge stays clear',sms:'ice dams start'},
+  gulfWinter:{hero:'freeze',under:'g2',lens:'Leak around the pipe',before:'g1',after:'g4',why:'Freeze season. Cracked pipe boots leak for months before you see it.',capB:'Cracked pipe boot',capA:'Metal flashing that won’t crack',sms:'the next freeze'},
+  hail:{hero:'hail',under:'h1',lens:'Hail bruises',before:'h1',after:'s5',why:'Hail season. Bruised shingles look fine and leak years later.',capB:'Hail-bruised shingles',capA:'Class 4 impact shingles',sms:'the next hailstorm'},
+  heat:{hero:'heat',under:'u1',lens:'Sun-baked shingles',before:'u1',after:'heat',why:'Summer heat. A hot attic cooks your shingles from below.',capB:'Curled, cracked shingles',capA:'New shingles and a ridge vent',sms:'summer gets worse'},
+  gutters:{hero:'f4',under:'f2',lens:'Rotted roof edge',before:'f1',after:'f4',why:'Leaf season. Clogged gutters rot the edge of your roof.',capB:'Gutters packed with leaves',capA:'New edge and gutter guard',sms:'the leaves come down'}};
+const pickSet=(sea,reg)=>({winter:reg==='gulf'?'gulfWinter':'usWinter',spring:'hail',summer:'heat',fall:reg==='gulf'?'hurricane':'gutters'})[sea];
+const seasonNow=()=>{const m=new Date().getMonth();return m===11||m<2?'winter':m<5?'spring':m<8?'summer':'fall'};
+const regionFor=c=>GULF.test(c)?'gulf':'us';
+const PICK={season:'auto',region:'auto'};try{Object.assign(PICK,JSON.parse(localStorage.getItem('rl-pick2')||'{}'))}catch(x){}
+const ok=n=>READY.has(n);
+const src=(el,n)=>{el.src=`img/${n}.webp`;el.srcset=`img/${n}-m.webp 800w, img/${n}.webp 1200w`;el.sizes='100vw'};
+function apply(){const sea=PICK.season==='auto'?seasonNow():PICK.season,reg=PICK.region==='auto'?regionFor(BIZ_CITY):PICK.region;
+  let s=SET[pickSet(sea,reg)];const fb=SET.hurricane;
+  const hero=ok(s.hero)?s.hero:fb.hero,under=ok(s.under)?s.under:fb.under,before=ok(s.before)?s.before:fb.before,after=ok(s.after)?s.after:fb.after;
+  src($('#hOver'),hero);src($('#hUnder'),under);src($('#baB'),before);src($('#baA'),after);
+  const full=ok(s.under);$('#lensT').textContent=full?s.lens:fb.lens;$('#why').textContent=s.why;
+  $('#capB').textContent=ok(s.before)?s.capB:fb.capB;$('#capA').textContent=ok(s.after)?s.capA:fb.capA;
+  SMS.hero=`Hi Ridgeline, I’d like a free roof inspection before ${s.sms}. My address is `;refreshSms(document);
+  try{localStorage.setItem('rl-pick2',JSON.stringify(PICK))}catch(x){}}
+$('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="dH">Demo settings</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
+    <p class="muted">For showing clients. The live site picks these by date and city on its own.</p>
+    <div class="field"><label for="dS">Season</label><select id="dS"><option value="auto">This season (${seasonNow()})</option><option value="winter">Winter</option><option value="spring">Spring</option><option value="summer">Summer</option><option value="fall">Fall</option></select></div>
+    <div class="field"><label for="dR">Region</label><select id="dR"><option value="auto">From city (${BIZ_CITY}: ${regionFor(BIZ_CITY)==='gulf'?'Gulf Coast':'rest of US'})</option><option value="gulf">Gulf Coast</option><option value="us">Rest of US</option></select></div>
+    <div class="smsrow"><a class="btn btn-main btn-sm" href="#owner" data-close>Open owner view</a></div></div></div>`,'#dS');
+  $('#dS').value=PICK.season;$('#dR').value=PICK.region;$('#dS').onchange=e=>{PICK.season=e.target.value;apply()};$('#dR').onchange=e=>{PICK.region=e.target.value;apply()}};
+
+/* ---------- the flashlight: your finger shows what's under the shingles ---------- */
+(function lens(){const hero=$('#hero'),L=$('#lens');let tx=.62,ty=.28,x=tx,y=ty,user=false,t0=performance.now(),run=true;
+  const R=()=>Math.round(Math.min(innerWidth,innerHeight)*(innerWidth<640?.2:.16));
+  function set(){const w=hero.clientWidth,h=hero.clientHeight,r=R();hero.style.setProperty('--r',r+'px');hero.style.setProperty('--x',(x*100).toFixed(2)+'%');hero.style.setProperty('--y',(y*100).toFixed(2)+'%');L.style.setProperty('--px',(x*w).toFixed(1)+'px');L.style.setProperty('--py',(y*h).toFixed(1)+'px')}
+  function tick(now){if(!run)return;if(!user&&!reduce){const k=(now-t0)/1000,m=innerWidth<720;tx=m?.5+.26*Math.sin(k*.45):.64+.16*Math.sin(k*.45);ty=m?.22+.06*Math.sin(k*.7+1):.3+.1*Math.sin(k*.7+1)}x+=(tx-x)*.12;y+=(ty-y)*.12;set();requestAnimationFrame(tick)}
+  const mv=e=>{const r=hero.getBoundingClientRect();tx=clamp((e.clientX-r.left)/r.width,.05,.95);ty=clamp((e.clientY-r.top)/r.height,.1,innerWidth<720?.4:.56);if(!user){user=true;$('#lensT').dataset.k=1}};
+  hero.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons||e.pointerType==='touch')mv(e)});hero.addEventListener('pointerdown',mv);
+  hero.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'){user=false;t0=performance.now()}});
+  new IntersectionObserver(es=>{const was=run;run=es[0].isIntersecting;if(run&&!was)requestAnimationFrame(tick)}).observe(hero);
+  addEventListener('resize',set);set();requestAnimationFrame(tick);
+  if(M&&!reduce){M.animate('.hcopy > *',{opacity:[.001,1],y:[24,0]},{duration:.7,delay:M.stagger(.08,{startDelay:.15}),ease:[.2,.8,.2,1]})}})();
+
+/* ---------- before / after ---------- */
+(function(){const ba=$('#ba'),r=$('#baR');const set=v=>ba.style.setProperty('--cut',v+'%');r.oninput=()=>set(r.value);set(50);
+  let hinted=false;new IntersectionObserver(es=>{if(es[0].isIntersecting&&!hinted&&M&&!reduce){hinted=true;M.animate(50,22,{duration:.7,ease:[.3,.7,.2,1],onUpdate:v=>set(v)}).then(()=>M.animate(22,50,{duration:.8,ease:[.3,.7,.2,1],onUpdate:v=>set(v)}))}},{threshold:.6}).observe(ba)})();
+
+/* ---------- top bar turns solid after the hero ---------- */
+addEventListener('scroll',()=>$('#bar').classList.toggle('solid',scrollY>innerHeight*.6),{passive:true});
+
+/* ---------- one button: name + number, then optional extras ---------- */
+function push(o){upsert(o)}
+function startSheet(){const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="gH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="gH">Free roof inspection</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
+    <div id="g1"><p class="muted" style="margin-bottom:12px">We text you back in about 10 minutes, 7 AM to 7 PM.</p>
+      <div class="field"><label for="gn">Your name</label><input id="gn" autocomplete="name"></div>
+      <div class="field" style="margin-top:10px"><label for="gp">Mobile number</label><input id="gp" type="tel" inputmode="tel" autocomplete="tel"></div>
+      <p class="err" id="ge" role="alert" hidden></p>
+      <button class="btn btn-main" type="button" id="gGo" style="width:100%;margin-top:14px">Get my free inspection</button></div>
+    <div id="g2" hidden><span class="okpill">Request sent</span><h3 id="gThx" style="margin-top:10px"></h3><p class="muted" style="margin:8px 0 14px">Want to speed things up? Everything below is optional.</p>
+      <div class="field"><label for="gm">What’s going on? In your own words</label><textarea id="gm" rows="3" placeholder="Stain on the bedroom ceiling after the storm."></textarea></div>
+      <div class="field" style="margin-top:10px"><span class="flabel">Photos</span><label class="upl" for="gf"><span id="gfl">Add photos of the roof or ceiling</span><input id="gf" type="file" accept="image/*" multiple></label><div class="thumbs" id="gt"></div></div>
+      <div class="field" style="margin-top:10px"><label for="ga">Address</label><input id="ga" autocomplete="street-address"></div>
+      <div class="field" style="margin-top:10px"><span class="flabel">Pick a time</span><div class="days" id="gd"></div><div class="slots" id="gs" style="margin-top:8px"></div></div>
+      <button class="btn btn-main" type="button" id="gSave" style="width:100%;margin-top:14px">Add to my request</button></div>
+    <div id="g3" hidden><span class="okpill">All set</span><h3 style="margin-top:10px">See you soon.</h3><p class="muted" id="gWhen" style="margin-top:8px"></p><button class="btn btn-line" type="button" data-close style="margin-top:14px">Done</button></div></div></div>`,'#gn');
+  let who=null,pd=null,ps=null;const pics=[];
+  $('#gGo').onclick=()=>{const n=$('#gn').value.trim(),p=$('#gp').value.trim();if(!n||!phoneOk(p)){$('#ge').textContent='Add your name and a 10-digit mobile number so we can text you.';$('#ge').hidden=false;(n?$('#gp'):$('#gn')).focus();return}
+    who=upsert({name:n,phone:p,source:'Website'});toast('Sent to the owner’s phone.');$('#g1').hidden=true;$('#g2').hidden=false;$('#gThx').textContent=`Thanks, ${first(n)}. We got it.`;draw()};
+  const draw=()=>{$('#gd').innerHTML=days.map((d,i)=>`<button type="button" class="day" data-gd="${i}" aria-pressed="${pd===i}"><small>${d.toLocaleDateString('en-US',{weekday:'short'})}</small><b>${d.getDate()}</b></button>`).join('');
+    $('#gs').innerHTML=SL.map((s,j)=>`<button type="button" class="slot" data-gs="${j}" aria-pressed="${ps===j}">${s}</button>`).join('');
+    $$('[data-gd]').forEach(b=>b.onclick=()=>{pd=+b.dataset.gd;draw()});$$('[data-gs]').forEach(b=>b.onclick=()=>{ps=+b.dataset.gs;if(pd==null)pd=0;draw()})};
+  $('#layer').addEventListener('change',e=>{if(e.target.id!=='gf')return;[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*k;cv.height=im.height*k;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);pics.push(cv.toDataURL('image/jpeg',.7));$('#gt').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('');$('#gfl').textContent=pics.length+' photo'+(pics.length>1?'s':'')+' added'};im.src=r.result};r.readAsDataURL(f)})});
+  $('#gSave').onclick=()=>{const o={phone:who.phone,msg:$('#gm').value.trim(),addr:$('#ga').value.trim(),photos:pics};if(ps!=null)o.appt={t:days[pd].getTime(),slot:SL[ps],confirmed:false};upsert(o);
+    $('#g2').hidden=true;$('#g3').hidden=false;$('#gWhen').textContent=ps!=null?`${days[pd].toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}, ${SL[ps]}. We’ll text to confirm the day before.`:'We’ll text you shortly to pick a time.'}}
+$$('[data-start]').forEach(b=>b.onclick=startSheet);
+
+apply();routeHash();
 })();
+
 </script>
