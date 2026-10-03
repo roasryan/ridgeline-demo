@@ -1638,7 +1638,8 @@ if(QD){
   const cen=g=>({lat:g.reduce((s,p)=>s+p.lat,0)/g.length,lon:g.reduce((s,p)=>s+p.lon,0)/g.length});
   const dist=(a,b)=>Math.hypot((a.lat-b.lat)*110540,(a.lon-b.lon)*111320*Math.cos(a.lat*Math.PI/180));
   const mk=g=>({g,c:cen(g),ft:area(g)});
-  function choose(pt){let best=null,bd=1e9;for(const b of blds){if(b.ft<350)continue;if(inside(pt,b.g))return b;const d=dist(pt,b.c);if(d<bd){bd=d;best=b}}return bd<35?best:null}
+  /* the address point often lands in the yard or on a shed: favor the main house (big footprint) close to the point */
+  function choose(pt){let best=null,bs=0;for(const b of blds){if(b.ft<350)continue;const ins=inside(pt,b.g),d=ins?0:dist(pt,b.c);if(d>40)continue;const sc=(b.ft>=1000?b.ft:b.ft*.4)/(d+10)*(ins?1.6:1);if(sc>bs){bs=sc;best=b}}return best}
   async function getBlds(lat,lon){
     try{const u=`https://services2.arcgis.com/FiaPA4ga0iQKduv3/ArcGIS/rest/services/USA_Structures_View/FeatureServer/0/query?f=json&geometry=${lon},${lat}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&distance=70&units=esriSRUnit_Meter&outFields=OCC_CLS&returnGeometry=true&outSR=4326`;
       const j=await(await fetch(u)).json();const b=(j.features||[]).filter(f=>f.geometry&&f.geometry.rings&&f.geometry.rings[0].length>3).map(f=>mk(f.geometry.rings[0].map(([x,y])=>({lat:y,lon:x}))));if(b.length)return b}catch(x){}
