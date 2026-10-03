@@ -457,7 +457,7 @@ footer .wrap{display:block}
 /* phone hero: whole house visible, blurred copy of the photo fills the rest */
 .hero::before{content:'';position:absolute;inset:-40px;background:var(--hbg) center 30%/cover no-repeat;filter:blur(28px) brightness(.55);transform:scale(1.1)}
 @media (max-width:899px){
- .hero .ph{inset:auto;left:-20%;width:140%;max-width:none;height:auto;top:calc(64px + env(safe-area-inset-top,0px));object-fit:fill}
+ .hero .ph{inset:auto;left:-20%;width:140%;max-width:none;height:auto;top:calc(var(--bh,64px));object-fit:fill}
  .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,.35) 0%,rgba(31,42,51,0) 14%,rgba(31,42,51,0) 54%,rgba(31,42,51,.85) 66%,var(--slate) 100%)}
 }
 @media (max-width:899px){.rpin,.rpin.l{transform:translate(-50%,calc(-100% + 7px))}.rpin .rp,.rpin.l .rp{flex-direction:column-reverse;gap:4px}}
@@ -507,11 +507,11 @@ footer .wrap{display:block}
 @media (max-width:899px){#ripFound,#ripFixed,#fixCap{top:calc(74px + env(safe-area-inset-top,0px))!important;bottom:auto!important;width:min(250px,calc(100% - 32px))!important}#ripMeter{display:none}.riplabel{display:none}}
 /* phones: slim bar on the lawn at the bottom of the photo, never over the roof */
 @media (max-width:899px){
- #ripFound,#ripFixed,#fixCap{top:calc(64px + env(safe-area-inset-top,0px) + 78vw - 64px)!important;left:12px!important;right:12px!important;width:auto!important;padding:8px 10px!important;border-radius:12px}
+ #ripFound,#ripFixed,#fixCap{top:calc(var(--bh,64px) + 78vw - 64px)!important;left:12px!important;right:12px!important;width:auto!important;padding:8px 10px!important;border-radius:12px}
  #ripFound b,#ripFixed b{display:none}
  #ripFound .row,#ripFixed .row{margin-top:0}
  #ripFound .linkbtn,#ripFixed .linkbtn{display:none}
- #fixCap{top:calc(64px + env(safe-area-inset-top,0px) + 78vw - 84px)!important}
+ #fixCap{top:calc(var(--bh,64px) + 78vw - 84px)!important}
  #fixCapT{font-size:13px!important}#fixCapT small{display:inline!important;margin-right:6px}
 }
 /* before/after on the hero after the fix */
@@ -523,27 +523,28 @@ footer .wrap{display:block}
 #cmpHandle .ct{position:absolute;top:calc(84px + env(safe-area-inset-top,0px));padding:5px 10px;border-radius:999px;background:rgba(31,42,51,.88);color:#fff;font-weight:800;font-size:13px;white-space:nowrap}
 #cmpHandle .ct.b{right:12px}#cmpHandle .ct.a{left:12px}
 @media (max-width:899px){#cmpHandle i{top:30%}#cmpHandle .ct{top:calc(74px + env(safe-area-inset-top,0px) + 40px)}}
-@media (max-width:899px){#cmpHandle{top:calc(64px + env(safe-area-inset-top,0px));bottom:auto;height:78vw}#cmpHandle .ct{top:12px}#cmpHandle i{top:40%}}
+@media (max-width:899px){#cmpHandle{top:calc(var(--bh,64px));bottom:auto;height:78vw}#cmpHandle .ct{top:12px}#cmpHandle i{top:40%}}
 /* phones: no dead gap. The text starts right under the photo, and only the photo itself is draggable (the rest of the hero scrolls normally) */
 @media (max-width:899px){
- .hero{height:auto!important;min-height:0!important;padding-top:calc(64px + env(safe-area-inset-top,0px) + 78vw)}
+ .hero{height:auto!important;min-height:0!important;padding-top:calc(var(--bh,64px) + 78vw)}
  .hero .hcopy{position:relative;bottom:auto;padding-top:18px}
- #ripZone{top:calc(64px + env(safe-area-inset-top,0px))!important;height:78vw!important}
+ #ripZone{top:calc(var(--bh,64px))!important;height:78vw!important}
  .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,0) 0%,rgba(31,42,51,0) calc(64px + 70vw),var(--slate) calc(64px + 78vw + 10px))!important}
 }
 /* phones: a slot under the photo holds the action box (Watch us fix it / steps / compare). The page scrolls normally there. */
 @media (max-width:899px){
- .hero{padding-top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 92px)}
- #ripFound,#ripFixed,#fixCap{top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 10px)!important;left:12px!important;right:12px!important;width:auto!important}
- .hero .riplabel{display:flex!important;position:absolute;top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 26px)!important;left:12px;right:12px;transform:none;justify-content:center;white-space:normal;font-size:15px}
+ .hero{padding-top:calc(var(--bh,64px) + 78vw + 92px)}
+ #ripFound,#ripFixed,#fixCap{top:calc(var(--bh,64px) + 78vw + 10px)!important;left:12px!important;right:12px!important;width:auto!important}
+ .hero .riplabel{display:flex!important;position:absolute;top:calc(var(--bh,64px) + 78vw + 26px)!important;left:12px;right:12px;transform:none;justify-content:center;white-space:normal;font-size:15px}
  .hero.tearing .riplabel,.hero.found .riplabel,.hero.fixing .riplabel{opacity:0}
 }
-@media (max-width:899px){.hero{padding-top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 112px)}#fixCap{padding:8px 10px!important;gap:6px!important}.hero .riplabel{top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 36px)!important}}
+@media (max-width:899px){.hero{padding-top:calc(var(--bh,64px) + 78vw + 112px)}#fixCap{padding:8px 10px!important;gap:6px!important}.hero .riplabel{top:calc(var(--bh,64px) + 78vw + 36px)!important}}
 /* phones: lawn stays bright from start to finish; the start prompt is a box in the same spot as the step box */
 @media (max-width:899px){
- .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,0) 0,rgba(31,42,51,0) calc(64px + env(safe-area-inset-top,0px) + 78vw - 2px),var(--slate) calc(64px + env(safe-area-inset-top,0px) + 78vw))!important}
- .hero .riplabel{top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 10px)!important;left:12px!important;right:12px!important;background:#1F2A33;border-radius:16px;padding:16px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35);font-size:16px;justify-content:flex-start}
+ .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,0) 0,rgba(31,42,51,0) calc(var(--bh,64px) + 78vw - 2px),var(--slate) calc(var(--bh,64px) + 78vw))!important}
+ .hero .riplabel{top:calc(var(--bh,64px) + 78vw + 10px)!important;left:12px!important;right:12px!important;background:#1F2A33;border-radius:16px;padding:16px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35);font-size:16px;justify-content:flex-start}
 }
+@media (max-width:899px){.hero::before{background:var(--slate);filter:none}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
@@ -724,6 +725,8 @@ footer .wrap{display:block}
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const M=window.Motion||null;
 const HOME=document.getElementById('quote')?'':'index.html';
+/* the photo sits exactly under the real header height (in-app browsers and notches change it) */
+{const bh=()=>{const b=document.getElementById('bar');if(b)document.documentElement.style.setProperty('--bh',b.offsetHeight+'px')};bh();addEventListener('resize',bh);addEventListener('load',bh);if(window.ResizeObserver)document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('bar');if(b)new ResizeObserver(bh).observe(b)})}
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const esc=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
