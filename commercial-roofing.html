@@ -690,6 +690,17 @@ main,footer{position:relative;z-index:1}
 .tcpop .btn-main{background:var(--hivis)!important;color:var(--slate)!important;border:0!important}
 @media (min-width:900px){.rgrid{grid-template-columns:.9fr 1.1fr;grid-template-areas:"h m" "o m";align-items:start}.rtext{grid-area:h}.rmwrap{grid-area:m}.rmout{grid-area:o}}
 .rmout{margin-top:-8px}
+.dimg{position:relative;display:block;transform-origin:50% 95%}
+.dimg img{display:block}.dimg .f2{position:absolute;left:0;top:0;opacity:0}
+.dillo.wave .dimg{animation:dbob 1.2s ease-in-out 2}
+.dillo.wave .f2{animation:dpaw 1.2s steps(1,end) 2}
+.dillo.wave img{animation:none}
+@keyframes dbob{0%,100%{transform:none}30%{transform:translateY(-6px) rotate(-3deg)}65%{transform:translateY(-2px) rotate(2deg)}}
+@keyframes dpaw{0%{opacity:0}20%{opacity:1}45%{opacity:0}70%{opacity:1}95%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.dillo.wave .dimg,.dillo.wave .f2{animation:none}}
+.dbub{transition:opacity .3s,transform .3s}.dillo.quiet .dbub{opacity:0;transform:translateY(6px);pointer-events:none}
+@media (min-width:701px){.dimg img{width:150px;height:auto}}
+@media (max-width:700px){.dimg img{width:86px;height:auto}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -732,7 +743,7 @@ main,footer{position:relative;z-index:1}
   </div>
 </footer>
 <div id="layer"></div>
-<script>
+<div class="dillo" id="dillo" hidden><button class="dgo" type="button" aria-label="Book a free roof inspection"><span class="dbub">Free roof check this week?</span><span class="dimg"><img src="img/dillo.webp" alt="Ridgeline’s armadillo mascot in a yellow hard hat, waving" width="180" height="180"><img class="f2" src="img/dillo2.webp" alt="" aria-hidden="true" width="180" height="180"></span></button><button class="dx" type="button" aria-label="Hide the helper">×</button></div><script>
 (function(){
 "use strict";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -1007,7 +1018,7 @@ addEventListener('hashchange',routeHash);
 /* ---------- season + region ---------- */
 const BIZ_CITY='Houston';
 const GULF=/Houston|Galveston|Corpus Christi|Beaumont|Brownsville|New Orleans|Baton Rouge|Lake Charles|Mobile|Biloxi|Gulfport|Pensacola|Panama City|Tampa|Sarasota|Fort Myers|Naples|Miami|Key West/i;
-const READY=new Set(["f1", "f2", "f3", "fa1", "fa2", "fa3", "fa_felt", "fa_ply", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "sp1", "sp2", "sv_attic", "sv_claim", "sv_gutter", "sv_leak", "sv_roof", "sv_storm", "w1", "w2", "w3", "w4"]);
+const READY=new Set(["dillo", "dillo2", "f1", "f2", "f3", "fa1", "fa2", "fa3", "fa_felt", "fa_ply", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "sp1", "sp2", "sv_attic", "sv_claim", "sv_gutter", "sv_leak", "sv_roof", "sv_storm", "w1", "w2", "w3", "w4"]);
 const SET={
   hurricane:{done:'fa3',hero:'s6',under:'fa2',lens:'Rot under the shingles',before:'fa1',after:'s5',why:'Hurricane season. Find the leaks before the storm does.',capB:'Worn shingles, water getting in',capA:'New roof, hurricane rated',sms:'the next storm',stages:[['fa2','Tear-off: every old shingle, nail and the rotted felt comes off'],['fa_ply','Rotted decking cut out, new plywood nailed down sheet by sheet'],['fa_felt','Ice and water shield at the edges, synthetic underlayment course by course'],['fa3','New impact-rated shingles laid course by course, ridge cap last']]},
   usWinter:{hero:'w4',under:'w2',lens:'Water behind the ice',before:'w1',after:'w4',why:'Ice dam season. Water backs up under the shingles at the edge.',capB:'Ice dam, water backing up',capA:'New roof, edge stays clear',sms:'ice dams start'},
@@ -1504,10 +1515,10 @@ const MAPS_KEY='';
   const ia=$('#iAddr');if(ia)ia.addEventListener('change',()=>{const v=ia.value.trim();if(v.length>8&&!view.classList.contains('found')){$('#rmAddr').value=v}})}}
 
 /* ---- the armadillo: our own booking helper (original character, real photo from Flow) ---- */
-{const d=$('#dillo');if(d){const im=d.querySelector('img');const lines=['Free roof check this week?','Tap me. I’ll book it.','Photo report in 24 hours.','I’ll find your spot.'];let i=0,tm;
+{const d=$('#dillo');if(d){const im=d.querySelector('img');d.classList.add('wave');const lines=['Free roof check this week?','Tap me. I’ll book it.','Photo report in 24 hours.','I’ll find your spot.'];let i=0,tm;
   const show=()=>{d.hidden=false;requestAnimationFrame(()=>d.classList.add('in'))};
   if(im.complete&&im.naturalWidth)setTimeout(show,2500);else{im.onload=()=>setTimeout(show,2500);im.onerror=()=>d.remove()}
-  const bub=d.querySelector('.dbub');const cycle=()=>{i=(i+1)%lines.length;bub.textContent=lines[i];d.classList.remove('wave');void d.offsetWidth;d.classList.add('wave')};tm=setInterval(cycle,6000);
+  const bub=d.querySelector('.dbub');const cycle=()=>{i=(i+1)%lines.length;bub.textContent=lines[i];d.classList.remove('wave','quiet');void d.offsetWidth;d.classList.add('wave');if(innerWidth<700)setTimeout(()=>d.classList.add('quiet'),3500)};if(innerWidth<700)setTimeout(()=>d.classList.add('quiet'),6000);tm=setInterval(cycle,6000);
   window.addEventListener('rl-fixed',()=>{bub.textContent='Want this on YOUR roof? Tap me.';d.classList.add('wave')});
   d.querySelector('button.dgo').onclick=()=>{const f=$('#inspect');if(f){f.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(()=>{const n=$('#iName');if(n&&!$('#iCard.done'))n.focus({preventScroll:true})},reduce?0:700)}else location.href='index.html#inspect'};
   d.querySelector('.dx').onclick=()=>{d.remove();clearInterval(tm)};
