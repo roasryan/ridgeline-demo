@@ -426,6 +426,31 @@ footer .wrap{display:block}
 }
 
 @media (max-width:899px){.hero.found .hcopy{opacity:0;pointer-events:none}.hero.found .hcopy>*{pointer-events:none}.hero.found .riplabel{opacity:0}}
+
+/* ===== watch us fix it ===== */
+#ripFound .btn-line,#ripFixed .btn-line{color:var(--ink)}
+.linkbtn{background:none;border:0;padding:10px 0 0;font:700 15px var(--body);color:var(--soft);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#ripFixed{position:absolute;z-index:7;left:16px;right:16px;top:calc(120px + env(safe-area-inset-top,0px));max-width:420px;margin:0 auto;background:#fff;color:var(--ink);border-radius:18px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+#ripFixed b{font:850 22px/1.1 var(--display);font-variation-settings:'wdth' 115;display:block}#ripFixed p{margin:8px 0 14px;font-size:16px;color:var(--soft)}#ripFixed .row{display:flex;gap:10px;flex-wrap:wrap}#ripFixed .btn{min-height:48px;font-size:16px}
+#fixCap{position:absolute;z-index:7;left:50%;bottom:calc(36% + 12px);transform:translateX(-50%);background:rgba(31,42,51,.94);color:#fff;font-weight:800;font-size:17px;padding:12px 18px;border-radius:14px;max-width:min(92vw,520px);text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#fixCap small{display:block;color:var(--hivis);font-size:13px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:2px}
+.hero.fixing .hcopy,.hero.fixing .riplabel,.hero.fixing #ripMeter{opacity:0;pointer-events:none}.hero.fixing .hcopy>*{pointer-events:none}
+.hero.fixing #ripZone{cursor:default}
+@media (min-width:900px){#ripFixed{left:auto;right:5vw;top:auto;bottom:12vh;margin:0}#fixCap{bottom:14vh}}
+@media (max-width:899px){#ripFixed{top:calc(64% + 8px);padding:14px 16px}#ripFixed b{font-size:19px}#ripFixed p{display:none}#ripFixed .row{margin-top:10px;flex-wrap:nowrap}#ripFixed .btn{min-height:44px;font-size:15px;padding:0 14px;flex:1}#fixCap{bottom:auto;top:calc(64% + 12px);font-size:16px}}
+/* ===== what we do ===== */
+.wwd{background:var(--paper)}
+.layers{list-style:none;margin:34px 0 0;padding:0;display:grid;gap:14px}
+.layers li{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:start;background:var(--concrete);border-radius:16px;padding:14px}
+.layers canvas{width:100%;aspect-ratio:3/2;border-radius:10px;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
+.layers em{font-style:normal;display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--slate);color:var(--hivis);font-weight:900;margin-right:10px;vertical-align:middle}
+.layers b{font:850 21px/1.15 var(--display);font-variation-settings:'wdth' 110;vertical-align:middle}
+.layers span{display:block;color:var(--soft);font-size:16px;margin-top:8px}.layers a{display:inline-block;margin-top:8px;font-weight:800;font-size:15px;text-decoration:none;border-bottom:2px solid var(--hivis)}
+@media (min-width:1000px){.layers{grid-template-columns:repeat(5,1fr)}.layers li{grid-template-columns:1fr;padding:0;overflow:hidden;background:var(--concrete)}.layers li>div{padding:4px 16px 18px}.layers canvas{border-radius:0}}
+@media (max-width:520px){.layers li{grid-template-columns:1fr}}
+.wwd-note{font-size:14px;color:var(--soft);margin:14px 0 0}
+#fixCap{left:16px;right:16px;margin:0 auto;width:fit-content;transform:none}
+@media (max-width:520px){.layers li{grid-template-columns:96px 1fr;gap:14px}.layers b{font-size:19px}.layers em{width:26px;height:26px;margin-right:6px}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
@@ -445,7 +470,9 @@ footer .wrap{display:block}
     <div class="riplabel" aria-hidden="true"><b>Rip it off.</b> Drag across the roof.</div>
     <div id="ripMeter" aria-hidden="true">Old roof removed<i></i></div>
     <div id="ripHint" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M24 34V12a4 4 0 0 1 8 0v16-4a4 4 0 0 1 8 0v4-2a4 4 0 0 1 8 0v4a4 4 0 0 1 8 0v10c0 10-6 18-16 18h-4c-6 0-10-3-13-8l-7-11a4 4 0 0 1 6-5z" fill="#fff" stroke="#1F2A33" stroke-width="3" stroke-linejoin="round"/></svg></div>
-    <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><p>Soft decking and water stains don’t show from the street. Our free inspection finds them and texts you the photos.</p><div class="row"><a class="btn btn-main" href="#quote">See my price</a><button class="btn btn-line" type="button" id="ripReset">Put the shingles back</button></div></div>
+    <div id="ripFound" hidden role="status"><b>That’s what 15 years of Houston weather hides.</b><p>Soft decking and water stains don’t show from the street. Want to see how we’d fix it?</p><div class="row"><button class="btn btn-main" type="button" id="ripFix">Watch us fix it</button><a class="btn btn-line" href="#quote">See my price</a></div><button class="linkbtn" type="button" id="ripReset">Put the old shingles back</button></div>
+    <div id="fixCap" hidden role="status" aria-live="polite"></div>
+    <div id="ripFixed" hidden role="status"><b>Fixed. New roof, one day.</b><p>New decking, sealed underlayment, impact-rated shingles and a 10-year leak-free warranty. Permit pulled for you.</p><div class="row"><a class="btn btn-main" href="#quote">See my price</a><a class="btn btn-line" href="#whatwedo">How we do it</a></div><button class="linkbtn" type="button" id="ripAgain">Rip it again</button></div>
     <div class="hcopy">
       <h1 id="h1">Houston roofing company.</h1>
       <p class="sub">See your roof price in 60 seconds. Free inspection with photos in 48 hours.</p>
@@ -476,6 +503,22 @@ footer .wrap{display:block}
       </aside>
     </div>
   </section>
+  <section class="sec wwd" id="whatwedo" aria-labelledby="wwdH">
+    <div class="wrap">
+      <h2 id="wwdH">What we do: how we fix what you just found</h2>
+      <p class="lede">Soft decking and leaks aren’t fixed with a patch on top. We rebuild the roof from the wood up, in this order, usually in one day.</p>
+      <ol class="layers">
+        <li><canvas data-sw="old" aria-hidden="true"></canvas><div><em>1</em><b>Tear off to the wood</b><span>Every old layer comes off. We photograph the bare decking so you see exactly what was under there. Tarps protect your yard and plants.</span><a href="roof-replacement.html">Roof replacement →</a></div></li>
+        <li><canvas data-sw="ply" aria-hidden="true"></canvas><div><em>2</em><b>Replace the rotted decking</b><span>Soft or stained sheets are cut out and replaced with new plywood. The price per sheet is agreed in writing before we start, so there are no surprises.</span><a href="roof-repair.html">Leak and rot repair →</a></div></li>
+        <li><canvas data-sw="felt" aria-hidden="true"></canvas><div><em>3</em><b>Seal it before a single shingle goes on</b><span>Ice and water shield in the valleys and along the edges, synthetic underlayment everywhere else, new metal drip edge, flashing and pipe boots. This is what actually keeps water out.</span><a href="storm-damage.html">Storm-proofing →</a></div></li>
+        <li><canvas data-sw="new" aria-hidden="true"></canvas><div><em>4</em><b>New shingles and airflow</b><span>Impact-rated shingles nailed to the maker’s high-wind pattern, plus a ridge vent so the attic breathes and the shingles last longer.</span><a href="attic-ventilation.html">Attic ventilation →</a></div></li>
+        <li><canvas data-sw="done" aria-hidden="true"></canvas><div><em>5</em><b>Clean up and prove it</b><span>Magnet sweep for nails, haul-away, City of Houston permit sign-off, and before, during and after photos on your phone with your warranty paperwork.</span><a href="reviews.html">What customers say →</a></div></li>
+      </ol>
+      <p class="wwd-note">Illustrations of each layer. Real job photos for each step get added once they’re shot.</p>
+      <div class="hcta"><a class="btn btn-main" href="#quote">See my price</a><button class="btn btn-line" type="button" data-start>Book a free inspection</button></div>
+    </div>
+  </section>
+
   <section class="sec offer" id="offer" aria-labelledby="oH">
     <div class="wrap ogrid">
       <div>
@@ -880,6 +923,34 @@ $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
     <div class="smsrow"><a class="btn btn-main btn-sm" href="#owner" data-close>Open owner view</a></div></div></div>`,'#dS');
   $('#dS').value=PICK.season;$('#dR').value=PICK.region;$('#dS').onchange=e=>{PICK.season=e.target.value;apply()};$('#dR').onchange=e=>{PICK.region=e.target.value;apply()}};
 
+/* ---------- roof layer textures, drawn in code (no photos): used by the hero "fix it" and the What we do swatches ---------- */
+const RT={rnd:(a,b)=>a+Math.random()*(b-a),
+  canvas(w,h){const c=document.createElement('canvas');c.width=Math.max(1,Math.round(w));c.height=Math.max(1,Math.round(h));return c},
+  ply(w,h,u){const c=RT.canvas(w,h),g=c.getContext('2d');g.fillStyle='#D8B07A';g.fillRect(0,0,w,h);
+    for(let i=0;i<h/(2.2*u);i++){const y=i*2.2*u;g.strokeStyle=`rgba(${RT.rnd(120,160)|0},${RT.rnd(80,105)|0},45,${RT.rnd(.12,.3)})`;g.lineWidth=RT.rnd(.6,1.6)*u;g.beginPath();g.moveTo(0,y);for(let x=0;x<=w;x+=20*u)g.lineTo(x,y+Math.sin(x/(70*u)+i*.7)*2.4*u+RT.rnd(-.6,.6)*u);g.stroke()}
+    for(let k=0;k<w*h/(26000*u*u);k++){g.fillStyle='rgba(120,75,35,.45)';g.beginPath();g.ellipse(RT.rnd(0,w),RT.rnd(0,h),RT.rnd(3,7)*u,RT.rnd(2,4)*u,0,0,7);g.fill()}
+    const pw=192*u,ph=96*u;g.strokeStyle='rgba(70,45,20,.7)';g.lineWidth=1.6*u;for(let y=0;y<h;y+=ph){g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();for(let x=(y/ph%2)*pw/2;x<w;x+=pw){g.beginPath();g.moveTo(x,y);g.lineTo(x,y+ph);g.stroke()}}
+    g.fillStyle='rgba(60,60,60,.8)';for(let y=0;y<h;y+=ph)for(let x=8*u;x<w;x+=16*u){g.fillRect(x,y+4*u,1.6*u,1.6*u)}return c},
+  felt(w,h,u){const c=RT.canvas(w,h),g=c.getContext('2d');g.fillStyle='#BFC5CB';g.fillRect(0,0,w,h);
+    const row=72*u;for(let y=0;y<h;y+=row){g.fillStyle='rgba(0,0,0,.12)';g.fillRect(0,y,w,2*u);g.fillStyle='rgba(255,255,255,.25)';g.fillRect(0,y+2*u,w,1.5*u);
+      g.fillStyle='rgba(40,85,170,.55)';g.font=`700 ${9*u}px system-ui,sans-serif`;for(let x=((y/row)%2)*90*u;x<w;x+=180*u)g.fillText('SYNTHETIC UNDERLAYMENT',x,y+row*.55);
+      g.fillStyle='rgba(40,85,170,.35)';for(let x=12*u;x<w;x+=36*u){g.beginPath();g.arc(x,y+row*.25,2.6*u,0,7);g.fill()}}
+    /* ice & water shield along the bottom edge */
+    const iw=h*.16;g.fillStyle='#24282D';g.fillRect(0,h-iw,w,iw);g.fillStyle='rgba(255,255,255,.08)';for(let x=0;x<w;x+=6*u)g.fillRect(x,h-iw,1*u,iw);return c},
+  shingles(w,h,u,old,persp){const c=RT.canvas(w,h),g=c.getContext('2d');g.fillStyle=old?'#4A4D50':'#1E2125';g.fillRect(0,0,w,h);
+    let y=0;while(y<h){const f=persp?(.55+.9*y/h):1,rh=27*u*f;let x=-RT.rnd(0,60)*u*f;
+      while(x<w){const tw=RT.rnd(30,70)*u*f,v=old?RT.rnd(62,95):RT.rnd(40,64),wm=RT.rnd(-3,4);
+        const tg=g.createLinearGradient(0,y,0,y+rh);tg.addColorStop(0,`rgb(${v+8+wm},${v+9},${v+12})`);tg.addColorStop(1,`rgb(${v-6+wm},${v-5},${v-2})`);g.fillStyle=tg;g.fillRect(x+1.2*u,y,tw-2.4*u,rh);
+        for(let k=0;k<tw*rh/(14*u*u);k++){const q=RT.rnd(-22,22);g.fillStyle=`rgba(${v+q},${v+q},${v+q+5},.6)`;g.fillRect(x+RT.rnd(0,tw),y+RT.rnd(0,rh),1.3*u,1.3*u)}
+        if(!old&&Math.random()<.3){g.fillStyle='rgba(0,0,0,.22)';g.fillRect(x+1.2*u,y+rh*.55,tw-2.4*u,rh*.45)}
+        if(old&&Math.random()<.35){g.fillStyle='rgba(30,40,25,.28)';g.fillRect(x,y,tw,rh)}x+=tw}
+      const gr=g.createLinearGradient(0,y+rh-8*u*f,0,y+rh);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'rgba(0,0,0,.7)');g.fillStyle=gr;g.fillRect(0,y+rh-8*u*f,w,8*u*f);g.fillStyle='rgba(255,255,255,.08)';g.fillRect(0,y,w,1.5*u);y+=rh}
+    if(persp){const lg=g.createLinearGradient(0,0,0,h);lg.addColorStop(0,'rgba(255,255,255,.06)');lg.addColorStop(1,'rgba(0,0,0,.25)');g.fillStyle=lg;g.fillRect(0,0,w,h)}return c}};
+/* What we do swatches */
+$$('canvas[data-sw]').forEach(cv=>{const w=cv.width=480,h=cv.height=320,g=cv.getContext('2d'),k=cv.dataset.sw,u=1.1;
+  if(k==='old'){g.drawImage(RT.shingles(w,h,u,true),0,0);g.save();g.beginPath();for(let i=0;i<14;i++){const a=i/14*Math.PI*2,r=RT.rnd(70,110);g.lineTo(w*.55+Math.cos(a)*r*1.5,h*.55+Math.sin(a)*r*.75)}g.closePath();g.clip();g.drawImage(RT.ply(w,h,u),0,0);g.fillStyle='rgba(60,35,15,.55)';g.beginPath();g.ellipse(w*.58,h*.58,80,40,.3,0,7);g.fill();g.restore()}
+  else if(k==='ply')g.drawImage(RT.ply(w,h,u),0,0);else if(k==='felt')g.drawImage(RT.felt(w,h,u),0,0);
+  else{g.drawImage(RT.shingles(w,h,u,false),0,0);if(k==='done'){g.fillStyle='#FFD400';g.beginPath();g.arc(w-60,60,34,0,7);g.fill();g.strokeStyle='#1F2A33';g.lineWidth=7;g.lineCap='round';g.lineJoin='round';g.beginPath();g.moveTo(w-76,60);g.lineTo(w-64,72);g.lineTo(w-44,48);g.stroke()}}});
 /* ---------- RIP IT OFF: drag across the roof to tear the old shingles off. Chunks fly with real physics and pile up; what's underneath is the rot. ---------- */
 (function rip(){const hero=$('#hero');if(!hero)return;
   const cv=$('#ripCv'),x=cv.getContext('2d'),zone=$('#ripZone'),over=$('#hOver'),under=$('#hUnder'),hint=$('#ripHint'),meter=$('#ripMeter'),found=$('#ripFound');
@@ -902,7 +973,7 @@ $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
     const sx=shake?(Math.random()-.5)*shake*dpr:0,sy=shake?(Math.random()-.5)*shake*dpr:0;x.setTransform(1,0,0,1,sx,sy);
     x.drawImage(top,0,0);x.globalCompositeOperation='destination-out';x.drawImage(holes,0,0);
     /* torn edges: dark lip around every hole so it reads as thickness */
-    x.globalCompositeOperation='source-atop';x.save();x.filter='blur('+(5*dpr)+'px)';x.globalAlpha=.75;x.drawImage(holes,0,0);x.restore();x.globalCompositeOperation='source-over';
+    x.globalCompositeOperation='source-atop';x.save();x.filter='blur('+(5*dpr)+'px)';x.globalAlpha=.75;x.drawImage(holes,0,0);x.restore();if(FX.L){x.globalCompositeOperation='destination-over';for(let i=2;i>=0;i--){const p=FX.p[i];if(p<=0)continue;x.save();x.beginPath();const zb=zone.offsetHeight*dpr;x.rect(0,zb*(1-p),cv.width,cv.height);x.clip();x.drawImage(FX.L[i],0,0);x.restore()}}x.globalCompositeOperation='source-over';
     for(const k of chunks){x.save();x.translate(k.x,k.y);x.rotate(k.r);x.shadowColor='rgba(0,0,0,.55)';x.shadowBlur=14*dpr;x.shadowOffsetY=8*dpr;x.drawImage(k.c,-k.c.width/2,-k.c.height/2);x.restore()}}
   function step(){if(!run)return;const g=.55*dpr,floor=cv.height-6*dpr;let moving=false;
     for(const k of chunks){if(k.rest)continue;k.vy+=g;k.x+=k.vx;k.y+=k.vy;k.r+=k.vr;k.vx*=.995;k.life++;
@@ -918,8 +989,8 @@ $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
     if(cleared>.32&&!done){done=true;found.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}}
   let down=false;
   const pos=e=>{const r=hero.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};
-  let fadeT=0;zone.addEventListener('pointerdown',e=>{clearTimeout(fadeT);hero.classList.add('tearing');down=true;zone.setPointerCapture(e.pointerId);stopAuto();hint.classList.add('gone');const[px,py]=pos(e);last=[px,py,performance.now()];tear(px,py,0,0,true)});
-  zone.addEventListener('pointermove',e=>{if(!down&&e.pointerType!=='mouse')return;const[px,py]=pos(e);
+  let fadeT=0;zone.addEventListener('pointerdown',e=>{if(FX.on)return;clearTimeout(fadeT);hero.classList.add('tearing');down=true;zone.setPointerCapture(e.pointerId);stopAuto();hint.classList.add('gone');const[px,py]=pos(e);last=[px,py,performance.now()];tear(px,py,0,0,true)});
+  zone.addEventListener('pointermove',e=>{if(FX.on)return;if(!down&&e.pointerType!=='mouse')return;const[px,py]=pos(e);
     if(!down){/* mouse hover still tears lightly, so desktop users feel it instantly */if(!last){last=[px,py,performance.now()];return}}
     const[lx,ly,lt]=last||[px,py,performance.now()],dist=Math.hypot(px-lx,py-ly),now=performance.now(),dt=Math.max(8,now-lt);
     const need=down?14:34;if(dist<need)return;const vx=(px-lx)/dt*16,vy=(py-ly)/dt*16,steps=Math.min(6,Math.floor(dist/need));
@@ -931,6 +1002,24 @@ $('#demoBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="shee
   function demo(){if(reduce)return;hint.classList.add('demo');const t0=performance.now(),zh=zone.offsetHeight;let lp=null;
     const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=W*(.25+.5*t),py=zh*(.55+.12*Math.sin(t*6));hint.style.left=px+'px';hint.style.top=py+'px';
       if(lp&&Math.hypot(px-lp[0],py-lp[1])>16){tear(px,py,(px-lp[0])*.6,0,false);lp=[px,py]}else if(!lp)lp=[px,py];auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
+
+  /* WATCH US FIX IT: the holes fill back up layer by layer, from the eaves up, like a real crew works */
+  const FX={on:false,L:null,p:[0,0,0]},cap=$('#fixCap'),fixed=$('#ripFixed');
+  const STEPS=[['Step 1 of 4','Tear-off and clean-up: old shingles and debris gone'],['Step 2 of 4','Rotted decking cut out, new plywood nailed down'],['Step 3 of 4','Ice and water shield, then synthetic underlayment'],['Step 4 of 4','New impact-rated shingles, nailed to the high-wind pattern']];
+  function fixIt(){if(FX.on)return;FX.on=true;stopAuto();hero.classList.add('fixing');found.hidden=true;$$('.rpin').forEach(p=>p.remove());
+    const u=dpr*Math.max(.8,Math.min(1.3,W/1000));FX.L=[RT.ply(cv.width,cv.height,u),RT.felt(cv.width,cv.height,u),RT.shingles(cv.width,cv.height,u,false,true)];FX.p=[0,0,0];
+    const say=i=>{cap.hidden=false;cap.innerHTML=`<small>${STEPS[i][0]}</small>${STEPS[i][1]}`;if(M&&!reduce)M.animate(cap,{opacity:[0,1],y:[8,0]},{duration:.3})};
+    if(reduce){FX.p=[1,1,1];chunks=[];draw();finish();return}
+    say(0);const t0=performance.now();const sweep=chunks.map(k=>({k,vx:(k.x>cv.width/2?1:-1)*RT.rnd(14,24)*dpr}));
+    const D=[1100,1500,1500,1700];let phase=0;
+    const tick=now=>{const t=now-t0;
+      if(t<D[0]){for(const s of sweep){s.k.rest=false;s.k.x+=s.vx;s.k.vy=-1}}else if(phase===0){phase=1;chunks=[];say(1)}
+      const a=t-D[0],b=a-D[1],c=b-D[2];FX.p[0]=clamp(a/D[1]);FX.p[1]=clamp(b/D[2]);FX.p[2]=clamp(c/D[3]);
+      if(phase===1&&b>0){phase=2;say(2)}if(phase===2&&c>0){phase=3;say(3)}
+      if(c<D[3]+250)requestAnimationFrame(tick);else finish()};requestAnimationFrame(tick)}
+  function finish(){FX.p=[1,1,1];cap.hidden=true;fixed.hidden=false;hero.classList.add('found');if(M&&!reduce)M.animate(fixed,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  $('#ripFix').onclick=fixIt;
+  $('#ripAgain').onclick=()=>{FX.on=false;FX.L=null;FX.p=[0,0,0];fixed.hidden=true;hero.classList.remove('fixing');$('#ripReset').click()};
   $('#ripReset').onclick=()=>{hero.classList.remove('found');hx.clearRect(0,0,holes.width,holes.height);chunks=[];tears=0;done=false;found.hidden=true;pins=[];$$('.rpin').forEach(p=>p.remove());meter.style.setProperty('--p',0);hint.classList.remove('gone')};
   const ready=()=>{build();hero.classList.add('ripon');if(!reduce)setTimeout(demo,1100)};
   if(over.complete&&over.naturalWidth)ready();else over.addEventListener('load',ready,{once:true});
