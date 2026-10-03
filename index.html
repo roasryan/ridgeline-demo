@@ -539,6 +539,11 @@ footer .wrap{display:block}
  .hero.tearing .riplabel,.hero.found .riplabel,.hero.fixing .riplabel{opacity:0}
 }
 @media (max-width:899px){.hero{padding-top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 112px)}#fixCap{padding:8px 10px!important;gap:6px!important}.hero .riplabel{top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 36px)!important}}
+/* phones: lawn stays bright from start to finish; the start prompt is a box in the same spot as the step box */
+@media (max-width:899px){
+ .hero .shade{background:linear-gradient(180deg,rgba(31,42,51,0) 0,rgba(31,42,51,0) calc(64px + env(safe-area-inset-top,0px) + 78vw - 2px),var(--slate) calc(64px + env(safe-area-inset-top,0px) + 78vw))!important}
+ .hero .riplabel{top:calc(64px + env(safe-area-inset-top,0px) + 78vw + 10px)!important;left:12px!important;right:12px!important;background:#1F2A33;border-radius:16px;padding:16px 14px;box-shadow:0 10px 30px rgba(0,0,0,.35);font-size:16px;justify-content:flex-start}
+}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <header class="bar" id="bar">
