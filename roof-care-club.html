@@ -811,6 +811,18 @@ html.qopen,html.qopen body{overflow:hidden}
 @media (max-width:560px){.avwins{grid-template-columns:1fr 1fr}.avw{font-size:12px}}
 /* the quote bubble must never sit on the roof interaction */
 @media (max-width:999px){.qtip{top:auto!important;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:12px!important;right:auto;max-width:calc(100vw - 130px)}.qtip::before{display:none}}
+/* v12: consent + time chips */
+.smsc{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.4;color:#55636E;margin:6px 0 0;cursor:pointer}
+.smsc[hidden]{display:none}
+.smsc input{width:22px!important;height:22px;min-height:0!important;flex:none;margin-top:1px}
+.islots .tchips{grid-template-columns:repeat(3,1fr)}
+@media (max-width:420px){.islots .tchips{grid-template-columns:repeat(2,1fr)}}
+.avrow2{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid var(--line)}
+.avon{display:flex;align-items:center;gap:8px;min-width:90px;cursor:pointer}.avon input{width:22px;height:22px}
+.avt{display:flex;align-items:center;gap:8px}.avt i{font-style:normal;color:var(--muted)}
+.avt select{min-height:42px;border-radius:10px;background:var(--night);color:var(--text);border:1px solid var(--line);padding:0 8px;font:15px var(--body)}
+.ocard input[type=password]{min-height:46px;border-radius:10px;background:var(--night);color:var(--text);border:1px solid var(--line);padding:0 12px;font:16px var(--body);width:100%;max-width:220px}
+.avsave{position:sticky;bottom:0;padding:12px 0;background:var(--night);display:grid;gap:8px}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -906,6 +918,7 @@ html.qopen,html.qopen body{overflow:hidden}
         <div class="field"><label for="qcPhone">Mobile</label><input id="qcPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div>
         <div class="field"><label for="qcEmail">Email</label><input id="qcEmail" type="email" inputmode="email" autocomplete="email"></div>
         <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="qcBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
+        <label class="smsc" id="qcSmsC"><input type="checkbox" id="qcSms"> <span>Text me my price and updates. Consent isn’t required. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
         <p class="err" id="qcErr" role="alert" hidden></p>
         <div class="qdnav"><button class="btn btn-line" type="button" data-qgo="2">Back</button><button class="btn btn-main" type="submit">Show my price</button></div>
       </form>
@@ -1193,8 +1206,8 @@ function routeHash(){if(location.hash==='#'+OWNER_KEY){oTab='today';openOwner()}
    (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
 const OUTBOX='rl-outbox';
 function leadRow(o){let me={},q={};try{me=JSON.parse(localStorage.getItem('rl-me')||'{}');q=JSON.parse(localStorage.getItem('rl-quote')||'{}')}catch(x){}
-  const ap=o.appt&&o.appt.t?{date:AV.iso(new Date(o.appt.t)),window:o.appt.slot}:null;
-  return{type:o.source||'Website',name:o.name||me.name||'',phone:digits(o.phone||me.phone||''),email:o.email||me.email||'',best:o.best||me.contact||'',
+  const ap=o.appt&&o.appt.t?{date:AV.iso(new Date(o.appt.t)),time:o.appt.time}:null;
+  return{type:o.source||'Website',name:o.name||me.name||'',phone:digits(o.phone||me.phone||''),email:o.email||me.email||'',best:o.best||me.contact||'',sms:!!o.sms,
     address:o.addr||q.addr||'',issue:o.msg||'',company:o.company||'',role:o.role||'',quote:q&&q.touched&&q.range?{name:q.name||'',range:q.range}:null,appt:ap,
     page:location.pathname+location.search,ts:Date.now(),hp:''}}
 async function postBackend(row){const r=await fetch(CFG.backend,{method:'POST',body:JSON.stringify(row)});return r.json()}
@@ -1548,75 +1561,101 @@ const startSheet=()=>bookSheet({});
 $$('[data-start]').forEach(b=>b.onclick=()=>startSheet());
 /* ---------- free inspection form on the homepage: full details + day/time, then an instant confirmation ---------- */
 
-/* ---------- availability: the owner sets it once (Owner view → Availability); the booking calendar only offers what's open ----------
-   Demo: stored on this device. Live: the same settings live in the lead Sheet, and busy times can come from the owner's Google Calendar later. */
-const AV=(()=>{const KEY='rl-avail',WIN=['8 to 10 AM','10 AM to noon','1 to 3 PM','3 to 5 PM'],START={'8 to 10 AM':8,'10 AM to noon':10,'1 to 3 PM':13,'3 to 5 PM':15};
-  const DEF={open:{0:[],1:WIN.slice(),2:WIN.slice(),3:WIN.slice(),4:WIN.slice(),5:WIN.slice(),6:WIN.slice(0,2)},perWin:1,maxDay:3,notice:1,ahead:28,weekCap:12,blocked:[]};
-  let S;try{S=Object.assign(JSON.parse(JSON.stringify(DEF)),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(x){S=JSON.parse(JSON.stringify(DEF))}
+/* ---------- availability: the owner sets hours once (Owner view → Availability); the booking calendar only offers real, future times ----------
+   Live (CFG.backend): settings + open times come from the backend, which also checks the owner's calendar. Demo: settings on this device. */
+const AV=(()=>{const KEY='rl-avail2';
+  const DEF={hours:{0:null,1:['08:00','17:00'],2:['08:00','17:00'],3:['08:00','17:00'],4:['08:00','17:00'],5:['08:00','17:00'],6:['09:00','13:00']},len:60,step:60,buffer:0,noticeH:3,ahead:28,maxDay:4,weekCap:12,blocked:[]};
+  const clone=o=>JSON.parse(JSON.stringify(o));
+  let S;try{S=Object.assign(clone(DEF),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(x){S=clone(DEF)}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(x){}};
-  const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const pad=n=>String(n).padStart(2,'0');
+  const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   const day0=d=>{const x=new Date(d);x.setHours(12,0,0,0);return x};
-  const booked=()=>{const m={};((typeof DB!=='undefined'&&DB.customers)||[]).forEach(c=>{if(c.appt&&c.appt.t){const k=iso(new Date(c.appt.t));m[k]=m[k]||{n:0};m[k].n++;m[k][c.appt.slot]=(m[k][c.appt.slot]||0)+1}});return m};
-  /* live: the open windows come from the backend (GoHighLevel calendar or the owner's Google Calendar) */
+  const toMin=t=>{const[h,m]=t.split(':').map(Number);return h*60+m},toHHMM=m=>`${pad(Math.floor(m/60))}:${pad(m%60)}`;
+  const label=t=>{const m=toMin(t),h=Math.floor(m/60),mm=m%60;return`${h%12||12}:${pad(mm)} ${h<12?'AM':'PM'}`};
+  /* "now" in the business's time zone (a visitor in another zone still sees the right cut-off) */
+  function nowBiz(){try{const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:CFG.tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+    return{date:`${p.year}-${p.month}-${p.day}`,min:+p.hour*60+ +p.minute}}catch(x){const d=new Date();return{date:iso(d),min:d.getHours()*60+d.getMinutes()}}}
+  /* a time is bookable only if it starts at least noticeH hours from now */
+  function future(date,t){const n=nowBiz(),diffDays=Math.round((new Date(date+'T12:00:00')-new Date(n.date+'T12:00:00'))/864e5);return diffDays*1440+toMin(t)-n.min>=S.noticeH*60}
+  const booked=()=>{const m={};((typeof DB!=='undefined'&&DB.customers)||[]).forEach(c=>{if(c.appt&&c.appt.t&&c.appt.time){const k=iso(new Date(c.appt.t));(m[k]=m[k]||[]).push(c.appt.time)}});return m};
   let remote=null;
-  async function load(){if(!CFG.backend)return;try{const j=await(await fetch(`${CFG.backend}?action=slots&days=${S.ahead}`)).json();if(j&&j.ok&&j.days){remote=j.days;window.dispatchEvent(new Event('rl-slots'))}}catch(x){}}
-  function slots(d){if(remote)return(remote[iso(d)]||[]).map(w=>({w,left:1,past:false}));const k=iso(d),b=booked()[k]||{n:0},now=new Date(),today=iso(now)===k;
-    return(S.open[d.getDay()]||[]).filter(w=>WIN.includes(w)).sort((a,b2)=>WIN.indexOf(a)-WIN.indexOf(b2)).map(w=>{const taken=b[w]||0,past=today&&now.getHours()>=START[w]-1;return{w,left:Math.max(0,S.perWin-taken),past}})}
-  function state(d){if(remote)return(remote[iso(d)]||[]).length?'open':(day0(d)<day0(new Date())?'out':'closed');const t0=day0(new Date()),dd=day0(d),diff=Math.round((dd-t0)/864e5);
-    if(diff<S.notice||diff>S.ahead)return'out';if(S.blocked.includes(iso(d)))return'blocked';const sl=slots(d);if(!sl.length)return'closed';
-    const b=booked()[iso(d)];if(b&&b.n>=S.maxDay)return'full';return sl.some(s=>s.left>0&&!s.past)?'open':'full'}
-  function weekLeft(){const now=day0(new Date()),mon=new Date(now);mon.setDate(now.getDate()-((now.getDay()+6)%7));let n=0;const b=booked();for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);n+=(b[iso(d)]||{n:0}).n}return Math.max(0,S.weekCap-n)}
+  async function load(){if(!CFG.backend)return;try{const j=await(await fetch(`${CFG.backend}?action=slots&days=${S.ahead}`)).json();if(j&&j.ok&&j.days){remote=j.days;if(j.settings)Object.assign(S,j.settings);window.dispatchEvent(new Event('rl-slots'))}}catch(x){}}
+  function times(d){const k=iso(d);
+    if(remote)return(remote[k]||[]).filter(t=>future(k,t));
+    if(S.blocked.includes(k))return[];const h=S.hours[d.getDay()];if(!h)return[];const taken=booked()[k]||[];if(taken.length>=S.maxDay)return[];
+    const out=[];for(let m=toMin(h[0]);m+S.len<=toMin(h[1]);m+=S.step){const t=toHHMM(m);
+      const clash=taken.some(b=>{const bm=toMin(b);return m<bm+S.len+S.buffer&&bm<m+S.len+S.buffer});if(!clash&&future(k,t))out.push(t)}return out}
+  function state(d){const n=nowBiz(),k=iso(d);if(k<n.date)return'out';const diff=Math.round((day0(d)-new Date(n.date+'T12:00:00'))/864e5);if(diff>S.ahead)return'out';
+    if(!remote&&S.blocked.includes(k))return'blocked';return times(d).length?'open':'closed'}
+  function weekLeft(){const now=day0(new Date()),mon=new Date(now);mon.setDate(now.getDate()-((now.getDay()+6)%7));let n=0;const b=booked();for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);n+=(b[iso(d)]||[]).length}return Math.max(0,S.weekCap-n)}
   const MON=d=>d.toLocaleDateString('en-US',{month:'long',year:'numeric'}),DOW=['S','M','T','W','T','F','S'];
-  /* month grid used by the customer form (mode 'pick') and the owner screen (mode 'owner') */
-  function grid(view,mode,sel){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1,12),n=new Date(y,m+1,0).getDate(),b=booked();let h='';
+  function grid(view,mode,sel){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1,12),n=new Date(y,m+1,0).getDate(),b=booked(),today=nowBiz().date;let h='';
     for(let i=0;i<first.getDay();i++)h+='<span class="cd pad"></span>';
-    for(let i=1;i<=n;i++){const d=new Date(y,m,i,12),st=state(d),k=iso(d),isSel=sel&&iso(sel)===k,cnt=(b[k]||{n:0}).n;
-      if(mode==='pick')h+=`<button type="button" class="cd ${st}${isSel?' sel':''}" data-cd="${k}" ${st==='open'?'':'disabled'} aria-pressed="${isSel}" aria-label="${d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}${st==='open'?', open':', not available'}">${i}</button>`;
-      else{const past=st==='out'&&day0(d)<day0(new Date());h+=`<button type="button" class="cd o-${S.blocked.includes(k)?'blocked':(S.open[d.getDay()]||[]).length?'open':'closed'}${past?' past':''}" data-cd="${k}" ${past?'disabled':''} aria-pressed="${S.blocked.includes(k)}"><b>${i}</b>${cnt?`<i>${cnt}</i>`:''}</button>`}}
+    for(let i=1;i<=n;i++){const d=new Date(y,m,i,12),k=iso(d),isSel=sel&&iso(sel)===k;
+      if(mode==='pick'){const st=state(d);h+=`<button type="button" class="cd ${st}${isSel?' sel':''}" data-cd="${k}" ${st==='open'?'':'disabled'} aria-pressed="${isSel}" aria-label="${d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}${st==='open'?', open':', not available'}">${i}</button>`}
+      else{const past=k<today,cnt=(b[k]||[]).length;h+=`<button type="button" class="cd o-${S.blocked.includes(k)?'blocked':S.hours[d.getDay()]?'open':'closed'}${past?' past':''}" data-cd="${k}" ${past?'disabled':''} aria-pressed="${S.blocked.includes(k)}"><b>${i}</b>${cnt?`<i>${cnt}</i>`:''}</button>`}}
     return`<div class="calhead"><button type="button" class="calnav" data-cm="-1" aria-label="Previous month">‹</button><b>${MON(view)}</b><button type="button" class="calnav" data-cm="1" aria-label="Next month">›</button></div><div class="calgrid">${DOW.map(x=>`<span class="cw">${x}</span>`).join('')}${h}</div>`}
-  /* customer picker: calendar + the open time windows for the chosen day */
   function mountPicker(calEl,slotEl,onPick){let view=new Date(),sel=null,slot=null;view.setDate(1);
-    const firstOpen=()=>{const d=day0(new Date());for(let i=0;i<=S.ahead;i++){const x=new Date(d);x.setDate(d.getDate()+i);if(state(x)==='open')return x}return null};
+    const firstOpen=()=>{const d=day0(new Date());for(let i=0;i<=S.ahead+1;i++){const x=new Date(d);x.setDate(d.getDate()+i);if(state(x)==='open')return x}return null};
     sel=firstOpen();if(sel)view=new Date(sel.getFullYear(),sel.getMonth(),1,12);
-    const render=()=>{calEl.innerHTML=grid(view,'pick',sel);
+    const render=()=>{if(sel&&state(sel)!=='open'){sel=firstOpen();slot=null}calEl.innerHTML=grid(view,'pick',sel);
       [...calEl.querySelectorAll('[data-cm]')].forEach(b=>b.onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+ +b.dataset.cm,1,12);render()});
       [...calEl.querySelectorAll('[data-cd]')].forEach(b=>b.onclick=()=>{const[y,m,d]=b.dataset.cd.split('-').map(Number);sel=new Date(y,m-1,d,12);slot=null;render()});
-      if(!sel){slotEl.innerHTML='<p class="calnone">No open days right now. Text us and we’ll fit you in.</p>';onPick(null,null);return}
-      const sl=slots(sel).filter(s=>!s.past);if(slot==null){const f=sl.find(s=>s.left>0);slot=f?f.w:null}
-      slotEl.innerHTML=`<p class="calday">${sel.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p><div class="chips">${sl.map(s=>`<button type="button" role="radio" aria-checked="${s.w===slot}" data-w="${s.w}" ${s.left?'':'disabled'}>${s.w}${s.left?'':' · booked'}</button>`).join('')}</div>`;
+      if(!sel){slotEl.innerHTML='<p class="calnone">No open times right now. Text us and we’ll fit you in.</p>';onPick(null,null);return}
+      const ts=times(sel);if(!ts.includes(slot))slot=ts[0]||null;
+      slotEl.innerHTML=`<p class="calday">${sel.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p><div class="chips tchips">${ts.map(t=>`<button type="button" role="radio" aria-checked="${t===slot}" data-w="${t}">${label(t)}</button>`).join('')}</div>`;
       [...slotEl.querySelectorAll('[data-w]')].forEach(b=>b.onclick=()=>{slot=b.dataset.w;render()});onPick(sel,slot)};
-    window.addEventListener('rl-slots',()=>{if(!sel||state(sel)!=='open'){sel=firstOpen();slot=null;if(sel)view=new Date(sel.getFullYear(),sel.getMonth(),1,12)}render()});
+    window.addEventListener('rl-slots',render);setInterval(render,5*60e3);/* drop times that pass while the page is open */
     render();return{refresh:render}}
-  load();return{S,WIN,save,iso,slots,state,grid,weekLeft,mountPicker,DEF,load,live:()=>!!remote}})();
-/* the "spots left this week" line follows the owner's real weekly cap */
+  load();return{S,DEF,save,iso,label,times,state,grid,weekLeft,mountPicker,load,live:()=>!!remote,toMin,toHHMM}})();
 {const sc=$('.scar span');if(sc){const n=AV.weekLeft();sc.textContent=`This week: ${n} of ${AV.S.weekCap} inspection spots left`;const dots=$('.scar .dots');if(dots)dots.innerHTML=Array.from({length:AV.S.weekCap},(_,i)=>`<i class="${i<AV.S.weekCap-n?'t':''}"></i>`).join('')}}
 
-/* owner screen: Availability */
+/* owner screen: Availability (live: saved to the backend with the owner PIN) */
 function oAvail(){const S=AV.S,DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const sel=(id,val,opts)=>`<select id="${id}">${opts.map(([v,t])=>`<option value="${v}" ${String(v)===String(val)?'selected':''}>${t}</option>`).join('')}</select>`;
-  return`${CFG.backend?`<section class="ocard"><h3>Live calendar</h3><p class="muted">Your website now books straight into your GoHighLevel calendar. Change your hours, days off and limits there (or in the LeadConnector app). Busy times on your synced Google Calendar are hidden automatically.</p></section>`:''}<section class="ocard"><h3>When customers can book</h3><p class="muted">Tap a time to turn it on or off. The website only offers what’s on here.</p>
-    <div class="avweek">${[1,2,3,4,5,6,0].map(d=>`<div class="avrow"><b>${DN[d]}</b><div class="avwins">${AV.WIN.map(w=>`<button type="button" class="avw" data-avd="${d}" data-avw="${w}" aria-pressed="${(S.open[d]||[]).includes(w)}">${w}</button>`).join('')}</div></div>`).join('')}</div></section>
-  <section class="ocard"><h3>Limits</h3><div class="avlims">
-    <div class="field"><label for="avPer">Inspections at the same time</label>${sel('avPer',S.perWin,[[1,'1 (just me)'],[2,'2 crews'],[3,'3 crews']])}</div>
-    <div class="field"><label for="avMax">Most inspections in one day</label>${sel('avMax',S.maxDay,[1,2,3,4,5,6,8].map(n=>[n,n]))}</div>
-    <div class="field"><label for="avWeek">Spots per week (shows on the site)</label>${sel('avWeek',S.weekCap,[6,8,10,12,15,20,25].map(n=>[n,n]))}</div>
-    <div class="field"><label for="avNot">Earliest a customer can book</label>${sel('avNot',S.notice,[[0,'Same day'],[1,'Tomorrow'],[2,'2 days out'],[3,'3 days out']])}</div>
-    <div class="field"><label for="avAh">How far ahead they can book</label>${sel('avAh',S.ahead,[[7,'1 week'],[14,'2 weeks'],[28,'4 weeks'],[56,'8 weeks']])}</div></div></section>
-  <section class="ocard"><h3>Days off</h3><p class="muted">Tap a day to block it (vacation, rain day, big job). Numbers show inspections already booked.</p><div class="avcal" id="avCal"></div>
-    <p class="muted" style="font-size:13px">Demo: saved on this device. On a live site these settings are saved with the lead Sheet, and your Google Calendar can block busy times automatically.</p></section>`}
+  const T=[];for(let m=5*60;m<=21*60;m+=30)T.push(AV.toHHMM(m));
+  const sel=(id,val,opts,attr='')=>`<select id="${id}" ${attr}>${opts.map(([v,t])=>`<option value="${v}" ${String(v)===String(val)?'selected':''}>${t}</option>`).join('')}</select>`;
+  const tsel=(id,v)=>sel(id,v,T.map(t=>[t,AV.label(t)]));
+  return`${CFG.backend?`<section class="ocard"><h3>Live calendar</h3><p class="muted">Bookings land on your “inspections” Google Calendar. Drag one to a new time and the customer is told automatically (by text, email or a call reminder, the way they picked). Anything else on that calendar blocks those times on the website.</p>
+      <div class="field"><label for="avPin">Owner PIN (to save changes)</label><input id="avPin" type="password" inputmode="numeric" autocomplete="off" placeholder="4 digits"></div></section>`:''}
+    <section class="ocard"><h3>Your hours</h3><p class="muted">Customers can pick any start time inside these hours.</p>
+    <div class="avweek">${[1,2,3,4,5,6,0].map(d=>{const h=S.hours[d];return`<div class="avrow2"><label class="avon"><input type="checkbox" data-avon="${d}" ${h?'checked':''}> <b>${DN[d]}</b></label><span class="avt">${tsel('avS'+d,h?h[0]:'08:00')}<i>to</i>${tsel('avE'+d,h?h[1]:'17:00')}</span></div>`}).join('')}</div></section>
+  <section class="ocard"><h3>Inspections</h3><div class="avlims">
+    <div class="field"><label for="avLen">How long one takes</label>${sel('avLen',S.len,[[30,'30 min'],[45,'45 min'],[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours']])}</div>
+    <div class="field"><label for="avStep">Start times every</label>${sel('avStep',S.step,[[30,'30 min'],[60,'1 hour'],[120,'2 hours']])}</div>
+    <div class="field"><label for="avBuf">Drive time between</label>${sel('avBuf',S.buffer,[[0,'None'],[15,'15 min'],[30,'30 min'],[60,'1 hour']])}</div>
+    <div class="field"><label for="avNot">Earliest a customer can book</label>${sel('avNot',S.noticeH,[[1,'1 hour from now'],[2,'2 hours from now'],[3,'3 hours from now'],[24,'Tomorrow'],[48,'2 days out']])}</div>
+    <div class="field"><label for="avAh">How far ahead</label>${sel('avAh',S.ahead,[[7,'1 week'],[14,'2 weeks'],[28,'4 weeks'],[56,'8 weeks']])}</div>
+    <div class="field"><label for="avMax">Most in one day</label>${sel('avMax',S.maxDay,[1,2,3,4,5,6,8,10].map(n=>[n,n]))}</div>
+    <div class="field"><label for="avWeek">Spots per week (shows on the site)</label>${sel('avWeek',S.weekCap,[6,8,10,12,15,20,25,30].map(n=>[n,n]))}</div></div></section>
+  <section class="ocard"><h3>Days off</h3><p class="muted">Tap a day to block it (vacation, rain day, big job). Numbers show inspections already booked.</p><div class="avcal" id="avCal"></div></section>
+  <div class="avsave"><button class="btn btn-main" type="button" id="avSave">Save availability</button><p class="err" id="avErr" role="alert" hidden></p></div>
+  ${CFG.backend?'':'<p class="muted" style="font-size:13px">Demo: saved on this device. On a live site these settings are saved to the business’s backend.</p>'}`}
 function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
-  $$('#obody [data-avw]').forEach(b=>b.onclick=()=>{const d=b.dataset.avd,w=b.dataset.avw,a=S.open[d]||(S.open[d]=[]);const i=a.indexOf(w);if(i>=0)a.splice(i,1);else a.push(w);b.setAttribute('aria-pressed',String(i<0));AV.save();drawCal();toast('Saved. The website updates right away.')});
-  [['avPer','perWin'],['avMax','maxDay'],['avWeek','weekCap'],['avNot','notice'],['avAh','ahead']].forEach(([id,k])=>{const e=$('#'+id);if(e)e.onchange=()=>{S[k]=+e.value;AV.save();drawCal();toast('Saved.')}});
-  function drawCal(){const el=$('#avCal');if(!el)return;el.innerHTML=AV.grid(view,'owner');
-    $$('#avCal [data-cm]').forEach(b=>b.onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+ +b.dataset.cm,1,12);drawCal()});
-    $$('#avCal [data-cd]').forEach(b=>b.onclick=()=>{const k=b.dataset.cd,i=S.blocked.indexOf(k);if(i>=0)S.blocked.splice(i,1);else S.blocked.push(k);AV.save();drawCal()})}
-  drawCal()}
+  try{const p=sessionStorage.getItem('rl-pin');if(p&&$('#avPin'))$('#avPin').value=p}catch(x){}
+  if(CFG.backend)fetch(`${CFG.backend}?action=settings`).then(r=>r.json()).then(j=>{if(j&&j.settings&&$('#avSave')){Object.assign(S,j.settings);const ob=$('#obody');if(ob){ob.innerHTML=oAvail();bindAvail2()}}}).catch(()=>{});
+  bindAvail2();
+  function bindAvail2(){
+    function drawCal(){const el=$('#avCal');if(!el)return;el.innerHTML=AV.grid(view,'owner');
+      $$('#avCal [data-cm]').forEach(b=>b.onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+ +b.dataset.cm,1,12);drawCal()});
+      $$('#avCal [data-cd]').forEach(b=>b.onclick=()=>{const k=b.dataset.cd,i=S.blocked.indexOf(k);if(i>=0)S.blocked.splice(i,1);else S.blocked.push(k);drawCal()})}
+    drawCal();
+    $('#avSave').onclick=async()=>{const err=$('#avErr');err.hidden=true;
+      for(let d=0;d<7;d++){const on=$(`[data-avon="${d}"]`).checked,s=$('#avS'+d).value,e=$('#avE'+d).value;if(on&&AV.toMin(e)<=AV.toMin(s)){err.textContent='An end time is before its start time.';err.hidden=false;return}S.hours[d]=on?[s,e]:null}
+      [['avLen','len'],['avStep','step'],['avBuf','buffer'],['avNot','noticeH'],['avAh','ahead'],['avMax','maxDay'],['avWeek','weekCap']].forEach(([id,k])=>S[k]=+$('#'+id).value);
+      AV.save();
+      if(CFG.backend){const pin=($('#avPin')||{}).value||'';if(!pin){err.textContent='Enter your owner PIN to save.';err.hidden=false;return}try{sessionStorage.setItem('rl-pin',pin)}catch(x){}
+        const b=$('#avSave');b.disabled=true;b.textContent='Saving…';
+        try{const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'settings',pin,settings:S})})).json();b.disabled=false;b.textContent='Save availability';
+          if(!j.ok){err.textContent=j.reason==='pin'?'That PIN isn’t right.':'Couldn’t save. Try again.';err.hidden=false;return}AV.load();toast('Saved. The website shows your new hours now.')}
+        catch(x){b.disabled=false;b.textContent='Save availability';err.textContent='Couldn’t reach the server. Try again.';err.hidden=false}}
+      else toast('Saved. The website shows your new hours now.')}}}
 
 (function(){const f=$('#iForm');if(!f)return;let selD=null,selS=null,best='Text';
   const fmt=d=>d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   const picker=AV.mountPicker($('#iCal'),$('#iSlots'),(d,w)=>{selD=d;selS=w});window.__iPicker=picker;
   const pick=(sel,attr,set)=>$$(sel+' button').forEach(b=>b.onclick=()=>{set(b.dataset[attr]);$$(sel+' button').forEach(x=>x.setAttribute('aria-checked',String(x===b)))});
-  pick('#iBest','best',v=>best=v);
+  pick('#iBest','best',v=>{best=v;const c=$('#iSmsC');if(c)c.hidden=v!=='Text'});
   /* prefill from what we already know (an earlier booking or the instant quote) */
   try{const m=JSON.parse(localStorage.getItem('rl-me')||'null');if(m){if(m.name)$('#iName').value=m.name;if(m.phone)$('#iPhone').value=m.phone;if(m.email)$('#iEmail').value=m.email}
     const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q&&q.addr)$('#iAddr').value=q.addr;
@@ -1629,19 +1668,21 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
     $$('#iForm .bad').forEach(x=>x.classList.remove('bad'));
     if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':'Add a 10-digit mobile number.','#iEmail':'Add a valid email.','#iAddr':'Add the property address.','#iIssue':'Pick what’s going on.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
     if(!selD||!selS){err.hidden=false;err.textContent='Pick a day and a time on the calendar.';$('#iCal').scrollIntoView({block:'center'});return}
-    err.hidden=true;const appt={t:selD.getTime(),slot:selS,confirmed:false};
+    err.hidden=true;const appt={t:selD.getTime(),time:selS,slot:AV.label(selS),confirmed:false};const smsOk=best==='Text'&&!!($('#iSms')&&$('#iSms').checked);
     const btn=f.querySelector('.ibtn'),bt=btn.textContent;let sent=false;
-    if(CFG.backend){btn.disabled=true;btn.textContent='Booking…';const r=await sendLead({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best});btn.disabled=false;btn.textContent=bt;
+    if(CFG.backend){btn.disabled=true;btn.textContent='Booking…';const r=await sendLead({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best,sms:smsOk});var notified=(r&&r.notified)||'';btn.disabled=false;btn.textContent=bt;
       if(r&&r.ok===false){err.hidden=false;err.textContent=r.reason==='taken'?'That time was just taken. Pick another one.':'Something went wrong. Please try again or text us.';AV.load();return}sent=true}
     let q=null;try{q=JSON.parse(localStorage.getItem('rl-quote')||'null')}catch(x){}
-    const c=upsert({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best,_sent:sent});
+    const c=upsert({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best,sms:smsOk,_sent:sent});
     Object.assign(c,{email:D.email,contactPref:best});if(q)c.quote=q;save();
     try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:best}))}catch(x){}
-    const first=D.name.split(' ')[0],when=`${fmt(selD)}, ${selS}`;
+    const first=D.name.split(' ')[0],when=`${fmt(selD)} at ${AV.label(selS)}`;
+    const nt=typeof notified==='string'?notified:'';
     $('#iDone').innerHTML=`<p class="ikick">You’re booked</p><h2>See you ${fmt(selD)}, ${esc(first)}.</h2>
-      <p class="idsub">Your confirmation just went to ${esc(D.email)}:</p>
-      <div class="ibubble"><small>Ridgeline Roofing · email</small>Hi ${esc(first)}, you’re booked for a free roof inspection at ${esc(D.addr)} on ${when}. You don’t need to be home. Your photo report arrives within 24 hours of the visit. Need a different time? Just reply.</div>
-      <p class="idemo">${CFG.backend?'The owner just got your request and will reach you by '+best.toLowerCase()+' to confirm.':'Demo: on a live site this email sends automatically and the owner gets an instant alert on their phone.'}</p>
+      ${nt==='sms'?`<p class="idsub">A confirmation text is on its way to ${esc(D.phone)}:</p><div class="ibubble"><small>Ridgeline Roofing · text</small>Hi ${esc(first)}, you’re booked for a free roof inspection on ${when}. You don’t need to be home. Reply here to change the time. Reply STOP to opt out.</div>`
+        :nt==='email'?`<p class="idsub">Your confirmation just went to ${esc(D.email)}.</p>`
+        :`<p class="idsub">${best==='Call'?'We’ll call you':'We’ll text you'} at ${esc(D.phone)} to confirm.</p>`}
+      <p class="idemo">${CFG.backend?'The owner already has your request. If the time ever needs to move, you’ll hear from us the way you picked.':'Demo: on a live site the confirmation goes out the way the customer picked (text, call or email) and the owner gets an instant alert.'}</p>
       <ul class="iperks"><li><b>Inspection:</b> ${when}</li><li><b>Issue:</b> ${esc(D.issue)}</li>${q&&q.touched&&q.range?`<li><b>Your price held 30 days:</b> ${esc(q.name)}, ${esc(q.range)}</li>`:''}<li><b>We’ll reach you by:</b> ${best.toLowerCase()}</li></ul>
       <div class="row"><a class="btn btn-main" href="#quote">See my price while you wait</a><button class="btn btn-line" type="button" id="iEdit">Change something</button></div>`;
     f.hidden=true;$('#iDone').hidden=false;$('#iCard').classList.add('done');$('#iEdit').onclick=()=>{f.hidden=false;$('#iDone').hidden=true;$('#iCard').classList.remove('done')};
@@ -1750,12 +1791,12 @@ if(QD){
   if(tip){tip.querySelector('.qtipx').onclick=()=>tip.hidden=true;tip.querySelector('.qtipgo').onclick=()=>qOpen()}
   $('#q1Skip').onclick=()=>qGo(2);$('#q1Next').onclick=()=>qGo(2);$('#q2Next').onclick=()=>qGo(3);
   /* contact step: the price shows only after this */
-  let qbest='Text';$$('#qcBest [data-best]').forEach(b=>b.onclick=()=>{qbest=b.dataset.best;$$('#qcBest [data-best]').forEach(x=>x.setAttribute('aria-checked',String(x===b)))});
+  let qbest='Text';$$('#qcBest [data-best]').forEach(b=>b.onclick=()=>{qbest=b.dataset.best;$$('#qcBest [data-best]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));$('#qcSmsC').hidden=qbest!=='Text'});
   {const m=me();if(m){if(m.name)$('#qcName').value=m.name;if(m.phone)$('#qcPhone').value=m.phone;if(m.email)$('#qcEmail').value=m.email}}
   $('#qcForm').onsubmit=e=>{e.preventDefault();const v=s=>$(s).value.trim(),D={name:v('#qcName'),phone:v('#qcPhone'),email:v('#qcEmail')},err=$('#qcErr');
     const bad=!D.name?'#qcName':!phoneOk(D.phone)?'#qcPhone':!/^\S+@\S+\.\S+$/.test(D.email)?'#qcEmail':null;$$('#qcForm .bad').forEach(x=>x.classList.remove('bad'));
     if(bad){err.hidden=false;err.textContent={'#qcName':'Add your name.','#qcPhone':'Add a 10-digit mobile number.','#qcEmail':'Add a valid email.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
-    err.hidden=true;const r=qCalc();const c=upsert({name:D.name,phone:D.phone,addr:QT.addr,source:'Instant roof quote',msg:`${r.name}: ${qmoney(r.lo)}–${qmoney(r.hi)}`,email:D.email,best:qbest});
+    err.hidden=true;const r=qCalc();const c=upsert({name:D.name,phone:D.phone,addr:QT.addr,source:'Instant roof quote',msg:`${r.name}: ${qmoney(r.lo)}–${qmoney(r.hi)}`,email:D.email,best:qbest,sms:qbest==='Text'&&$('#qcSms').checked});
     Object.assign(c,{email:D.email,contactPref:qbest,quote:{name:r.name,range:qmoney(r.lo)+'–'+qmoney(r.hi),addr:QT.addr}});save();
     try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:qbest}))}catch(x){}
     const ia=$('#iName');if(ia&&!ia.value){ia.value=D.name;$('#iPhone').value=D.phone;$('#iEmail').value=D.email;const ad=$('#iAddr');if(ad&&!ad.value&&QT.addr)ad.value=QT.addr}
