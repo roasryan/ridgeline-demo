@@ -871,13 +871,10 @@ html.qopen,html.qopen body{overflow:hidden}
     <div class="qdhead"><div class="qdsteps" aria-hidden="true"><i></i><i></i><i></i><i></i></div><button type="button" class="qdx" data-qclose aria-label="Close the quote">×</button></div>
     <section class="qstep" data-step="1">
       <h2 id="qdH">What will my roof cost?</h2>
-      <p class="qdsub">Start typing your street address, then pick it from the list.</p>
-      <form id="rmForm" class="rmform" novalidate autocomplete="off"><div class="acwrap"><label for="rmAddr" class="vh">Street address</label><input id="rmAddr" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="acList" autocomplete="off" placeholder="Enter your street address"><ul id="acList" class="aclist" role="listbox" hidden></ul></div><button class="btn btn-main" type="submit">Start</button></form>
+      <p class="qdsub">Start with your address. Pick it from the list as you type.</p>
+      <form id="rmForm" class="rmform" novalidate autocomplete="off"><div class="acwrap"><label for="rmAddr" class="vh">Street address</label><input id="rmAddr" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="acList" autocomplete="off" placeholder="Enter your street address"><ul id="acList" class="aclist" role="listbox" hidden></ul></div><button class="btn btn-main" type="submit">Next</button></form>
       <p class="rmmsg" id="rmMsg" role="status" aria-live="polite"></p>
-      <div class="rmview" id="rmView"><div class="rmtiles" id="rmTiles"></div><svg id="rmSvg" aria-hidden="true"></svg><div class="rmpin" id="rmPin" hidden><span>Your roof</span></div><div class="rmempty"><b>Your house shows up here</b><span>Satellite photo, straight down</span></div></div>
-      <div id="rmOut" class="rmout" hidden></div>
-      <div class="qdnav"><button class="btn btn-main" type="button" id="q1Next" hidden>Yes, that’s my roof</button><button class="linkbtn" type="button" id="q1Skip">Skip the map, I’ll type my size</button></div>
-      <p class="rmfine">Demo map: imagery © Esri, Maxar, Earthstar Geographics · address search © Esri · roof outlines: FEMA USA Structures, © OpenStreetMap contributors.</p>
+      <div class="qdnav"><button class="linkbtn" type="button" id="q1Skip">Skip, I’ll add it later</button><button type="button" id="q1Next" hidden></button></div>
     </section>
     <section class="qstep qform" data-step="2" hidden>
       <h2>Tell us about the job</h2>
@@ -924,9 +921,8 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const M=window.Motion||null;
 /* ================= CLIENT SETTINGS: the only block to change per client (see SETUP.md) =================
    backend: the client's Google Apps Script web app URL (/exec). Leads, owner alerts, the booking calendar and GoHighLevel all go through it.
-   mapsKey: the client's Google Maps Platform browser key (Places API (New), Maps Static API, Solar API), restricted to the client's domain.
    Leave either empty and the site falls back to demo mode (leads stay on this device, free map services). */
-const CFG={biz:'Ridgeline Roofing',city:'Houston',tz:'America/Chicago',lat:29.7604,lon:-95.3698,backend:'https://script.google.com/macros/s/AKfycbyAH-VeQsKxZEnmBuQIfmz0bhsFxF9hr7h61UsIYIoeZXBaD9hDOd4JS70rdRo_rBmI/exec',mapsKey:''};
+const CFG={biz:'Ridgeline Roofing',city:'Houston',tz:'America/Chicago',lat:29.7604,lon:-95.3698,backend:'https://script.google.com/macros/s/AKfycbyAH-VeQsKxZEnmBuQIfmz0bhsFxF9hr7h61UsIYIoeZXBaD9hDOd4JS70rdRo_rBmI/exec'};
 
 const HOME=document.getElementById('inspect')?'':'index.html';
 /* the photo sits exactly under the real header height (in-app browsers and notches change it) */
@@ -1168,7 +1164,7 @@ const OUTBOX='rl-outbox';
 function leadRow(o){let me={},q={};try{me=JSON.parse(localStorage.getItem('rl-me')||'{}');q=JSON.parse(localStorage.getItem('rl-quote')||'{}')}catch(x){}
   const ap=o.appt&&o.appt.t?{date:AV.iso(new Date(o.appt.t)),time:o.appt.time}:null;
   return{type:o.source||'Website',name:o.name||me.name||'',phone:digits(o.phone||me.phone||''),email:o.email||me.email||'',best:o.best||me.contact||'',sms:!!o.sms,
-    address:o.addr||q.addr||'',issue:o.msg||'',company:o.company||'',role:o.role||'',quote:q&&q.touched&&q.range?{name:q.name||'',range:q.range}:null,appt:ap,
+    address:o.addr||q.addr||'',issue:o.msg||'',company:o.company||'',role:o.role||'',quote:!o.club&&q&&q.touched&&q.range?{name:q.name||'',range:q.range}:null,club:o.club?o.club.plan:'',appt:ap,
     page:location.pathname+location.search,ts:Date.now(),hp:''}}
 async function postBackend(row){const r=await fetch(CFG.backend,{method:'POST',body:JSON.stringify(row)});return r.json()}
 function outbox(){try{return JSON.parse(localStorage.getItem(OUTBOX)||'[]')}catch(x){return[]}}
@@ -1541,7 +1537,7 @@ $$('[data-start]').forEach(b=>b.onclick=()=>startSheet());
 /* ---------- availability: the owner sets hours once (Owner view → Availability); the booking calendar only offers real, future times ----------
    Live (CFG.backend): settings + open times come from the backend, which also checks the owner's calendar. Demo: settings on this device. */
 const AV=(()=>{const KEY='rl-avail2';
-  const DEF={hours:{0:null,1:['08:00','17:00'],2:['08:00','17:00'],3:['08:00','17:00'],4:['08:00','17:00'],5:['08:00','17:00'],6:['09:00','13:00']},len:60,step:60,buffer:0,noticeH:3,ahead:28,maxDay:4,weekCap:12,blocked:[]};
+  const DEF={hours:{0:null,1:['08:00','17:00'],2:['08:00','17:00'],3:['08:00','17:00'],4:['08:00','17:00'],5:['08:00','17:00'],6:['09:00','13:00']},len:60,step:60,buffer:0,noticeH:0,ahead:28,maxDay:4,weekCap:12,blocked:[]};
   const clone=o=>JSON.parse(JSON.stringify(o));
   let S;try{S=Object.assign(clone(DEF),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(x){S=clone(DEF)}
   const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(x){}};
@@ -1554,7 +1550,7 @@ const AV=(()=>{const KEY='rl-avail2';
   function nowBiz(){try{const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:CFG.tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
     return{date:`${p.year}-${p.month}-${p.day}`,min:+p.hour*60+ +p.minute}}catch(x){const d=new Date();return{date:iso(d),min:d.getHours()*60+d.getMinutes()}}}
   /* a time is bookable only if it starts at least noticeH hours from now */
-  function future(date,t){const n=nowBiz(),diffDays=Math.round((new Date(date+'T12:00:00')-new Date(n.date+'T12:00:00'))/864e5);return diffDays*1440+toMin(t)-n.min>=S.noticeH*60}
+  function future(date,t){const n=nowBiz(),diffDays=Math.round((new Date(date+'T12:00:00')-new Date(n.date+'T12:00:00'))/864e5);return diffDays*1440+toMin(t)-n.min>=Math.max(S.noticeH*60,1)}
   const booked=()=>{const m={};((typeof DB!=='undefined'&&DB.customers)||[]).forEach(c=>{if(c.appt&&c.appt.t&&c.appt.time){const k=iso(new Date(c.appt.t));(m[k]=m[k]||[]).push(c.appt.time)}});return m};
   let remote=null;
   async function load(){if(!CFG.backend)return;try{const j=await(await fetch(`${CFG.backend}?action=slots&days=${S.ahead}`)).json();if(j&&j.ok&&j.days){remote=j.days;if(j.settings)Object.assign(S,j.settings);window.dispatchEvent(new Event('rl-slots'))}}catch(x){}}
@@ -1601,7 +1597,7 @@ function oAvail(){const S=AV.S,DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     <div class="field"><label for="avLen">How long one takes</label>${sel('avLen',S.len,[[30,'30 min'],[45,'45 min'],[60,'1 hour'],[90,'1.5 hours'],[120,'2 hours']])}</div>
     <div class="field"><label for="avStep">Start times every</label>${sel('avStep',S.step,[[30,'30 min'],[60,'1 hour'],[120,'2 hours']])}</div>
     <div class="field"><label for="avBuf">Drive time between</label>${sel('avBuf',S.buffer,[[0,'None'],[15,'15 min'],[30,'30 min'],[60,'1 hour']])}</div>
-    <div class="field"><label for="avNot">Earliest a customer can book</label>${sel('avNot',S.noticeH,[[1,'1 hour from now'],[2,'2 hours from now'],[3,'3 hours from now'],[24,'Tomorrow'],[48,'2 days out']])}</div>
+    <div class="field"><label for="avNot">Earliest a customer can book</label>${sel('avNot',S.noticeH,[[0,'Same day, any open time'],[1,'1 hour from now'],[2,'2 hours from now'],[3,'3 hours from now'],[24,'Tomorrow'],[48,'2 days out']])}</div>
     <div class="field"><label for="avAh">How far ahead</label>${sel('avAh',S.ahead,[[7,'1 week'],[14,'2 weeks'],[28,'4 weeks'],[56,'8 weeks']])}</div>
     <div class="field"><label for="avMax">Most in one day</label>${sel('avMax',S.maxDay,[1,2,3,4,5,6,8,10].map(n=>[n,n]))}</div>
     <div class="field"><label for="avWeek">Spots per week (shows on the site)</label>${sel('avWeek',S.weekCap,[6,8,10,12,15,20,25,30].map(n=>[n,n]))}</div></div></section>
@@ -1738,7 +1734,7 @@ if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"
    1 address (autocomplete) + satellite roof outline → 2 job details → 3 contact → 4 price.
    Demo services, no key: Esri address suggest + Esri satellite + FEMA USA Structures roof outlines (OSM fallback).
    Live client sites: set MAPS_KEY (Google Maps Static satellite, key locked to the domain). */
-const MAPS_KEY=CFG.mapsKey;
+
 const QD=$('#quote');
 let qStep=1,qUnlocked=false;
 function qGo(n){if(!QD)return;if(n===3&&qUnlocked)n=4;if(n===3){const m=me();if(m&&m.name&&m.phone&&m.email){qUnlock(m,true);n=4}}
@@ -1782,86 +1778,24 @@ if(QD){
     const ia=$('#iName');if(ia&&!ia.value){ia.value=D.name;$('#iPhone').value=D.phone;$('#iEmail').value=D.email;const ad=$('#iAddr');if(ad&&!ad.value&&QT.addr)ad.value=QT.addr}
     qUnlock();qGo(4)}}
 
-/* ---- step 1: address autocomplete + satellite roof outline ---- */
-{const view=$('#rmView');if(view){const tiles=$('#rmTiles'),svg=$('#rmSvg'),pin=$('#rmPin'),msg=$('#rmMsg'),out=$('#rmOut'),inp=$('#rmAddr'),list=$('#acList');
-  const newTok=()=>(crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2));let gTok=newTok();
-  const Z=19,TS=256,GEO='https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/';let C=null,S=1,blds=[],pick=null,addr='',sugg=[],act=-1,seq=0;
-  const wx=(lon,z)=>(lon+180)/360*TS*2**z,wy=(lat,z)=>{const r=lat*Math.PI/180;return(1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*TS*2**z};
-  const lonOf=(x,z)=>x/(TS*2**z)*360-180,latOf=(y,z)=>{const n=Math.PI-2*Math.PI*y/(TS*2**z);return 180/Math.PI*Math.atan(.5*(Math.exp(n)-Math.exp(-n)))};
+/* ---- step 1: just the address (type-ahead suggestions, no map; Ryan, Oct 4) ---- */
+{const inp=$('#rmAddr'),list=$('#acList'),msg=$('#rmMsg');if(inp&&list){
+  const GEO='https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/';let sugg=[],act=-1,seq=0,tmr;
   const say=(t,bad)=>{msg.textContent=t;msg.classList.toggle('bad',!!bad)};
-  function draw(lat,lon,scale){C={lat,lon,x:wx(lon,Z),y:wy(lat,Z)};S=scale;const w=view.clientWidth||600,h=view.clientHeight||450;tiles.innerHTML='';
-    if(MAPS_KEY){const z=S>=1.6?20:19,k=z===20?.5:1,px2=640*k*S;const im=new Image();im.alt='';im.src=`https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lon}&zoom=${z}&size=640x640&scale=2&maptype=satellite&key=${MAPS_KEY}`;
-      Object.assign(im.style,{position:'absolute',width:px2+'px',height:px2+'px',left:(w/2-px2/2)+'px',top:(h/2-px2/2)+'px'});tiles.appendChild(im)}
-    else{const hw=w/2/S,hh=h/2/S,x0=Math.floor((C.x-hw)/TS),x1=Math.floor((C.x+hw)/TS),y0=Math.floor((C.y-hh)/TS),y1=Math.floor((C.y+hh)/TS);
-      for(let tx=x0;tx<=x1;tx++)for(let ty=y0;ty<=y1;ty++){const im=new Image();im.alt='';im.decoding='async';im.src=`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${Z}/${ty}/${tx}`;
-        Object.assign(im.style,{position:'absolute',width:TS*S+1+'px',height:TS*S+1+'px',left:(w/2+(tx*TS-C.x)*S)+'px',top:(h/2+(ty*TS-C.y)*S)+'px'});tiles.appendChild(im)}}
-    outline()}
-  const px=(lat,lon)=>{const w=view.clientWidth,h=view.clientHeight;return[w/2+(wx(lon,Z)-C.x)*S,h/2+(wy(lat,Z)-C.y)*S]};
-  function outline(){const w=view.clientWidth,h=view.clientHeight;svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML='';
-    if(pick){svg.innerHTML=`<polygon points="${pick.g.map(p=>px(p.lat,p.lon).map(v=>v.toFixed(1)).join(',')).join(' ')}" class="rmpoly"/>`;const[a,b]=px(pick.c.lat,pick.c.lon);pin.style.left=a+'px';pin.style.top=b+'px'}
-    else if(C){const[a,b]=px(C.lat,C.lon);pin.style.left=a+'px';pin.style.top=b+'px'}pin.hidden=false}
-  const inside=(pt,g)=>{let ins=false;for(let i=0,j=g.length-1;i<g.length;j=i++){const a=g[i],b=g[j];if((a.lat>pt.lat)!==(b.lat>pt.lat)&&pt.lon<(b.lon-a.lon)*(pt.lat-a.lat)/(b.lat-a.lat)+a.lon)ins=!ins}return ins};
-  const area=g=>{const k=Math.cos(g[0].lat*Math.PI/180)*111320,m=110540;let s=0;for(let i=0,j=g.length-1;i<g.length;j=i++)s+=(g[j].lon*k)*(g[i].lat*m)-(g[i].lon*k)*(g[j].lat*m);return Math.abs(s/2)*10.7639};
-  const cen=g=>({lat:g.reduce((s,p)=>s+p.lat,0)/g.length,lon:g.reduce((s,p)=>s+p.lon,0)/g.length});
-  const dist=(a,b)=>Math.hypot((a.lat-b.lat)*110540,(a.lon-b.lon)*111320*Math.cos(a.lat*Math.PI/180));
-  const mk=g=>({g,c:cen(g),ft:area(g)});
-  /* the address point often lands in the yard or on a shed: favor the main house (big footprint) close to the point */
-  function choose(pt){let best=null,bs=0;for(const b of blds){if(b.ft<350)continue;const ins=inside(pt,b.g),d=ins?0:dist(pt,b.c);if(d>40)continue;const sc=(b.ft>=1000?b.ft:b.ft*.4)/(d+10)*(ins?1.6:1);if(sc>bs){bs=sc;best=b}}return best}
-  async function getBlds(lat,lon){
-    try{const u=`https://services2.arcgis.com/FiaPA4ga0iQKduv3/ArcGIS/rest/services/USA_Structures_View/FeatureServer/0/query?f=json&geometry=${lon},${lat}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&distance=70&units=esriSRUnit_Meter&outFields=OCC_CLS&returnGeometry=true&outSR=4326`;
-      const j=await(await fetch(u)).json();const b=(j.features||[]).filter(f=>f.geometry&&f.geometry.rings&&f.geometry.rings[0].length>3).map(f=>mk(f.geometry.rings[0].map(([x,y])=>({lat:y,lon:x}))));if(b.length)return b}catch(x){}
-    try{const oq=`[out:json][timeout:12];way(around:70,${lat},${lon})["building"];out geom;`;
-      const o=await(await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(oq),headers:{'Content-Type':'application/x-www-form-urlencoded'}})).json();
-      return(o.elements||[]).filter(e=>e.geometry&&e.geometry.length>3).map(e=>mk(e.geometry.map(p=>({lat:p.lat,lon:p.lon}))))}catch(x){return[]}}
-  let solar=null;
-  async function getSolar(lat,lon){if(!MAPS_KEY)return null;for(const q of['HIGH','MEDIUM','BASE']){try{const r=await fetch(`https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lon}&requiredQuality=${q}&key=${MAPS_KEY}`);if(!r.ok)continue;const j=await r.json();const sp=j.solarPotential||{};
-      const segs=(sp.roofSegmentStats||[]).map(x=>({p:x.pitchDegrees||0,a:(x.stats&&x.stats.areaMeters2)||0}));const area=(sp.wholeRoofStats&&sp.wholeRoofStats.areaMeters2)||segs.reduce((a,x)=>a+x.a,0);if(!area)continue;
-      const tot=segs.reduce((a,x)=>a+x.a,0)||1,pitch=segs.reduce((a,x)=>a+x.p*x.a,0)/tot;return{sqft:Math.round(area*10.7639/10)*10,pitch,segs:segs.length,quality:j.imageryQuality||q,center:j.center}}catch(x){}}return null}
-  const pitchKey=d=>d<9.5?'flat':d<18.5?'low':d<30?'med':'steep';
-  const PNAME={flat:'flat',low:'gentle',med:'medium',steep:'steep'};
-  const roofOf=b=>solar?solar.sqft:Math.round(b.ft*1.1*1.12/10)*10;
-  function result(){const nice=addr.replace(/, USA$/,'');
-    /* the map only helps them find and confirm their home; the size comes from them (Ryan: outlines can be wrong, so no estimate here) */
-    out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><p class="rmnote">${pick?'Is this your home? If the box is on the wrong house, tap your house on the photo.':'Here’s your address. Tap your house on the photo if you can spot it, or just keep going.'}</p>`;
-    $('#q1Next').textContent=pick?'Yes, that’s my home':'Keep going';
-    out.hidden=false;$('#q1Next').hidden=false;view.classList.add('found');
-    QT.addr=nice;const qa=$('#qAddr');if(qa)qa.value=nice;const ia=$('#iAddr');if(ia&&!ia.value)ia.value=nice;
-    try{localStorage.setItem('rl-roof',JSON.stringify({addr:nice}))}catch(x){}}
-  async function locate(item){hideList();inp.value=item.text.replace(/, USA$/,'');say('Finding your house…');out.hidden=true;$('#q1Next').hidden=true;pick=null;blds=[];
-    solar=null;
-    try{let lat,lon;
-      if(MAPS_KEY&&item.placeId){const d=await(await fetch(`https://places.googleapis.com/v1/places/${item.placeId}?sessionToken=${gTok}`,{headers:{'X-Goog-Api-Key':MAPS_KEY,'X-Goog-FieldMask':'location,formattedAddress'}})).json();gTok=newTok();
-        if(!d.location)throw 0;lat=d.location.latitude;lon=d.location.longitude;addr=d.formattedAddress}
-      else{const c=await(await fetch(`${GEO}findAddressCandidates?f=json&maxLocations=1&outFields=Addr_type${item.magicKey?'&magicKey='+encodeURIComponent(item.magicKey):''}&SingleLine=${encodeURIComponent(item.text)}&location=${CFG.lon},${CFG.lat}`)).json();
-      const k=c.candidates&&c.candidates[0];if(!k)throw 0;lat=k.location.y;lon=k.location.x;addr=k.address}
-      draw(lat,lon,1.8);view.classList.add('found');say(MAPS_KEY?'Measuring your roof…':'Outlining your roof…');[blds,solar]=await Promise.all([getBlds(lat,lon),getSolar(lat,lon)]);pick=choose({lat,lon});
-      if(pick){const w=view.clientWidth;const xs=pick.g.map(p=>wx(p.lon,Z)),ys=pick.g.map(p=>wy(p.lat,Z));const span=Math.max(Math.max(...xs)-Math.min(...xs),(Math.max(...ys)-Math.min(...ys))*w/view.clientHeight);draw(pick.c.lat,pick.c.lon,clamp(w*.5/span,1,2.6))}
-      say(pick?'Found it.':'Here’s your address.');result()}
-    catch(x){say(x&&x.name==='TypeError'?'Address search is blocked in this preview. Open the site in Safari or Chrome.':'We couldn’t find that address. Pick it from the list as you type.',true)}}
-  /* autocomplete list */
+  const useAddr=t=>{const nice=String(t).replace(/, USA$/,'').trim();inp.value=nice;QT.addr=nice;const qa=$('#qAddr');if(qa)qa.value=nice;const ia=$('#iAddr');if(ia&&!ia.value)ia.value=nice;
+    try{localStorage.setItem('rl-roof',JSON.stringify({addr:nice}))}catch(x){}hideList();say('');qGo(2)};
   function hideList(){list.hidden=true;inp.setAttribute('aria-expanded','false');act=-1}
-  function showList(){list.innerHTML=sugg.map((s,i)=>`<li role="option" id="ac${i}" aria-selected="${i===act}" data-i="${i}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.2" fill="currentColor"/></svg>${esc(s.text.replace(/, USA$/,''))}</li>`).join('');
+  function showList(){list.innerHTML=sugg.map((s,i)=>`<li role="option" id="ac${i}" aria-selected="${i===act}" data-i="${i}">${esc(s.text.replace(/, USA$/,''))}</li>`).join('');
     list.hidden=!sugg.length;inp.setAttribute('aria-expanded',String(!!sugg.length));if(act>=0)inp.setAttribute('aria-activedescendant','ac'+act);else inp.removeAttribute('aria-activedescendant')}
-  let tmr;inp.addEventListener('input',()=>{clearTimeout(tmr);const v=inp.value.trim();if(v.length<3){sugg=[];hideList();return}
-    tmr=setTimeout(async()=>{const my=++seq;try{
-      if(MAPS_KEY){const j=await(await fetch('https://places.googleapis.com/v1/places:autocomplete',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':MAPS_KEY},
-          body:JSON.stringify({input:v,sessionToken:gTok,includedRegionCodes:['us'],includedPrimaryTypes:['street_address','premise','subpremise'],locationBias:{circle:{center:{latitude:CFG.lat,longitude:CFG.lon},radius:50000}}})})).json();
-        if(my!==seq)return;sugg=(j.suggestions||[]).filter(s=>s.placePrediction).map(s=>({text:s.placePrediction.text.text,placeId:s.placePrediction.placeId}))}
-      else{const j=await(await fetch(`${GEO}suggest?f=json&countryCode=USA&category=Address&maxSuggestions=6&location=${CFG.lon},${CFG.lat}&text=${encodeURIComponent(v)}`)).json();
-        if(my!==seq)return;sugg=(j.suggestions||[]).filter(s=>!s.isCollection)}
-      act=-1;showList();if(!sugg.length&&v.length>=8)say('Keep typing your street address, or tap Start.')}catch(x){say('Address search is blocked in this preview. Open the site in Safari or Chrome, or tap Start to type your size.',true)}},220)});
+  inp.addEventListener('input',()=>{clearTimeout(tmr);const v=inp.value.trim();if(v.length<3){sugg=[];hideList();return}
+    tmr=setTimeout(async()=>{const my=++seq;try{const j=await(await fetch(`${GEO}suggest?f=json&countryCode=USA&category=Address&maxSuggestions=6&location=${CFG.lon},${CFG.lat}&text=${encodeURIComponent(v)}`)).json();
+      if(my!==seq)return;sugg=(j.suggestions||[]).filter(s=>!s.isCollection);act=-1;showList()}catch(x){sugg=[];hideList()}},220)});
   inp.addEventListener('keydown',e=>{if(list.hidden)return;if(e.key==='ArrowDown'){e.preventDefault();act=(act+1)%sugg.length;showList()}else if(e.key==='ArrowUp'){e.preventDefault();act=(act-1+sugg.length)%sugg.length;showList()}
-    else if(e.key==='Enter'&&act>=0){e.preventDefault();locate(sugg[act])}else if(e.key==='Escape'){e.stopPropagation();hideList()}});
-  /* phones: pick on pointerdown (fires before the input blurs and the list closes) */
-  let picked=false;const pickLi=e=>{const li=e.target.closest('li');if(!li)return;e.preventDefault();if(picked)return;picked=true;setTimeout(()=>picked=false,600);inp.blur();locate(sugg[+li.dataset.i])};
+    else if(e.key==='Enter'&&act>=0){e.preventDefault();useAddr(sugg[act].text)}else if(e.key==='Escape'){e.stopPropagation();hideList()}});
+  let picked=false;const pickLi=e=>{const li=e.target.closest('li');if(!li)return;e.preventDefault();if(picked)return;picked=true;setTimeout(()=>picked=false,600);inp.blur();useAddr(sugg[+li.dataset.i].text)};
   list.addEventListener('pointerdown',pickLi);list.addEventListener('mousedown',e=>e.preventDefault());list.addEventListener('click',pickLi);
   inp.addEventListener('blur',()=>setTimeout(hideList,350));
-  $('#rmForm').onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(sugg.length)return locate(sugg[act>=0?act:0]);if(v.length<6){say('Type your street address and pick it from the list.',true);return}locate({text:v})};
-  view.addEventListener('click',e=>{if(!C||!blds.length)return;const r=view.getBoundingClientRect();const x=C.x+(e.clientX-r.left-r.width/2)/S,y=C.y+(e.clientY-r.top-r.height/2)/S;
-    const pt={lat:latOf(y,Z),lon:lonOf(x,Z)};const b=blds.find(b=>inside(pt,b.g));if(b){pick=b;outline();result();say('Got it. Is this your roof?')}});
-  let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(C)draw(C.lat,C.lon,S)},200)});
-  if(MAPS_KEY){const f=$('#quote .rmfine');if(f)f.textContent='Imagery and roof measurements © Google · roof outlines: FEMA USA Structures.'}
-  window.addEventListener('rl-qopen',()=>{if(!C)setTimeout(()=>{if(!C){draw(CFG.lat,CFG.lon,1.4);view.classList.remove('found')}},350)},{once:false})}}
+  $('#rmForm').onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(act>=0&&sugg[act])return useAddr(sugg[act].text);if(v.length<6){say('Type your street address, city and ZIP.',true);return}useAddr(v)}}}
 
 /* ---- season switcher (demo): pick a season, the sky and the hero follow ---- */
 {const box=$('#seaPick');if(box){const SEA=[['fall','Fall','Hurricane season'],['spring','Spring','Hail season'],['summer','Summer','Heat'],['winter','Winter','Freeze']];

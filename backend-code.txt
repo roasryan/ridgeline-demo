@@ -26,7 +26,7 @@ const GHL = 'https://services.leadconnectorhq.com';
 
 const DEFAULT_SETTINGS = {
   hours: { 0: null, 1: ['08:00', '17:00'], 2: ['08:00', '17:00'], 3: ['08:00', '17:00'], 4: ['08:00', '17:00'], 5: ['08:00', '17:00'], 6: ['09:00', '13:00'] },
-  len: 60, step: 60, buffer: 0, noticeH: 3, ahead: 28, maxDay: 4, weekCap: 12, blocked: []
+  len: 60, step: 60, buffer: 0, noticeH: 0, ahead: 28, maxDay: 4, weekCap: 12, blocked: []
 };
 function settings() { try { return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(cfg('SETTINGS') || '{}')); } catch (x) { return DEFAULT_SETTINGS; } }
 
@@ -93,7 +93,7 @@ function doPost(e) {
     if (appt) clearSlotCache();
 
     sheetRow(L, appt, ghl);
-    const notified = notifyCustomer(appt ? 'booked' : 'lead', L, appt);
+    const notified = notifyCustomer(appt ? 'booked' : L.club ? 'club' : 'lead', L, appt);
     ownerAlert(L, appt, notified);
     return json({ ok: true, booked: !!appt, notified });
   } finally { lock.releaseLock(); }
@@ -121,7 +121,7 @@ function calSlots(days, onlyDate) {
   const S = settings(), now = new Date(), out = {};
   const first = onlyDate ? at(onlyDate, '00:00') : at(fmt(now, 'yyyy-MM-dd'), '00:00');
   const last = onlyDate ? new Date(first.getTime() + 864e5) : new Date(first.getTime() + (days + 1) * 864e5);
-  const evs = busyEvents(first, last), earliest = now.getTime() + S.noticeH * 3600e3, cal = bookingCal().getId();
+  const evs = busyEvents(first, last), earliest = now.getTime() + Math.max(S.noticeH * 3600e3, 60e3), cal = bookingCal().getId();
   for (let d = new Date(first); d < last; d = new Date(d.getTime() + 864e5)) {
     const key = fmt(d, 'yyyy-MM-dd'), dow = +fmt(d, 'u') % 7, h = S.hours[dow];
     if (!h || S.blocked.indexOf(key) >= 0) continue;
@@ -185,9 +185,10 @@ function notifyCustomer(kind, L, appt) {
     moved: `Hi ${first}, ${owner} from ${biz} here. Your roof inspection moved to ${when}. Reply if that doesn't work and we'll find another time.`,
     cancelled: `Hi ${first}, ${owner} from ${biz} here. We had to cancel your inspection on ${when}. Reply and we'll set a new time.`,
     reminder: `Hi ${first}, reminder: your free roof inspection with ${biz} is tomorrow, ${when}. Reply if you need to change it.`,
+    club: `Hi ${first}, welcome to the ${biz} Roof Care Club (${L.club}). This is a demo sign-up, so no card was charged. ${owner} will reach out to schedule your first roof checkup.`,
     lead: `Hi ${first}, thanks for reaching out to ${biz}.${L.quote ? ` Your instant quote: ${L.quote.name}, ${L.quote.range} (held 30 days).` : ''} ${owner} will be in touch shortly.`
   }[kind];
-  const subj = { booked: `You're booked: roof inspection ${appt ? fmt(appt.start, 'EEE MMM d') : ''}`, moved: 'Your roof inspection time changed', cancelled: 'Your roof inspection was cancelled', reminder: 'Reminder: roof inspection tomorrow', lead: `We got your request, ${first}` }[kind];
+  const subj = { booked: `You're booked: roof inspection ${appt ? fmt(appt.start, 'EEE MMM d') : ''}`, moved: 'Your roof inspection time changed', cancelled: 'Your roof inspection was cancelled', reminder: 'Reminder: roof inspection tomorrow', club: `Welcome to the Roof Care Club (demo), ${first}`, lead: `We got your request, ${first}` }[kind];
   if (L.best === 'Text') {
     if (L.sms && smsReady()) { try { sendSms(L.phone, msg + (kind === 'booked' || kind === 'lead' ? ' Reply STOP to opt out.' : '')); return 'sms'; } catch (x) { logErr('sms', x); } }
     return 'none';                              // owner texts them by hand (alert says so)
@@ -219,11 +220,12 @@ function ownerAlert(L, appt, notified) {
     ${L.email ? `<p style="margin:0 0 6px"><b>Email:</b> <a href="mailto:${esc(L.email)}" style="color:#1A56DB">${esc(L.email)}</a></p>` : ''}
     ${L.address ? `<p style="margin:0 0 6px"><b>Address:</b> <a href="https://maps.google.com/?q=${encodeURIComponent(L.address)}" style="color:#1A56DB">${esc(L.address)}</a></p>` : ''}
     ${L.issue ? `<p style="margin:0 0 6px"><b>Issue:</b> ${esc(L.issue)}</p>` : ''}
+    ${L.club ? `<p style="margin:0 0 6px"><b>Roof Care Club:</b> ${esc(L.club)} (demo, nothing charged)</p>` : ''}
     ${L.quote ? `<p style="margin:0 0 6px"><b>Instant quote:</b> ${esc(L.quote.name)}, ${esc(L.quote.range)}</p>` : ''}
     <p style="margin:16px 0"><a href="${sms}" style="background:#FFD400;color:#1F2A33;padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none">Text ${esc(first)}</a>
     &nbsp; <a href="tel:+1${L.phone}" style="border:2px solid #1F2A33;color:#1F2A33;padding:10px 16px;border-radius:10px;font-weight:800;text-decoration:none">Call</a></p>
     ${appt ? '<p style="color:#6B7882;font-size:13px">It’s on your inspections calendar. Drag it to reschedule; the customer is told automatically.</p>' : ''}</div>`;
-  MailApp.sendEmail({ to, subject: `${appt ? 'New inspection' : 'New lead'}: ${L.name}${when ? ' · ' + when : ''}`, htmlBody: html, name: cfg('BIZ_NAME', 'Website') + ' website', replyTo: L.email || undefined });
+  MailApp.sendEmail({ to, subject: `${appt ? 'New inspection' : L.club ? 'New Roof Care Club member (demo)' : 'New lead'}: ${L.name}${when ? ' · ' + when : ''}`, htmlBody: html, name: cfg('BIZ_NAME', 'Website') + ' website', replyTo: L.email || undefined });
 }
 
 /* ------------------------------------------------------------------ SMS providers */
