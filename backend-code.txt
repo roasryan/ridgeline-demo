@@ -1,0 +1,254 @@
+/**
+ * Unplanned Studio — website backend for local service sites (template).
+ * One copy per client, deployed as a Google Apps Script web app (free).
+ *
+ * What it does
+ *   GET  ?action=slots&days=28   → open inspection windows for the website calendar
+ *   POST (JSON lead from the site) → 1) Google Sheet row  2) instant owner alert (email, with tap-to-text/call links)
+ *                                    3) customer confirmation email  4) GoHighLevel contact + appointment (if connected)
+ *
+ * Where availability comes from
+ *   - GoHighLevel connected (GHL_TOKEN set): the GHL calendar's free slots. The owner manages hours, days off,
+ *     buffers and max per day in GHL (and GHL hides busy times from his synced Google Calendar).
+ *   - Not connected: the owner's Google Calendar (busy events block windows) + the OPEN_HOURS below.
+ *
+ * Script properties (Project Settings → Script properties) — see SETUP.md
+ *   BIZ_NAME, OWNER_NAME, OWNER_EMAIL, OWNER_PHONE, TZ (e.g. America/Chicago)
+ *   GHL_TOKEN (Private Integration token), GHL_LOCATION_ID, GHL_CALENDAR_ID     ← optional
+ *   SHEET_ID (optional; created automatically on first lead), CONFIRM_EMAIL (yes/no, default yes)
+ */
+
+const P = PropertiesService.getScriptProperties();
+const cfg = (k, d) => P.getProperty(k) || d || '';
+const TZ = () => cfg('TZ', 'America/Chicago');
+
+/* The 2-hour inspection windows the website shows. Start hour (24h) → label. Keep in sync with the site. */
+const WINDOWS = [['8 to 10 AM', 8], ['10 AM to noon', 10], ['1 to 3 PM', 13], ['3 to 5 PM', 15]];
+const WIN_LEN_H = 2;
+
+/* Used only when GoHighLevel is NOT connected. 0 = Sunday. */
+const OPEN_HOURS = { 1: [8, 10, 13, 15], 2: [8, 10, 13, 15], 3: [8, 10, 13, 15], 4: [8, 10, 13, 15], 5: [8, 10, 13, 15], 6: [8, 10] };
+const MIN_NOTICE_DAYS = 1, MAX_PER_DAY = 3;
+
+const GHL = 'https://services.leadconnectorhq.com';
+
+/* ------------------------------------------------------------------ GET: open windows */
+function doGet(e) {
+  const p = (e && e.parameter) || {};
+  if (p.action === 'slots') {
+    const days = Math.min(+p.days || 28, 60);
+    const key = 'slots_' + days;
+    const cache = CacheService.getScriptCache();
+    const hit = cache.get(key);
+    if (hit) return json(JSON.parse(hit));
+    const out = { ok: true, source: cfg('GHL_TOKEN') ? 'ghl' : 'gcal', days: cfg('GHL_TOKEN') ? ghlSlots(days) : gcalSlots(days) };
+    cache.put(key, JSON.stringify(out), 120); // 2 minutes
+    return json(out);
+  }
+  return json({ ok: true, service: 'website backend', time: new Date().toISOString() });
+}
+
+/* ------------------------------------------------------------------ POST: a lead or booking */
+function doPost(e) {
+  let L;
+  try { L = JSON.parse(e.postData.contents); } catch (x) { return json({ ok: false, reason: 'bad_json' }); }
+  if (L.hp) return json({ ok: true }); // honeypot: bots fill hidden fields
+  L.phone = String(L.phone || '').replace(/\D/g, '').slice(-10);
+  if (!L.name || L.phone.length < 10) return json({ ok: false, reason: 'missing' });
+
+  // basic flood protection: same phone at most 5 posts per 10 minutes
+  const cache = CacheService.getScriptCache(), ck = 'rate_' + L.phone, n = +(cache.get(ck) || 0);
+  if (n >= 5) return json({ ok: false, reason: 'slow_down' });
+  cache.put(ck, String(n + 1), 600);
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    let appt = null;
+    if (L.appt && L.appt.date && L.appt.window) {
+      const start = windowStart(L.appt.date, L.appt.window);
+      if (!start) return json({ ok: false, reason: 'bad_time' });
+      if (!isStillOpen(L.appt.date, L.appt.window)) return json({ ok: false, reason: 'taken' });
+      appt = { start, end: new Date(start.getTime() + WIN_LEN_H * 3600e3) };
+    }
+
+    let ghl = null;
+    if (cfg('GHL_TOKEN')) {
+      try { ghl = ghlSave(L, appt); } catch (x) { ghl = { error: String(x) }; }
+    } else if (appt) {
+      gcalBook(L, appt);
+    }
+    CacheService.getScriptCache().removeAll(['slots_7','slots_14','slots_28','slots_56']); // the calendar changed
+
+    sheetRow(L, appt, ghl);
+    ownerAlert(L, appt);
+    if (cfg('CONFIRM_EMAIL', 'yes') !== 'no' && L.email) customerEmail(L, appt);
+    return json({ ok: true, booked: !!appt, ghl: ghl && !ghl.error ? 'ok' : (ghl ? 'error' : 'off') });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ------------------------------------------------------------------ GoHighLevel */
+function ghlFetch(method, path, body, version) {
+  const r = UrlFetchApp.fetch(GHL + path, {
+    method, muteHttpExceptions: true, contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + cfg('GHL_TOKEN'), Version: version || '2021-07-28', Accept: 'application/json' },
+    payload: body ? JSON.stringify(body) : undefined
+  });
+  const code = r.getResponseCode(), txt = r.getContentText();
+  if (code >= 300) throw new Error('GHL ' + method + ' ' + path + ' → ' + code + ' ' + txt.slice(0, 300));
+  return txt ? JSON.parse(txt) : {};
+}
+
+/* free slots → { 'YYYY-MM-DD': ['8 to 10 AM', ...] } mapped to our windows */
+function ghlSlots(days) {
+  const now = new Date(), end = new Date(now.getTime() + days * 864e5);
+  const res = ghlFetch('get', `/calendars/${cfg('GHL_CALENDAR_ID')}/free-slots?startDate=${now.getTime()}&endDate=${end.getTime()}&timezone=${encodeURIComponent(TZ())}`, null, '2021-04-15');
+  const out = {};
+  Object.keys(res).forEach(day => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !res[day] || !res[day].slots) return;
+    const wins = [];
+    res[day].slots.forEach(iso => {
+      const h = +Utilities.formatDate(new Date(iso), TZ(), 'H'), m = +Utilities.formatDate(new Date(iso), TZ(), 'm');
+      const w = WINDOWS.find(x => x[1] === h && m === 0);
+      if (w && wins.indexOf(w[0]) < 0) wins.push(w[0]);
+    });
+    if (wins.length) out[day] = wins.sort((a, b) => wIndex(a) - wIndex(b));
+  });
+  return out;
+}
+
+function ghlSave(L, appt) {
+  const parts = String(L.name).trim().split(/\s+/);
+  const tags = ['website', slug(L.type)];
+  if (L.quote) tags.push('instant-quote');
+  const up = ghlFetch('post', '/contacts/upsert', {
+    locationId: cfg('GHL_LOCATION_ID'), firstName: parts[0], lastName: parts.slice(1).join(' '), name: L.name,
+    phone: '+1' + L.phone, email: L.email || undefined, address1: L.address || undefined, source: 'Website: ' + L.type, tags
+  });
+  const contactId = (up.contact && up.contact.id) || up.id;
+  const note = [L.type, L.issue && 'Issue: ' + L.issue, L.quote && `Instant quote: ${L.quote.name}, ${L.quote.range}`, L.best && 'Best way to reach: ' + L.best, 'Page: ' + L.page].filter(Boolean).join('\n');
+  try { ghlFetch('post', `/contacts/${contactId}/notes`, { body: note }); } catch (x) {}
+  let apptId = null;
+  if (appt) {
+    const a = ghlFetch('post', '/calendars/events/appointments', {
+      calendarId: cfg('GHL_CALENDAR_ID'), locationId: cfg('GHL_LOCATION_ID'), contactId,
+      startTime: Utilities.formatDate(appt.start, TZ(), "yyyy-MM-dd'T'HH:mm:ssXXX"),
+      endTime: Utilities.formatDate(appt.end, TZ(), "yyyy-MM-dd'T'HH:mm:ssXXX"),
+      title: `Free roof inspection: ${L.name}`, address: L.address || '', appointmentStatus: 'confirmed', toNotify: true
+    }, '2021-04-15');
+    apptId = a.id || (a.event && a.event.id) || null;
+  }
+  return { contactId, apptId };
+}
+
+/* ------------------------------------------------------------------ Google Calendar fallback (no GHL) */
+/* Bookings go on their own calendar ("<Biz> inspections"), shared into the owner's Google Calendar app.
+   CHECK_OWNER_CAL=yes also hides windows where the owner's main calendar is busy. */
+function bookingCal() {
+  const id = cfg('CALENDAR_ID');
+  if (id) { const c = CalendarApp.getCalendarById(id); if (c) return c; }
+  const c = CalendarApp.createCalendar(cfg('BIZ_NAME', 'Website') + ' inspections', { color: CalendarApp.Color.YELLOW, timeZone: TZ() });
+  P.setProperty('CALENDAR_ID', c.getId());
+  return c;
+}
+function gcalSlots(days) {
+  const cal = bookingCal(), out = {}, today = dayStart(new Date());
+  const from = new Date(today.getTime() + MIN_NOTICE_DAYS * 864e5), to = new Date(today.getTime() + (days + 1) * 864e5);
+  let evs = cal.getEvents(from, to);
+  if (cfg('CHECK_OWNER_CAL', 'yes') === 'yes' && cal.getId() !== CalendarApp.getDefaultCalendar().getId()) evs = evs.concat(CalendarApp.getDefaultCalendar().getEvents(from, to));
+  const busy = evs.filter(ev => ev.getTransparency ? String(ev.getTransparency()) !== 'TRANSPARENT' : true);
+  for (let d = new Date(from); d < to; d = new Date(d.getTime() + 864e5)) {
+    const key = Utilities.formatDate(d, TZ(), 'yyyy-MM-dd'), dow = +Utilities.formatDate(d, TZ(), 'u') % 7;
+    const hours = OPEN_HOURS[dow] || [];
+    const bookedToday = busy.filter(ev => Utilities.formatDate(ev.getStartTime(), TZ(), 'yyyy-MM-dd') === key && /inspection/i.test(ev.getTitle())).length;
+    if (bookedToday >= MAX_PER_DAY) continue;
+    const wins = hours.map(h => WINDOWS.find(w => w[1] === h)).filter(Boolean).filter(w => {
+      const s = windowStart(key, w[0]), e = new Date(s.getTime() + WIN_LEN_H * 3600e3);
+      return !busy.some(ev => ev.isAllDayEvent() ? Utilities.formatDate(ev.getAllDayStartDate(), TZ(), 'yyyy-MM-dd') === key : ev.getStartTime() < e && ev.getEndTime() > s);
+    }).map(w => w[0]);
+    if (wins.length) out[key] = wins;
+  }
+  return out;
+}
+function gcalBook(L, appt) {
+  bookingCal().createEvent(`Free roof inspection: ${L.name}`, appt.start, appt.end, {
+    location: L.address || '', description: `Phone: ${pretty(L.phone)}\nEmail: ${L.email || ''}\nBest way: ${L.best || ''}\nIssue: ${L.issue || ''}${L.quote ? `\nInstant quote: ${L.quote.name}, ${L.quote.range}` : ''}`
+  });
+}
+
+function isStillOpen(date, win) {
+  const days = cfg('GHL_TOKEN') ? ghlSlots(45) : gcalSlots(45);
+  return (days[date] || []).indexOf(win) >= 0;
+}
+
+/* ------------------------------------------------------------------ Sheet + emails */
+function sheetRow(L, appt, ghl) {
+  let id = cfg('SHEET_ID'), ss;
+  if (id) ss = SpreadsheetApp.openById(id);
+  else { ss = SpreadsheetApp.create(cfg('BIZ_NAME', 'Website') + ' leads'); P.setProperty('SHEET_ID', ss.getId()); }
+  const sh = ss.getSheets()[0];
+  if (sh.getLastRow() === 0) sh.appendRow(['Received', 'Type', 'Name', 'Mobile', 'Email', 'Best way', 'Address', 'Issue', 'Quote', 'Price', 'Inspection', 'GoHighLevel', 'Page']);
+  sh.appendRow([new Date(), L.type, L.name, pretty(L.phone), L.email || '', L.best || '', L.address || '', L.issue || '', L.quote ? L.quote.name : '', L.quote ? L.quote.range : '',
+    appt ? Utilities.formatDate(appt.start, TZ(), 'EEE MMM d, h:mm a') : '', ghl ? (ghl.error ? 'ERROR: ' + ghl.error.slice(0, 200) : 'saved') : '', L.page || '']);
+}
+
+function ownerAlert(L, appt) {
+  const to = cfg('OWNER_EMAIL'); if (!to) return;
+  const when = appt ? Utilities.formatDate(appt.start, TZ(), "EEE MMM d 'at' h:mm a") : '';
+  const subj = `${appt ? 'New inspection' : 'New lead'}: ${L.name}${when ? ' · ' + when : ''}`;
+  const first = String(L.name).split(' ')[0];
+  const text = encodeURIComponent(`Hi ${first}, this is ${cfg('OWNER_NAME', 'the owner')} with ${cfg('BIZ_NAME')}. Got your ${appt ? 'inspection request for ' + when : 'request'}. `);
+  const html = `<div style="font:16px/1.5 -apple-system,Segoe UI,Arial,sans-serif;max-width:520px">
+    <p style="font-size:20px;font-weight:800;margin:0 0 6px">${esc(L.name)} · ${esc(L.type)}</p>
+    ${when ? `<p style="margin:0 0 6px"><b>Inspection:</b> ${esc(when)}</p>` : ''}
+    <p style="margin:0 0 6px"><b>Mobile:</b> ${pretty(L.phone)} &nbsp; <b>Best way:</b> ${esc(L.best || 'any')}</p>
+    ${L.email ? `<p style="margin:0 0 6px"><b>Email:</b> ${esc(L.email)}</p>` : ''}
+    ${L.address ? `<p style="margin:0 0 6px"><b>Address:</b> <a href="https://maps.google.com/?q=${encodeURIComponent(L.address)}">${esc(L.address)}</a></p>` : ''}
+    ${L.issue ? `<p style="margin:0 0 6px"><b>Issue:</b> ${esc(L.issue)}</p>` : ''}
+    ${L.quote ? `<p style="margin:0 0 6px"><b>Instant quote:</b> ${esc(L.quote.name)}, ${esc(L.quote.range)}</p>` : ''}
+    <p style="margin:16px 0"><a href="sms:+1${L.phone}?body=${text}" style="background:#FFD400;color:#1F2A33;padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none">Text ${esc(first)}</a>
+    &nbsp; <a href="tel:+1${L.phone}" style="border:2px solid #1F2A33;color:#1F2A33;padding:10px 16px;border-radius:10px;font-weight:800;text-decoration:none">Call</a></p>
+    <p style="color:#6B7882;font-size:13px">Leads called back within 5 minutes close far more often. Reply to this lead now.</p></div>`;
+  MailApp.sendEmail({ to, subject: subj, htmlBody: html, name: cfg('BIZ_NAME', 'Website') + ' website', replyTo: L.email || undefined });
+}
+
+function customerEmail(L, appt) {
+  const first = String(L.name).split(' ')[0], biz = cfg('BIZ_NAME', 'us');
+  const when = appt ? Utilities.formatDate(appt.start, TZ(), "EEEE, MMMM d 'between' h a") + ' and ' + Utilities.formatDate(appt.end, TZ(), 'h a') : '';
+  const subj = appt ? `You're booked: free roof inspection ${Utilities.formatDate(appt.start, TZ(), 'EEE MMM d')}` : `We got your request, ${first}`;
+  const body = appt
+    ? `<p>Hi ${esc(first)},</p><p>You're booked for a free roof inspection at <b>${esc(L.address || 'your home')}</b> on <b>${when}</b>.</p><p>You don't need to be home. Your photo report arrives within 24 hours of the visit.</p><p>Need a different time? Just reply to this email or text ${pretty(cfg('OWNER_PHONE'))}.</p><p>${esc(cfg('OWNER_NAME'))}<br>${esc(biz)}</p>`
+    : `<p>Hi ${esc(first)},</p><p>Thanks for reaching out to ${esc(biz)}.${L.quote ? ` Your instant quote: <b>${esc(L.quote.name)}, ${esc(L.quote.range)}</b> (held for 30 days).` : ''}</p><p>${esc(cfg('OWNER_NAME', 'We'))} will reach you by ${esc((L.best || 'text').toLowerCase())} shortly.</p><p>${esc(biz)}</p>`;
+  MailApp.sendEmail({ to: L.email, subject: subj, htmlBody: `<div style="font:16px/1.55 -apple-system,Segoe UI,Arial,sans-serif;max-width:520px">${body}</div>`, name: biz, replyTo: cfg('OWNER_EMAIL') || undefined });
+}
+
+/* ------------------------------------------------------------------ helpers */
+function windowStart(date, win) {
+  const w = WINDOWS.find(x => x[0] === win); if (!w || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  return Utilities.parseDate(`${date} ${('0' + w[1]).slice(-2)}:00`, TZ(), 'yyyy-MM-dd HH:mm');
+}
+const wIndex = l => WINDOWS.findIndex(w => w[0] === l);
+const dayStart = d => Utilities.parseDate(Utilities.formatDate(d, TZ(), 'yyyy-MM-dd') + ' 00:00', TZ(), 'yyyy-MM-dd HH:mm');
+const pretty = p => String(p || '').replace(/^(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3');
+const slug = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function json(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+
+/* Demo setup for the Ridgeline site (edit the values, run once, approve Google's permission screen). */
+function setupRidgelineDemo() {
+  P.setProperties({ BIZ_NAME: 'Ridgeline Roofing (demo)', OWNER_NAME: 'Mark', OWNER_EMAIL: Session.getEffectiveUser().getEmail(), OWNER_PHONE: '3467740053',
+    TZ: 'America/Chicago', CONFIRM_EMAIL: 'yes', CHECK_OWNER_CAL: 'no' });
+  bookingCal();
+  sheetRow({ type: 'Setup test', name: 'Setup Test', phone: '3465550123', email: '', best: 'Text', address: '901 Bagby St, Houston, TX', issue: 'Checking the lead sheet', page: '/' }, null, null);
+  testSetup();
+  Logger.log('Calendar: ' + cfg('CALENDAR_ID') + '  Sheet: https://docs.google.com/spreadsheets/d/' + cfg('SHEET_ID'));
+}
+
+/* Run once from the editor after setting properties: checks every connection and sends you a test alert. */
+function testSetup() {
+  Logger.log('Slots: ' + JSON.stringify(doGet({ parameter: { action: 'slots', days: 14 } }).getContent()).slice(0, 500));
+  ownerAlert({ name: 'Test Lead', type: 'Setup test', phone: '3465550123', email: '', best: 'Text', address: '901 Bagby St, Houston, TX', issue: 'Testing alerts' }, null);
+  Logger.log('Owner alert sent to ' + cfg('OWNER_EMAIL'));
+}
