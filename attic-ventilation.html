@@ -280,6 +280,27 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .popt-h{display:flex;justify-content:space-between;gap:10px;font-size:17px}.popt-h span{font-weight:800}.popt ul{margin:0;padding-left:18px;color:#C9D3DA;font-size:15px}
 .pup{border-left:2px solid #3A4A56;padding-left:12px;display:grid;gap:6px}.pup small{color:var(--muted)}.pup img{width:100%;max-width:360px;border-radius:10px}
 .ownerlink{color:var(--muted);margin-left:10px;white-space:nowrap}
+/* materials (Oct 4) */
+.samp-note{background:var(--raised);border:1px dashed #3A4A56;border-radius:12px;padding:10px 12px;margin:0;font-size:14.5px;color:var(--muted)}
+.linkbtn{background:none;border:0;padding:0;color:var(--hivis,#FFD400);font:inherit;font-weight:800;text-decoration:underline;cursor:pointer}
+.msrc{gap:10px}.mconn{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid #3A4A56;padding-top:10px}
+.mconn b{display:block}.mconn span{font-size:14px;color:var(--muted)}
+.mbuy select{min-height:40px;border-radius:10px;border:1px solid #3A4A56;background:var(--night);color:var(--text);padding:0 8px;max-width:220px}
+.mtable{display:grid;gap:6px}.mrow{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(4,minmax(0,1fr));gap:8px;align-items:center;background:var(--deck);border:1px solid #3A4A56;border-radius:12px;padding:10px 12px;font-variant-numeric:tabular-nums;cursor:pointer}
+.mrow.mh{background:none;border:0;padding:0 12px;font-size:12.5px;color:var(--muted);cursor:default;text-transform:uppercase;letter-spacing:.04em}
+.mrow small{display:block;color:var(--muted);font-size:12.5px}.mrow .over{color:#FF8A65;font-weight:800}
+@media (max-width:640px){.mrow{grid-template-columns:1fr 1fr;}.mrow span:first-child{grid-column:1/-1}.mrow.mh{display:none}}
+.mlist{display:grid;gap:6px}.mli{display:grid;grid-template-columns:90px minmax(0,1fr) 74px 80px;gap:8px;align-items:center;font-size:14.5px;border-bottom:1px solid #3A4A56;padding:6px 0}
+.mli span{color:var(--muted)}.mli em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.mli input{width:100%;min-height:34px;border-radius:8px;border:1px solid #3A4A56;background:var(--night);color:var(--text);padding:0 6px;text-align:right}
+.mli.buy{grid-template-columns:90px minmax(0,1fr) 80px}
+@media (max-width:520px){.mli{grid-template-columns:70px minmax(0,1fr) 64px 70px;font-size:13.5px}}
+.mcalc{background:var(--night);border:1px solid #3A4A56;border-radius:12px;padding:10px 12px}.mcalc summary{cursor:pointer;font-weight:800}
+.mjob{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;padding:10px 12px}
+@media (max-width:520px){.mjob{grid-template-columns:1fr}}
+.pmat{list-style:none;margin:0;padding:0;display:grid;gap:4px}.pmat li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #3A4A56;padding:6px 0;font-size:15px}.pmat span{color:var(--muted);white-space:nowrap}
+.mrow small.samp{display:inline-block;font-size:11px}
+@media (max-width:640px){.mrow span[data-l]::before{content:attr(data-l);display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}}
 
 .app .kicker,.sheet .kicker{font-size:14px;font-weight:700;color:var(--hivis);margin:0}
 .app{color:var(--text)}
@@ -677,29 +698,6 @@ main,footer{position:relative;z-index:1}
 .rmempty b{font:850 22px var(--display)}.rmempty span{color:#C9D3DA;font-size:15px}
 .rmview.found .rmempty{display:none}
 .rmfine{font-size:12px;color:#6B7882;margin:8px 2px 0}
-/* ===== v9: armadillo booking helper ===== */
-.dillo{position:fixed;right:12px;bottom:10px;z-index:18;transform:translateY(150%);transition:transform .55s cubic-bezier(.2,1.35,.4,1)}
-.dillo.in{transform:none}.dillo.in.away{transform:translateY(150%)}
-.dgo{background:none;border:0;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:flex-end}
-.dgo img{width:128px;height:auto;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5));transform-origin:50% 92%}
-.dillo.wave img{animation:dwave 1.1s ease-in-out 2}
-@keyframes dwave{0%,100%{transform:rotate(0)}25%{transform:rotate(-7deg) translateY(-5px)}70%{transform:rotate(5deg)}}
-.dbub{background:#fff;color:#1F2A33;font:800 15px/1.25 var(--body);padding:10px 14px;border-radius:16px 16px 4px 16px;box-shadow:0 10px 26px rgba(0,0,0,.35);max-width:210px;text-align:left;margin-right:40px;margin-bottom:-4px}
-.dx{position:absolute;top:-10px;right:-2px;width:30px;height:30px;border-radius:50%;border:0;background:#1F2A33;color:#fff;font:700 18px/1 var(--body);cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.4)}
-@media (max-width:700px){.dgo img{width:86px}.dbub{font-size:13px;max-width:160px;margin-right:24px}}
-@media (prefers-reduced-motion:reduce){.dillo{transition:none}.dillo.wave img{animation:none}}
-.tcpop .btn-main{background:var(--hivis)!important;color:var(--slate)!important;border:0!important}
-@media (min-width:900px){.rgrid{grid-template-columns:.9fr 1.1fr;grid-template-areas:"h m" "o m";align-items:start}.rtext{grid-area:h}.rmwrap{grid-area:m}.rmout{grid-area:o}}
-.rmout{margin-top:-8px}
-.dimg{position:relative;display:block;transform-origin:50% 95%}
-.dimg img{display:block}.dimg .f2{position:absolute;left:0;top:0;opacity:0}
-.dillo.wave .dimg{animation:dbob 1.2s ease-in-out 2}
-.dillo.wave .f2{animation:dpaw 1.2s steps(1,end) 2}
-.dillo.wave img{animation:none}
-@keyframes dbob{0%,100%{transform:none}30%{transform:translateY(-6px) rotate(-3deg)}65%{transform:translateY(-2px) rotate(2deg)}}
-@keyframes dpaw{0%{opacity:0}20%{opacity:1}45%{opacity:0}70%{opacity:1}95%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.dillo.wave .dimg,.dillo.wave .f2{animation:none}}
-.dbub{transition:opacity .3s,transform .3s}.dillo.quiet .dbub{opacity:0;transform:translateY(6px);pointer-events:none}
 @media (min-width:701px){.dimg img{width:150px;height:auto}}
 @media (max-width:700px){.dimg img{width:86px;height:auto}}
 /* v9.1: banner = plain words */
@@ -886,6 +884,52 @@ html{background:#070C11}
 @media (max-width:899px){.hero[data-mode=hail] .rpin span{display:none}.hcard{width:46%}.hcard figcaption{font-size:12px;padding:6px 8px}}
 .hero.fixing .hcard,.hero.found .hcard{display:none}
 #team{scroll-margin-top:calc(var(--bh,64px) + 12px)}
+/* hero v11 (Oct 4): bigger headline, no subtitle, instant booking right under it */
+.tleft h1{font-size:clamp(44px,5.6vw,76px)!important;line-height:.98;margin-bottom:12px}
+@media (max-width:999px){.tleft h1{font-size:clamp(42px,12.5vw,60px)!important}}
+.qbook{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.qbook .btn{min-height:52px;font-size:17px;padding:0 22px}
+.qbnext{color:#DDE4E8;font-weight:700;font-size:15px}.qbnext b{color:#fff}
+@media (min-width:1000px){.qbook{display:none}}
+@media (max-width:999px){.qbook .btn{flex:1 1 100%}.qbnext{font-size:14px}}
+/* inspection v11: compact card + 2-step modal */
+.icard .iperks{margin-bottom:10px}
+.inext{margin:0 0 10px;font-size:15px;color:var(--soft)}.inext b{color:var(--ink)}
+.ibooked{margin-top:10px;font-size:15px;color:var(--ink);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.imodal{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:16px}
+.imodal[hidden]{display:none}
+.imscrim{position:absolute;inset:0;background:rgba(8,12,16,.62);backdrop-filter:blur(3px);opacity:0;transition:opacity .2s}
+.impanel{position:relative;width:min(560px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:#fff;color:var(--ink);border-radius:22px;padding:20px 20px 22px;box-shadow:0 30px 80px rgba(0,0,0,.5);transform:translateY(18px);opacity:0;transition:transform .22s,opacity .22s}
+.imodal.in .imscrim{opacity:1}.imodal.in .impanel{transform:none;opacity:1}
+.imhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.imhead h2{font-size:clamp(24px,5vw,30px);margin:2px 0 8px;max-width:none}
+.imx{width:44px;height:44px;flex:none;border-radius:50%;border:0;background:#EEF2F4;color:var(--ink);font-size:24px;line-height:1;cursor:pointer}
+.imsteps{display:flex;gap:6px;margin:0 0 14px}.imsteps i{flex:1;height:5px;border-radius:4px;background:#E2E7EB}.imsteps i.on{background:var(--hivis)}
+.iwhen{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:#FFF6CC;font-size:15px}.iwhen .linkbtn{color:var(--ink)}
+.imnav{display:flex;gap:10px;margin-top:6px}.imnav .btn-line{color:var(--ink);flex:0 0 auto;min-height:58px}.imnav .ibtn{flex:1;margin:0}
+html.imopen{overflow:hidden}
+@media (max-width:640px){.imodal{padding:0;place-items:end stretch}.impanel{width:100%;max-height:92dvh;border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px))}}
+.qlock{display:grid;gap:8px;padding:14px;border-radius:14px;background:rgba(255,212,0,.12);border:1px solid rgba(255,212,0,.45)}
+.qlock .qlk{margin:0;font-size:17px;line-height:1.35}.qlock .qlk small{opacity:.75}.qlock .qlh{margin:0;font-size:15px}
+#iDone>.ikick{display:none}
+
+/* ===== service inquiry modal ===== */
+.amodal .astep .field{margin-bottom:14px}
+.amodal textarea{width:100%;background:#fff;color:var(--ink);font:inherit;border:1.5px solid #cfd6de;border-radius:12px;padding:10px 12px;resize:vertical}
+.amodal #aDone{padding:6px 2px 4px}.amodal #aDone .imnav{margin-top:16px}
+/* ===== close-up tray under the hero (no pop-ups over the roof) ===== */
+.htray{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}
+.htray[hidden]{display:none}.htray::-webkit-scrollbar{display:none}
+.hthumb{flex:0 0 auto;display:flex;align-items:center;gap:8px;background:#fff;border:2px solid transparent;border-radius:12px;padding:4px 10px 4px 4px;font:800 13px/1.2 var(--body);color:var(--ink);cursor:zoom-in;box-shadow:0 4px 14px rgba(0,0,0,.18);max-width:240px;text-align:left}
+.hthumb img{width:64px;height:40px;object-fit:cover;border-radius:8px;flex:0 0 auto}
+.hthumb.new{border-color:var(--hivis)}
+.hero.fixing~.heroact .htray{display:none}
+.hzoom{position:fixed;inset:0;z-index:60;background:rgba(10,14,18,.82);display:grid;place-items:center;padding:16px;cursor:zoom-out}
+.hzoom figure{margin:0;max-width:min(900px,100%);background:#fff;border-radius:16px;overflow:hidden}
+.hzoom img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;background:#111}
+.hzoom figcaption{padding:10px 14px;font:800 16px/1.3 var(--body);color:var(--ink)}
+.hzoom .hcx{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:#111;font-size:26px;line-height:1;cursor:pointer}
+.hero[data-mode=hail] .rpin span{display:none}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -907,7 +951,7 @@ html{background:#070C11}
 <main id="top">
   <section class="phero"><img src="img/sv_attic.webp" srcset="img/sv_attic-m.webp 800w, img/sv_attic.webp 1200w" sizes="100vw" alt="Inside an attic with daylight through the ridge vent and foam baffles at the eaves" fetchpriority="high"><div class="shade2"></div>
     <div class="wrap"><nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / <a href="roofing-services.html">Services</a> / <span>Attic ventilation</span></nav><h1>Attic ventilation in Houston</h1><p class="sub">Ridge and soffit vents so the attic stays cooler, the AC works less and the shingles last longer.</p>
-    <div class="hcta"><a class="btn btn-main" href="index.html?job=attic-ventilation#quote">See my price</a><button class="btn btn-line light" type="button" data-start>Book a free inspection</button><a class="btn btn-line light" href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with attic ventilation. My address is ">Text us</a></div></div></section>
+    <div class="hcta"><button class="btn btn-main" type="button" data-ask="attic-ventilation">Ask about attic ventilation</button><button class="btn btn-line light" type="button" data-start>Book a free inspection</button><a class="btn btn-line light" href="#" data-sms="svc" data-body="Hi Ridgeline, I need help with attic ventilation. My address is ">Text us</a></div></div></section>
   <section class="sec tight"><div class="wrap"><ul class="facts"><li><span>Install</span><b>Half a day</b></li><li><span>Typical price</span><b>$600–$2,500</b></li><li><span>Attic temp drop</span><b>Often 20°F+</b></li><li><span>Warranty</span><b>10 years</b></li></ul></div></section>
   <section class="sec alt"><div class="wrap"><h2>Signs you need it</h2><p class="lede">If two or more of these sound familiar, get it checked before the next storm.</p><ul class="checks"><li>The attic is over 140°F on summer afternoons</li><li>Upstairs rooms stay hot no matter the thermostat</li><li>Shingles curling or blistering early</li><li>Mold or a musty smell in the attic</li><li>Insulation blocking the soffits</li></ul></div></section>
   <section class="sec"><div class="wrap"><h2>How we do it, step by step</h2><p class="lede">No mystery. This is exactly what happens, in order.</p><ol class="psteps"><li><b>Measure the attic</b><span>Floor area and current vents tell us how much intake and exhaust you need.</span></li><li><b>Balance intake and exhaust</b><span>Air comes in at the soffits and leaves at the ridge; both sides have to match.</span></li><li><b>Install baffles</b><span>Foam baffles keep insulation from blocking airflow at the eaves.</span></li><li><b>Cut and cap the ridge</b><span>A continuous ridge vent with a weather filter.</span></li></ol></div></section>
@@ -920,31 +964,46 @@ html{background:#070C11}
     <div class="cards2"><div><b>Financing</b><p>Monthly payment options are available. We check your rate at the free inspection; no monthly price is quoted without the APR and term.</p></div><div><b>Permits and code</b><p>The City of Houston requires a permit for re-roofing. We pull it, schedule the city inspection and give you the sign-off.</p></div></div></div></section>
   <section class="sec alt"><div class="wrap"><h2>Attic ventilation questions</h2><div class="qs full"><details><summary>Does more venting always help?</summary><p>No. Unbalanced vents can pull rain in. We balance intake and exhaust.</p></details><details><summary>Will it lower my power bill?</summary><p>A cooler attic means the AC works less; savings depend on your insulation and ducts.</p></details><details><summary>Can you add it without a new roof?</summary><p>Yes, ridge vents can be cut into most existing shingle roofs.</p></details></div></div></section>
   <section class="sec"><div class="wrap"><h2>Related services</h2><ul class="related"><li><a href="roof-replacement.html">Roof replacement<span>Tear-off to the wood, rotten decking replaced, new impact-rated shingles. Most homes are done in one day.</span></a></li><li><a href="gutters.html">Gutters<span>Seamless gutters and guards sized for Houston downpours, so water ends up away from your foundation.</span></a></li><li><a href="roof-repair.html">Leak repair<span>We find where the water really gets in and fix that, not just the stain. Photos before and after.</span></a></li></ul></div></section>
-  <section class="band"><div class="wrap"><h2>Get your price now. Photos within 24 hours of your visit.</h2><p>Photo report within 24 hours of your inspection, or $50 off any repair.</p><div class="hcta"><a class="btn btn-main" href="index.html#quote">Get my quote today</a><button class="btn btn-line" type="button" data-start>Book a free inspection</button></div></div></section>
+  <section class="band"><div class="wrap"><h2>Ask us. A real person answers.</h2><p>Photo report within 24 hours of your inspection, or $50 off any repair.</p><div class="hcta"><button class="btn btn-main" type="button" data-ask="attic-ventilation">Ask about attic ventilation</button><button class="btn btn-line" type="button" data-start>Book a free inspection</button></div></div></section>
 <section class="sec ibook" aria-label="Free roof inspection"><div class="wrap"><aside class="tform" id="inspect" aria-labelledby="iH">
       <div class="icard" id="iCard">
         <p class="ikick">Free roof inspection</p>
         <h2 id="iH">Book it in 60 seconds</h2>
         <ul class="iperks">
-          <li><b>Confirmation in seconds</b> by email, and the owner reaches you the way you pick</li>
-          <li><b>Photo report within 24 hours</b> of your inspection, or $50 off any repair</li>
-          <li><b>You don’t need to be home.</b> We check from the roof and the attic access</li>
-          <li><b>Insurance-ready damage file</b> and your instant-quote price held 30 days</li>
+          <li><b>Photo report within 24 hours</b> or $50 off any repair</li>
+          <li><b>You don’t need to be home</b></li>
         </ul>
-        <form id="iForm" novalidate>
-          <div class="two"><div class="field"><label for="iName">Full name</label><input id="iName" autocomplete="name" required></div>
-          <div class="field"><label for="iPhone">Mobile</label><input id="iPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div></div>
-          <div class="field"><label for="iEmail">Email</label><input id="iEmail" type="email" inputmode="email" autocomplete="email"><small class="qhint2">Mobile or email: one is enough.</small></div>
-          <div class="field"><label for="iAddr">Property address</label><input id="iAddr" autocomplete="street-address" required placeholder="Street, city, ZIP"></div>
-          <div class="field"><span class="flabel" id="iIssueL">What do you need? Pick all that apply</span><input type="hidden" id="iIssue"><div class="chips ijobs" id="iJobs" role="group" aria-label="What do you need"><button type="button" aria-pressed="false" data-ij="Roof replacement">Roof replacement</button><button type="button" aria-pressed="false" data-ij="Leak or roof repair">Leak or roof repair</button><button type="button" aria-pressed="false" data-ij="Missing or damaged shingles">Missing or damaged shingles</button><button type="button" aria-pressed="false" data-ij="Storm or hail damage">Storm or hail damage</button><button type="button" aria-pressed="false" data-ij="Insurance claim help">Insurance claim help</button><button type="button" aria-pressed="false" data-ij="Gutters">Gutters</button><button type="button" aria-pressed="false" data-ij="Attic heat or ventilation">Attic heat or ventilation</button><button type="button" aria-pressed="false" data-ij="Commercial roof">Commercial roof</button><button type="button" aria-pressed="false" data-ij="Not sure, just check it">Not sure, just check it</button></div></div>
-          <div class="field"><span class="flabel">Pick a day and time</span><div class="ical" id="iCal"></div><div class="islots" id="iSlots" role="radiogroup" aria-label="Time"></div></div>
-          <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="iBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
-          <label class="smsc" id="iSmsC"><input type="checkbox" id="iSms"> <span>Text me about my inspection (confirmation, reminder, time changes). Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
-          <p class="err" id="iErr" role="alert" hidden></p>
-          <button class="btn btn-main ibtn" type="submit">Book my free inspection</button>
-          <p class="ifine">No cost, no obligation. We’ll never sell your info. <a href="#quote">Rather see a price first?</a></p>
-        </form>
-        <div id="iDone" hidden></div>
+        <p class="inext" id="iNext" hidden></p>
+        <button class="btn btn-main ibtn" type="button" id="iOpen">Pick a day and time</button>
+        <p class="ifine">No cost, no obligation. <a href="#quote">Rather see a price first?</a></p>
+        <div class="ibooked" id="iBooked" hidden></div>
+      </div>
+      <div class="imodal" id="iModal" hidden role="dialog" aria-modal="true" aria-labelledby="imH">
+        <div class="imscrim" data-iclose></div>
+        <div class="impanel">
+          <div class="imhead"><div><p class="ikick">Free roof inspection</p><h2 id="imH">Pick a day and time</h2></div><button type="button" class="imx" data-iclose aria-label="Close">×</button></div>
+          <div class="imsteps" aria-hidden="true"><i class="on"></i><i></i></div>
+          <form id="iForm" novalidate>
+            <section class="istep" data-s="1">
+              <div class="ical" id="iCal"></div><div class="islots" id="iSlots" role="radiogroup" aria-label="Time"></div>
+              <p class="err" id="iErr1" role="alert" hidden></p>
+              <button class="btn btn-main ibtn" type="button" id="iNext1">Next</button>
+            </section>
+            <section class="istep" data-s="2" hidden>
+              <p class="iwhen" id="iWhen"></p>
+              <div class="two"><div class="field"><label for="iName">Full name</label><input id="iName" autocomplete="name"></div>
+              <div class="field"><label for="iPhone">Mobile</label><input id="iPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div></div>
+              <div class="field"><label for="iEmail">Email</label><input id="iEmail" type="email" inputmode="email" autocomplete="email"></div>
+              <div class="field"><label for="iAddr">Property address</label><input id="iAddr" autocomplete="street-address" placeholder="Street, city, ZIP"></div>
+              <div class="field"><span class="flabel" id="iIssueL">What do you need? Pick all that apply</span><input type="hidden" id="iIssue"><div class="chips ijobs" id="iJobs" role="group" aria-label="What do you need"><button type="button" aria-pressed="false" data-ij="Roof replacement">Roof replacement</button><button type="button" aria-pressed="false" data-ij="Leak or roof repair">Leak or roof repair</button><button type="button" aria-pressed="false" data-ij="Missing or damaged shingles">Missing or damaged shingles</button><button type="button" aria-pressed="false" data-ij="Storm or hail damage">Storm or hail damage</button><button type="button" aria-pressed="false" data-ij="Insurance claim help">Insurance claim help</button><button type="button" aria-pressed="false" data-ij="Gutters">Gutters</button><button type="button" aria-pressed="false" data-ij="Attic heat or ventilation">Attic heat or ventilation</button><button type="button" aria-pressed="false" data-ij="Commercial roof">Commercial roof</button><button type="button" aria-pressed="false" data-ij="Not sure, just check it">Not sure, just check it</button></div></div>
+              <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="iBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
+              <label class="smsc" id="iSmsC"><input type="checkbox" id="iSms"> <span>Text me about my inspection (confirmation, reminder, time changes). Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
+              <p class="err" id="iErr" role="alert" hidden></p>
+              <div class="imnav"><button class="btn btn-line" type="button" id="iBack">Back</button><button class="btn btn-main ibtn" type="submit">Book my free inspection</button></div>
+            </section>
+          </form>
+          <div id="iDone" hidden></div>
+        </div>
       </div>
     </aside></div></section></main>
 <footer>
@@ -994,7 +1053,7 @@ html{background:#070C11}
       <form id="qcForm" novalidate>
         <div class="field"><label for="qcName">Full name</label><input id="qcName" autocomplete="name"></div>
         <div class="field"><label for="qcPhone">Mobile</label><input id="qcPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div>
-        <div class="field"><label for="qcEmail">Email</label><input id="qcEmail" type="email" inputmode="email" autocomplete="email"><small class="qhint2">Mobile or email: one is enough.</small></div>
+        <div class="field"><label for="qcEmail">Email</label><input id="qcEmail" type="email" inputmode="email" autocomplete="email"></div>
         <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="qcBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
         <label class="smsc" id="qcSmsC"><input type="checkbox" id="qcSms"> <span>Text me my price and inspection updates. Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
         <p class="err" id="qcErr" role="alert" hidden></p>
@@ -1005,14 +1064,28 @@ html{background:#070C11}
       <div class="qres" aria-live="polite">
         <p class="qlabel">Your estimate</p><p class="qname" id="qName"></p><p class="qprice" id="qPrice">$0</p><p class="qnote" id="qNote"></p>
         <ul class="qinc" id="qInc"></ul>
-        <button class="btn btn-main" type="button" id="qBook">Lock in this price</button>
+        <button class="btn btn-main" type="button" id="qBook">Lock in this price</button><div class="qlock" id="qLock" hidden></div>
         <a class="btn btn-line light" href="#" id="qText" data-sms="quote">Text us about this quote</a>
         <p class="qfine">Estimates use typical Houston installed prices for 2026. Financing available, check your rate at the inspection.</p>
       </div>
       <button class="linkbtn" type="button" data-qgo="2">Change my answers</button>
     </section>
   </div>
-</div><div class="dillo" id="dillo" hidden><button class="dgo" type="button" aria-label="Book a free roof inspection"><span class="dbub">Free roof check this week?</span><span class="dimg"><img src="img/dillo.webp" alt="Ridgeline’s armadillo mascot in a yellow hard hat, waving" width="180" height="180"><img class="f2" src="img/dillo2.webp" alt="" aria-hidden="true" width="180" height="180"></span></button><button class="dx" type="button" aria-label="Hide the helper">×</button></div><script>
+</div><div class="imodal amodal" id="aModal" hidden role="dialog" aria-modal="true" aria-labelledby="amH"><div class="imscrim" data-aclose></div>
+<div class="impanel"><div class="imhead"><div><p class="ikick" id="aKick">Ask about a service</p><h2 id="amH">Tell us what’s going on</h2></div><button type="button" class="imx" data-aclose aria-label="Close">×</button></div>
+<div class="imsteps" aria-hidden="true"><i class="on"></i><i></i></div>
+<form id="aForm" novalidate>
+<section class="astep" data-s="1"><div id="aQs"></div><div class="field"><label for="aNote">Anything else? (optional)</label><textarea id="aNote" rows="3" placeholder="What you’ve noticed, when it started, where on the house"></textarea></div>
+<p class="err" id="aErr1" role="alert" hidden></p><button class="btn btn-main ibtn" type="button" id="aNext">Next</button></section>
+<section class="astep" data-s="2" hidden>
+<div class="two"><div class="field"><label for="aName">Full name</label><input id="aName" autocomplete="name"></div><div class="field"><label for="aPhone">Mobile</label><input id="aPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div></div>
+<div class="field"><label for="aEmail">Email</label><input id="aEmail" type="email" inputmode="email" autocomplete="email"></div>
+<div class="field"><label for="aAddr">Property address</label><input id="aAddr" autocomplete="street-address" placeholder="Street, city, ZIP"></div>
+<div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="aBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
+<label class="smsc" id="aSmsC"><input type="checkbox" id="aSms"> <span>Text me about my question. Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
+<p class="err" id="aErr" role="alert" hidden></p>
+<div class="imnav"><button class="btn btn-line" type="button" id="aBack">Back</button><button class="btn btn-main ibtn" type="submit">Send my question</button></div></section>
+</form><div id="aDone" hidden></div></div></div><script>
 (function(){
 "use strict";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
@@ -1133,6 +1206,7 @@ function openPortal(id){const c=byId(id);if(!c)return;const s=c.show||{};const c
     ${ap?`<p class="muted">Signed by ${esc(est.signed)}. We’ll text you to schedule the work.</p>`:'<p class="muted">Questions first? <a href="#" data-sms="portal" data-body="Hi Ridgeline, I have a question about my estimate." style="color:var(--text)">Text us</a></p>'}</section>`)}
   if(ups.length)parts.push(`<section class="pcard"><p class="kicker">Job updates</p>${ups.slice().reverse().map(u=>`<div class="pup"><small>${ago(u.t)}</small><p>${esc(u.text)}</p>${(u.photos||[]).map(p=>`<img src="${p}" alt="Job photo">`).join('')}</div>`).join('')}</section>`);
   if(inv)parts.push(`<section class="pcard"><p class="kicker">Invoice · ${fmtDay(inv.t)}</p><h3>${esc(inv.desc||'Roof work')}</h3><p class="pbig">${usd(inv.amount)}</p>${inv.status==='paid'?`<span class="okpill">Paid ${fmtDay(inv.paidT)}. Thank you!</span>`:`<button class="btn btn-main" type="button" id="payInv">Pay ${usd(inv.amount)}</button><p class="muted" style="font-size:14px">Card or bank. On the live site this opens a secure checkout.</p>`}</section>`);
+  if(c.matPlan&&c.matPlan.length&&s.materials)parts.push(`<section class="pcard"><p class="kicker">What’s going on your roof</p><h3>${c.matColor?esc(c.matColor)+' ':''}${esc((c.matPlan.find(m=>/shingle/i.test(m.desc))||c.matPlan[0]).desc)}</h3><ul class="pmat">${c.matPlan.map(m=>`<li><b>${esc(m.desc)}</b><span>${m.qty} ${esc(plu(m.qty,m.unit))}</span></li>`).join('')}</ul><p class="muted" style="font-size:14px">Everything we order for your home, so you know exactly what you’re getting.</p></section>`);
   if(c.club&&s.club)parts.push(`<section class="pcard"><p class="kicker">Roof Care Club</p><h3>${esc(c.club.plan)}</h3><p class="muted">Yearly checkup, storm checks within 72 hours, 15% off repairs.</p></section>`);
   if(c.stage==='paid')parts.push(`<section class="pcard"><p class="kicker">Warranty</p><h3>10-year workmanship warranty</h3><p class="muted">Keep this page. If anything we did leaks, text us and we come back free.</p></section>`);
   const empty=!parts.length;
@@ -1165,13 +1239,13 @@ function metrics(days){const since=Date.now()-days*DAY,C=DB.customers,inP=t=>t&&
   return{leads:leads.length,avgReply,booked,inspected,sent:sent.length,won:won.length,close:sent.length?Math.round(won.length/sent.length*100):null,pipe,paid,owed,portal:C.filter(c=>c.portal).length,club:C.filter(c=>c.club).length,src}}
 const fmtDur=ms=>{const m=Math.round(ms/6e4);return !ms?'n/a':m<60?m+' min':Math.round(m/6)/10+' hr'};
 function chip(c){return `<span class="chip st-${c.stage}">${stageName(c.stage)}</span>`}
-function oToday(){const C=DB.customers,now=Date.now();
+function oToday(){const C=DB.customers,now=Date.now();const smp=samplesOn()?'<p class="samp-note">Showing sample jobs. <button class="linkbtn" type="button" id="sampOff">Remove samples</button></p>':(C.length?'':'<p class="samp-note">No customers yet. <button class="linkbtn" type="button" id="sampOn">Load sample jobs</button> to see the owner screen and customer portal working.</p>');
   const leads=C.filter(c=>c.stage==='lead').sort((a,b)=>a.created-b.created);
   const up=C.filter(c=>c.appt&&c.appt.t>now-6*36e5&&c.stage==='booked').sort((a,b)=>a.appt.t-b.appt.t);
   const nudge=C.filter(c=>c.estimate&&c.estimate.status==='sent'&&now-c.estimate.t>3*DAY);
   const owed=C.filter(c=>c.invoice&&c.invoice.status==='sent');
   const late=t=>now-t>36e5;
-  return `<h3 class="osec">New requests to answer <span class="cnt">${leads.length}</span></h3>${leads.length?leads.map(c=>`<article class="orow ${late(c.created)?'late':''}" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(c.source)} · ${ago(c.created)}${late(c.created)?' · answer soon':''}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small>${c.quote?`<p class="muted">Instant quote: ${esc(c.quote.name||'')}${c.quote.range?', '+esc(c.quote.range):''}</p>`:''}${c.msg?`<p>“${esc(c.msg)}”</p>`:''}</div>
+  return smp+`<h3 class="osec">New requests to answer <span class="cnt">${leads.length}</span></h3>${leads.length?leads.map(c=>`<article class="orow ${late(c.created)?'late':''}" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(c.source)} · ${ago(c.created)}${late(c.created)?' · answer soon':''}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small>${c.quote?`<p class="muted">Instant quote: ${esc(c.quote.name||'')}${c.quote.range?', '+esc(c.quote.range):''}</p>`:''}${c.msg?`<p>“${esc(c.msg)}”</p>`:''}</div>
       <div class="oacts"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, this is ${ownerName} with Ridgeline Roofing. Got your request for a free roof inspection. What day works best this week?`)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" data-book="${c.id}">Book inspection</button></div></article>`).join(''):'<p class="muted">All caught up.</p>'}
     <h3 class="osec">Inspections coming up <span class="cnt">${up.length}</span></h3>${up.length?up.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${fmtDay(c.appt.t)}, ${c.appt.slot} · ${esc(c.addr||'No address yet')}</small>${c.appt.confirmed?'<span class="okpill sm">Confirmed</span>':'<span class="warnpill">Not confirmed yet</span>'}</div>
       <div class="oacts">${c.appt.confirmed?'':`<a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. Confirming your free roof inspection ${fmtDay(c.appt.t)}, ${c.appt.slot}. Reply YES to confirm or text a better time.`)}">Text to confirm</a><button class="btn btn-line btn-sm" type="button" data-confirm="${c.id}">They confirmed</button>`}
@@ -1189,13 +1263,13 @@ function oNumbers(){const m=metrics(oPeriod),src=Object.entries(m.src).sort((a,b
     ${tile('Customers with portal',m.portal)}${tile('Roof Care Club members',m.club)}</div>
     <h3 class="osec">Where requests came from</h3><div class="obars">${src.map(([k,v])=>`<div class="obar" title="${esc(k)}: ${v}"><span>${esc(k)}</span><i style="width:${Math.max(4,v/mx*100)}%"></i><b>${v}</b></div>`).join('')||'<p class="muted">No requests in this range.</p>'}</div>
     `}
-function openOwner(){if(CFG.backend&&!window.__ownerLive)return ownerGate();const body=oTab==='today'?oToday():oTab==='people'?oCustomers(''):oTab==='avail'?oAvail():oNumbers();
-  full('owner',`<header class="apphead"><div><p class="kicker">Ridgeline · Owner</p><h2>${oTab==='today'?'Today':oTab==='people'?'Customers':oTab==='avail'?'Availability':'Numbers'}</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
-    <nav class="otabs" aria-label="Owner sections">${[['today','Today'],['people','Customers'],['avail','Availability'],['numbers','Numbers']].map(([k,l])=>`<button type="button" data-otab="${k}" aria-current="${oTab===k?'page':'false'}">${l}</button>`).join('')}</nav>
+function openOwner(){if(CFG.backend&&!window.__ownerLive)return ownerGate();const body=oTab==='today'?oToday():oTab==='people'?oCustomers(''):oTab==='avail'?oAvail():oTab==='mat'?oMaterials():oNumbers();
+  full('owner',`<header class="apphead"><div><p class="kicker">Ridgeline · Owner</p><h2>${oTab==='today'?'Today':oTab==='people'?'Customers':oTab==='avail'?'Availability':oTab==='mat'?'Materials':'Numbers'}</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
+    <nav class="otabs" aria-label="Owner sections">${[['today','Today'],['people','Customers'],['mat','Materials'],['avail','Availability'],['numbers','Numbers']].map(([k,l])=>`<button type="button" data-otab="${k}" aria-current="${oTab===k?'page':'false'}">${l}</button>`).join('')}</nav>
     <div class="appbody" id="obody">${body}</div>`);
   $('#oOut').onclick=()=>{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
   $$('[data-otab]').forEach(b=>b.onclick=()=>{oTab=b.dataset.otab;openOwner()});
-  bindOwner();if(oTab==='avail')bindAvail()}
+  bindOwner();if(oTab==='avail')bindAvail();if(oTab==='mat')bindMaterials()}
 function bindOwner(){const ob=$('#obody');
   $$('#obody [data-open]').forEach(r=>r.addEventListener('click',e=>{if(e.target.closest('a,button'))return;custSheet(r.dataset.open)}));
   $$('#obody [data-book]').forEach(b=>b.onclick=()=>bookSheet(b.dataset.book));
@@ -1203,7 +1277,7 @@ function bindOwner(){const ob=$('#obody');
   $$('#obody [data-report]').forEach(b=>b.onclick=()=>reportSheet(b.dataset.report));
   $$('#obody [data-per]').forEach(b=>b.onclick=()=>{oPeriod=+b.dataset.per;openOwner()});
   const q=$('#oq');if(q){q.oninput=()=>{ob.innerHTML=oCustomers(q.value);bindOwner();const nq=$('#oq');nq.focus();nq.setSelectionRange(nq.value.length,nq.value.length)}}
-  const add=$('#oadd');if(add)add.onclick=addSheet;
+  const add=$('#oadd');if(add)add.onclick=addSheet;{const so=$('#sampOn'),sf=$('#sampOff');if(so)so.onclick=()=>{setSamples(true);openOwner()};if(sf)sf.onclick=()=>{setSamples(false);openOwner()}}
   $$('#obody a[href^="sms:"]').forEach(a=>a.addEventListener('click',e=>{if(!isPhone()){e.preventDefault();toast('Opens your texting app on your phone.')}}));
   $$('#obody [data-open]').forEach(r=>{const c=byId(r.dataset.open);if(c&&c.fresh){r.classList.add('fresh');c.fresh=false}});save()}
 function sheetWrap(id,title,inner){return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="${id}"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="${id}">${title}</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>${inner}</div></div>`}
@@ -1221,9 +1295,9 @@ function addSheet(){const close=open(sheetWrap('adH','Add a customer',`<div clas
   $('#ago').onclick=()=>{const n=$('#an').value.trim(),p=$('#ap').value;if(!n||digits(p).length<10){$('#ae').textContent='Add a name and a 10-digit mobile number.';$('#ae').hidden=false;return}
     const c=upsert({name:n,phone:p,addr:$('#aa').value.trim(),source:$('#as').value.trim()||'Owner added'});c.portal=$('#aport').checked;c.replied=c.replied||Date.now();save();close();custSheet(c.id)}}
 function custSheet(id){const c=byId(id);if(!c)return;const s=c.show=c.show||{};
-  const has={schedule:!!c.appt,report:!!c.report,estimate:!!(c.estimate&&c.estimate.status!=='draft'),updates:!!(c.updates&&c.updates.length),invoice:!!(c.invoice&&c.invoice.status!=='draft'),club:!!c.club};
-  const lab={schedule:'Inspection time',report:'Inspection report',estimate:'Estimate',updates:'Job updates and photos',invoice:'Invoice',club:'Roof Care Club plan'};
-  const make={report:'<button class="btn btn-line btn-sm" type="button" data-mk="report">Add report</button>',estimate:'<button class="btn btn-line btn-sm" type="button" data-mk="estimate">Write estimate</button>',updates:'<button class="btn btn-line btn-sm" type="button" data-mk="update">Post update</button>',invoice:'<button class="btn btn-line btn-sm" type="button" data-mk="invoice">Create invoice</button>',schedule:'<button class="btn btn-line btn-sm" type="button" data-mk="book">Book inspection</button>',club:''};
+  const has={schedule:!!c.appt,report:!!c.report,estimate:!!(c.estimate&&c.estimate.status!=='draft'),updates:!!(c.updates&&c.updates.length),invoice:!!(c.invoice&&c.invoice.status!=='draft'),materials:!!(c.matPlan&&c.matPlan.length),club:!!c.club};
+  const lab={schedule:'Inspection time',report:'Inspection report',estimate:'Estimate',updates:'Job updates and photos',invoice:'Invoice',materials:'What’s going on your roof (no prices)',club:'Roof Care Club plan'};
+  const make={report:'<button class="btn btn-line btn-sm" type="button" data-mk="report">Add report</button>',estimate:'<button class="btn btn-line btn-sm" type="button" data-mk="estimate">Write estimate</button>',updates:'<button class="btn btn-line btn-sm" type="button" data-mk="update">Post update</button>',invoice:'<button class="btn btn-line btn-sm" type="button" data-mk="invoice">Create invoice</button>',materials:'<button class="btn btn-line btn-sm" type="button" data-mk="mat">Materials</button>',schedule:'<button class="btn btn-line btn-sm" type="button" data-mk="book">Book inspection</button>',club:''};
   const invite=`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline Roofing. Your project page is ready: ${SITE_URL} Tap Customer login and use this phone number.`;
   const close=open(sheetWrap('cuH',esc(c.name),`<p class="muted" style="margin-top:-6px">${pretty(c.phone)}${c.addr?' · '+esc(c.addr):''} · came from ${esc(c.source)}</p>
     ${c.email?`<p style="margin:0"><a href="mailto:${esc(c.email)}" style="color:var(--hivis)">${esc(c.email)}</a>${c.contactPref?` · prefers ${esc(c.contactPref)}${c.bestTime?', '+esc(c.bestTime.toLowerCase()):''}`:''}</p>`:''}
@@ -1232,13 +1306,14 @@ function custSheet(id){const c=byId(id);if(!c)return;const s=c.show=c.show||{};
     <div class="field"><label for="cst">Where they are</label><select id="cst">${STAGES.map(([k,l])=>`<option value="${k}" ${c.stage===k?'selected':''}>${l}</option>`).join('')}</select></div>
     <div class="pbox"><label class="tog"><input type="checkbox" id="cport" ${c.portal?'checked':''}> Customer portal: they log in with ${pretty(c.phone)}</label>
       ${c.portal?`<a class="btn btn-line btn-sm" href="${smsTo(c.phone,invite)}">Text them their login</a>`:''}</div>
+    <div class="pbox mjob"><b>Materials</b><span class="muted">Planned ${usd(matTotal(c.matPlan))} · bought ${usd(jobSpent(c))}${jobPrice(c)?' · job price '+usd(jobPrice(c)):''}</span><button class="btn btn-line btn-sm" type="button" data-mk="mat">Open materials list</button></div>
     <p class="kicker" style="margin-top:6px">What ${esc(first(c.name))} can see</p><p class="muted" style="font-size:14px;margin-top:-6px">Nothing shows until you create it and switch it on.</p>
-    <div class="vis">${Object.keys(lab).map(k=>`<div class="visrow"><label class="tog ${has[k]?'':'off'}"><input type="checkbox" data-show="${k}" ${has[k]&&s[k]?'checked':''} ${has[k]?'':'disabled'}> ${lab[k]}${has[k]?'':' <small>· not created yet</small>'}</label>${make[k]&&(k==='updates'||!has[k])?make[k]:''}</div>`).join('')}</div>
+    <div class="vis">${Object.keys(lab).map(k=>`<div class="visrow"><label class="tog ${has[k]?'':'off'}"><input type="checkbox" data-show="${k}" ${has[k]&&s[k]?'checked':''} ${has[k]?'':'disabled'}> ${lab[k]}${has[k]?'':' <small>· not created yet</small>'}</label>${make[k]&&(k==='updates'||(!has[k]&&k!=='materials'))?make[k]:''}</div>`).join('')}</div>
     <div class="smsrow"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. `)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" id="cprev" ${c.portal?'':'disabled'}>See their portal</button></div>`));
   $('#cst').onchange=e=>{c.stage=e.target.value;save()};
   $('#cport').onchange=e=>{c.portal=e.target.checked;save();close();custSheet(c.id)};
   $$('#layer [data-show]').forEach(x=>x.onchange=()=>{s[x.dataset.show]=x.checked;save()});
-  $$('#layer [data-mk]').forEach(b=>b.onclick=()=>{close();({report:reportSheet,estimate:estSheet,update:updSheet,invoice:invSheet,book:bookSheet})[b.dataset.mk](c.id)});
+  $$('#layer [data-mk]').forEach(b=>b.onclick=()=>{close();({report:reportSheet,estimate:estSheet,update:updSheet,invoice:invSheet,book:bookSheet,mat:matSheet})[b.dataset.mk](c.id)});
   $('#cprev').onclick=()=>{close();openPortal(c.id)};
   $$('#layer a[href^="sms:"]').forEach(a=>a.addEventListener('click',e=>{if(!isPhone()){e.preventDefault();toast('Opens your texting app on your phone.')}}));
   openOwner()}
@@ -1256,13 +1331,112 @@ function invSheet(id){const c=byId(id);const est=c.estimate&&c.estimate.status==
   $('#ivgo').onclick=()=>{const a=+String($('#iva').value).replace(/[^\d.]/g,'');if(!a){$('#ive').textContent='Add the amount.';$('#ive').hidden=false;return}c.invoice={t:Date.now(),amount:a,desc:$('#ivd').value.trim(),status:'sent'};c.stage='invoiced';c.show.invoice=$('#ivshow').checked;c.portal=true;save();close();custSheet(c.id)}}
 function routeHash(){if(location.hash==='#'+OWNER_KEY){oTab='today';openOwner()}}
 
+/* ================= MATERIALS + PURCHASES (Oct 4) =================
+   Per job: a planned list (calculator from roof size) and what was actually bought.
+   All jobs: spend by month, by vendor, profit per job.
+   Purchases come in three ways: owner's Gmail receipts (Home Depot / Lowe's / supply-house e-receipts, read by the
+   backend), a linked card feed (Plaid, read-only), or added by hand. Unassigned purchases wait in an inbox to be tagged to a job.
+   Customers never see costs; their portal shows "what's going on your roof" (products only). */
+const MAT_PRICE={shingle:['Architectural shingles','bundle',42],under:['Synthetic underlayment (10 sq roll)','roll',95],iw:['Ice & water shield (2 sq roll)','roll',85],starter:['Starter strip','bundle',55],ridge:['Ridge cap shingles','bundle',70],drip:['Drip edge, 10 ft','piece',12],nails:['Coil roofing nails','box',48],cap:['Plastic cap nails','box',32],boot:['Pipe boot / flashing','each',18],vent:['Ridge vent, 4 ft','piece',22],ply:['7/16" OSB decking, 4x8','sheet',32],sealant:['Roofing sealant','tube',9]};
+function matCalc(o){/* o: squares, eaveRake ft, ridge ft, pipes, waste %, sheets of decking */const S=+o.sq||0,w=1+(+o.waste||12)/100,er=+o.er||Math.round(Math.sqrt(S*100)*4.2),rg=+o.ridge||Math.round(Math.sqrt(S*100)*1.1),L=[];
+  const add=(k,q)=>{if(q>0){const p=MAT_PRICE[k];L.push({k,desc:p[0],qty:Math.ceil(q),unit:p[1],unitCost:p[2]})}};
+  add('shingle',S*w*3);add('under',S*w/10);add('iw',(er*.5*3/100)/2+1);add('starter',er/110);add('ridge',rg/30);add('drip',er/10);add('nails',S/16);add('cap',S/20);add('boot',+o.pipes||2);if(o.vent)add('vent',rg/4);add('ply',+o.sheets||0);add('sealant',Math.max(2,S/10));
+  return L}
+const plu=(q,u)=>!u||q===1||u==='each'||/s$/.test(u)?u:/(x|sh|ch)$/.test(u)?u+'es':u+'s';
+const matTotal=L=>(L||[]).reduce((a,m)=>a+(m.total!=null?m.total:m.qty*m.unitCost),0);
+const MON=t=>{const d=new Date(t);return d.getFullYear()*12+d.getMonth()};
+function sampleJobs(){const t=d=>NOW+d*DAY,P=(i)=>'28155501'+String(40+i);
+  const plan=matCalc({sq:28,pipes:3,vent:true,sheets:4});
+  const buy=(src,vendor,card,d,items,job)=>({id:'p'+Math.random().toString(36).slice(2,8),t:t(d),vendor,card,src,items,total:items.reduce((a,m)=>a+m.qty*m.unitCost,0),job:job||'',sample:true});
+  const J=[
+   {id:'x_ana',sample:true,name:'Ana Delgado',phone:P(1),email:'ana.d@example.com',addr:'4719 Cedar Ridge Dr, Houston, TX 77018',source:'Instant roof quote',created:t(-1.2),stage:'booked',contactPref:'Text',photos:[],updates:[],portal:true,show:{schedule:true},notes:'',appt:{t:t(1)+10*36e5,slot:'10:00 AM',confirmed:false},quote:{name:'Architectural shingles',range:'$12,900–$19,900'}},
+   {id:'x_ben',sample:true,name:'Brian Okafor',phone:P(2),email:'brian.o@example.com',addr:'2210 Willow Bend Ln, Spring, TX 77373',source:'Google',created:t(-9),stage:'estimate',contactPref:'Email',photos:[],updates:[],portal:true,show:{report:true,estimate:true},notes:'',
+     report:{t:t(-6),notes:'Hail bruising on the south and west slopes, two cracked pipe boots, decking solid. Insurance-ready photo file sent.',photos:[]},
+     estimate:{t:t(-5),status:'sent',opts:[{name:'Repair: south slope + pipe boots',price:3400,items:['Replace bruised shingles on the south slope','Two new metal pipe flashings','1-year leak-free warranty']},{name:'Full replacement, Class 4 impact shingles',price:17800,items:['Tear-off to the deck','Synthetic underlayment, ice & water in valleys','Class 4 shingles + ridge vent','10-year workmanship warranty']}]},
+     matPlan:matCalc({sq:26,pipes:3,vent:true,sheets:0})},
+   {id:'x_cam',sample:true,name:'Carla Mendoza',phone:P(3),email:'carla.m@example.com',addr:'918 Bayou Glen Ct, Katy, TX 77494',source:'Neighbor referral',created:t(-21),stage:'work',contactPref:'Text',photos:[],portal:true,show:{report:true,estimate:true,updates:true,materials:true},notes:'',
+     report:{t:t(-18),notes:'Shingles worn through, 4 soft decking sheets over the back bedroom.',photos:[]},
+     estimate:{t:t(-16),status:'approved',pick:0,signed:'Carla Mendoza',signedT:t(-14),opts:[{name:'Full replacement, architectural shingles',price:16450,items:['Tear-off to the deck','Up to 4 sheets of decking included','Synthetic underlayment','New shingles + ridge vent','10-year workmanship warranty']}]},
+     updates:[{t:t(-2),text:'Materials delivered to the driveway. Crew starts tomorrow at 7 AM.',photos:[]},{t:t(-1),text:'Tear-off done. 4 decking sheets replaced over the back bedroom. Underlayment on, shingles tomorrow.',photos:[]}],
+     matPlan:plan,matColor:'Charcoal'},
+   {id:'x_dev',sample:true,name:'Devon Price',phone:P(4),email:'devon.p@example.com',addr:'6031 Pecan Hollow St, Houston, TX 77092',source:'Yard sign',created:t(-40),stage:'paid',contactPref:'Call',photos:[],portal:true,show:{report:true,estimate:true,updates:true,invoice:true,materials:true},notes:'',
+     report:{t:t(-37),notes:'Leak at the chimney flashing, rest of roof in good shape.',photos:[]},
+     estimate:{t:t(-35),status:'approved',pick:0,signed:'Devon Price',signedT:t(-34),opts:[{name:'Chimney flashing repair',price:1350,items:['New step and counter flashing','Replace 12 shingles around the chimney','1-year leak-free warranty']}]},
+     updates:[{t:t(-30),text:'Chimney flashing replaced and sealed. Water test passed.',photos:[]}],
+     invoice:{t:t(-29),amount:1350,desc:'Chimney flashing repair',status:'paid',paidT:t(-27)},
+     matPlan:[{k:'shingle',desc:'Architectural shingles',qty:2,unit:'bundle',unitCost:42},{k:'flash',desc:'Step + counter flashing kit',qty:1,unit:'kit',unitCost:96},{k:'sealant',desc:'Roofing sealant',qty:3,unit:'tube',unitCost:9}]}];
+  const purchases=[
+   buy('gmail','Home Depot','Visa •••• 4417',-30,[{desc:'Step flashing, 4x4x8 (50 pc)',qty:1,unit:'box',unitCost:58},{desc:'Counter flashing, 10 ft',qty:2,unit:'piece',unitCost:19},{desc:'Roofing sealant',qty:3,unit:'tube',unitCost:9},{desc:'Architectural shingles',qty:2,unit:'bundle',unitCost:42}],'x_dev'),
+   buy('gmail','ABC Supply','Account (net 30)',-3,plan.filter(m=>m.k!=='ply'&&m.k!=='sealant').map(m=>({desc:m.desc,qty:m.qty,unit:m.unit,unitCost:m.unitCost})),'x_cam'),
+   buy('card','Home Depot','Home Depot Pro card •••• 0921',-1,[{desc:'7/16" OSB decking, 4x8',qty:4,unit:'sheet',unitCost:32},{desc:'Roofing sealant',qty:4,unit:'tube',unitCost:9}],''),
+   buy('gmail','Lowe’s','Visa •••• 4417',-1,[{desc:'Pipe boot, 3"',qty:2,unit:'each',unitCost:18},{desc:'Plastic cap nails',qty:1,unit:'box',unitCost:32}],''),
+   buy('card','Shell','Visa •••• 4417',-2,[{desc:'Fuel, work truck',qty:1,unit:'fill-up',unitCost:74}],'')];
+  purchases[2].hint='x_cam';purchases[2].jobName='MENDOZA';purchases[3].hint='x_ben';
+  return{jobs:J,purchases}}
+DB.purchases=DB.purchases||[];
+function samplesOn(){return DB.customers.some(c=>c.sample)}
+function setSamples(on){DB.customers=DB.customers.filter(c=>!c.sample);DB.purchases=(DB.purchases||[]).filter(p=>!p.sample);
+  if(on){const S=sampleJobs();DB.customers=DB.customers.concat(S.jobs);DB.purchases=S.purchases.concat(DB.purchases)}save()}
+const jobSpent=c=>(DB.purchases||[]).filter(p=>p.job===c.id).reduce((a,p)=>a+p.total,0)+matTotal(c.matExtra);
+const jobPrice=c=>c.invoice?c.invoice.amount:c.estimate&&c.estimate.status==='approved'?c.estimate.opts[c.estimate.pick||0].price:0;
+function oMaterials(){const P=DB.purchases||[],thisM=MON(Date.now()),inbox=P.filter(p=>!p.job),mo=P.filter(p=>MON(p.t)===thisM&&p.job&&p.job!=='overhead');
+  const jobs=DB.customers.filter(c=>c.matPlan||P.some(p=>p.job===c.id)),vend={};P.filter(p=>p.job&&p.job!=='overhead').forEach(p=>vend[p.vendor]=(vend[p.vendor]||0)+p.total);
+  const mx=Math.max(1,...Object.values(vend)),tile=(l,v,h)=>`<div class="tile"><small>${l}</small><b>${v}</b>${h?`<span>${h}</span>`:''}</div>`;
+  const opts=DB.customers.filter(c=>stageIx(c.stage)>=stageIx('estimate')||c.matPlan).map(c=>`<option value="${c.id}">${esc(c.name)}${c.addr?' · '+esc(c.addr.split(',')[0]):''}</option>`).join('');
+  return `${samplesOn()?'<p class="samp-note">Showing sample jobs and purchases. <button class="linkbtn" type="button" id="sampOff">Remove samples</button></p>':`<p class="samp-note">No jobs yet. <button class="linkbtn" type="button" id="sampOn">Load sample jobs</button> to see how this works.</p>`}
+    <div class="tiles">${tile('Materials this month',usd(mo.reduce((a,p)=>a+p.total,0)),mo.length+(mo.length===1?' purchase':' purchases')+' on jobs')}${tile('Waiting to be tagged',inbox.length,inbox.length?usd(inbox.reduce((a,p)=>a+p.total,0)):'all caught up')}${tile('Jobs with materials',jobs.length)}${tile('Overhead (not a job)',usd(P.filter(p=>p.job==='overhead').reduce((a,p)=>a+p.total,0)),'fuel, tools, office')}</div>
+    <section class="pcard msrc"><p class="kicker">Where purchases come from</p>
+      <div class="mconn"><div><b>Gmail receipts</b><span>Home Depot, Lowe’s and supply-house e-receipts in the owner’s inbox are read automatically. Pro Xtra job names match the job.</span></div><button class="btn btn-line btn-sm" type="button" data-conn="gmail">${CFG.backend?'How it works':'Demo: connected'}</button></div>
+      <div class="mconn"><div><b>Debit and credit cards</b><span>Link a business debit card, Visa/Mastercard or the Home Depot card (read-only). New charges show up here to tag.</span></div><button class="btn btn-line btn-sm" type="button" data-conn="card">Link a card</button></div>
+      <div class="mconn"><div><b>By hand</b><span>Snap or type a purchase from the job page.</span></div><button class="btn btn-line btn-sm" type="button" data-conn="hand">Add a purchase</button></div></section>
+    <h3 class="osec">New purchases to tag <span class="cnt">${inbox.length}</span></h3>
+    ${inbox.length?inbox.map(p=>`<article class="orow mbuy" data-buy="${p.id}"><div class="orow-m"><b>${esc(p.vendor)} · ${usd(p.total)}</b><small>${fmtDay(p.t)} · ${esc(p.card)} · ${p.src==='gmail'?'from Gmail receipt':p.src==='card'?'from card feed':'added by hand'}${p.jobName?' · Pro Xtra job: '+esc(p.jobName):''}</small>
+      <p class="muted">${p.items.map(m=>esc(m.qty+' × '+m.desc)).join(', ')}</p></div>
+      <div class="oacts"><select aria-label="Which job" data-tagsel="${p.id}"><option value="">Which job?</option>${opts}<option value="overhead">Not a job (overhead)</option></select><button class="btn btn-main btn-sm" type="button" data-tag="${p.id}">Tag</button></div></article>`).join(''):'<p class="muted">Nothing new. Purchases show up here as receipts and card charges come in.</p>'}
+    <h3 class="osec">Jobs: materials vs. price</h3>
+    ${jobs.length?`<div class="mtable" role="table"><div class="mrow mh" role="row"><span>Job</span><span>Planned</span><span>Bought</span><span>Price</span><span>Left after materials</span></div>${jobs.map(c=>{const pl=matTotal(c.matPlan),sp=jobSpent(c),pr=jobPrice(c);return`<div class="mrow" role="row" data-open="${c.id}"><span><b>${esc(c.name)}</b>${c.sample?' <small class="samp">sample</small>':''}<small>${stageName(c.stage)}</small></span><span data-l="Planned">${pl?usd(pl):'–'}</span><span data-l="Bought" class="${pl&&sp>pl*1.05?'over':''}">${sp?usd(sp):'–'}</span><span data-l="Price">${pr?usd(pr):'–'}</span><span data-l="Left">${pr?usd(pr-sp)+' <small>('+Math.round((pr-sp)/pr*100)+'%)</small>':'–'}</span></div>`}).join('')}</div>`:'<p class="muted">No jobs with materials yet.</p>'}
+    <h3 class="osec">Spend by store</h3><div class="obars">${Object.entries(vend).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="obar"><span>${esc(k)}</span><i style="width:${Math.max(4,v/mx*100)}%"></i><b>${usd(v)}</b></div>`).join('')||'<p class="muted">No tagged purchases yet.</p>'}</div>`}
+function bindMaterials(){const so=$('#sampOn'),sf=$('#sampOff');if(so)so.onclick=()=>{setSamples(true);openOwner()};if(sf)sf.onclick=()=>{setSamples(false);openOwner()};
+  $$('#obody [data-tagsel]').forEach(s=>{const p=(DB.purchases||[]).find(x=>x.id===s.dataset.tagsel);if(p&&p.hint)s.value=p.hint});
+  $$('#obody [data-tag]').forEach(b=>b.onclick=()=>{const id=b.dataset.tag,v=$(`[data-tagsel="${id}"]`).value;if(!v){toast('Pick a job first.');return}const p=DB.purchases.find(x=>x.id===id);p.job=v;save();openOwner();toast(v==='overhead'?'Saved as overhead.':'Added to '+first(byId(v).name)+'’s job.')});
+  $$('#obody [data-conn]').forEach(b=>b.onclick=()=>connSheet(b.dataset.conn))}
+function connSheet(k){if(k==='hand'){buySheet('');return}
+  const T={gmail:['Gmail receipts',`<p>The website’s backend already runs on the owner’s Google account. With one extra permission it reads <b>receipts only</b> (Home Depot, Lowe’s, ABC Supply, SRS, Beacon) from Gmail, pulls out the store, date, card and every line item, and drops them here to tag.</p><ul class="checks"><li>At Home Depot: pick <b>eReceipt</b> at checkout, or link the card to <b>Pro Xtra</b> so every purchase is emailed and saved.</li><li>Type the customer’s last name as the <b>Pro Xtra job name</b> at the register. It matches the job automatically.</li><li>Nothing is sent anywhere else. The owner can turn it off any time in his Google account.</li></ul><p class="muted">${CFG.backend?'Turn on: Owner → Settings → Connect Gmail receipts (one Google permission screen).':'Demo: sample receipts are shown.'}</p>`],
+    card:['Link a card',`<p>Cards connect through <b>Plaid</b>, the same read-only bank link apps like Venmo use. It sees charges, never the card number or login, and can’t move money.</p><ul class="checks"><li>Business debit, Visa, Mastercard, Amex.</li><li>The Home Depot consumer card is supported. The Commercial Revolving card may be limited: forward its emailed receipts instead.</li><li>New charges show up here within a day to tag to a job or overhead.</li></ul><p class="muted">Demo: linking is turned off. On a live site this opens the secure Plaid window.</p>`]}[k];
+  open(sheetWrap('cnH',T[0],T[1]))}
+function buySheet(jobId){const close=open(sheetWrap('byH','Add a purchase',`<div class="two"><div class="field"><label for="bv">Store</label><input id="bv" list="bvl" placeholder="Home Depot"><datalist id="bvl"><option value="Home Depot"><option value="Lowe’s"><option value="ABC Supply"><option value="SRS Distribution"><option value="Beacon"></datalist></div><div class="field"><label for="bt">Total</label><input id="bt" inputmode="decimal" placeholder="$"></div></div>
+    <div class="field"><label for="bi">What you bought (one per line)</label><textarea id="bi" rows="3" placeholder="4 × OSB decking sheets"></textarea></div>
+    <div class="field"><label for="bj">Job</label><select id="bj"><option value="">Tag later</option>${DB.customers.map(c=>`<option value="${c.id}" ${c.id===jobId?'selected':''}>${esc(c.name)}</option>`).join('')}<option value="overhead">Not a job (overhead)</option></select></div><p class="err" id="bye" hidden></p><button class="btn btn-main" type="button" id="bygo">Save purchase</button>`),'#bv');
+  $('#bygo').onclick=()=>{const tot=+String($('#bt').value).replace(/[^\d.]/g,'');if(!tot){$('#bye').textContent='Add the total.';$('#bye').hidden=false;return}
+    const items=$('#bi').value.split('\n').map(x=>x.trim()).filter(Boolean).map(x=>{const m=x.match(/^(\d+)\s*[x×]\s*(.+)$/i);return{desc:m?m[2]:x,qty:m?+m[1]:1,unit:'',unitCost:0}});
+    DB.purchases=DB.purchases||[];DB.purchases.unshift({id:'p'+Math.random().toString(36).slice(2,8),t:Date.now(),vendor:$('#bv').value.trim()||'Store',card:'Added by hand',src:'hand',items:items.length?items:[{desc:'Materials',qty:1,unit:'',unitCost:tot}],total:tot,job:$('#bj').value});save();close();if(jobId)custSheet(jobId);else openOwner()}}
+/* per-job materials sheet: calculator → planned list; bought list from tagged purchases */
+function matSheet(id){const c=byId(id),bought=(DB.purchases||[]).filter(p=>p.job===id);const pl=c.matPlan||[];
+  const close=open(sheetWrap('mtH','Materials: '+esc(first(c.name)),`
+    <details class="mcalc" ${pl.length?'':'open'}><summary>${pl.length?'Recalculate from roof size':'Build the list from roof size'}</summary>
+      <div class="two"><div class="field"><label for="mq">Roof size (squares)</label><input id="mq" inputmode="decimal" value="${c.matSq||''}" placeholder="28"></div><div class="field"><label for="mw">Waste %</label><input id="mw" inputmode="decimal" value="12"></div></div>
+      <div class="two"><div class="field"><label for="mp">Pipes on the roof</label><input id="mp" inputmode="numeric" value="2"></div><div class="field"><label for="ms">Decking sheets to replace</label><input id="ms" inputmode="numeric" value="0"></div></div>
+      <label class="tog"><input type="checkbox" id="mv" checked> Add a ridge vent</label><button class="btn btn-line btn-sm" type="button" id="mgo">Make the list</button><p class="muted" style="font-size:13px">Quantities: 3 bundles a square, 10 squares a roll of synthetic, edges and ridge estimated from the size. Prices are typical Houston prices: tap any to change.</p></details>
+    <p class="kicker">Planned · ${usd(matTotal(pl))}</p>
+    <div class="mlist" id="mpl">${pl.map((m,i)=>`<div class="mli"><span>${m.qty} ${esc(plu(m.qty,m.unit))}</span><b>${esc(m.desc)}</b><input aria-label="Price per ${esc(m.unit)}" data-mpc="${i}" inputmode="decimal" value="${m.unitCost}"><em>${usd(m.qty*m.unitCost)}</em></div>`).join('')||'<p class="muted">No list yet.</p>'}</div>
+    ${pl.length?`<div class="smsrow"><a class="btn btn-line btn-sm" href="sms:?body=${encodeURIComponent('Material order for '+(c.addr||c.name)+':\n'+pl.map(m=>m.qty+' '+m.unit+' '+m.desc).join('\n'))}">Text this list to the supplier</a><button class="btn btn-line btn-sm" type="button" id="mcopy">Copy list</button></div>`:''}
+    <p class="kicker" style="margin-top:8px">Bought · ${usd(jobSpent(c))}</p>
+    <div class="mlist">${bought.map(p=>`<div class="mli buy"><span>${fmtDay(p.t)}</span><b>${esc(p.vendor)}: ${p.items.map(m=>esc(m.qty+' × '+m.desc)).join(', ')}</b><em>${usd(p.total)}</em></div>`).join('')||'<p class="muted">Nothing tagged to this job yet. Purchases from Gmail receipts and cards land in Owner → Materials to tag.</p>'}</div>
+    <button class="btn btn-line btn-sm" type="button" id="mbuy">Add a purchase</button>
+    <label class="tog" style="margin-top:6px"><input type="checkbox" id="mshow" ${(c.show||{}).materials?'checked':''} ${pl.length?'':'disabled'}> Show “what’s going on your roof” in their portal (products only, no prices)</label>`),'#mq');
+  $('#mgo').onclick=()=>{const sq=+$('#mq').value;if(!sq){toast('Add the roof size in squares.');return}c.matSq=sq;c.matPlan=matCalc({sq,waste:$('#mw').value,pipes:$('#mp').value,sheets:$('#ms').value,vent:$('#mv').checked});save();close();matSheet(id)};
+  $$('#layer [data-mpc]').forEach(i=>i.onchange=()=>{const v=+String(i.value).replace(/[^\d.]/g,'');if(v>=0){c.matPlan[+i.dataset.mpc].unitCost=v;save();close();matSheet(id)}});
+  const cp=$('#mcopy');if(cp)cp.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(pl.map(m=>m.qty+' '+m.unit+' '+m.desc).join('\n'));toast('List copied.')};
+  $('#mbuy').onclick=()=>{close();buySheet(id)};
+  $('#mshow').onchange=e=>{c.show=c.show||{};c.show.materials=e.target.checked;save()}}
+
 /* ---------- backend: every lead and booking goes to the client's Apps Script web app
    (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
 const OUTBOX='rl-outbox';
 function leadRow(o){let me={},q={};try{me=JSON.parse(localStorage.getItem('rl-me')||'{}');q=JSON.parse(localStorage.getItem('rl-quote')||'{}')}catch(x){}
   const ap=o.appt&&o.appt.t?{date:AV.iso(new Date(o.appt.t)),time:o.appt.time}:null;
   return{type:o.source||'Website',name:o.name||me.name||'',phone:digits(o.phone||me.phone||''),email:o.email||me.email||'',best:o.best||me.contact||'',sms:!!o.sms,
-    address:o.addr||q.addr||'',issue:o.msg||'',company:o.company||'',role:o.role||'',quote:!o.club&&q&&q.touched&&q.range?{name:q.name||'',range:q.range}:null,club:o.club?o.club.plan:'',appt:ap,
+    address:o.addr||q.addr||'',issue:o.msg||'',company:o.company||'',role:o.role||'',quote:!o.club&&q&&q.touched&&q.range?{name:q.name||'',range:q.range}:null,club:o.club?o.club.plan:'',appt:ap,lock:o.lock||null,
     page:location.pathname+location.search,ts:Date.now(),hp:''}}
 async function postBackend(row){const r=await fetch(CFG.backend,{method:'POST',body:JSON.stringify(row)});return r.json()}
 function outbox(){try{return JSON.parse(localStorage.getItem(OUTBOX)||'[]')}catch(x){return[]}}
@@ -1456,7 +1630,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
      Each repair step plays as a motion graphic over real photos of the same house: crews peel the old roof off in strips,
      lay plywood sheet by sheet, roll underlayment course by course and lay shingles course by course. 3 s a step, swipeable;
      a swipe hands control to the visitor. */
-  function showAct(){if(done||FX.on)return;if(innerWidth<900)closeCard();done=true;hero.classList.add('found','tearing');found.hidden=false;if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
+  function showAct(){if(done||FX.on)return;done=true;hero.classList.add('found','tearing');found.hidden=false;if(M&&!reduce)M.animate(found,{y:[30,0],opacity:[0,1]},{type:'spring',stiffness:380,damping:26})}
   const show=$('#fixShow'),dots=$('#fixDots'),capT=$('#fixCapT'),fx=$('#fixCv'),fg=fx.getContext('2d');
   const STEP_DEF=[['tear','Tear-off: every old shingle, nail and the rotted felt comes off'],['ply','Rotted decking cut out, new plywood nailed down sheet by sheet'],['felt','Ice and water shield at the edges, synthetic underlayment rolled course by course'],['shingle','New impact-rated shingles laid course by course, ridge cap last']];
   let REAL=[],slides=[],si=-1,sTimer=0,manual=false,anim=0,frames=[];
@@ -1524,11 +1698,14 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   function focusPt(){const s=window.RL_SET||{},k=(s.before||'');const p=(SPOTS[k]||[[.5,.4]])[0];return P2C(p[0],p[1])}
   let chipEl=null,cardEl=null,sunEl=null,hailFound=[],lastMiss=1e9,misses=0,frostPinned=false,heatShown=false;
   function chip(t){if(!chipEl){chipEl=document.createElement('div');chipEl.className='mchip';hero.appendChild(chipEl)}chipEl.hidden=false;chipEl.innerHTML=t}
-  function closeCard(){if(cardEl){cardEl.remove();cardEl=null}}
-  function card(img,cap,cx,cy){closeCard();const el=document.createElement('figure');el.className='hcard'+(cx/cv.width>.5?' l':'');
-    el.innerHTML=`<img src="img/${img}-m.webp" srcset="img/${img}-m.webp 800w, img/${img}.webp 1200w" sizes="320px" alt="${cap}"><figcaption>${cap}</figcaption><button type="button" class="hcx" aria-label="Close">×</button>`;
-    el.style.left=(cx/cv.width*100)+'%';el.style.top=(cy/cv.height*100)+'%';hero.appendChild(el);el.querySelector('.hcx').onclick=e=>{e.stopPropagation();closeCard()};cardEl=el;
-    if(M&&!reduce)M.animate(el,{scale:[.6,1],opacity:[0,1]},{type:'spring',stiffness:420,damping:24})}
+  /* close-ups go into a tray UNDER the hero box (Ryan, Oct 4: pop-ups blocked the roof). Tap a thumb to enlarge. */
+  function tray(){let t=document.getElementById('hTray');if(!t){t=document.createElement('div');t.id='hTray';t.className='htray';t.setAttribute('aria-label','Close-up photos of what you found');const act=hero.parentNode.querySelector('.heroact');(act||hero.parentNode).insertBefore(t,act?act.firstChild:null)}return t}
+  function closeCard(){const t=document.getElementById('hTray');if(t){t.innerHTML='';t.hidden=true}}
+  function zoomCard(img,cap){const z=document.createElement('div');z.className='hzoom';z.innerHTML=`<figure><img src="img/${img}.webp" alt="${cap}"><figcaption>${cap}</figcaption></figure><button type="button" class="hcx" aria-label="Close">×</button>`;
+    document.body.appendChild(z);const x=()=>z.remove();z.onclick=x;document.addEventListener('keydown',function k(e){if(e.key==='Escape'){x();document.removeEventListener('keydown',k)}});z.querySelector('.hcx').focus()}
+  function card(img,cap){const t=tray();t.hidden=false;const b=document.createElement('button');b.type='button';b.className='hthumb new';
+    b.innerHTML=`<img src="img/${img}-m.webp" alt=""><span>${cap}</span>`;b.setAttribute('aria-label','Enlarge: '+cap);b.onclick=()=>zoomCard(img,cap);t.appendChild(b);setTimeout(()=>b.classList.remove('new'),1600);
+    if(M&&!reduce)M.animate(b,{scale:[.6,1],opacity:[0,1]},{type:'spring',stiffness:420,damping:24})}
   function pinAtXY(cx,cy,label){const el=document.createElement('div');const fx=cx/cv.width;el.className='rpin'+(fx>.5?' l':'');el.style.left=fx*100+'%';el.style.top=cy/cv.height*100+'%';el.innerHTML=`<div class="rp"><i></i><span>${label}</span></div>`;hero.appendChild(el);
     if(M&&!reduce)M.animate(el.firstChild,{scale:[.4,1],opacity:[0,1]},{type:'spring',stiffness:500,damping:18})}
   function ripple(cx,cy,cls){const el=document.createElement('i');el.className='hrip '+(cls||'');el.style.left=cx/cv.width*100+'%';el.style.top=cy/cv.height*100+'%';hero.appendChild(el);setTimeout(()=>el.remove(),900)}
@@ -1539,7 +1716,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
     const R=Math.max(46*dpr,cv.width*.075);
     if(bi>=0&&bd<R){hailFound.push(bi);const[hx2,hy2]=P[bi];ripple(hx2,hy2,'hit');pinAtXY(hx2,hy2,H[bi][1]);card(H[bi][0],H[bi][1],hx2,hy2);misses=0;lastMiss=1e9;
       if(navigator.vibrate)try{navigator.vibrate(20)}catch(_){}chip(`Hail hits <b>${hailFound.length} of ${H.length}</b>`);meter.style.setProperty('--p',hailFound.length/H.length);
-      if(hailFound.length===H.length){full=true;meter.classList.add('full');say('<b>All 4 found.</b> From the street this roof looks fine.');setTimeout(()=>{closeCard();showAct()},2600)}else say(`<b>Found one.</b> ${H.length-hailFound.length} more hiding on this roof.`);return}
+      if(hailFound.length===H.length){full=true;meter.classList.add('full');say('<b>All 4 found.</b> From the street this roof looks fine.');setTimeout(showAct,1400)}else say(`<b>Found one.</b> ${H.length-hailFound.length} more hiding on this roof.`);return}
     ripple(px,py,onRoof(px,py)?'':'off');misses++;
     if(!onRoof(px,py))say('<b>Tap the roof.</b> The hail hits are up there.');
     else{say(bd<lastMiss?'<b>Warmer…</b> keep tapping the roof.':'<b>Colder.</b> Try another part of the roof.');lastMiss=bd}
@@ -1595,7 +1772,7 @@ function push(o){upsert(o)}
 /* ---------- instant quote, job-specific: no contact info needed to see the price ---------- */
 const QT={jobs:['replace'],mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitch:'u',mat:'arch',layers:false,
   issue:'boot',spots:'1',storm:'repair',gft:'',gunsure:false,guard:true,fascia:false,vent:{ridge:true,soffit:true,fan:false},
-  JOBS:[['replace','Roof replacement'],['repair','Leak or roof repair'],['storm','Storm or hail damage'],['gutters','Gutters'],['vent','Attic ventilation'],['commercial','Commercial roof']],
+  JOBS:[['replace','Roof replacement'],['repair','Leak or roof repair'],['commercial','Commercial roof']],
   // residential $ per square (100 sq ft) installed, Texas 2025-26 estimates; commercial $ per sq ft
   RES:{arch:['Architectural shingles',550,850,'Most popular. 30-year shingle, 10-year workmanship.'],impact:['Class 4 impact shingles',650,950,'Top hail rating. Ask your insurer about a discount.'],metal:['Standing-seam metal',1000,1800,'Lasts 40+ years, reflects Houston heat.'],tile:['Concrete tile',900,1600,'Heavy, long-lasting, classic look.'],flat:['Flat or low-slope (TPO)',600,1400,'Patios, additions and flat sections.']},
   COM:{tpo:['TPO single-ply',4.5,8,'Most common for warehouses and retail.'],epdm:['EPDM rubber',3,7,'Budget-friendly, proven on flat roofs.'],pvc:['PVC single-ply',7,13,'Best for restaurants and chemical exposure.'],coat:['Silicone roof coating',2,4,'Restores an aging roof without a tear-off.'],metal:['Metal roof',7,14,'Long life for warehouses and churches.']},
@@ -1653,7 +1830,7 @@ function qRender(){const j=QT.job,roofy=j==='replace'||j==='commercial';QT.mode=
   $('#qInc').innerHTML=(QT.INC[j||QT.jobs[0]]||QT.INC.replace).map(t=>`<li>${t}</li>`).join('');
   const n2=$('#q2Next');if(n2)n2.textContent=j?'See my price':'Next';qOut()}
 let qPrev=[0,0];
-function qOut(){const r=qCalc(),el=$('#qPrice'),bk=$('#qBook'),lab=$('#quote .qlabel');
+function qOut(){const r=qCalc(),el=$('#qPrice'),bk=$('#qBook'),lab=$('#quote .qlabel');{const lk=$('#qLock');if(lk&&bk){lk.hidden=true;bk.hidden=false;bk.disabled=false}}
   const oth=r.others.length?` Also on your list: ${qList(r.others.map(x=>x.toLowerCase()))}, quoted after the free inspection.`:'';
   if(r.inquiry){$('#qName').textContent=r.name;el.textContent='Quote after your free inspection';el.classList.add('inq');$('#qNote').textContent='We price these after we see them. The inspection is free and you get the written quote within 24 hours.';if(lab)lab.textContent='Your request';if(bk)bk.textContent='Book my free inspection';qPrev=[0,0]}
   else{el.classList.remove('inq');if(lab)lab.textContent='Your roof estimate';if(bk)bk.textContent='Lock in this price';$('#qName').textContent=r.name;$('#qNote').textContent=r.note+' Final price after a free inspection.'+oth;
@@ -1677,8 +1854,7 @@ $$('[data-quote]').forEach(b=>b.addEventListener('click',()=>{const m=b.dataset.
 
 /* ---------- every "Book a free inspection" goes to the one inspection form on the page (no pop-up; Ryan, Oct 4) ---------- */
 function me(){try{return JSON.parse(localStorage.getItem('rl-me')||'null')}catch(x){return null}}
-function startSheet(){const f=$('#inspect');if(!f){location.href='index.html#inspect';return}if(window.closeQuote)window.closeQuote();if(window.__iPrefill)window.__iPrefill();
-  f.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(()=>{const n=$('#iName');if(n&&!$('#iCard.done'))n.focus({preventScroll:true})},reduce?0:600)}
+function startSheet(){if(window.openInspect){if(window.closeQuote)window.closeQuote();window.openInspect();return}location.href='index.html#inspect'}
 $$('[data-start]').forEach(b=>b.onclick=e=>{e.preventDefault();startSheet()});
 /* ---------- free inspection form on the homepage: full details + day/time, then an instant confirmation ---------- */
 
@@ -1772,9 +1948,22 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
         catch(x){b.disabled=false;b.textContent='Save availability';err.textContent='Couldn’t reach the server. Try again.';err.hidden=false}}
       else toast('Saved. The website shows your new hours now.')}}}
 
-(function(){const f=$('#iForm');if(!f)return;let selD=null,selS=null,best='Text';
+(function(){const f=$('#iForm');if(!f)return;let selD=null,selS=null,best='Text',userPicked=false;
+  /* the booking lives in a 2-step modal (Ryan, Oct 4): 1 day + time, 2 contact. The page only shows a small card. */
+  const MD=$('#iModal');document.body.appendChild(MD);const titles=['Pick a day and time','Where should we reach you?'];
+  function iStep(n){$$('#iModal .istep').forEach(x=>x.hidden=+x.dataset.s!==n);$$('#iModal .imsteps i').forEach((d,i)=>d.classList.toggle('on',i<n));$('#imH').textContent=titles[n-1];MD.querySelector('.impanel').scrollTop=0;
+    if(n===2){$('#iWhen').innerHTML=`<b>${selD?fmt(selD)+' at '+AV.label(selS):''}</b> <button type="button" class="linkbtn" id="iChg">Change</button>`;$('#iChg').onclick=()=>iStep(1);setTimeout(()=>{const n1=['#iName','#iPhone','#iEmail','#iAddr'].map(x=>$(x)).find(x=>!x.value);if(n1&&matchMedia('(min-width:700px)').matches)n1.focus()},60)}}
+  function openIM(done){if(window.__iPrefill)window.__iPrefill();MD.hidden=false;document.documentElement.classList.add('imopen');requestAnimationFrame(()=>MD.classList.add('in'));
+    if(done&&!$('#iDone').hidden){f.hidden=true;$('.imsteps').hidden=true;$('#imH').textContent='You’re booked'}else{f.hidden=false;$('#iDone').hidden=true;$('.imsteps').hidden=false;iStep(1)}}
+  function closeIM(){MD.classList.remove('in');document.documentElement.classList.remove('imopen');setTimeout(()=>MD.hidden=true,reduce?0:220)}
+  window.openInspect=openIM;window.closeInspect=closeIM;
+  $('#iOpen').onclick=()=>openIM();$$('#iModal [data-iclose]').forEach(x=>x.onclick=closeIM);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!MD.hidden)closeIM()});
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href$="#inspect"]');if(!a)return;e.preventDefault();openIM()},true);
+  MD.addEventListener('click',e=>{if(e.target.closest('a[href*="#quote"]'))closeIM()});
+  $('#iNext1').onclick=()=>{const e1=$('#iErr1');if(!selD||!selS){e1.textContent='Pick a day and a time.';e1.hidden=false;return}e1.hidden=true;iStep(2)};
+  $('#iBack').onclick=()=>iStep(1);
   const fmt=d=>d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-  const picker=AV.mountPicker($('#iCal'),$('#iSlots'),(d,w)=>{selD=d;selS=w});window.__iPicker=picker;
+  const picker=AV.mountPicker($('#iCal'),$('#iSlots'),(d,w)=>{selD=d;selS=w;if(d&&w&&!userPicked){const t=`Next open: <b>${fmt(d)}, ${AV.label(w)}</b>`;const nx=$('#iNext');if(nx){nx.innerHTML=t;nx.hidden=false}const qn=$('#qbNext');if(qn)qn.innerHTML=t}});window.__iPicker=picker;
   const pick=(sel,attr,set)=>$$(sel+' button').forEach(b=>b.onclick=()=>{set(b.dataset[attr]);$$(sel+' button').forEach(x=>x.setAttribute('aria-checked',String(x===b)))});
   pick('#iBest','best',v=>{best=v;const c=$('#iSmsC');if(c)c.hidden=v!=='Text'});
   const IJ={replace:'Roof replacement',repair:'Leak or roof repair',storm:'Storm or hail damage',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof',insurance:'Insurance claim help'};
@@ -1792,11 +1981,11 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
   f.addEventListener('submit',async e=>{e.preventDefault();const v=id=>$(id).value.trim(),err=$('#iErr');
     const D={name:v('#iName'),phone:v('#iPhone'),email:v('#iEmail'),addr:v('#iAddr'),issue:v('#iIssue')};
     const okP=phoneOk(D.phone),okE=/^\S+@\S+\.\S+$/.test(D.email);
-    const bad=!D.name?'#iName':(!okP&&!okE)?'#iPhone':(best!=='Email'&&!okP)?'#iPhone':(best==='Email'&&!okE)?'#iEmail':(D.phone&&!okP)?'#iPhone':(D.email&&!okE)?'#iEmail':D.addr.length<5?'#iAddr':!D.issue?'#iIssue':null;
+    const bad=!D.name?'#iName':!okP?'#iPhone':!okE?'#iEmail':D.addr.length<5?'#iAddr':!D.issue?'#iIssue':null;
     $$('#iForm .bad').forEach(x=>x.classList.remove('bad'));
-    if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':(!okP&&!okE)?'Add a mobile number or an email so we can reach you.':best==='Email'?'That mobile number looks short. Fix it or leave it blank.':'Add a 10-digit mobile number so we can '+(best==='Call'?'call':'text')+' you.','#iEmail':best==='Email'&&!okE?'Add your email so we can email you.':'That email doesn’t look right. Fix it or leave it blank.','#iAddr':'Add the property address.','#iIssue':'Pick at least one thing you need.'}[bad];if(bad==='#iIssue'){$('#iJobs').classList.add('bad');$('#iJobs').scrollIntoView({block:'center'});return}$(bad).classList.add('bad');$(bad).focus();return}
+    if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':'Add your 10-digit mobile number.','#iEmail':'Add your email.','#iAddr':'Add the property address.','#iIssue':'Pick at least one thing you need.'}[bad];if(bad==='#iIssue'){$('#iJobs').classList.add('bad');$('#iJobs').scrollIntoView({block:'center'});return}$(bad).classList.add('bad');$(bad).focus();return}
     
-    if(!selD||!selS){err.hidden=false;err.textContent='Pick a day and a time on the calendar.';$('#iCal').scrollIntoView({block:'center'});return}
+    if(!selD||!selS){iStep(1);$('#iErr1').textContent='Pick a day and a time.';$('#iErr1').hidden=false;return}
     err.hidden=true;const appt={t:selD.getTime(),time:selS,slot:AV.label(selS),confirmed:false};const smsOk=best==='Text'&&!!($('#iSms')&&$('#iSms').checked);
     const btn=f.querySelector('.ibtn'),bt=btn.textContent;let sent=false;
     if(CFG.backend){btn.disabled=true;btn.textContent='Booking…';const r=await sendLead({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection',appt,email:D.email,best,sms:smsOk});var notified=(r&&r.notified)||'';btn.disabled=false;btn.textContent=bt;
@@ -1804,7 +1993,7 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
     let q=null;try{q=JSON.parse(localStorage.getItem('rl-quote')||'null')}catch(x){}
     const c=upsert({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection',appt,email:D.email,best,sms:smsOk,_sent:sent});
     Object.assign(c,{email:D.email,contactPref:best});if(q)c.quote=q;save();
-    try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:best}))}catch(x){}
+    try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:best,sms:smsOk}))}catch(x){}
     const first=D.name.split(' ')[0],when=`${fmt(selD)} at ${AV.label(selS)}`;
     const nt=typeof notified==='string'?notified:'';
     $('#iDone').innerHTML=`<p class="ikick">You’re booked</p><h2>See you ${fmt(selD)}, ${esc(first)}.</h2>
@@ -1813,9 +2002,13 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
         :`<p class="idsub">${best==='Call'?'We’ll call you':'We’ll text you'} at ${esc(D.phone)} to confirm.</p>`}
       <p class="idemo">${CFG.backend?'The owner already has your request. If the time ever needs to move, you’ll hear from us the way you picked.':'Demo: on a live site the confirmation goes out the way the customer picked (text, call or email) and the owner gets an instant alert.'}</p>
       <ul class="iperks"><li><b>Inspection:</b> ${when}</li><li><b>You need:</b> ${esc(D.issue)}</li>${q&&q.touched&&q.range?`<li><b>Your price held 30 days:</b> ${esc(q.name)}, ${esc(q.range)}</li>`:''}<li><b>We’ll reach you by:</b> ${best.toLowerCase()}</li></ul>
-      <div class="row"><a class="btn btn-main" href="#quote">See my price while you wait</a><button class="btn btn-line" type="button" id="iEdit">Change something</button></div>`;
-    f.hidden=true;$('#iDone').hidden=false;$('#iCard').classList.add('done');$('#iEdit').onclick=()=>{f.hidden=false;$('#iDone').hidden=true;$('#iCard').classList.remove('done')};
-    if(M&&!reduce)M.animate('#iDone',{opacity:[0,1],y:[16,0]},{duration:.35});$('#inspect').scrollIntoView({block:'start',behavior:reduce?'auto':'smooth'})});
+      <div class="row"><button class="btn btn-main" type="button" id="iDoneX">Done</button><button class="btn btn-line" type="button" id="iEdit">Change something</button></div>`;
+    f.hidden=true;$('.imsteps').hidden=true;$('#imH').textContent='You’re booked';$('#iDone').hidden=false;MD.querySelector('.impanel').scrollTop=0;
+    $('#iEdit').onclick=()=>{f.hidden=false;$('#iDone').hidden=true;$('.imsteps').hidden=false;iStep(2)};$('#iDoneX').onclick=closeIM;
+    const bk=$('#iBooked');bk.innerHTML=`<span class="okpill">Booked</span> <b>${when}</b> <button type="button" class="linkbtn" id="iSee">See details</button>`;bk.hidden=false;$('#iSee').onclick=()=>openIM(true);
+    $('#iOpen').textContent='Book another time';$('#iNext').hidden=true;const qn=$('#qbNext');if(qn)qn.innerHTML=`Booked: <b>${when}</b>`;
+    if(M&&!reduce)M.animate('#iDone',{opacity:[0,1],y:[16,0]},{duration:.35})});
+  $('#iSlots').addEventListener('click',()=>{userPicked=true});$('#iCal').addEventListener('click',()=>{userPicked=true});
   /* any "Book a free inspection" button on the homepage jumps to this form instead of a pop-up */
 
 })();
@@ -1843,7 +2036,7 @@ if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"
 
 
 
-/* ================= v9: always-on banner, seasonal sky, roof lookup, armadillo ================= */
+/* ================= v9: always-on banner, seasonal sky, roof lookup ================= */
 
 /* ---- banner: Text / Call popover + which section you're on ---- */
 {const b=$('#tcBtn'),pop=$('#tcPop');if(b&&pop){const set=v=>{pop.hidden=!v;b.setAttribute('aria-expanded',v)};
@@ -2009,11 +2202,11 @@ if(QD){
   {const m=me();if(m){if(m.name)$('#qcName').value=m.name;if(m.phone)$('#qcPhone').value=m.phone;if(m.email)$('#qcEmail').value=m.email}}
   $('#qcForm').onsubmit=e=>{e.preventDefault();const v=s=>$(s).value.trim(),D={name:v('#qcName'),phone:v('#qcPhone'),email:v('#qcEmail')},err=$('#qcErr');
     const okP=phoneOk(D.phone),okE=/^\S+@\S+\.\S+$/.test(D.email);
-    const bad=!D.name?'#qcName':(!okP&&!okE)?'#qcPhone':(qbest!=='Email'&&!okP)?'#qcPhone':(qbest==='Email'&&!okE)?'#qcEmail':(D.phone&&!okP)?'#qcPhone':(D.email&&!okE)?'#qcEmail':null;$$('#qcForm .bad').forEach(x=>x.classList.remove('bad'));
-    if(bad){err.hidden=false;err.textContent={'#qcName':'Add your name.','#qcPhone':(!okP&&!okE)?'Add a mobile number or an email so we can send your price.':qbest==='Email'?'That mobile number looks short. Fix it or leave it blank.':'Add a 10-digit mobile number so we can '+(qbest==='Call'?'call':'text')+' you.','#qcEmail':qbest==='Email'&&!okE?'Add your email so we can email you.':'That email doesn’t look right. Fix it or leave it blank.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
+    const bad=!D.name?'#qcName':!okP?'#qcPhone':!okE?'#qcEmail':null;$$('#qcForm .bad').forEach(x=>x.classList.remove('bad'));
+    if(bad){err.hidden=false;err.textContent={'#qcName':'Add your name.','#qcPhone':'Add your 10-digit mobile number.','#qcEmail':'Add your email.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
     err.hidden=true;const r=qCalc();const need=r.jobs.map(k=>QJN[k]).join(', ');qUnlock();const c=upsert({name:D.name,phone:D.phone,addr:QT.addr,source:r.inquiry?'Service inquiry':'Instant roof quote',msg:r.inquiry?'Needs: '+need:`Needs: ${need}. Roof estimate: ${r.name}, ${qmoney(r.lo)}–${qmoney(r.hi)}`,email:D.email,best:qbest,sms:qbest==='Text'&&$('#qcSms').checked});
     Object.assign(c,{email:D.email,contactPref:qbest,quote:r.inquiry?null:{name:r.name,range:qmoney(r.lo)+'–'+qmoney(r.hi),addr:QT.addr}});save();
-    try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:qbest}))}catch(x){}
+    try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:qbest,sms:qbest==='Text'&&$('#qcSms').checked}))}catch(x){}
     const ia=$('#iName');if(ia&&!ia.value){ia.value=D.name;$('#iPhone').value=D.phone;$('#iEmail').value=D.email;const ad=$('#iAddr');if(ad&&!ad.value&&QT.addr)ad.value=QT.addr}
     qUnlock();qGo(4)}}
 
@@ -2059,15 +2252,64 @@ new MutationObserver(()=>{['#ja','#oaddr'].forEach(s=>{const e=$(s);if(e)addrTyp
     $$('#seaPick [data-sea]').forEach(b=>b.onclick=()=>{PICK.season=b.dataset.sea;apply();if(window.__rebuildFix)try{window.__rebuildFix()}catch(x){}render();const r=window.RL_READY&&window.RL_READY[b.dataset.sea];toast(r?b.querySelector('b').textContent+' house loaded':'Sky switched. This season’s house photos are being made next.')})};
   window.addEventListener('rl-season',render);render()}}
 
-/* ---- the armadillo: our own booking helper (original character, real photo from Flow) ---- */
-{const d=$('#dillo');if(d){const im=d.querySelector('img');d.classList.add('wave');const lines=['Free roof check this week?','Tap me. I’ll book it.','Photo report in 24 hours.','I’ll find your spot.'];let i=0,tm;
-  const show=()=>{d.hidden=false;requestAnimationFrame(()=>d.classList.add('in'))};
-  if(im.complete&&im.naturalWidth)setTimeout(show,2500);else{im.onload=()=>setTimeout(show,2500);im.onerror=()=>d.remove()}
-  const bub=d.querySelector('.dbub');const cycle=()=>{i=(i+1)%lines.length;bub.textContent=lines[i];d.classList.remove('wave','quiet');void d.offsetWidth;d.classList.add('wave');if(innerWidth<700)setTimeout(()=>d.classList.add('quiet'),3500)};if(innerWidth<700)setTimeout(()=>d.classList.add('quiet'),6000);tm=setInterval(cycle,6000);
-  window.addEventListener('rl-fixed',()=>{bub.textContent='Want this on YOUR roof? Tap me.';d.classList.add('wave')});
-  d.querySelector('button.dgo').onclick=()=>{const f=$('#inspect');if(f){f.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(()=>{const n=$('#iName');if(n&&!$('#iCard.done'))n.focus({preventScroll:true})},reduce?0:700)}else location.href='index.html#inspect'};
-  d.querySelector('.dx').onclick=()=>{d.remove();clearInterval(tm)};
-  const f=$('#inspect');if(f&&window.IntersectionObserver)new IntersectionObserver(es=>d.classList.toggle('away',es[0].isIntersecting),{threshold:.25}).observe(f)}}
+/* ---- Service inquiries (Ryan, Oct 4): gutters, ventilation, storm and claims get their own short form, never a price ---- */
+{const MD=$('#aModal'),F=$('#aForm');if(MD&&F){document.body.appendChild(MD);
+  const AQ={
+    'gutters':{name:'Gutters',kick:'Gutters',h:'What’s going on with your gutters?',qs:[['What do you see? Pick all that apply',1,['Overflowing in rain','Sagging or pulling away','Leaking at the seams','Clogged with leaves','Water by the foundation','I want new seamless gutters','I want gutter guards']],['About how many feet? (optional)',0,['Under 100 ft','100–200 ft','Over 200 ft','Not sure']]]},
+    'attic-ventilation':{name:'Attic ventilation',kick:'Attic heat and ventilation',h:'What are you noticing?',qs:[['Pick all that apply',1,['Upstairs rooms too hot','High summer power bills','AC runs all day','Shingles curling or blistering','Musty smell or mold in the attic','Ceiling stains','Want a ridge vent or attic fan']],['How old is the roof? (optional)',0,['Under 10 years','10–20 years','Over 20 years','Not sure']]]},
+    'storm-damage':{name:'Storm damage',kick:'Storm or hail damage',h:'Tell us about the storm',qs:[['When was the storm?',0,['This week','This month','Earlier this year','Not sure']],['What do you see? Pick all that apply',1,['Missing shingles','Dents on vents or gutters','Granules in the gutters','A leak inside','Tree or limb on the roof','Nothing yet, just worried']],['Have you called your insurance?',0,['Not yet','Yes, claim filed','Adjuster already came','Not sure']]]},
+    'insurance-claims':{name:'Insurance claim help',kick:'Insurance claim help',h:'Where is your claim at?',qs:[['Claim status',0,['Haven’t filed yet','Filed, waiting on the adjuster','Adjuster came','Got a denial or a low offer']],['What caused the damage? Pick all that apply',1,['Hail','Wind','Fallen tree or limb','A leak','Not sure']]]}};
+  let cur=null,best='Text',A={};
+  const step=n=>{$$('#aModal .astep').forEach(x=>x.hidden=+x.dataset.s!==n);$$('#aModal .imsteps i').forEach((d,i)=>d.classList.toggle('on',i<n));$('#amH').textContent=n===1?AQ[cur].h:'Where should we reach you?';MD.querySelector('.impanel').scrollTop=0;
+    if(n===2){const m=me()||{};[['#aName','name'],['#aPhone','phone'],['#aEmail','email']].forEach(([s,k])=>{if(m[k]&&!$(s).value)$(s).value=m[k]});try{const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q&&q.addr&&!$('#aAddr').value)$('#aAddr').value=q.addr}catch(x){}}};
+  function openAsk(k){cur=AQ[k]?k:'gutters';const C=AQ[cur];A={};$('#aKick').textContent=C.kick;$('#aNote').value='';
+    $('#aQs').innerHTML=C.qs.map(([l,multi,opts],qi)=>`<div class="field"><span class="flabel">${esc(l)}</span><div class="chips ijobs" data-q="${qi}" data-m="${multi}" role="group" aria-label="${esc(l)}">${opts.map(o=>`<button type="button" aria-pressed="false" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`).join('');
+    $$('#aQs .chips').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{const on=b.getAttribute('aria-pressed')!=='true';if(g.dataset.m==='0')g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed',String(on));g.classList.remove('bad')}));
+    F.hidden=false;$('#aDone').hidden=true;MD.querySelector('.imsteps').hidden=false;$('#aErr1').hidden=true;$('#aErr').hidden=true;
+    MD.hidden=false;document.documentElement.classList.add('imopen');requestAnimationFrame(()=>MD.classList.add('in'));step(1)}
+  function closeAsk(){MD.classList.remove('in');document.documentElement.classList.remove('imopen');setTimeout(()=>MD.hidden=true,reduce?0:220)}
+  window.openAsk=openAsk;
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-ask]');if(!b)return;e.preventDefault();openAsk(b.dataset.ask)});
+  $$('#aModal [data-aclose]').forEach(x=>x.onclick=closeAsk);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!MD.hidden)closeAsk()});
+  $$('#aBest button').forEach(b=>b.onclick=()=>{best=b.dataset.best;$$('#aBest button').forEach(x=>x.setAttribute('aria-checked',String(x===b)));$('#aSmsC').hidden=best!=='Text'});
+  addrTypeahead($('#aAddr'));
+  const answers=()=>AQ[cur].qs.map(([l],qi)=>[l.replace(/\?.*$|\. Pick.*$| \(optional\)/g,''),$$(`#aQs [data-q="${qi}"] [aria-pressed=true]`).map(b=>b.dataset.v).join(', ')]);
+  $('#aNext').onclick=()=>{const g=$('#aQs .chips'),first=answers()[0][1];if(!first&&!$('#aNote').value.trim()){g.classList.add('bad');$('#aErr1').textContent='Pick one, or tell us in your own words.';$('#aErr1').hidden=false;return}$('#aErr1').hidden=true;step(2)};
+  $('#aBack').onclick=()=>step(1);
+  F.addEventListener('submit',async e=>{e.preventDefault();const v=id=>$(id).value.trim(),err=$('#aErr');
+    const D={name:v('#aName'),phone:v('#aPhone'),email:v('#aEmail'),addr:v('#aAddr')};const okP=phoneOk(D.phone),okE=/^\S+@\S+\.\S+$/.test(D.email);
+    const bad=!D.name?'#aName':!okP?'#aPhone':!okE?'#aEmail':D.addr.length<5?'#aAddr':null;$$('#aForm .bad').forEach(x=>x.classList.remove('bad'));
+    if(bad){err.hidden=false;err.textContent={'#aName':'Add your name.','#aPhone':'Add your 10-digit mobile number.','#aEmail':'Add your email.','#aAddr':'Add the property address.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
+    err.hidden=true;const C=AQ[cur],note=v('#aNote'),msg=C.name+': '+answers().filter(x=>x[1]).map(([l,a])=>l+': '+a).join(' · ')+(note?' · Notes: '+note:'');
+    const smsOk=best==='Text'&&$('#aSms').checked,o={name:D.name,phone:D.phone,email:D.email,addr:D.addr,best,sms:smsOk,msg,source:'Service inquiry: '+C.name};
+    const btn=F.querySelector('.ibtn'),bt=btn.textContent;let sent=false;
+    if(CFG.backend){btn.disabled=true;btn.textContent='Sending…';const r=await sendLead(o);btn.disabled=false;btn.textContent=bt;if(r&&r.ok===false){err.hidden=false;err.textContent='Something went wrong. Please try again or text us.';return}sent=true}
+    const c=upsert({...o,_sent:sent});Object.assign(c,{email:D.email,contactPref:best});save();
+    try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:best,sms:smsOk}))}catch(x){}
+    const first=D.name.split(' ')[0],how=best==='Email'?'email you at '+esc(D.email):best==='Call'?'call you at '+esc(D.phone):'text you at '+esc(D.phone);
+    F.hidden=true;MD.querySelector('.imsteps').hidden=true;$('#amH').textContent='Got it, '+first+'.';
+    $('#aDone').hidden=false;$('#aDone').innerHTML=`<p class="idsub">We’ll ${how} about your ${esc(C.name.toLowerCase())} question, usually within a few business hours. No price yet: we look first, then quote.</p>
+      <p class="idemo">${CFG.backend?'The owner already has your question.':'Demo: on a live site the owner gets an instant alert and replies the way you picked.'}</p>
+      <div class="imnav"><button class="btn btn-line" type="button" data-aclose2>Done</button><button class="btn btn-main" type="button" data-start2>Book a free inspection too</button></div>`;
+    $('#aDone [data-aclose2]').onclick=closeAsk;$('#aDone [data-start2]').onclick=()=>{closeAsk();setTimeout(()=>window.openInspect&&window.openInspect(),reduce?0:240)}})}}
+
+/* ---- Lock in this price (Ryan, Oct 4): confirmation goes out the way the customer picked (email or text) ---- */
+{const bk=$('#qBook');if(bk){bk.onclick=async()=>{const r=qCalc();if(r.inquiry){startSheet();return}const m=me()||{};
+  if(!m.name||!(m.phone&&String(m.phone).length>=10)||!m.email){qUnlocked=false;qGo(3);return}
+  bk.disabled=true;const bt=bk.textContent;bk.textContent='Locking your price…';
+  const until=new Date(Date.now()+30*864e5).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),code='RL-'+Math.random().toString(36).slice(2,6).toUpperCase();
+  const lock={name:r.name,range:qmoney(r.lo)+'–'+qmoney(r.hi),until,code},best=m.contact||'Text';
+  const o={name:m.name,phone:m.phone,email:m.email,best,sms:!!m.sms,addr:QT.addr,source:'Price lock',msg:`Locked: ${lock.name}, ${lock.range} until ${until} (${code})`,lock};
+  let res=null;try{res=await sendLead(o)}catch(x){}
+  if(res&&res.ok===false&&res.reason!=='slow_down'){bk.disabled=false;bk.textContent=bt;toast('Couldn’t lock it right now. Please try again.');return}
+  const c=upsert(Object.assign({},o,{_sent:true}));c.quote={name:r.name,range:lock.range,addr:QT.addr,locked:until,code};c.contactPref=best;save();
+  try{const q=JSON.parse(localStorage.getItem('rl-quote')||'{}');q.locked=until;q.code=code;q.touched=true;localStorage.setItem('rl-quote',JSON.stringify(q))}catch(x){}
+  const nt=(res&&res.notified)||'',ph=pretty(m.phone);
+  const how=nt==='email'?`Confirmation emailed to <b>${esc(m.email)}</b>.`:nt==='sms'?`Confirmation texted to <b>${esc(ph)}</b>.`
+    :!CFG.backend?`Demo: the live site ${best==='Email'?'emails it to '+esc(m.email):'texts it to '+esc(ph)}.`
+    :best==='Email'?`Confirmation is on its way to <b>${esc(m.email)}</b>.`:best==='Call'?`We’ll call <b>${esc(ph)}</b> to go over it.`:`We’ll text it to <b>${esc(ph)}</b> shortly.`;
+  const box=$('#qLock');box.innerHTML=`<span class="okpill">Price locked</span><p class="qlk"><b>${esc(lock.range)}</b> held until <b>${until}</b><br><small>Lock code ${code}</small></p><p class="qlh">${how}</p><button class="btn btn-main" type="button" id="qLockBook">Book my free inspection</button>`;
+  box.hidden=false;bk.hidden=true;bk.disabled=false;bk.textContent=bt;$('#qLockBook').onclick=()=>startSheet();if(M&&!reduce)M.animate(box,{opacity:[0,1],y:[10,0]},{duration:.3})}}}
 
 apply();routeHash();
 })();
