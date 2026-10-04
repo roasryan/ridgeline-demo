@@ -831,6 +831,23 @@ html.qopen,html.qopen body{overflow:hidden}
 .acfield{display:block;width:100%}
 .acfield>input{width:100%}
 .icard .aclist{z-index:30}
+/* multi-pick jobs (Oct 4): pressed = picked, check mark shows it's a multi-select */
+.qjobs button[aria-pressed="true"],.ijobs button[aria-pressed="true"]{border-color:var(--slate);background:var(--slate);color:#fff}
+.qjobs button,.ijobs button{position:relative}
+.qjobs button[aria-pressed="true"]::after,.ijobs button[aria-pressed="true"]::after{content:"✓";position:absolute;top:6px;right:9px;font-size:13px;color:var(--yellow,#FFD400)}
+.qjobs button small{display:block;font:600 12px/1.2 var(--body);opacity:.65;margin-top:3px}
+.ijobs{display:flex;flex-wrap:wrap;gap:8px}.ijobs button{padding-right:26px}
+.ijobs.bad{outline:2px solid #C0392B;outline-offset:4px;border-radius:12px}
+.qprice.inq{font-size:clamp(22px,4.4vw,30px)!important;line-height:1.15}
+.qinq{background:#FFF6CC;border-radius:12px;padding:10px 12px;color:var(--ink)}
+.ibook .wrap{max-width:640px}.ibook .tform{position:static}
+/* v10 sky: WebGL clouds under the particle canvas */
+#skyGL{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none;display:block;image-rendering:auto}
+#sky{z-index:0}
+html{background:#070C11}
+/* v10: let the sky breathe between panels so the clouds and lightning read while scrolling */
+.sec:not(.offer):not(.end){padding:28px 14px!important}
+@media (max-width:640px){.sec:not(.offer):not(.end){padding:18px 10px!important}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -859,7 +876,32 @@ html.qopen,html.qopen body{overflow:hidden}
   <section class="sec"><div class="wrap"><h2>Coat it, repair it or replace it?</h2><div class="cards2"><div><b>Repair</b><p>Leaks in a few spots on a roof that is otherwise dry. Lowest cost, fastest.</p></div><div><b>Restore with a coating</b><p>The roof is aging but dry underneath (we scan for wet insulation). About half the cost of tear-off, often no permit, and adds years.</p></div><div><b>Replace</b><p>Wet insulation across large areas, or the system is past its life. New warranty from the maker.</p></div><div><b>Not sure?</b><p>We core-sample and moisture-scan, then show you all three with prices.</p></div></div></div></section>
   <section class="sec alt"><div class="wrap"><h2>Commercial roofing questions</h2><div class="qs full"><details><summary>Coating or replacement?</summary><p>If the roof is dry underneath (we scan for wet insulation), a coating costs about half of a tear-off.</p></details><details><summary>Can you work while we’re open?</summary><p>Yes. We stage work around business hours and keep entrances safe.</p></details><details><summary>Do you work with property managers?</summary><p>Yes. Reports are written to forward to owners and boards.</p></details><details><summary>Do you handle emergencies?</summary><p>24/7 leak response with same-day tarps or patches.</p></details></div></div></section>
   <section class="band"><div class="wrap"><h2>Get a commercial roof price today.</h2><p>Square footage and system type is all it takes. A condition report follows the site visit.</p><div class="hcta"><a class="btn btn-main" href="index.html?job=commercial#quote">Get a commercial quote</a><button class="btn btn-line" type="button" data-start>Book a free inspection</button></div></div></section>
-</main>
+<section class="sec ibook" aria-label="Free roof inspection"><div class="wrap"><aside class="tform" id="inspect" aria-labelledby="iH">
+      <div class="icard" id="iCard">
+        <p class="ikick">Free roof inspection</p>
+        <h2 id="iH">Book it in 60 seconds</h2>
+        <ul class="iperks">
+          <li><b>Confirmation in seconds</b> by email, and the owner reaches you the way you pick</li>
+          <li><b>Photo report within 24 hours</b> of your inspection, or $50 off any repair</li>
+          <li><b>You don’t need to be home.</b> We check from the roof and the attic access</li>
+          <li><b>Insurance-ready damage file</b> and your instant-quote price held 30 days</li>
+        </ul>
+        <form id="iForm" novalidate>
+          <div class="two"><div class="field"><label for="iName">Full name</label><input id="iName" autocomplete="name" required></div>
+          <div class="field"><label for="iPhone">Mobile</label><input id="iPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div></div>
+          <div class="field"><label for="iEmail">Email</label><input id="iEmail" type="email" inputmode="email" autocomplete="email"><small class="qhint2">Mobile or email: one is enough.</small></div>
+          <div class="field"><label for="iAddr">Property address</label><input id="iAddr" autocomplete="street-address" required placeholder="Street, city, ZIP"></div>
+          <div class="field"><span class="flabel" id="iIssueL">What do you need? Pick all that apply</span><input type="hidden" id="iIssue"><div class="chips ijobs" id="iJobs" role="group" aria-label="What do you need"><button type="button" aria-pressed="false" data-ij="Roof replacement">Roof replacement</button><button type="button" aria-pressed="false" data-ij="Leak or roof repair">Leak or roof repair</button><button type="button" aria-pressed="false" data-ij="Missing or damaged shingles">Missing or damaged shingles</button><button type="button" aria-pressed="false" data-ij="Storm or hail damage">Storm or hail damage</button><button type="button" aria-pressed="false" data-ij="Insurance claim help">Insurance claim help</button><button type="button" aria-pressed="false" data-ij="Gutters">Gutters</button><button type="button" aria-pressed="false" data-ij="Attic heat or ventilation">Attic heat or ventilation</button><button type="button" aria-pressed="false" data-ij="Commercial roof">Commercial roof</button><button type="button" aria-pressed="false" data-ij="Not sure, just check it">Not sure, just check it</button></div></div>
+          <div class="field"><span class="flabel">Pick a day and time</span><div class="ical" id="iCal"></div><div class="islots" id="iSlots" role="radiogroup" aria-label="Time"></div></div>
+          <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="iBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
+          <label class="smsc" id="iSmsC"><input type="checkbox" id="iSms"> <span>Text me about my inspection (confirmation, reminder, time changes). Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
+          <p class="err" id="iErr" role="alert" hidden></p>
+          <button class="btn btn-main ibtn" type="submit">Book my free inspection</button>
+          <p class="ifine">No cost, no obligation. We’ll never sell your info. <a href="#quote">Rather see a price first?</a></p>
+        </form>
+        <div id="iDone" hidden></div>
+      </div>
+    </aside></div></section></main>
 <footer>
   <div class="wrap">
     <div class="ftcols">
@@ -891,7 +933,7 @@ html.qopen,html.qopen body{overflow:hidden}
       <h2>Tell us about the job</h2>
       
         
-        <div class="field"><span class="flabel">What do you need?</span><div class="qjobs" id="qJobs" role="radiogroup" aria-label="Job"></div></div>
+        <div class="field"><span class="flabel">What do you need? Pick all that apply</span><div class="qjobs" id="qJobs" role="group" aria-label="Pick all the jobs you need"></div></div>
         <input id="qAddr" type="hidden">
         <div id="qRoof"><div class="field"><label for="qSize">How big is your roof? (your best guess)</label><div class="qsize"><input id="qSize" inputmode="decimal" placeholder="Type a number, e.g. 2400"><select id="qUnit" aria-label="Unit"></select></div>
           <label class="tog2"><input type="checkbox" id="qUnsure"> Not sure, use a typical size</label><small class="qhint2">Type roof sq ft, or switch to <b>Home sq ft</b> and use your home’s size (it’s on your appraisal or listing). We measure it exactly at the free inspection.</small></div>
@@ -935,7 +977,7 @@ const M=window.Motion||null;
    Leave either empty and the site falls back to demo mode (leads stay on this device, free map services). */
 const CFG={biz:'Ridgeline Roofing',city:'Houston',tz:'America/Chicago',lat:29.7604,lon:-95.3698,backend:'https://script.google.com/macros/s/AKfycbyAH-VeQsKxZEnmBuQIfmz0bhsFxF9hr7h61UsIYIoeZXBaD9hDOd4JS70rdRo_rBmI/exec'};
 
-const HOME=document.getElementById('inspect')?'':'index.html';
+const HOME=document.getElementById('hero')?'':'index.html';
 /* the photo sits exactly under the real header height (in-app browsers and notches change it) */
 {const bh=()=>{const b=document.getElementById('bar');if(b)document.documentElement.style.setProperty('--bh',b.offsetHeight+'px')};bh();addEventListener('resize',bh);addEventListener('load',bh);if(window.ResizeObserver)document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('bar');if(b)new ResizeObserver(bh).observe(b)})}
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1429,7 +1471,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
 
 function push(o){upsert(o)}
 /* ---------- instant quote, job-specific: no contact info needed to see the price ---------- */
-const QT={job:'replace',mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitch:'u',mat:'arch',layers:false,
+const QT={jobs:['replace'],mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitch:'u',mat:'arch',layers:false,
   issue:'boot',spots:'1',storm:'repair',gft:'',gunsure:false,guard:true,fascia:false,vent:{ridge:true,soffit:true,fan:false},
   JOBS:[['replace','Roof replacement'],['repair','Leak or roof repair'],['storm','Storm or hail damage'],['gutters','Gutters'],['vent','Attic ventilation'],['commercial','Commercial roof']],
   // residential $ per square (100 sq ft) installed, Texas 2025-26 estimates; commercial $ per sq ft
@@ -1445,104 +1487,77 @@ const QT={job:'replace',mode:'res',addr:'',size:'',unit:'roof',unsure:false,pitc
     gutters:['Free measure and photo check','6-inch seamless gutters, formed on site','Downspouts and extensions away from the slab','10-year workmanship warranty'],
     vent:['Free attic check with temperature reading','Balanced intake and exhaust','Leak-free at every vent we cut','10-year workmanship warranty'],
     commercial:['Site visit with core sample and moisture scan','Written repair / coat / replace options','Board-ready condition report','Manufacturer warranty options']}};
+/* Only roof work gets an instant price; every other service is an inquiry quoted after the free inspection (Ryan, Oct 4). Visitors can pick several jobs. */
+const QPRICED=['replace','repair','commercial'],QJN=Object.fromEntries(QT.JOBS);
+Object.defineProperty(QT,'job',{get(){return QT.jobs.find(k=>QPRICED.includes(k))||null},set(k){QT.jobs=[k]}});
+const qOthers=()=>QT.jobs.filter(k=>!QPRICED.includes(k));
+const qList=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
 const qmoney=n=>'$'+(Math.round(n/100)*100).toLocaleString('en-US');
 function roofSqft(){const raw=parseFloat(String(QT.size).replace(/[^\d.]/g,''));const pf=QT.PITCH[QT.pitch][1];let sqft,note;
   if(QT.unsure||!raw){sqft=2400*0.85*pf;note='Based on a typical 2,400 sq ft Houston home until we measure yours.'}
   else if(QT.unit==='home'){sqft=raw*0.85*pf;note=`Roof estimated from a ${Math.round(raw).toLocaleString()} sq ft home.`}
   else if(QT.unit==='squares'){sqft=raw*100;note=`${raw} squares of roof.`}else{sqft=raw;note=`${Math.round(raw).toLocaleString()} sq ft of roof.`}return[sqft,note]}
-function qCalc(){const j=QT.job;
+function qCalc(){const j=QT.job,oth=qOthers().map(k=>QJN[k]);
+  if(!j)return{job:null,jobs:QT.jobs.slice(),inquiry:true,name:oth.join(' + '),lo:0,hi:0,note:'',others:oth};
+  return Object.assign(qCalc1(j),{jobs:QT.jobs.slice(),others:oth})}
+function qCalc1(j){
   if(j==='commercial'){const raw=parseFloat(String(QT.size).replace(/[^\d.]/g,''));const sqft=QT.unsure||!raw?20000:(QT.unit==='squares'?raw*100:raw);const note=QT.unsure||!raw?'Based on a typical 20,000 sq ft commercial roof until we measure yours.':`${Math.round(sqft).toLocaleString()} sq ft of roof.`;
     const m=QT.COM[QT.mat]||QT.COM.tpo,tear=QT.layers&&QT.mat!=='coat'?1.5:0;return{job:j,name:m[0],desc:m[3],lo:sqft*(m[1]+tear),hi:sqft*(m[2]+tear),note,sqft}}
   if(j==='repair'){const m=QT.ISSUE[QT.issue],k=QT.SPOTS[QT.spots][1];return{job:j,name:'Roof repair: '+m[0].toLowerCase(),desc:m[3],lo:m[1]*k,hi:m[2]*k,note:QT.SPOTS[QT.spots][0]+'. '+m[3]}}
-  if(j==='storm'){if(QT.storm!=='replace'){const m=QT.STORM[QT.storm];return{job:j,name:m[0],desc:m[3],lo:m[1],hi:m[2],note:m[3]}}
-    const[sq,n]=roofSqft(),r=QT.RES.impact;return{job:j,name:'Storm replacement (impact shingles)',lo:sq/100*r[1],hi:sq/100*r[2],note:n+' If insurance approves, you pay your deductible.'}}
-  if(j==='gutters'){const raw=parseFloat(String(QT.gft).replace(/[^\d.]/g,''));const ft=QT.gunsure||!raw?150:raw,dn=Math.max(2,Math.round(ft/35));
-    let lo=ft*9+dn*90,hi=ft*14+dn*150;if(QT.guard){lo+=ft*7;hi+=ft*15}if(QT.fascia){lo+=ft*.2*8;hi+=ft*.2*20}
-    return{job:j,name:'Seamless gutters'+(QT.guard?' + guards':''),lo,hi,note:(QT.gunsure||!raw?'Based on a typical 150 ft of roof edge until we measure yours.':`${Math.round(ft)} ft of gutter.`)+` About ${dn} downspouts.`}}
-  if(j==='vent'){const V=QT.vent;let lo=0,hi=0,n=[];if(V.ridge){lo+=400;hi+=1200;n.push('ridge vent')}if(V.soffit){lo+=300;hi+=1300;n.push('soffit vents + baffles')}if(V.fan){lo+=500;hi+=900;n.push('solar attic fan')}
-    if(!n.length){lo=150;hi=300;n.push('attic check')}return{job:j,name:'Attic ventilation',lo,hi,note:'Includes '+n.join(', ')+'.'}}
   const[sqft,note]=roofSqft(),sq=sqft/100,m=QT.RES[QT.mat]||QT.RES.arch,extra=QT.layers?100:0,steep=QT.pitch==='steep'?1.06:1;
   return{job:j,name:m[0],desc:m[3],lo:sq*(m[1]+extra)*steep,hi:sq*(m[2]+extra)*steep,note,sqft}}
+const qjchip=(k,t)=>`<button type="button" aria-pressed="${QT.jobs.includes(k)}" data-job="${k}">${t}${QPRICED.includes(k)?'':'<small>quote after a look</small>'}</button>`;
 const qchip=(attr,v,t,cur)=>`<button type="button" role="radio" aria-checked="${v===cur}" data-${attr}="${v}">${t}</button>`;
-function qRender(){const j=QT.job,roofy=j==='replace'||j==='commercial'||(j==='storm'&&QT.storm==='replace');QT.mode=j==='commercial'?'com':'res';
-  $('#qJobs').innerHTML=QT.JOBS.map(([k,t])=>qchip('job',k,t,j)).join('');
-  $$('#qJobs [data-job]').forEach(b=>b.onclick=()=>{QT.job=b.dataset.job;QT.unit='roof';qRender()});
+function qRender(){const j=QT.job,roofy=j==='replace'||j==='commercial';QT.mode=j==='commercial'?'com':'res';
+  $('#qJobs').innerHTML=QT.JOBS.map(([k,t])=>qjchip(k,t)).join('');
+  $$('#qJobs [data-job]').forEach(b=>b.onclick=()=>{const k=b.dataset.job,on=QT.jobs.includes(k);
+    if(on){if(QT.jobs.length>1)QT.jobs=QT.jobs.filter(x=>x!==k)}
+    else{if(QPRICED.includes(k))QT.jobs=QT.jobs.filter(x=>!QPRICED.includes(x));QT.jobs.push(k);if(k==='commercial'||QT.job==='commercial')QT.unit='roof'}
+    qRender()});
   $('#qRoof').hidden=!roofy;
   const mats=QT.mode==='com'?QT.COM:QT.RES;if(!mats[QT.mat])QT.mat=Object.keys(mats)[0];
   $('#qMats').innerHTML=Object.entries(mats).map(([k,m])=>`<label class="qmat ${QT.mat===k?'on':''}"><input type="radio" name="qmat" value="${k}" ${QT.mat===k?'checked':''}><b>${m[0]}</b><small>${m[3]}</small></label>`).join('');
-  $('#qMats').closest('.field').hidden=j==='storm';
+  $('#qMats').closest('.field').hidden=!roofy;
   $('#qPitchF').hidden=QT.mode==='com';$('#qUnit').innerHTML=(QT.mode==='com'?[['roof','Roof sq ft'],['squares','Squares']]:[['roof','Roof sq ft'],['home','Home sq ft'],['squares','Squares']]).map(([v,t])=>`<option value="${v}" ${QT.unit===v?'selected':''}>${t}</option>`).join('');
   $('#qLayersL').textContent=QT.mode==='com'?'Tear off the old roof first':'Remove an extra layer of old shingles';
   $$('#qMats input').forEach(i=>i.onchange=()=>{QT.mat=i.value;qRender()});
   let o='';
   if(j==='repair')o=`<div class="field"><span class="flabel">What’s going on?</span><div class="qmats">${Object.entries(QT.ISSUE).map(([k,m])=>`<label class="qmat ${QT.issue===k?'on':''}"><input type="radio" name="qiss" value="${k}" ${QT.issue===k?'checked':''}><b>${m[0]}</b><small>${m[3]}</small></label>`).join('')}</div></div><div class="field"><span class="flabel">How many spots?</span><div class="chips">${Object.entries(QT.SPOTS).map(([k,s])=>qchip('spots',k,s[0],QT.spots)).join('')}</div></div>`;
-  if(j==='storm')o=`<div class="field"><span class="flabel">What do you need?</span><div class="chips">${Object.entries(QT.STORM).map(([k,s])=>qchip('storm',k,s[0],QT.storm)).join('')}</div></div><p class="qhint">The inspection and photo file are free. In Texas a roofer can’t waive or pay your deductible.</p>`;
-  if(j==='gutters')o=`<div class="field"><label for="qG">How many feet of gutter?</label><input id="qG" inputmode="decimal" placeholder="e.g. 160" value="${esc(QT.gft)}"><label class="tog2"><input type="checkbox" id="qGu" ${QT.gunsure?'checked':''}> Not sure, use a typical home</label></div><label class="tog2"><input type="checkbox" id="qGg" ${QT.guard?'checked':''}> Add leaf guards</label><label class="tog2"><input type="checkbox" id="qGf" ${QT.fascia?'checked':''}> Some fascia boards are rotted</label>`;
-  if(j==='vent')o=`<div class="field"><span class="flabel">What should we add?</span>${[['ridge','Ridge vent (exhaust along the top)'],['soffit','Soffit vents + baffles (intake at the eaves)'],['fan','Solar attic fan']].map(([k,t])=>`<label class="tog2"><input type="checkbox" data-vent="${k}" ${QT.vent[k]?'checked':''}> ${t}</label>`).join('')}<small class="muted2">Not sure? Leave the first two on; that’s what most Houston attics are missing.</small></div>`;
+  const oth=qOthers().map(k=>QJN[k].toLowerCase());
+  if(oth.length)o+=`<p class="qhint qinq"><b>${j?'Also on your list':'Got it'}:</b> ${esc(qList(oth))}. ${oth.length>1?'These are':'This is'} quoted in writing after your free inspection, so there’s no instant price for ${oth.length>1?'them':'it'}.</p>`;
   $('#qOther').innerHTML=o;
   $$('#qOther [name=qiss]').forEach(i=>i.onchange=()=>{QT.issue=i.value;qRender()});
   $$('#qOther [data-spots]').forEach(b=>b.onclick=()=>{QT.spots=b.dataset.spots;qRender()});
-  $$('#qOther [data-storm]').forEach(b=>b.onclick=()=>{QT.storm=b.dataset.storm;qRender()});
-  if($('#qG')){$('#qG').oninput=e=>{QT.gft=e.target.value;if(e.target.value){QT.gunsure=false;$('#qGu').checked=false}qOut()};$('#qGu').onchange=e=>{QT.gunsure=e.target.checked;qOut()};$('#qGg').onchange=e=>{QT.guard=e.target.checked;qOut()};$('#qGf').onchange=e=>{QT.fascia=e.target.checked;qOut()}}
-  $$('#qOther [data-vent]').forEach(i=>i.onchange=()=>{QT.vent[i.dataset.vent]=i.checked;qOut()});
-  $('#qInc').innerHTML=(QT.INC[j]||QT.INC.replace).map(t=>`<li>${t}</li>`).join('');
-  qOut()}
+  $('#qInc').innerHTML=(QT.INC[j||QT.jobs[0]]||QT.INC.replace).map(t=>`<li>${t}</li>`).join('');
+  const n2=$('#q2Next');if(n2)n2.textContent=j?'See my price':'Next';qOut()}
 let qPrev=[0,0];
-function qOut(){const r=qCalc();$('#qName').textContent=r.name;$('#qNote').textContent=r.note+' Final price after a free inspection.';
-  const el=$('#qPrice'),[a,b]=qPrev;qPrev=[r.lo,r.hi];
-  if(M&&!reduce)M.animate(0,1,{duration:.45,ease:[.2,.8,.2,1],onUpdate:t=>{el.textContent=qmoney(a+(r.lo-a)*t)+' – '+qmoney(b+(r.hi-b)*t)}});else el.textContent=qmoney(r.lo)+' – '+qmoney(r.hi);
-  const body=`Hi Ridgeline, I got an instant quote on your site: ${r.name}, ${qmoney(r.lo)}–${qmoney(r.hi)}${QT.addr?' for '+QT.addr:''}. Can we set up the free inspection?`;
-  const t=$('#qText');t.dataset.body=body;t.href=smsHref(body);try{let t=false;try{t=!!JSON.parse(localStorage.getItem('rl-quote')||'{}').touched}catch(y){}localStorage.setItem('rl-quote',JSON.stringify({...r,touched:t,range:qmoney(r.lo)+'–'+qmoney(r.hi),mode:QT.mode,addr:QT.addr}))}catch(x){}}
+function qOut(){const r=qCalc(),el=$('#qPrice'),bk=$('#qBook'),lab=$('#quote .qlabel');
+  const oth=r.others.length?` Also on your list: ${qList(r.others.map(x=>x.toLowerCase()))}, quoted after the free inspection.`:'';
+  if(r.inquiry){$('#qName').textContent=r.name;el.textContent='Quote after your free inspection';el.classList.add('inq');$('#qNote').textContent='We price these after we see them. The inspection is free and you get the written quote within 24 hours.';if(lab)lab.textContent='Your request';if(bk)bk.textContent='Book my free inspection';qPrev=[0,0]}
+  else{el.classList.remove('inq');if(lab)lab.textContent='Your roof estimate';if(bk)bk.textContent='Lock in this price';$('#qName').textContent=r.name;$('#qNote').textContent=r.note+' Final price after a free inspection.'+oth;
+    const[a,b]=qPrev;qPrev=[r.lo,r.hi];
+    if(M&&!reduce&&(a||b))M.animate(0,1,{duration:.45,ease:[.2,.8,.2,1],onUpdate:t=>{el.textContent=qmoney(a+(r.lo-a)*t)+' – '+qmoney(b+(r.hi-b)*t)}});else el.textContent=qmoney(r.lo)+' – '+qmoney(r.hi)}
+  const all=qList(r.jobs.map(k=>QJN[k].toLowerCase()));
+  const body=r.inquiry?`Hi Ridgeline, I need help with ${all}${QT.addr?' at '+QT.addr:''}. Can we set up the free inspection?`:`Hi Ridgeline, I got an instant quote on your site: ${r.name}, ${qmoney(r.lo)}–${qmoney(r.hi)}${QT.addr?' for '+QT.addr:''}.${r.others.length?' I also need '+qList(r.others.map(x=>x.toLowerCase()))+'.':''} Can we set up the free inspection?`;
+  const t=$('#qText');t.dataset.body=body;t.href=smsHref(body);t.textContent=r.inquiry?'Text us about this':'Text us about this quote';
+  try{let tc=false;try{tc=!!JSON.parse(localStorage.getItem('rl-quote')||'{}').touched}catch(y){}localStorage.setItem('rl-quote',JSON.stringify({...r,touched:tc,range:r.inquiry?'':qmoney(r.lo)+'–'+qmoney(r.hi),mode:QT.mode,addr:QT.addr}))}catch(x){}}
 function qInit(){
   $('#qAddr').oninput=e=>{QT.addr=e.target.value;qOut()};$('#qSize').oninput=e=>{QT.size=e.target.value;if(e.target.value){QT.unsure=false;$('#qUnsure').checked=false}qOut()};
   $('#qUnit').onchange=e=>{QT.unit=e.target.value;qOut()};$('#qUnsure').onchange=e=>{QT.unsure=e.target.checked;qOut()};$('#qLayers').onchange=e=>{QT.layers=e.target.checked;qOut()};
   $$('[data-pitch]').forEach(b=>b.onclick=()=>{QT.pitch=b.dataset.pitch;$$('[data-pitch]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));qOut()});
-  $('#qBook').onclick=()=>bookSheet({quote:qCalc(),mode:QT.mode,addr:QT.addr});
+  $('#qBook').onclick=()=>startSheet();
   const MAP={'roof-replacement':'replace','roof-repair':'repair','storm-damage':'storm','insurance-claims':'storm','gutters':'gutters','attic-ventilation':'vent','commercial-roofing':'commercial',com:'commercial'};
-  const q=new URLSearchParams(location.search),jq=q.get('job')||q.get('mode');if(jq){const k=MAP[jq]||jq;if(QT.JOBS.some(x=>x[0]===k))QT.job=k}
+  const q=new URLSearchParams(location.search),jq=q.get('job')||q.get('mode');if(jq){const k=MAP[jq]||jq;if(QT.JOBS.some(x=>x[0]===k))QT.jobs=[k]}
   qRender()}
-window.setJob=k=>{QT.job=k;if($('#qMats'))qRender()};
+window.setJob=k=>{if(QT.JOBS.some(x=>x[0]===k))QT.jobs=[k];if($('#qMats'))qRender()};
 if($('#qMats'))qInit();
 $$('[data-quote]').forEach(b=>b.addEventListener('click',()=>{const m=b.dataset.quote;window.setJob(m==='com'?'commercial':m==='res'?'replace':m)}));
 
-/* ---------- booking: contact (skipped if we already have it) → optional details → pick a time ---------- */
+/* ---------- every "Book a free inspection" goes to the one inspection form on the page (no pop-up; Ryan, Oct 4) ---------- */
 function me(){try{return JSON.parse(localStorage.getItem('rl-me')||'null')}catch(x){return null}}
-function bookSheet(opts={}){const known=me(),com=opts.mode==='com';const D={name:'',phone:'',email:'',contact:'text',company:'',role:'',addr:opts.addr||'',notes:''};let step=known?2:1,pd=null,ps=null;const pics=[];
-  const close=open(`<div class="scrim"><div class="sheet intake" role="dialog" aria-modal="true" aria-labelledby="bH"><div class="ihead"><h3 id="bH">${opts.quote?'Lock in your quote':'Free roof inspection'}</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div><div id="bBody"></div><p class="err" id="bErr" role="alert" hidden></p></div></div>`);
-  const pill=(n,v,t,cur)=>`<label class="iopt ${cur===v?'on':''}"><input type="radio" name="${n}" value="${v}" ${cur===v?'checked':''}><b>${t}</b></label>`;
-  const q=opts.quote?`<div class="iest"><span>${esc(opts.quote.name)}</span><b>${qmoney(opts.quote.lo)} – ${qmoney(opts.quote.hi)}</b></div>`:'';
-  function render(){const B=$('#bBody');$('#bErr').hidden=true;
-    if(step===1){B.innerHTML=`${q}<p class="muted" style="margin:0">So we can confirm your time and send your ${opts.quote?'quote':'photos'}.</p>
-      <div class="field"><label for="bn">Full name</label><input id="bn" autocomplete="name" value="${esc(D.name)}"></div>
-      <div class="two"><div class="field"><label for="bp">Mobile number</label><input id="bp" type="tel" inputmode="tel" autocomplete="tel" value="${esc(D.phone)}"></div><div class="field"><label for="be">Email</label><input id="be" type="email" inputmode="email" autocomplete="email" value="${esc(D.email)}"></div></div>
-      ${com?`<div class="two"><div class="field"><label for="bc">Company</label><input id="bc" autocomplete="organization"></div><div class="field"><label for="br">Your role</label><input id="br" placeholder="Owner, property manager…"></div></div>`:''}
-      <div class="field"><span class="flabel">Best way to reach you</span><div class="pills">${[['text','Text'],['call','Call'],['email','Email']].map(([v,t])=>pill('bct',v,t,D.contact)).join('')}</div></div>
-      <p class="muted" style="font-size:13.5px">By continuing you agree we can text, call or email you about your roof. Reply STOP anytime.</p>
-      <button class="btn btn-main" type="button" id="bGo" style="width:100%">Next: pick a time</button>`;
-      $$('#bBody input[name=bct]').forEach(i=>i.onchange=()=>{D.contact=i.value;D.name=$('#bn').value;D.phone=$('#bp').value;D.email=$('#be').value;render()});
-      $('#bGo').onclick=()=>{D.name=$('#bn').value.trim();D.phone=$('#bp').value;D.email=$('#be').value.trim();const er=$('#bErr');
-        if(D.name.length<2){er.textContent='Add your name.';er.hidden=false;return}if(!phoneOk(D.phone)){er.textContent='Add a 10-digit mobile number.';er.hidden=false;return}
-        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(D.email)){er.textContent='Add an email like you@example.com.';er.hidden=false;return}
-        if(com){D.company=$('#bc').value.trim();D.role=$('#br').value.trim()}
-        const c=upsert({name:D.name,phone:D.phone,addr:D.addr,source:opts.quote?(com?'Commercial quote':'Instant quote'):'Website'});
-        Object.assign(c,{email:D.email,contactPref:D.contact,company:D.company||c.company,role:D.role||c.role});if(opts.quote)c.quote={verdict:opts.quote.name,range:qmoney(opts.quote.lo)+'–'+qmoney(opts.quote.hi),note:opts.quote.note};save();
-        try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name}))}catch(x){}toast('Sent to the owner’s phone.');step=2;render()}}
-    if(step===2){const who=known?known.name:D.name;B.innerHTML=`${q}<p style="margin:0"><b>${known?'Welcome back, ':'Thanks, '}${esc(first(who))}.</b> Pick a time for your free ${com?'commercial roof assessment':'inspection'}.</p>
-      <div class="field"><label for="bAd">Property address</label><input id="bAd" autocomplete="street-address" value="${esc(D.addr)}"></div>
-      <div class="days" id="bd"></div><div class="slots" id="bs"></div>
-      <details class="bmore"><summary>Add details or photos (optional)</summary><div class="field"><label for="bt">What’s going on, in your own words</label><textarea id="bt" rows="2"></textarea></div><label class="upl" for="bf"><span id="bfl">Add photos</span><input id="bf" type="file" accept="image/*" multiple></label><div class="thumbs" id="bth"></div></details>
-      <button class="btn btn-main" type="button" id="bOk" style="width:100%">Book my free ${com?'assessment':'inspection'}</button><button class="btn btn-line" type="button" id="bLater">Just call me to set a time</button>`;
-      const dr=()=>{$('#bd').innerHTML=days.map((d,i)=>`<button type="button" class="day" data-d="${i}" aria-pressed="${pd===i}"><small>${d.toLocaleDateString('en-US',{weekday:'short'})}</small><b>${d.getDate()}</b></button>`).join('');$('#bs').innerHTML=SL.map((s,j)=>`<button type="button" class="slot" data-s="${j}" aria-pressed="${ps===j}">${s}</button>`).join('');
-        $$('#bd [data-d]').forEach(b=>b.onclick=()=>{pd=+b.dataset.d;dr()});$$('#bs [data-s]').forEach(b=>b.onclick=()=>{ps=+b.dataset.s;if(pd==null)pd=0;dr()})};dr();
-      $('#bf').onchange=e=>{[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const z=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*z;cv.height=im.height*z;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);pics.push(cv.toDataURL('image/jpeg',.7));$('#bth').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('');$('#bfl').textContent=pics.length+' photo(s) added'};im.src=r.result};r.readAsDataURL(f)})};
-      const phone=known?known.phone:D.phone;
-      const fin=(appt)=>{upsert({phone,addr:$("#bAd").value.trim(),msg:$('#bt').value.trim(),photos:pics,...(appt?{appt}:{})});
-        $('#bBody').innerHTML=`<span class="okpill">${appt?'Booked':'Got it'}</span><h3>${appt?`See you ${days[pd].toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}, ${SL[ps]}.`:'We’ll call you shortly.'}</h3><p class="muted">${appt?'We’ll text a reminder the day before and when we’re on the way. You don’t need to be home.':'Usually within 10 minutes, 7 AM to 7 PM.'}</p><button class="btn btn-line" type="button" id="bDone">Done</button>`;$('#bDone').onclick=close};
-      $('#bOk').onclick=()=>{if(ps==null){$('#bErr').textContent='Pick a day and a time window.';$('#bErr').hidden=false;return}fin({t:days[pd].getTime(),slot:SL[ps],confirmed:false})};
-      $('#bLater').onclick=()=>fin(null)}}
-  render()}
-const startSheet=()=>bookSheet({});
-$$('[data-start]').forEach(b=>b.onclick=()=>startSheet());
+function startSheet(){const f=$('#inspect');if(!f){location.href='index.html#inspect';return}if(window.closeQuote)window.closeQuote();if(window.__iPrefill)window.__iPrefill();
+  f.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(()=>{const n=$('#iName');if(n&&!$('#iCard.done'))n.focus({preventScroll:true})},reduce?0:600)}
+$$('[data-start]').forEach(b=>b.onclick=e=>{e.preventDefault();startSheet()});
 /* ---------- free inspection form on the homepage: full details + day/time, then an instant confirmation ---------- */
 
 /* ---------- availability: the owner sets hours once (Owner view → Availability); the booking calendar only offers real, future times ----------
@@ -1640,26 +1655,32 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
   const picker=AV.mountPicker($('#iCal'),$('#iSlots'),(d,w)=>{selD=d;selS=w});window.__iPicker=picker;
   const pick=(sel,attr,set)=>$$(sel+' button').forEach(b=>b.onclick=()=>{set(b.dataset[attr]);$$(sel+' button').forEach(x=>x.setAttribute('aria-checked',String(x===b)))});
   pick('#iBest','best',v=>{best=v;const c=$('#iSmsC');if(c)c.hidden=v!=='Text'});
+  const IJ={replace:'Roof replacement',repair:'Leak or roof repair',storm:'Storm or hail damage',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof',insurance:'Insurance claim help'};
+  const syncIJ=()=>{$('#iIssue').value=$$('#iJobs [aria-pressed=true]').map(b=>b.dataset.ij).join(', ')};
+  function setIJobs(list){if(!list.length)return;$$('#iJobs button').forEach(b=>b.setAttribute('aria-pressed',String(list.includes(b.dataset.ij))));syncIJ()}
+  $$('#iJobs button').forEach(b=>b.onclick=()=>{const on=b.getAttribute('aria-pressed')!=='true',ns=b.dataset.ij.startsWith('Not sure');
+    if(on)$$('#iJobs button').forEach(x=>{if(x!==b&&(ns||x.dataset.ij.startsWith('Not sure')))x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed',String(on));syncIJ();$('#iJobs').classList.remove('bad')});
   /* prefill from what we already know (an earlier booking or the instant quote) */
   try{const m=JSON.parse(localStorage.getItem('rl-me')||'null');if(m){if(m.name)$('#iName').value=m.name;if(m.phone)$('#iPhone').value=m.phone;if(m.email)$('#iEmail').value=m.email}
     const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q&&q.addr)$('#iAddr').value=q.addr;
-    const J={repair:'Leak or water stain',storm:'Storm or hail damage',replace:'Old roof, thinking about replacing',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof'};if(q&&q.touched&&J[q.job])$('#iIssue').value=J[q.job]}catch(x){}
-  /* when the visitor uses the instant quote, carry the job into the form */
-  const qs=$('#quote');if(qs)['input','click'].forEach(ev=>qs.addEventListener(ev,()=>{setTimeout(()=>{try{const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q){q.touched=true;localStorage.setItem('rl-quote',JSON.stringify(q));const J={repair:'Leak or water stain',storm:'Storm or hail damage',replace:'Old roof, thinking about replacing',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof'};if(J[q.job])$('#iIssue').value=J[q.job];if(q.addr&&!$('#iAddr').value)$('#iAddr').value=q.addr}}catch(x){}},50)}));
+    if(q&&q.touched&&q.jobs)setIJobs(q.jobs.map(k=>IJ[k]).filter(Boolean))}catch(x){}
+  /* when the visitor uses the instant quote, carry the jobs and address into the form */
+  window.__iPrefill=()=>{try{const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q&&q.touched){if(q.jobs)setIJobs(q.jobs.map(k=>IJ[k]).filter(Boolean));if(q.addr&&!$('#iAddr').value)$('#iAddr').value=q.addr}
+    const m=me();if(m){if(m.name&&!$('#iName').value)$('#iName').value=m.name;if(m.phone&&!$('#iPhone').value)$('#iPhone').value=m.phone;if(m.email&&!$('#iEmail').value)$('#iEmail').value=m.email}}catch(x){}};
   f.addEventListener('submit',async e=>{e.preventDefault();const v=id=>$(id).value.trim(),err=$('#iErr');
     const D={name:v('#iName'),phone:v('#iPhone'),email:v('#iEmail'),addr:v('#iAddr'),issue:v('#iIssue')};
     const okP=phoneOk(D.phone),okE=/^\S+@\S+\.\S+$/.test(D.email);
     const bad=!D.name?'#iName':(!okP&&!okE)?'#iPhone':(best!=='Email'&&!okP)?'#iPhone':(best==='Email'&&!okE)?'#iEmail':(D.phone&&!okP)?'#iPhone':(D.email&&!okE)?'#iEmail':D.addr.length<5?'#iAddr':!D.issue?'#iIssue':null;
     $$('#iForm .bad').forEach(x=>x.classList.remove('bad'));
-    if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':(!okP&&!okE)?'Add a mobile number or an email so we can reach you.':best==='Email'?'That mobile number looks short. Fix it or leave it blank.':'Add a 10-digit mobile number so we can '+(best==='Call'?'call':'text')+' you.','#iEmail':best==='Email'&&!okE?'Add your email so we can email you.':'That email doesn’t look right. Fix it or leave it blank.','#iAddr':'Add the property address.','#iIssue':'Pick what’s going on.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
+    if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':(!okP&&!okE)?'Add a mobile number or an email so we can reach you.':best==='Email'?'That mobile number looks short. Fix it or leave it blank.':'Add a 10-digit mobile number so we can '+(best==='Call'?'call':'text')+' you.','#iEmail':best==='Email'&&!okE?'Add your email so we can email you.':'That email doesn’t look right. Fix it or leave it blank.','#iAddr':'Add the property address.','#iIssue':'Pick at least one thing you need.'}[bad];if(bad==='#iIssue'){$('#iJobs').classList.add('bad');$('#iJobs').scrollIntoView({block:'center'});return}$(bad).classList.add('bad');$(bad).focus();return}
     
     if(!selD||!selS){err.hidden=false;err.textContent='Pick a day and a time on the calendar.';$('#iCal').scrollIntoView({block:'center'});return}
     err.hidden=true;const appt={t:selD.getTime(),time:selS,slot:AV.label(selS),confirmed:false};const smsOk=best==='Text'&&!!($('#iSms')&&$('#iSms').checked);
     const btn=f.querySelector('.ibtn'),bt=btn.textContent;let sent=false;
-    if(CFG.backend){btn.disabled=true;btn.textContent='Booking…';const r=await sendLead({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best,sms:smsOk});var notified=(r&&r.notified)||'';btn.disabled=false;btn.textContent=bt;
+    if(CFG.backend){btn.disabled=true;btn.textContent='Booking…';const r=await sendLead({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection',appt,email:D.email,best,sms:smsOk});var notified=(r&&r.notified)||'';btn.disabled=false;btn.textContent=bt;
       if(r&&r.ok===false){err.hidden=false;err.textContent=r.reason==='taken'?'That time was just taken. Pick another one.':'Something went wrong. Please try again or text us.';AV.load();return}sent=true}
     let q=null;try{q=JSON.parse(localStorage.getItem('rl-quote')||'null')}catch(x){}
-    const c=upsert({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best,sms:smsOk,_sent:sent});
+    const c=upsert({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection',appt,email:D.email,best,sms:smsOk,_sent:sent});
     Object.assign(c,{email:D.email,contactPref:best});if(q)c.quote=q;save();
     try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:best}))}catch(x){}
     const first=D.name.split(' ')[0],when=`${fmt(selD)} at ${AV.label(selS)}`;
@@ -1669,12 +1690,12 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
         :nt==='email'?`<p class="idsub">Your confirmation just went to ${esc(D.email)}.</p>`
         :`<p class="idsub">${best==='Call'?'We’ll call you':'We’ll text you'} at ${esc(D.phone)} to confirm.</p>`}
       <p class="idemo">${CFG.backend?'The owner already has your request. If the time ever needs to move, you’ll hear from us the way you picked.':'Demo: on a live site the confirmation goes out the way the customer picked (text, call or email) and the owner gets an instant alert.'}</p>
-      <ul class="iperks"><li><b>Inspection:</b> ${when}</li><li><b>Issue:</b> ${esc(D.issue)}</li>${q&&q.touched&&q.range?`<li><b>Your price held 30 days:</b> ${esc(q.name)}, ${esc(q.range)}</li>`:''}<li><b>We’ll reach you by:</b> ${best.toLowerCase()}</li></ul>
+      <ul class="iperks"><li><b>Inspection:</b> ${when}</li><li><b>You need:</b> ${esc(D.issue)}</li>${q&&q.touched&&q.range?`<li><b>Your price held 30 days:</b> ${esc(q.name)}, ${esc(q.range)}</li>`:''}<li><b>We’ll reach you by:</b> ${best.toLowerCase()}</li></ul>
       <div class="row"><a class="btn btn-main" href="#quote">See my price while you wait</a><button class="btn btn-line" type="button" id="iEdit">Change something</button></div>`;
     f.hidden=true;$('#iDone').hidden=false;$('#iCard').classList.add('done');$('#iEdit').onclick=()=>{f.hidden=false;$('#iDone').hidden=true;$('#iCard').classList.remove('done')};
     if(M&&!reduce)M.animate('#iDone',{opacity:[0,1],y:[16,0]},{duration:.35});$('#inspect').scrollIntoView({block:'start',behavior:reduce?'auto':'smooth'})});
   /* any "Book a free inspection" button on the homepage jumps to this form instead of a pop-up */
-  $$('[data-start]').forEach(b=>b.onclick=e=>{e.preventDefault();$('#inspect').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(()=>$('#iName').focus({preventScroll:true}),500)});
+
 })();
 
 
@@ -1714,7 +1735,74 @@ if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"
    $$('#qbar [data-q]').forEach(a=>a.classList.toggle('on',a.dataset.q===best))},{threshold:[0,.15,.3,.5]});
   Object.values(map).forEach(el=>el&&io.observe(el))}}
 
-/* ---- seasonal motion background (one canvas behind the whole page) ---- */
+/* ---- v10 sky (Oct 4): live WebGL storm clouds behind the whole page.
+   Domain-warped clouds drift with the wind, the cursor/finger lights and parts them, scrolling moves the camera
+   (dusk → night), lightning in storm seasons (tap empty sky to call one). Particles stay on #sky. ---- */
+window.RLSKY=(function(){const cv=document.createElement('canvas');cv.id='skyGL';cv.setAttribute('aria-hidden','true');
+  const sk=$('#sky');if(!sk)return null;sk.parentNode.insertBefore(cv,sk);
+  const gl=cv.getContext('webgl',{antialias:false,alpha:false,powerPreference:'low-power'});if(!gl){cv.remove();return null}
+  const VS='attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+  const FS=`precision mediump float;uniform vec2 R;uniform float T,S,F,K;uniform vec2 P,FP;uniform vec3 C0,C1,C2,CC,CL;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1.,0.)),f.x),mix(h(i+vec2(0.,1.)),h(i+1.),f.x),f.y);}
+float fbm(vec2 p){float v=0.,a=.5;mat2 m=mat2(1.6,1.2,-1.2,1.6);for(int i=0;i<5;i++){v+=a*n(p);p=m*p;a*=.5;}return v;}
+void main(){vec2 uv=gl_FragCoord.xy/R;vec2 p=(gl_FragCoord.xy-.5*R)/R.y;float t=T*.035;
+ if(K>2.5){p.x+=sin(p.y*28.+T*2.)*.004*(1.-uv.y);}
+ vec3 col=mix(C0,C1,smoothstep(0.,.55,uv.y));col=mix(col,C2,smoothstep(.5,1.,uv.y));
+ float hz=exp(-pow((uv.y-.06-S*.25)*3.2,2.));col+=CL*hz*(.6-.4*S);
+ vec2 pp=(P-.5*R)/R.y;float pd=length(p-pp);
+ vec2 q=p*1.5+vec2(t*1.4,-S*1.6);q+=(p-pp)*.45*exp(-pd*3.2);
+ vec2 w=vec2(fbm(q+vec2(0.,t)),fbm(q+vec2(5.2,1.3)-t*.6));
+ float c=fbm(q+2.4*w),c2=fbm(q*2.3+3.*w+vec2(t*2.2,0.));
+ float dens=smoothstep(.36,.86,c*.78+c2*.34)*(K>2.5?.55:1.);
+ float edge=smoothstep(.32,.62,c)-smoothstep(.62,.95,c);
+ vec3 cloud=mix(CC*.42,CC,c2);cloud+=CL*edge*.55*(1.-S*.5);
+ cloud+=vec3(1.,.93,.82)*exp(-pd*3.6)*.42*dens;
+ col=mix(col,cloud,dens*.88);
+ col+=vec3(1.,.95,.85)*exp(-pd*7.)*.06;
+ float fd=length(p-(FP-.5*R)/R.y);col+=vec3(.72,.8,1.)*F*(exp(-fd*1.6)*1.4+.22)*(.35+dens);
+ if(K>1.5&&K<2.5||K>2.5){float st=step(.997,h(floor(gl_FragCoord.xy*.5)))*smoothstep(.45,1.,uv.y)*(1.-dens)*(.25+S);col+=st*(.6+.4*sin(T*3.+h(gl_FragCoord.xy)*40.));}
+ col*=1.-.5*pow(length(uv-vec2(.5,.55))*1.25,2.);col*=1.-S*.32;
+ col+=(h(gl_FragCoord.xy+fract(T))-.5)*.04;gl_FragColor=vec4(col,1.);}`;
+  const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS)){console.warn(gl.getShaderInfoLog(o));return null}return o};
+  const vs=sh(gl.VERTEX_SHADER,VS),fs=sh(gl.FRAGMENT_SHADER,FS);if(!vs||!fs){cv.remove();return null}
+  const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);gl.useProgram(pr);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  const al=gl.getAttribLocation(pr,'a');gl.enableVertexAttribArray(al);gl.vertexAttribPointer(al,2,gl.FLOAT,false,0,0);
+  const U={};['R','T','S','F','K','P','FP','C0','C1','C2','CC','CL'].forEach(k=>U[k]=gl.getUniformLocation(pr,k));
+  const hex=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)/255);
+  /* season looks: base, mid, top, cloud, light. Fall = hurricane dusk, spring = violet hail storm, summer = heat haze sunset, winter = Gulf freeze moonlight */
+  const PAL={fall:['#070C11','#14212C','#22374A','#8FA5B8','#F08A3C'],spring:['#080C18','#18213A','#2A3860','#A3AFD0','#B9A0FF'],
+    summer:['#170A0C','#3A1A1A','#5E2A20','#E9A27A','#FFB040'],winter:['#060C18','#122138','#1F3658','#C6D6EA','#8FD3FF']};
+  const KI={fall:0,spring:1,summer:3,winter:2};
+  let W=0,H=0,sc=.5,sea='fall',raf=0,T0=performance.now(),px=0,py=0,tx=0,ty=0,flash=0,fx=0,fy=0,next=0,scroll=0,bolt=null;
+  function size(){sc=innerWidth<700?.42:.5;W=Math.round(innerWidth*sc);H=Math.round(innerHeight*sc);cv.width=W;cv.height=H;gl.viewport(0,0,W,H);
+    if(!px){px=tx=innerWidth*.78;py=ty=innerHeight*.2}}
+  function setSea(s){sea=PAL[s]?s:'fall';const c=PAL[sea].map(hex);['C0','C1','C2','CC','CL'].forEach((k,i)=>gl.uniform3fv(U[k],c[i]));gl.uniform1f(U.K,KI[sea]);next=performance.now()+2500}
+  function strike(x,y){fx=x;fy=y==null?innerHeight*.3:y;flash=1;
+    const pts=[[fx+(Math.random()-.5)*80,-10]];let cx=pts[0][0],cy=-10;const end=Math.min(innerHeight*.75,fy+innerHeight*.25);
+    while(cy<end){cy+=12+Math.random()*26;cx+=(Math.random()-.5)*34;pts.push([cx,cy])}
+    const br=[];for(let k=0;k<2;k++){const s=pts[(pts.length*(.3+Math.random()*.4))|0];let bx=s[0],by=s[1];const a=[[bx,by]],d=Math.random()<.5?-1:1;for(let j=0;j<6;j++){by+=10+Math.random()*20;bx+=d*(6+Math.random()*16);a.push([bx,by])}br.push(a)}
+    bolt={m:pts,br,life:1}}
+  function frame(now){const t=(now-T0)/1000;px+=(tx-px)*.06;py+=(ty-py)*.06;flash*=.88;if(flash<.01)flash=0;
+    if((sea==='fall'||sea==='spring')&&now>next){next=now+5000+Math.random()*9000;strike(innerWidth*(.15+Math.random()*.7));setTimeout(()=>{if(bolt)flash=Math.max(flash,.7)},110)}
+    gl.uniform2f(U.R,W,H);gl.uniform1f(U.T,t);gl.uniform1f(U.S,scroll);gl.uniform1f(U.F,flash);
+    gl.uniform2f(U.P,px*sc,(innerHeight-py)*sc);gl.uniform2f(U.FP,fx*sc,(innerHeight-fy)*sc);gl.drawArrays(gl.TRIANGLES,0,3);
+    raf=requestAnimationFrame(frame)}
+  const onScroll=()=>{const m=Math.max(1,document.documentElement.scrollHeight-innerHeight);scroll=Math.min(1,scrollY/m)};
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY},{passive:true});
+  /* tap empty sky (not a panel, button or form) to call lightning */
+  document.addEventListener('pointerdown',e=>{tx=e.clientX;ty=e.clientY;const el=e.target;if(reduce)return;
+    if(el.closest('a,button,input,select,textarea,label,.wrap,.hero,.icard,.qdrawer,.sheet,header,footer,.dillo,#layer'))return;strike(e.clientX,e.clientY)},{passive:true});
+  function start(){cancelAnimationFrame(raf);size();setSea(document.documentElement.dataset.season||'fall');onScroll();
+    if(reduce){frame(performance.now());cancelAnimationFrame(raf);return}raf=requestAnimationFrame(frame)}
+  let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(start,150)});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else start()});
+  addEventListener('rl-season',start);start();
+  return{get bolt(){return bolt},set bolt(v){bolt=v},strike}})();
+
+/* ---- seasonal particles (rain, leaves, hail, heat, snow) on top of the WebGL sky ---- */
 {const cv=$('#sky');if(cv){const g=cv.getContext('2d');let W=0,H=0,dpr=1,P=[],sea='fall',raf=0,t0=0,clouds=[];
   const pal={fall:['#121B23','#1E2B36','#2A3742'],spring:['#13202A','#1C3140','#28414F'],summer:['#1E1A1A','#2E2420','#3E2C22'],winter:['#121A24','#1C2836','#2A3848']};
   const R=(a,b)=>a+Math.random()*(b-a);
@@ -1727,7 +1815,10 @@ if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"
   function size(){dpr=Math.min(1.5,devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);
     const n=Math.round(Math.min(90,W*H/(sea==='summer'?26000:14000)));P=Array.from({length:n},()=>mk(true));
     clouds=Array.from({length:5},(_,i)=>({x:R(-.2,1.1)*W,y:R(-.1,.55)*H,r:R(.35,.7)*Math.max(W,H),v:R(.04,.12)*(i%2?1:.6)}))}
-  function bg(){const c=pal[sea]||pal.fall,gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,c[2]);gr.addColorStop(.45,c[1]);gr.addColorStop(1,c[0]);g.fillStyle=gr;g.fillRect(0,0,W,H);
+  function bolt(){const B=window.RLSKY&&window.RLSKY.bolt;if(!B)return;B.life*=.9;if(B.life<.03){window.RLSKY.bolt=null;return}
+    const ln=(pts,w)=>{g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.lineWidth=w;g.stroke()};g.save();g.lineCap='round';g.lineJoin='round';
+    g.shadowColor='rgba(170,200,255,.9)';g.shadowBlur=18;g.strokeStyle=`rgba(225,235,255,${B.life})`;ln(B.m,2.6);B.br.forEach(b=>ln(b,1.2));g.shadowBlur=0;g.strokeStyle=`rgba(255,255,255,${B.life})`;ln(B.m,1);g.restore()}
+  function bg(){if(window.RLSKY){g.clearRect(0,0,W,H);bolt();return}const c=pal[sea]||pal.fall,gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,c[2]);gr.addColorStop(.45,c[1]);gr.addColorStop(1,c[0]);g.fillStyle=gr;g.fillRect(0,0,W,H);
     if(sea==='summer'){const s=g.createRadialGradient(W*.85,-H*.05,0,W*.85,-H*.05,H*.9);s.addColorStop(0,'rgba(255,190,90,.38)');s.addColorStop(1,'rgba(255,150,60,0)');g.fillStyle=s;g.fillRect(0,0,W,H)}
     for(const k of clouds){const cg=g.createRadialGradient(k.x,k.y,0,k.x,k.y,k.r);const a=sea==='summer'?.05:sea==='winter'?.1:.13;cg.addColorStop(0,`rgba(150,170,185,${a})`);cg.addColorStop(1,'rgba(150,170,185,0)');g.fillStyle=cg;g.fillRect(0,0,W,H)}}
   function frame(t){const dt=Math.min(3,(t-(t0||t))/16.7);t0=t;bg();
@@ -1755,12 +1846,13 @@ let qStep=1,qUnlocked=false;
 function qGo(n){if(!QD)return;if(n===3&&qUnlocked)n=4;if(n===3){const m=me();if(m&&m.name&&m.phone&&m.email){qUnlock(m,true);n=4}}
   qStep=n;$$('#quote .qstep').forEach(s=>s.hidden=+s.dataset.step!==n);$$('#quote .qdsteps i').forEach((d,i)=>d.classList.toggle('on',i<n));
   const p=$('#quote .qdpanel');if(p)p.scrollTop=0;if(n===4&&typeof qOut==='function')qOut();
-  if(n===2&&typeof qRender==='function')qRender()}
+  if(n===2&&typeof qRender==='function')qRender();
+  if(n===3&&typeof qCalc==='function'){const inq=!QT.job,h=$('#quote [data-step="3"] h2'),p=$('#quote [data-step="3"] .qdsub');if(h)h.textContent=inq?'Where should we reach you?':'Where should we send your price?';if(p)p.textContent=inq?'We’ll set up your free inspection and send a written quote after. No spam.':'We send you a copy and hold this price for 30 days. No spam, no sales calls you didn’t ask for.'}}
 function qOpen(job){if(!QD)return;if(job&&window.setJob)window.setJob(job);QD.hidden=false;document.documentElement.classList.add('qopen');
   requestAnimationFrame(()=>QD.classList.add('in'));qGo(qStep);const tip=$('#qTip');if(tip)tip.hidden=true;
   setTimeout(()=>{const f=qStep===1?$('#rmAddr'):null;if(f&&matchMedia('(min-width:700px)').matches)f.focus()},300);window.dispatchEvent(new Event('rl-qopen'))}
 function qClose(){if(!QD||QD.hidden)return;QD.classList.remove('in');document.documentElement.classList.remove('qopen');setTimeout(()=>{QD.hidden=true},reduce?0:280);if(location.hash==='#quote')history.replaceState(null,'',location.pathname+location.search)}
-window.openQuote=qOpen;
+window.openQuote=qOpen;window.closeQuote=qClose;
 function qUnlock(m,silent){qUnlocked=true;try{const q=JSON.parse(localStorage.getItem('rl-quote')||'{}');q.touched=true;localStorage.setItem('rl-quote',JSON.stringify(q))}catch(x){}}
 if(QD){
   $('#qTab').onclick=()=>qOpen();
@@ -1778,7 +1870,7 @@ if(QD){
   if(tip&&!seen)setTimeout(()=>{if(QD.hidden){tip.hidden=false;try{sessionStorage.setItem('rl-qtip','1')}catch(x){}setTimeout(()=>tip.hidden=true,9000)}},5000);
   document.addEventListener('pointerdown',e=>{if(tip&&!tip.hidden&&!tip.contains(e.target))tip.hidden=true},true);
   if(tip){tip.querySelector('.qtipx').onclick=()=>tip.hidden=true;tip.querySelector('.qtipgo').onclick=()=>qOpen()}
-  $('#q1Skip').onclick=()=>qGo(2);$('#q1Next').onclick=()=>qGo(2);$('#q2Next').onclick=()=>{const roofy=['replace','commercial'].includes(QT.job)||(QT.job==='storm'&&QT.storm==='replace');const s=$('#qSize');
+  $('#q1Skip').onclick=()=>qGo(2);$('#q1Next').onclick=()=>qGo(2);$('#q2Next').onclick=()=>{const roofy=['replace','commercial'].includes(QT.job);const s=$('#qSize');
     if(roofy&&!QT.unsure&&!(parseFloat(String(QT.size).replace(/[^\d.]/g,''))>0)){s.classList.add('bad');s.focus();let h=$('#qSizeErr');if(!h){h=document.createElement('p');h.id='qSizeErr';h.className='err';s.closest('.field').appendChild(h)}h.textContent='Type your best guess, or tick “Not sure”.';return}
     const h=$('#qSizeErr');if(h)h.remove();s&&s.classList.remove('bad');qGo(3)};
   /* contact step: the price shows only after this */
@@ -1788,8 +1880,8 @@ if(QD){
     const okP=phoneOk(D.phone),okE=/^\S+@\S+\.\S+$/.test(D.email);
     const bad=!D.name?'#qcName':(!okP&&!okE)?'#qcPhone':(qbest!=='Email'&&!okP)?'#qcPhone':(qbest==='Email'&&!okE)?'#qcEmail':(D.phone&&!okP)?'#qcPhone':(D.email&&!okE)?'#qcEmail':null;$$('#qcForm .bad').forEach(x=>x.classList.remove('bad'));
     if(bad){err.hidden=false;err.textContent={'#qcName':'Add your name.','#qcPhone':(!okP&&!okE)?'Add a mobile number or an email so we can send your price.':qbest==='Email'?'That mobile number looks short. Fix it or leave it blank.':'Add a 10-digit mobile number so we can '+(qbest==='Call'?'call':'text')+' you.','#qcEmail':qbest==='Email'&&!okE?'Add your email so we can email you.':'That email doesn’t look right. Fix it or leave it blank.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
-    err.hidden=true;const r=qCalc();const c=upsert({name:D.name,phone:D.phone,addr:QT.addr,source:'Instant roof quote',msg:`${r.name}: ${qmoney(r.lo)}–${qmoney(r.hi)}`,email:D.email,best:qbest,sms:qbest==='Text'&&$('#qcSms').checked});
-    Object.assign(c,{email:D.email,contactPref:qbest,quote:{name:r.name,range:qmoney(r.lo)+'–'+qmoney(r.hi),addr:QT.addr}});save();
+    err.hidden=true;const r=qCalc();const need=r.jobs.map(k=>QJN[k]).join(', ');qUnlock();const c=upsert({name:D.name,phone:D.phone,addr:QT.addr,source:r.inquiry?'Service inquiry':'Instant roof quote',msg:r.inquiry?'Needs: '+need:`Needs: ${need}. Roof estimate: ${r.name}, ${qmoney(r.lo)}–${qmoney(r.hi)}`,email:D.email,best:qbest,sms:qbest==='Text'&&$('#qcSms').checked});
+    Object.assign(c,{email:D.email,contactPref:qbest,quote:r.inquiry?null:{name:r.name,range:qmoney(r.lo)+'–'+qmoney(r.hi),addr:QT.addr}});save();
     try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:qbest}))}catch(x){}
     const ia=$('#iName');if(ia&&!ia.value){ia.value=D.name;$('#iPhone').value=D.phone;$('#iEmail').value=D.email;const ad=$('#iAddr');if(ad&&!ad.value&&QT.addr)ad.value=QT.addr}
     qUnlock();qGo(4)}}
