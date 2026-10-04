@@ -63,6 +63,10 @@ function doPost(e) {
     return json({ ok: true });
   }
 
+  if (L.action === 'leads') {
+    if (!cfg('OWNER_PIN') || String(L.pin) !== cfg('OWNER_PIN')) { Utilities.sleep(800); return json({ ok: false, reason: 'pin' }); }
+    return json({ ok: true, leads: ownerLeads() });
+  }
   if (L.hp) return json({ ok: true });
   L.phone = String(L.phone || '').replace(/\D/g, '').slice(-10);
   if (!L.name || L.phone.length < 10) return json({ ok: false, reason: 'missing' });
@@ -283,14 +287,33 @@ function ghlSave(L, appt) {
 }
 
 /* ------------------------------------------------------------------ Sheet */
-function sheetRow(L, appt, ghl) {
+const LEAD_COLS = ['Received', 'Type', 'Name', 'Mobile', 'Email', 'Best way', 'Text consent', 'Address', 'Issue', 'Quote', 'Price', 'Inspection', 'Start', 'GoHighLevel', 'Page'];
+function leadsSheet() {
   let id = cfg('SHEET_ID'), ss;
   if (id) ss = SpreadsheetApp.openById(id);
   else { ss = SpreadsheetApp.create(cfg('BIZ_NAME', 'Website') + ' leads'); P.setProperty('SHEET_ID', ss.getId()); }
-  const sh = ss.getSheets()[0];
-  if (sh.getLastRow() === 0) sh.appendRow(['Received', 'Type', 'Name', 'Mobile', 'Email', 'Best way', 'Text consent', 'Address', 'Issue', 'Quote', 'Price', 'Inspection', 'GoHighLevel', 'Page']);
-  sh.appendRow([new Date(), L.type, L.name, pretty(L.phone), L.email || '', L.best || '', L.sms ? 'yes' : '', L.address || '', L.issue || '', L.quote ? L.quote.name : '', L.quote ? L.quote.range : '',
-    appt ? fmt(appt.start, 'EEE MMM d, h:mm a') : '', ghl ? (ghl.error ? 'ERROR: ' + ghl.error.slice(0, 200) : 'saved') : '', L.page || '']);
+  let sh = ss.getSheetByName('Leads');
+  if (!sh) { sh = ss.insertSheet('Leads', 0); sh.appendRow(LEAD_COLS); sh.setFrozenRows(1); }
+  return sh;
+}
+function sheetRow(L, appt, ghl) {
+  leadsSheet().appendRow([new Date(), L.type, L.name, pretty(L.phone), L.email || '', L.best || '', L.sms ? 'yes' : '', L.address || '', L.issue || '', L.quote ? L.quote.name : '', L.quote ? L.quote.range : '',
+    appt ? fmt(appt.start, 'EEE MMM d, h:mm a') : '', appt ? appt.start.toISOString() : '', ghl ? (ghl.error ? 'ERROR: ' + ghl.error.slice(0, 200) : 'saved') : '', L.page || '']);
+}
+/* the owner view on the website reads real leads from here (PIN-protected) */
+function ownerLeads() {
+  const sh = leadsSheet(), n = sh.getLastRow();
+  if (n < 2) return [];
+  const rows = sh.getRange(Math.max(2, n - 299), 1, Math.min(300, n - 1), LEAD_COLS.length).getValues();
+  const moved = {};
+  Object.keys(P.getProperties()).filter(k => k.indexOf('bk_') === 0).forEach(k => { const b = JSON.parse(P.getProperty(k)); moved[b.p + '|' + b.n] = b.t; });
+  return rows.map(r => {
+    const o = {}; LEAD_COLS.forEach((c, i) => o[c] = r[i]);
+    const phone = String(o['Mobile']).replace(/\D/g, '').slice(-10);
+    const start = moved[phone + '|' + o['Name']] || (o['Start'] ? String(o['Start']) : '');
+    return { received: o['Received'] instanceof Date ? o['Received'].toISOString() : String(o['Received']), type: o['Type'], name: o['Name'], phone, email: o['Email'], best: o['Best way'], sms: o['Text consent'] === 'yes',
+      address: o['Address'], issue: o['Issue'], quote: o['Quote'] ? { name: o['Quote'], range: o['Price'] } : null, start, startLabel: start ? fmt(new Date(start), 'h:mm a') : '', startTime: start ? fmt(new Date(start), 'HH:mm') : '' };
+  }).reverse();
 }
 
 /* ------------------------------------------------------------------ helpers */
@@ -309,6 +332,7 @@ function setupRidgelineDemo() {
   P.setProperties({ BIZ_NAME: cfg('BIZ_NAME', 'Ridgeline Roofing (demo)'), OWNER_NAME: cfg('OWNER_NAME', 'Mark'), OWNER_EMAIL: cfg('OWNER_EMAIL', Session.getEffectiveUser().getEmail()),
     OWNER_PHONE: cfg('OWNER_PHONE', '3467740053'), TZ: cfg('TZ', 'America/Chicago'), OWNER_ALERT: cfg('OWNER_ALERT', 'email'), CHECK_OWNER_CAL: cfg('CHECK_OWNER_CAL', 'no') });
   bookingCal();
+  leadsSheet();
   registerExistingBookings();
   installTriggers();
   clearSlotCache();

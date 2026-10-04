@@ -823,6 +823,8 @@ html.qopen,html.qopen body{overflow:hidden}
 .avt select{min-height:42px;border-radius:10px;background:var(--night);color:var(--text);border:1px solid var(--line);padding:0 8px;font:15px var(--body)}
 .ocard input[type=password]{min-height:46px;border-radius:10px;background:var(--night);color:var(--text);border:1px solid var(--line);padding:0 12px;font:16px var(--body);width:100%;max-width:220px}
 .avsave{position:sticky;bottom:0;padding:12px 0;background:var(--night);display:grid;gap:8px}
+.qhint2{display:block;font-size:13px;color:#55636E;margin-top:6px;line-height:1.4}
+#qSize.bad{border-color:#B3261E!important}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -847,7 +849,6 @@ html.qopen,html.qopen body{overflow:hidden}
     <div class="tleft">
       <h1 id="h1">Houston roofing company.</h1>
       <p class="tsub">See what’s under your shingles, then get a free inspection. Photo report within 24 hours of your visit.</p>
-      <p class="proof1"><span class="st">★ 4.9</span> 212 Google reviews (sample) · Since 2009 · We pull the City of Houston permit</p>
       <div class="hero" id="hero">
         <img class="ph under" id="hUnder" src="img/fa2.webp" alt="Under the old shingles: water-stained, rotting roof decking">
         <img id="hDone" alt="" aria-hidden="true" hidden data-ok="0">
@@ -931,7 +932,7 @@ html.qopen,html.qopen body{overflow:hidden}
       </div>
       <div>
         <div class="guar"><div><b>24-hour photo report</b><span>Your photo report lands within 24 hours of your inspection, or $50 comes off any repair we do.</span></div><div><b>Price-lock guarantee</b><span>The price on your written quote holds for 30 days. No surprise add-ons; decking is priced per sheet up front.</span></div><div><b>Leak-free for 10 years</b><span>If our workmanship leaks in 10 years, we fix it free. In writing.</span></div></div>
-        <div class="scar" aria-label="Inspections left this week (sample)"><span>This week: 4 of 12 inspection spots left</span><span class="dots"><i></i><i></i><i></i><i></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i></span><small>Sample. The owner sets the real weekly number so every roof gets a full hour.</small></div>
+        <div class="scar" aria-label="Inspections left this week"><span>This week: 4 of 12 inspection spots left</span><span class="dots"><i></i><i></i><i></i><i></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i><i class="t"></i></span><small>The owner sets the weekly number so every roof gets a full hour.</small></div>
         <div class="hcta"><button class="btn btn-main" type="button" data-start>Claim my free roof check</button><a class="btn btn-line light" href="#quote">See my price first</a></div>
       </div>
     </div>
@@ -939,7 +940,7 @@ html.qopen,html.qopen body{overflow:hidden}
 <section class="sec trust" aria-labelledby="tH">
     <div class="wrap">
       <h2 id="tH">Why Houston homeowners choose Ridgeline</h2>
-      <ul class="badges" aria-label="Credentials (sample)"><li><b>Manufacturer-certified installer</b><span>Sample badge. Live sites show the real certification, linked to the maker’s lookup.</span></li><li><b>BBB A+ accredited</b><span>Sample. Shown only if the client is accredited.</span></li><li><b>RCAT licensed roofer #00000</b><span>Sample. Texas has no state roofing license; RCAT is the voluntary one.</span></li><li><b>$2M general liability + workers’ comp</b><span>Certificate sent on request.</span></li></ul>
+      
       <div class="warr"><div><b>Materials warranty</b><span>Up to 50 years, backed by the shingle maker. Transfers if you sell.</span></div><div><b>Workmanship warranty</b><span>10 years, backed by us. If our work leaks, we come back free.</span></div><div><b>Financing</b><span>Monthly payment options. Check your rate at the free inspection.</span></div><div><b>Insurance claims</b><span>We document the damage with photos and meet your adjuster. We never waive deductibles; that’s illegal in Texas.</span></div></div>
     </div>
   </section>
@@ -959,16 +960,7 @@ html.qopen,html.qopen body{overflow:hidden}
         <li><b>You get the photos</b><span>Every problem we find, on your phone. You decide what happens next.</span></li>
       </ol>
     </div>
-  </section>
-  <section class="sec reviews" id="reviews" aria-labelledby="revH">
-    <div class="wrap">
-      <div class="revhead"><h2 id="revH">What neighbors say</h2><p class="score"><b>4.9</b><span class="stars" aria-hidden="true"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg></span><span>212 Google reviews</span></p></div>
-      <ul class="revs"><li class="rev"><div class="stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg></div><p>“They found the leak was at the chimney, not where the stain was. Photos of everything before they started. Fixed in one morning.”</p><div class="who"><b>Linda P.</b><span>Meyerland · Leak repair · 2 weeks ago</span></div></li><li class="rev"><div class="stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg></div><p>“Insurance approved the whole roof after they met the adjuster with me. Crew was gone by 5 and the yard was cleaner than before.”</p><div class="who"><b>Marcus W.</b><span>The Heights · Roof replacement · 1 month ago</span></div></li><li class="rev"><div class="stars" aria-label="5 out of 5 stars"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.8l2.5 5.2 5.7.8-4.1 4 1 5.6L10 14.8 4.9 17.4l1-5.6-4.1-4 5.7-.8z"/></svg></div><p>“I didn’t even know we had hail damage. The photos made it obvious. Joined the club after, worth it for the storm checks alone.”</p><div class="who"><b>Ana L.</b><span>Pearland · Hail damage · 3 months ago</span></div></li></ul>
-      <p class="demo-note2">Sample reviews for this demo. On a client’s site this section shows their real Google reviews, linked to the source.</p>
-      <a class="more" href="reviews.html">Read all reviews →</a>
-    </div>
-  </section>
-<section class="sec club" id="club" aria-labelledby="clubH">
+  </section><section class="sec club" id="club" aria-labelledby="clubH">
     <div class="wrap clubgrid">
       <div>
         <h2 id="clubH">Roof Care Club</h2>
@@ -1000,14 +992,14 @@ html.qopen,html.qopen body{overflow:hidden}
       <h2 id="endH">Know what’s on your roof this week.</h2>
       <p class="lede">Photo report within 24 hours of your inspection, or $50 off any repair.</p>
       <a class="btn btn-main" href="#inspect">Book my free inspection</a>
-      <div class="proof"><span><b>4.9</b> from 212 Google reviews (sample)</span><span><b>10-year</b> workmanship warranty</span><span>We work with your insurance</span></div>
+      <div class="proof"><span><b>10-year</b> workmanship warranty</span><span>We work with your insurance</span></div>
     </div>
   </section>
 </main>
 <footer>
   <div class="wrap">
     <div class="ftcols">
-      <div><h4>Ridgeline Roofing</h4><ul><li>Houston, TX (demo business)</li><li><a href="#" data-sms="footer"><span data-phone>(346) 774-0053</span></a></li><li>Mon–Sat 7 AM–7 PM · 24/7 storm line</li><li>RCAT #00000 (sample)</li></ul></div>
+      <div><h4>Ridgeline Roofing</h4><ul><li>Houston, TX (demo business)</li><li><a href="#" data-sms="footer"><span data-phone>(346) 774-0053</span></a></li><li>Mon–Sat 7 AM–7 PM · 24/7 storm line</li></ul></div>
       <div><h4>Services</h4><ul><li><a href="roof-replacement.html">Roof replacement</a></li><li><a href="roof-repair.html">Leak repair</a></li><li><a href="storm-damage.html">Storm and hail damage</a></li><li><a href="gutters.html">Gutters</a></li><li><a href="attic-ventilation.html">Attic ventilation</a></li><li><a href="insurance-claims.html">Insurance claims</a></li><li><a href="commercial-roofing.html">Commercial roofing</a></li></ul></div>
       <div><h4>Company</h4><ul><li><a href="about.html">About us</a></li><li><a href="reviews.html">Reviews</a></li><li><a href="roof-care-club.html">Roof Care Club</a></li><li><a href="roof-replacement-cost.html">Roof cost guide</a></li><li><a href="faq.html">Questions</a></li><li><a href="roofing-services.html">All services</a></li></ul></div>
       <div><h4>Service areas</h4><ul class="ar"><li>Houston</li><li>Katy</li><li>Sugar Land</li><li>Pearland</li><li>The Woodlands</li><li>Cypress</li><li>Spring</li><li>Kingwood</li><li>League City</li><li>Missouri City</li><li>Bellaire</li><li>Humble</li><li>Friendswood</li><li>Tomball</li><li>Richmond</li><li>Rosenberg</li></ul></div>
@@ -1040,8 +1032,8 @@ html.qopen,html.qopen body{overflow:hidden}
         
         <div class="field"><span class="flabel">What do you need?</span><div class="qjobs" id="qJobs" role="radiogroup" aria-label="Job"></div></div>
         <input id="qAddr" type="hidden">
-        <div id="qRoof"><div class="field"><label for="qSize">How big is it?</label><div class="qsize"><input id="qSize" inputmode="decimal" placeholder="Type a number, e.g. 2400"><select id="qUnit" aria-label="Unit"></select></div>
-          <label class="tog2"><input type="checkbox" id="qUnsure"> Not sure, use a typical size</label></div>
+        <div id="qRoof"><div class="field"><label for="qSize">How big is your roof? (your best guess)</label><div class="qsize"><input id="qSize" inputmode="decimal" placeholder="Type a number, e.g. 2400"><select id="qUnit" aria-label="Unit"></select></div>
+          <label class="tog2"><input type="checkbox" id="qUnsure"> Not sure, use a typical size</label><small class="qhint2">Type roof sq ft, or switch to <b>Home sq ft</b> and use your home’s size (it’s on your appraisal or listing). We measure it exactly at the free inspection.</small></div>
         <div class="field" id="qPitchF"><span class="flabel">Roof slope (optional)</span><div class="chips" role="radiogroup" aria-label="Roof slope"><button type="button" role="radio" aria-checked="true" data-pitch="u">Not sure</button><button type="button" role="radio" aria-checked="false" data-pitch="flat">Flat</button><button type="button" role="radio" aria-checked="false" data-pitch="low">Gentle</button><button type="button" role="radio" aria-checked="false" data-pitch="med">Medium</button><button type="button" role="radio" aria-checked="false" data-pitch="steep">Steep</button></div></div>
         <div class="field"><span class="flabel">Material</span><div class="qmats" id="qMats"></div></div>
         <label class="tog2"><input type="checkbox" id="qLayers"> <span id="qLayersL">Remove an extra layer of old shingles</span></label></div><div id="qOther"></div>
@@ -1147,31 +1139,9 @@ const stageIx=s=>STAGES.findIndex(x=>x[0]===s);
 const stageName=s=>(STAGES.find(x=>x[0]===s)||['',s])[1];
 const OWNER_KEY='owner';
 const SITE_URL=location.href.split('#')[0];
-function seedDB(){const c=(o)=>Object.assign({id:'c'+Math.random().toString(36).slice(2,8),sample:true,photos:[],updates:[],portal:false,show:{},notes:''},o);
-  const roofPics=['img/s2-m.webp','img/s1-m.webp'];
-  return{v:2,customers:[
-    c({name:'Linda Park',phone:'2815550177',addr:'4410 Bellfort Ave, Houston',source:'Website form',created:NOW-9*DAY,replied:NOW-9*DAY+6*6e4,stage:'estimate',portal:true,
-      appt:{t:NOW-6*DAY,slot:'8 to 10 AM',confirmed:true},report:{t:NOW-6*DAY,notes:'Soft decking over the back bedroom, about 3 sheets. Lifted tabs on the south side. Gutters fine.',photos:roofPics},
-      estimate:{t:NOW-5*DAY,status:'sent',opts:[{name:'Repair the leak area',price:1850,items:['Replace 3 sheets of decking','New underlayment and shingles over the area','Photo report when done']},{name:'Full roof replacement',price:14200,items:['Tear-off down to the wood','Class 4 impact shingles','Ridge vent and new drip edge','10-year workmanship warranty']}]},
-      show:{schedule:true,report:true,estimate:true}}),
-    c({name:'Marcus Webb',phone:'7135550199',addr:'812 Heights Blvd, Houston',source:'Roof check',created:NOW-3*36e5,stage:'lead',msg:'Stain on the living room ceiling after the storm Tuesday.'}),
-    c({name:'Priya Shah',phone:'8325550123',addr:'',source:'Google',created:NOW-50*6e4,stage:'lead',msg:'Need a quote for a new roof, house is 18 years old.'}),
-    c({name:'Dale Ortiz',phone:'2815550144',addr:'9021 Westview Dr, Houston',source:'Booking',created:NOW-2*DAY,replied:NOW-2*DAY+12*6e4,stage:'booked',appt:{t:NOW+1*DAY,slot:'10 AM to noon',confirmed:false},show:{schedule:true},portal:true}),
-    c({name:'Grace Kim',phone:'7135550111',addr:'55 Kirby Dr, Houston',source:'Referral',created:NOW-4*DAY,replied:NOW-4*DAY+30*6e4,stage:'booked',appt:{t:NOW+3*DAY,slot:'1 to 3 PM',confirmed:true},show:{schedule:true}}),
-    c({name:'Tom Reyes',phone:'2815550166',addr:'301 Elm St, Pasadena',source:'Facebook',created:NOW-14*DAY,replied:NOW-14*DAY+45*6e4,stage:'work',portal:true,
-      estimate:{t:NOW-10*DAY,status:'approved',signed:'Tom Reyes',opts:[{name:'Full roof replacement',price:16800,items:['Tear-off','Class 4 shingles','Ridge vent']}],pick:0},
-      updates:[{t:NOW-1*DAY,text:'Tear-off done. Two sheets of decking replaced over the garage.',photos:['img/s3-m.webp']},{t:NOW-2*36e5,text:'Underlayment is on. Shingles go on tomorrow morning.',photos:['img/s4-m.webp']}],
-      show:{estimate:true,updates:true}}),
-    c({name:'Ana Lopez',phone:'8325550188',addr:'77 Rice Blvd, Houston',source:'Website form',created:NOW-21*DAY,replied:NOW-21*DAY+8*6e4,stage:'paid',portal:true,club:{plan:'Yearly, $129'},
-      estimate:{t:NOW-18*DAY,status:'approved',signed:'Ana Lopez',opts:[{name:'Leak repair',price:2400,items:['Flashing and decking repair']}],pick:0},invoice:{t:NOW-12*DAY,amount:2400,status:'paid',paidT:NOW-11*DAY,desc:'Leak repair'},
-      show:{estimate:true,invoice:true,club:true}}),
-    c({name:'Ben Carter',phone:'7135550133',addr:'1200 Main St, Houston',source:'Google',created:NOW-12*DAY,replied:NOW-12*DAY+3*36e5,stage:'invoiced',portal:true,
-      estimate:{t:NOW-10*DAY,status:'approved',signed:'Ben Carter',opts:[{name:'Gutter replacement',price:3100,items:['Seamless gutters','Guards']}],pick:0},invoice:{t:NOW-2*DAY,amount:3100,status:'sent',desc:'Gutter replacement'},show:{invoice:true}}),
-    c({name:'Joy Nguyen',phone:'2815550122',addr:'',source:'Roof Care Club',created:NOW-16*DAY,replied:NOW-16*DAY+20*6e4,stage:'paid',club:{plan:'Monthly, $12'}}),
-    c({name:'Sam Brooks',phone:'8325550155',addr:'',source:'Facebook',created:NOW-25*DAY,replied:NOW-25*DAY+2*DAY,stage:'estimate',estimate:{t:NOW-8*DAY,status:'sent',opts:[{name:'Full roof replacement',price:12900,items:['Tear-off','New shingles']}]}})
-  ]}}
+function seedDB(){return{v:3,customers:[]}}/* real data only: no sample customers (Ryan, Oct 3) */
 let DB;try{DB=JSON.parse(localStorage.getItem('rl-db')||'null')}catch(x){}
-if(!DB||DB.v!==2)DB=seedDB();
+if(!DB||DB.v!==3)DB=seedDB();
 const save=()=>{try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}};save();
 const byPhone=p=>DB.customers.find(c=>c.phone===digits(p));
 const byId=id=>DB.customers.find(c=>c.id===id);
@@ -1189,8 +1159,7 @@ function loginSheet(){const close=open(`<div class="scrim"><div class="sheet" ro
     <div class="field"><label for="lp">Mobile number</label><input id="lp" type="tel" autocomplete="tel" inputmode="tel" placeholder="(281) 555-0177"></div>
     <div class="field" id="lcodeF" hidden><label for="lcode">4-digit code</label><input id="lcode" inputmode="numeric" autocomplete="one-time-code" maxlength="4"></div>
     <p class="err" id="lerr2" role="alert" hidden></p><p class="muted" id="lhint" style="font-size:14px" hidden></p>
-    <button class="btn btn-main" type="button" id="lg">Text me a code</button>
-    <p class="muted" style="font-size:14px">Demo: try <b style="color:var(--text)">(281) 555-0177</b>, a sample customer.</p></div></div>`,'#lp');
+    <button class="btn btn-main" type="button" id="lg">Text me a code</button></div></div>`,'#lp');
   let who=null,code=null;
   $('#lg').onclick=()=>{const er=$('#lerr2');er.hidden=true;
     if(!who){const c=byPhone($('#lp').value);if(!digits($('#lp').value)||digits($('#lp').value).length<10){er.textContent='Enter your 10-digit mobile number.';er.hidden=false;return}
@@ -1255,7 +1224,7 @@ function oToday(){const C=DB.customers,now=Date.now();
   const nudge=C.filter(c=>c.estimate&&c.estimate.status==='sent'&&now-c.estimate.t>3*DAY);
   const owed=C.filter(c=>c.invoice&&c.invoice.status==='sent');
   const late=t=>now-t>36e5;
-  return `<h3 class="osec">New requests to answer <span class="cnt">${leads.length}</span></h3>${leads.length?leads.map(c=>`<article class="orow ${late(c.created)?'late':''}" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(c.source)} · ${ago(c.created)}${late(c.created)?' · answer soon':''}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small>${c.quote?`<p>Saw: ${esc(c.quote.verdict)}</p>`:''}${c.msg?`<p>“${esc(c.msg)}”</p>`:''}</div>
+  return `<h3 class="osec">New requests to answer <span class="cnt">${leads.length}</span></h3>${leads.length?leads.map(c=>`<article class="orow ${late(c.created)?'late':''}" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(c.source)} · ${ago(c.created)}${late(c.created)?' · answer soon':''}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small>${c.quote?`<p class="muted">Instant quote: ${esc(c.quote.name||'')}${c.quote.range?', '+esc(c.quote.range):''}</p>`:''}${c.msg?`<p>“${esc(c.msg)}”</p>`:''}</div>
       <div class="oacts"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, this is ${ownerName} with Ridgeline Roofing. Got your request for a free roof inspection. What day works best this week?`)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" data-book="${c.id}">Book inspection</button></div></article>`).join(''):'<p class="muted">All caught up.</p>'}
     <h3 class="osec">Inspections coming up <span class="cnt">${up.length}</span></h3>${up.length?up.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${fmtDay(c.appt.t)}, ${c.appt.slot} · ${esc(c.addr||'No address yet')}</small>${c.appt.confirmed?'<span class="okpill sm">Confirmed</span>':'<span class="warnpill">Not confirmed yet</span>'}</div>
       <div class="oacts">${c.appt.confirmed?'':`<a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. Confirming your free roof inspection ${fmtDay(c.appt.t)}, ${c.appt.slot}. Reply YES to confirm or text a better time.`)}">Text to confirm</a><button class="btn btn-line btn-sm" type="button" data-confirm="${c.id}">They confirmed</button>`}
@@ -1272,8 +1241,8 @@ function oNumbers(){const m=metrics(oPeriod),src=Object.entries(m.src).sort((a,b
     ${tile('Estimates sent',m.sent)}${tile('Close rate',m.close==null?'n/a':m.close+'%',m.won+' approved')}${tile('Open estimates',usd(m.pipe),'waiting on an answer')}${tile('Collected',usd(m.paid),m.owed?usd(m.owed)+' still owed':'')}
     ${tile('Customers with portal',m.portal)}${tile('Roof Care Club members',m.club)}</div>
     <h3 class="osec">Where requests came from</h3><div class="obars">${src.map(([k,v])=>`<div class="obar" title="${esc(k)}: ${v}"><span>${esc(k)}</span><i style="width:${Math.max(4,v/mx*100)}%"></i><b>${v}</b></div>`).join('')||'<p class="muted">No requests in this range.</p>'}</div>
-    <p class="muted" style="font-size:14px">Sample numbers mixed with anything you submit on this demo.</p>`}
-function openOwner(){const body=oTab==='today'?oToday():oTab==='people'?oCustomers(''):oTab==='avail'?oAvail():oNumbers();
+    `}
+function openOwner(){if(CFG.backend&&!window.__ownerLive)return ownerGate();const body=oTab==='today'?oToday():oTab==='people'?oCustomers(''):oTab==='avail'?oAvail():oNumbers();
   full('owner',`<header class="apphead"><div><p class="kicker">Ridgeline · Owner</p><h2>${oTab==='today'?'Today':oTab==='people'?'Customers':oTab==='avail'?'Availability':'Numbers'}</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
     <nav class="otabs" aria-label="Owner sections">${[['today','Today'],['people','Customers'],['avail','Availability'],['numbers','Numbers']].map(([k,l])=>`<button type="button" data-otab="${k}" aria-current="${oTab===k?'page':'false'}">${l}</button>`).join('')}</nav>
     <div class="appbody" id="obody">${body}</div>`);
@@ -1356,6 +1325,23 @@ function sendLead(o){if(!CFG.backend)return Promise.resolve({ok:true,demo:true})
 /* anything that failed to send (no signal, backend down) is retried on the next visit */
 if(CFG.backend){const q=outbox();if(q.length){setOutbox([]);q.forEach(row=>postBackend(row).catch(()=>setOutbox(outbox().concat([row]))))}}
 {const _up=upsert;upsert=function(o){const c=_up(o);if(!o._sent)sendLead(o);return c}}
+/* ---------- owner view, live: real leads from the backend (PIN), no sample data ---------- */
+async function loadOwnerLeads(pin){const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'leads',pin})})).json();if(!j.ok)return j;
+  const real=j.leads.map((L,i)=>{const t=L.start?new Date(L.start):null;
+    return{id:'s'+i+'_'+L.phone,name:L.name||'Customer',phone:L.phone,addr:L.address||'',email:L.email||'',contactPref:L.best||'',source:L.type||'Website',created:Date.parse(L.received)||Date.now(),
+      stage:t?'booked':'lead',msg:L.issue||'',quote:L.quote,photos:[],updates:[],portal:false,show:{schedule:!!t},notes:'',
+      appt:t?{t:t.getTime(),time:L.startTime,slot:AV.label(L.startTime),confirmed:false}:undefined}});
+  const seen=new Set(real.map(c=>c.phone+'|'+c.created));
+  DB.customers=real.concat(DB.customers.filter(c=>c.id&&c.id[0]!=='s'&&!seen.has(c.phone+'|'+c.created)));save();window.__ownerLive=true;return j}
+function ownerGate(msg){let pin='';try{pin=sessionStorage.getItem('rl-pin')||''}catch(x){}
+  full('owner',`<header class="apphead"><div><p class="kicker">${esc(CFG.biz)} · Owner</p><h2>Your leads</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
+    <div class="appbody"><section class="ocard"><h3>Enter your owner PIN</h3><p class="muted">Shows every real request from your website: name, number, how they want to be reached and their inspection time.</p>
+    <div class="field"><label for="ogPin">Owner PIN</label><input id="ogPin" type="password" inputmode="numeric" autocomplete="off" value="${esc(pin)}"></div>
+    <p class="err" id="ogErr" role="alert" ${msg?'':'hidden'}>${esc(msg||'')}</p><button class="btn btn-main" type="button" id="ogGo">Show my leads</button></section></div>`);
+  $('#oOut').onclick=()=>{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
+  const go=async()=>{const p=$('#ogPin').value.trim();if(!p)return;const b=$('#ogGo');b.disabled=true;b.textContent='Loading…';
+    try{const r=await loadOwnerLeads(p);if(!r.ok){ownerGate('That PIN isn’t right.');return}try{sessionStorage.setItem('rl-pin',p)}catch(x){}openOwner()}catch(x){ownerGate('Couldn’t reach the server. Try again.')}};
+  $('#ogGo').onclick=go;$('#ogPin').onkeydown=e=>{if(e.key==='Enter')go()}}
 
 addEventListener('hashchange',routeHash);
 
@@ -1922,12 +1908,15 @@ if(QD){
     let job=null;try{const u=new URL(a.getAttribute('href'),location.href);job=u.searchParams.get('job')}catch(x){}
     const MAP={'roof-replacement':'replace','roof-repair':'repair','storm-damage':'storm','insurance-claims':'storm','attic-ventilation':'vent','commercial-roofing':'commercial',com:'commercial'};qOpen(job?(MAP[job]||job):null)},true);
   if(location.hash==='#quote')setTimeout(()=>qOpen(),400);
+  addEventListener('hashchange',()=>{if(location.hash&&location.hash!=='#quote')qClose()});
   /* "Need a roof quote?" bubble once per visit */
   const tip=$('#qTip');let seen=false;try{seen=sessionStorage.getItem('rl-qtip')==='1'}catch(x){}
   if(tip&&!seen)setTimeout(()=>{if(QD.hidden){tip.hidden=false;try{sessionStorage.setItem('rl-qtip','1')}catch(x){}setTimeout(()=>tip.hidden=true,9000)}},5000);
   document.addEventListener('pointerdown',e=>{if(tip&&!tip.hidden&&!tip.contains(e.target))tip.hidden=true},true);
   if(tip){tip.querySelector('.qtipx').onclick=()=>tip.hidden=true;tip.querySelector('.qtipgo').onclick=()=>qOpen()}
-  $('#q1Skip').onclick=()=>qGo(2);$('#q1Next').onclick=()=>qGo(2);$('#q2Next').onclick=()=>qGo(3);
+  $('#q1Skip').onclick=()=>qGo(2);$('#q1Next').onclick=()=>qGo(2);$('#q2Next').onclick=()=>{const roofy=['replace','commercial'].includes(QT.job)||(QT.job==='storm'&&QT.storm==='replace');const s=$('#qSize');
+    if(roofy&&!QT.unsure&&!(parseFloat(String(QT.size).replace(/[^\d.]/g,''))>0)){s.classList.add('bad');s.focus();let h=$('#qSizeErr');if(!h){h=document.createElement('p');h.id='qSizeErr';h.className='err';s.closest('.field').appendChild(h)}h.textContent='Type your best guess, or tick “Not sure”.';return}
+    const h=$('#qSizeErr');if(h)h.remove();s&&s.classList.remove('bad');qGo(3)};
   /* contact step: the price shows only after this */
   let qbest='Text';$$('#qcBest [data-best]').forEach(b=>b.onclick=()=>{qbest=b.dataset.best;$$('#qcBest [data-best]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));$('#qcSmsC').hidden=qbest!=='Text'});
   {const m=me();if(m){if(m.name)$('#qcName').value=m.name;if(m.phone)$('#qcPhone').value=m.phone;if(m.email)$('#qcEmail').value=m.email}}
@@ -1979,14 +1968,12 @@ if(QD){
   const PNAME={flat:'flat',low:'gentle',med:'medium',steep:'steep'};
   const roofOf=b=>solar?solar.sqft:Math.round(b.ft*1.1*1.12/10)*10;
   function result(){const nice=addr.replace(/, USA$/,'');
-    if(pick||solar){const roof=roofOf(pick),lo=Math.round(roof*(solar?.95:.9)/50)*50,hi=Math.round(roof*(solar?1.05:1.1)/50)*50;
-      if(solar){QT.pitch=pitchKey(solar.pitch);$$('[data-pitch]').forEach(x=>x.setAttribute('aria-checked',String(x.dataset.pitch===QT.pitch)))}
-      out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><div class="rmstats"><div><b>${lo.toLocaleString()}–${hi.toLocaleString()}</b><span>sq ft of roof (${solar?'measured from satellite':'estimate'})</span></div><div><b>${Math.round(roof/100)}</b><span>squares</span></div></div>${solar?`<p class="rmnote">${PNAME[QT.pitch][0].toUpperCase()+PNAME[QT.pitch].slice(1)} slope (about ${Math.round(solar.pitch)}°), ${solar.segs} roof sections. We confirm it on the roof at your free inspection.</p>`:''}<p class="rmnote">Not your house? Tap your roof on the photo.</p>`;
-      QT.size=String(roof);QT.unit='roof';QT.unsure=false;const s=$('#qSize'),u=$('#qUnit');if(s)s.value=roof;if(u)u.value='roof';$('#q1Next').textContent='Yes, that’s my roof'}
-    else{out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><p class="rmnote">We found your address but couldn’t outline this roof from public maps. Tap your roof on the photo, or keep going and type your size.</p>`;$('#q1Next').textContent='Keep going'}
+    /* the map only helps them find and confirm their home; the size comes from them (Ryan: outlines can be wrong, so no estimate here) */
+    out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><p class="rmnote">${pick?'Is this your home? If the box is on the wrong house, tap your house on the photo.':'Here’s your address. Tap your house on the photo if you can spot it, or just keep going.'}</p>`;
+    $('#q1Next').textContent=pick?'Yes, that’s my home':'Keep going';
     out.hidden=false;$('#q1Next').hidden=false;view.classList.add('found');
     QT.addr=nice;const qa=$('#qAddr');if(qa)qa.value=nice;const ia=$('#iAddr');if(ia&&!ia.value)ia.value=nice;
-    try{localStorage.setItem('rl-roof',JSON.stringify({addr:nice,roof:pick?roofOf(pick):null}))}catch(x){}}
+    try{localStorage.setItem('rl-roof',JSON.stringify({addr:nice}))}catch(x){}}
   async function locate(item){hideList();inp.value=item.text.replace(/, USA$/,'');say('Finding your house…');out.hidden=true;$('#q1Next').hidden=true;pick=null;blds=[];
     solar=null;
     try{let lat,lon;
@@ -1996,7 +1983,7 @@ if(QD){
       const k=c.candidates&&c.candidates[0];if(!k)throw 0;lat=k.location.y;lon=k.location.x;addr=k.address}
       draw(lat,lon,1.8);view.classList.add('found');say(MAPS_KEY?'Measuring your roof…':'Outlining your roof…');[blds,solar]=await Promise.all([getBlds(lat,lon),getSolar(lat,lon)]);pick=choose({lat,lon});
       if(pick){const w=view.clientWidth;const xs=pick.g.map(p=>wx(p.lon,Z)),ys=pick.g.map(p=>wy(p.lat,Z));const span=Math.max(Math.max(...xs)-Math.min(...xs),(Math.max(...ys)-Math.min(...ys))*w/view.clientHeight);draw(pick.c.lat,pick.c.lon,clamp(w*.5/span,1,2.6))}
-      say(pick||solar?'Is this your roof?':'Here’s your address.');result()}
+      say(pick?'Found it.':'Here’s your address.');result()}
     catch(x){say(x&&x.name==='TypeError'?'Address search is blocked in this preview. Open the site in Safari or Chrome.':'We couldn’t find that address. Pick it from the list as you type.',true)}}
   /* autocomplete list */
   function hideList(){list.hidden=true;inp.setAttribute('aria-expanded','false');act=-1}
