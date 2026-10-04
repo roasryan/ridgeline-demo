@@ -885,6 +885,7 @@ html{background:#070C11}
 @media (prefers-reduced-motion:reduce){.hrip,.hsun::after{animation:none}}
 @media (max-width:899px){.hero[data-mode=hail] .rpin span{display:none}.hcard{width:46%}.hcard figcaption{font-size:12px;padding:6px 8px}}
 .hero.fixing .hcard,.hero.found .hcard{display:none}
+#team{scroll-margin-top:calc(var(--bh,64px) + 12px)}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -1824,7 +1825,7 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
 
 /* ---------- header menu, thumb bar, club ---------- */
 $('#menuBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="mH">Menu</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
-    <nav class="menu"><a class="btn-main" href="${HOME}#quote" data-go="nav">Get my quote today</a><button type="button" data-go="start">Book a free inspection</button><a href="roofing-services.html">All services</a><a href="roof-replacement.html">Roof replacement</a><a href="roof-repair.html">Leak repair</a><a href="storm-damage.html">Storm and hail damage</a><a href="insurance-claims.html">Insurance claims</a><a href="commercial-roofing.html">Commercial roofing</a><a href="roof-replacement-cost.html">Roof cost guide</a><a href="reviews.html">Reviews</a><a href="roof-care-club.html">Roof Care Club</a><a href="faq.html">Questions</a><a href="#" data-sms="fab">Text us</a><button type="button" data-go="login">Customer login</button></nav></div></div>`,'#layer .menu .btn-main');
+    <nav class="menu"><a class="btn-main" href="${HOME}#quote" data-go="nav">Get my quote today</a><button type="button" data-go="start">Book a free inspection</button><a href="roofing-services.html">All services</a><a href="roof-replacement.html">Roof replacement</a><a href="roof-repair.html">Leak repair</a><a href="storm-damage.html">Storm and hail damage</a><a href="insurance-claims.html">Insurance claims</a><a href="commercial-roofing.html">Commercial roofing</a><a href="roof-replacement-cost.html">Roof cost guide</a><a href="about.html#team">Meet the team</a><a href="reviews.html">Reviews</a><a href="roof-care-club.html">Roof Care Club</a><a href="faq.html">Questions</a><a href="#" data-sms="fab">Text us</a><button type="button" data-go="login">Customer login</button></nav></div></div>`,'#layer .menu .btn-main');
   refreshSms(document);
   $$('#layer [data-go]').forEach(x=>x.addEventListener('click',()=>{const g=x.dataset.go;close();if(g==='start')startSheet();if(g==='login')loginSheet()}))};
 addEventListener('scroll',()=>{const i=$('#inspect');const r=i?i.getBoundingClientRect():null;$('#thumbbar').classList.toggle('on',scrollY>120&&!(r&&r.top<innerHeight&&r.bottom>0))},{passive:true});
