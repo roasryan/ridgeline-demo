@@ -1553,6 +1553,12 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
     /* phones show the whole house (CSS sizes the photo, we read its box); desktop fills the screen */
     if(getComputedStyle(over).objectFit!=='cover'){const hr=hero.getBoundingClientRect(),r=over.getBoundingClientRect(),k=w/hr.width;return[(r.left-hr.left)*k,(r.top-hr.top)*k,r.width*k,r.width*ih/iw*k]}
     const s=Math.max(w/iw,h/ih),dw=iw*s,dh=ih*s;return[(w-dw)/2,(h-dh)*.4,dw,dh]}
+  /* grab area = the house (roof + upper walls), not the whole box, so a thumb on the sky/lawn scrolls the page (Ryan, Oct 4) */
+  const GRAB={fa1:[.094,.16,.886,.76]};
+  function placeGrab(key,poly,T,nw,nh){const st=zone.style;if(!T){['left','top','width','height','right','bottom'].forEach(p=>st.removeProperty(p));return}
+    let g=GRAB[key];if(!g){const xs=poly.map(p=>p[0]),ys=poly.map(p=>p[1]);g=[Math.min(...xs)-.03,Math.min(...ys)-.05,Math.max(...xs)+.03,Math.max(...ys)+.16]}
+    const[a,b,c,d]=T,k=hero.getBoundingClientRect().width/nw,L=Math.max(0,a+g[0]*c)*k,Tp=Math.max(0,b+g[1]*d)*k,R=Math.min(nw,a+g[2]*c)*k,B=Math.min(nh,b+g[3]*d)*k;
+    st.setProperty('left',L+'px','important');st.setProperty('top',Tp+'px','important');st.setProperty('width',(R-L)+'px','important');st.setProperty('height',(B-Tp)+'px','important');st.setProperty('right','auto','important');st.setProperty('bottom','auto','important')}
   function build(){const r=hero.getBoundingClientRect();if(!r.width||!r.height)return;const nw=Math.round(r.width*dpr),nh=Math.round(r.height*dpr);
     if(top&&top.__ok&&nw===cv.width&&nh===cv.height&&top.__src===over.currentSrc)return;
     cv.width=nw;cv.height=nh;top=mk(nw,nh);top.__src=over.currentSrc;const t=top.getContext('2d');let T=null;
@@ -1560,6 +1566,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
     maskC=mk(nw,nh);const m=maskC.getContext('2d');const key=((over.currentSrc||over.src||'').match(/\/(\w+?)(?:-m)?\.webp/)||[])[1];const poly=ROOF[key]||ROOF._;
     lastT=T;if(T){const[a,b,c,d]=T;m.fillStyle='#000';m.beginPath();poly.forEach(([u,v])=>m.lineTo(a+u*c,b+v*d));m.closePath();m.fill();
       const ys=poly.map(p=>b+p[1]*d);rt=Math.max(0,Math.min(...ys));rb=Math.min(nh,Math.max(...ys))}
+    placeGrab(key,poly,T,nw,nh);
     mW=Math.ceil(nw/8);mH=Math.ceil(nh/8);const sm=mk(mW,mH),sg=sm.getContext('2d');sg.drawImage(maskC,0,0,mW,mH);const md=sg.getImageData(0,0,mW,mH).data;mArr=new Uint8Array(mW*mH);for(let i=0;i<mArr.length;i++)mArr[i]=md[i*4+3]>127?1:0;
     const oh=holes;holes=mk(nw,nh);hx=holes.getContext('2d');if(oh)hx.drawImage(oh,0,0,nw,nh);
     const op=pile;pile=mk(nw,nh);if(op)pile.getContext('2d').drawImage(op,0,0,nw,nh);
@@ -1612,7 +1619,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
   const skip=t=>t.closest('a,button,input,select,textarea,label,#ripFound,#ripFixed,#fixShow,#fixCap,.bar');
   let fadeT=0;
-  hero.addEventListener('pointerdown',e=>{if(FX.on||e.button>0||skip(e.target))return;if(MODE()==='hail'){hailTap(e);return}if(MODE()==='heat'){heatDown(e);return}if(e.pointerType!=='mouse'&&!zone.contains(e.target))return;
+  hero.addEventListener('pointerdown',e=>{if(FX.on||e.button>0||skip(e.target))return;if(MODE()==='hail'){if(e.pointerType!=='mouse'&&!zone.contains(e.target))return;hailTap(e);return}if(MODE()==='heat'){heatDown(e);return}if(e.pointerType!=='mouse'&&!zone.contains(e.target))return;
     const[px,py]=pos(e);e.preventDefault();clearTimeout(fadeT);hero.classList.add('tearing');down=true;try{hero.setPointerCapture(e.pointerId)}catch(_){}stopAuto();hint.classList.add('gone');last=[px,py,performance.now()];tear(px,py,0,0,true);if(!actT)actT=setTimeout(showAct,5000)});
   hero.addEventListener('pointermove',e=>{if(MODE()==='heat'){heatMove(e);return}if(!down||FX.on)return;const[px,py]=pos(e),[lx,ly,lt]=last,dist=Math.hypot(px-lx,py-ly),now=performance.now(),dt=Math.max(8,now-lt),need=16*dpr;if(dist<need)return;
     const vx=(px-lx)/dt*16,vy=(py-ly)/dt*16,n=Math.min(5,Math.floor(dist/need));for(let i=1;i<=n;i++)tear(lx+(px-lx)*i/n,ly+(py-ly)*i/n,vx,vy,false);last=[px,py,now]});
@@ -1621,7 +1628,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
   setInterval(()=>{if(tears&&!FX.on)progress()},450);
   /* ghost hand: tears one strip across the middle of the roof so nobody has to guess */
   function stopAuto(){if(auto){cancelAnimationFrame(auto);auto=null;hint.classList.remove('demo')}}
-  function demo(){if(reduce||!top)return;if(MODE()==='hail'||MODE()==='heat'){modeDemo();return}hint.classList.add('demo');const t0=performance.now(),k=hero.offsetWidth/cv.width,zb=zone.offsetHeight/k,y0=Math.min(rt+(rb-rt)*.45,zb*.8);let lp=null;
+  function demo(){if(reduce||!top)return;if(MODE()==='hail'||MODE()==='heat'){modeDemo();return}hint.classList.add('demo');const t0=performance.now(),k=hero.offsetWidth/cv.width,zb=(zone.offsetTop+zone.offsetHeight)/k,y0=Math.min(rt+(rb-rt)*.45,zb*.8);let lp=null;
     const f=now=>{const t=(now-t0)/1400;if(t>1){auto=null;hint.classList.remove('demo');return}const px=cv.width*(.28+.44*t),py=y0+Math.sin(t*6)*(rb-rt)*.05;hint.style.left=px*k+'px';hint.style.top=py*k+'px';
       auto=requestAnimationFrame(f)};auto=requestAnimationFrame(f)}
   const layers=()=>{const u=dpr*Math.max(.8,Math.min(1.3,cv.width/dpr/1000)),dn=$('#hDone');let last=null;FX.full=false;
