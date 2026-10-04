@@ -42,7 +42,7 @@ function doGet(e) {
     const hit = cache.get(key);
     if (hit) return json(JSON.parse(hit));
     const out = { ok: true, source: cfg('GHL_TOKEN') ? 'ghl' : 'gcal', days: cfg('GHL_TOKEN') ? ghlSlots(days) : gcalSlots(days) };
-    cache.put(key, JSON.stringify(out), 120); // 2 minutes
+    cache.put(key, JSON.stringify(out), 600); // 10 minutes (cleared on every booking)
     return json(out);
   }
   return json({ ok: true, service: 'website backend', time: new Date().toISOString() });
@@ -179,8 +179,17 @@ function gcalBook(L, appt) {
 }
 
 function isStillOpen(date, win) {
-  const days = cfg('GHL_TOKEN') ? ghlSlots(45) : gcalSlots(45);
-  return (days[date] || []).indexOf(win) >= 0;
+  if (cfg('GHL_TOKEN')) return (ghlSlots(45)[date] || []).indexOf(win) >= 0;
+  /* fast check of just this window on the calendar(s) */
+  const s = windowStart(date, win), e = new Date(s.getTime() + WIN_LEN_H * 3600e3), d0 = dayStart(s), d1 = new Date(d0.getTime() + 864e5);
+  const dow = +Utilities.formatDate(s, TZ(), 'u') % 7, w = WINDOWS.find(x => x[0] === win);
+  if ((OPEN_HOURS[dow] || []).indexOf(w[1]) < 0) return false;
+  if (dayStart(s).getTime() < dayStart(new Date()).getTime() + MIN_NOTICE_DAYS * 864e5 - 36e5) return false;
+  const cal = bookingCal(), cals = [cal];
+  if (cfg('CHECK_OWNER_CAL', 'yes') === 'yes' && cal.getId() !== CalendarApp.getDefaultCalendar().getId()) cals.push(CalendarApp.getDefaultCalendar());
+  const dayEvs = cal.getEvents(d0, d1).filter(ev => /inspection/i.test(ev.getTitle()));
+  if (dayEvs.length >= MAX_PER_DAY) return false;
+  return !cals.some(c => c.getEvents(s, e).some(ev => ev.isAllDayEvent() || (ev.getStartTime() < e && ev.getEndTime() > s)));
 }
 
 /* ------------------------------------------------------------------ Sheet + emails */
