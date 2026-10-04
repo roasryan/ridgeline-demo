@@ -811,6 +811,8 @@ html.qopen,html.qopen body{overflow:hidden}
 .avcal .cd.past{opacity:.25;cursor:default}
 .avcal .cd i{position:absolute;top:2px;right:4px;font:800 10px var(--body);font-style:normal;color:var(--sodium)}
 @media (max-width:560px){.avwins{grid-template-columns:1fr 1fr}.avw{font-size:12px}}
+/* the quote bubble must never sit on the roof interaction */
+@media (max-width:999px){.qtip{top:auto!important;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:12px!important;right:auto;max-width:calc(100vw - 130px)}.qtip::before{display:none}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -922,6 +924,12 @@ html.qopen,html.qopen body{overflow:hidden}
 "use strict";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const M=window.Motion||null;
+/* ================= CLIENT SETTINGS: the only block to change per client (see SETUP.md) =================
+   backend: the client's Google Apps Script web app URL (/exec). Leads, owner alerts, the booking calendar and GoHighLevel all go through it.
+   mapsKey: the client's Google Maps Platform browser key (Places API (New), Maps Static API, Solar API), restricted to the client's domain.
+   Leave either empty and the site falls back to demo mode (leads stay on this device, free map services). */
+const CFG={biz:'Ridgeline Roofing',city:'Houston',tz:'America/Chicago',lat:29.7604,lon:-95.3698,backend:'',mapsKey:''};
+
 const HOME=document.getElementById('inspect')?'':'index.html';
 /* the photo sits exactly under the real header height (in-app browsers and notches change it) */
 {const bh=()=>{const b=document.getElementById('bar');if(b)document.documentElement.style.setProperty('--bh',b.offsetHeight+'px')};bh();addEventListener('resize',bh);addEventListener('load',bh);if(window.ResizeObserver)document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('bar');if(b)new ResizeObserver(bh).observe(b)})}
@@ -1179,13 +1187,22 @@ function invSheet(id){const c=byId(id);const est=c.estimate&&c.estimate.status==
   $('#ivgo').onclick=()=>{const a=+String($('#iva').value).replace(/[^\d.]/g,'');if(!a){$('#ive').textContent='Add the amount.';$('#ive').hidden=false;return}c.invoice={t:Date.now(),amount:a,desc:$('#ivd').value.trim(),status:'sent'};c.stage='invoiced';c.show.invoice=$('#ivshow').checked;c.portal=true;save();close();custSheet(c.id)}}
 function routeHash(){if(location.hash==='#'+OWNER_KEY){oTab='today';openOwner()}}
 
-/* ---------- lead delivery: every saved lead also goes to the Google Sheet + email (Apps Script web app) ---------- */
-const LEAD_URL='';/* paste the Apps Script /exec URL here */
-function sendLead(o){if(!LEAD_URL)return;let me={},q={};try{me=JSON.parse(localStorage.getItem('rl-me')||'{}');q=JSON.parse(localStorage.getItem('rl-quote')||'{}')}catch(x){}
-  const row={type:o.source||'Website',name:o.name||me.name||'',mobile:o.phone||me.phone||'',email:o.email||me.email||'',best:o.best||me.best||me.contact||'',company:o.company||'',role:o.role||'',
-    address:o.addr||'',quote:q.name||q.mat||'',price:q.range||q.price||'',appointment:o.appt?(o.appt.day||'')+' '+(o.appt.slot||''):'',message:o.msg||'',page:location.pathname+location.search};
-  try{fetch(LEAD_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(row)})}catch(x){}}
-{const _up=upsert;upsert=function(o){const c=_up(o);sendLead(o);return c}}
+/* ---------- backend: every lead and booking goes to the client's Apps Script web app
+   (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
+const OUTBOX='rl-outbox';
+function leadRow(o){let me={},q={};try{me=JSON.parse(localStorage.getItem('rl-me')||'{}');q=JSON.parse(localStorage.getItem('rl-quote')||'{}')}catch(x){}
+  const ap=o.appt&&o.appt.t?{date:AV.iso(new Date(o.appt.t)),window:o.appt.slot}:null;
+  return{type:o.source||'Website',name:o.name||me.name||'',phone:digits(o.phone||me.phone||''),email:o.email||me.email||'',best:o.best||me.contact||'',
+    address:o.addr||q.addr||'',issue:o.msg||'',company:o.company||'',role:o.role||'',quote:q&&q.touched&&q.range?{name:q.name||'',range:q.range}:null,appt:ap,
+    page:location.pathname+location.search,ts:Date.now(),hp:''}}
+async function postBackend(row){const r=await fetch(CFG.backend,{method:'POST',body:JSON.stringify(row)});return r.json()}
+function outbox(){try{return JSON.parse(localStorage.getItem(OUTBOX)||'[]')}catch(x){return[]}}
+function setOutbox(a){try{localStorage.setItem(OUTBOX,JSON.stringify(a.slice(-20)))}catch(x){}}
+function sendLead(o){if(!CFG.backend)return Promise.resolve({ok:true,demo:true});const row=leadRow(o);
+  return postBackend(row).catch(()=>{setOutbox(outbox().concat([row]));return{ok:true,queued:true}})}
+/* anything that failed to send (no signal, backend down) is retried on the next visit */
+if(CFG.backend){const q=outbox();if(q.length){setOutbox([]);q.forEach(row=>postBackend(row).catch(()=>setOutbox(outbox().concat([row]))))}}
+{const _up=upsert;upsert=function(o){const c=_up(o);if(!o._sent)sendLead(o);return c}}
 
 addEventListener('hashchange',routeHash);
 
@@ -1538,9 +1555,12 @@ const AV=(()=>{const KEY='rl-avail',WIN=['8 to 10 AM','10 AM to noon','1 to 3 PM
   const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   const day0=d=>{const x=new Date(d);x.setHours(12,0,0,0);return x};
   const booked=()=>{const m={};((typeof DB!=='undefined'&&DB.customers)||[]).forEach(c=>{if(c.appt&&c.appt.t){const k=iso(new Date(c.appt.t));m[k]=m[k]||{n:0};m[k].n++;m[k][c.appt.slot]=(m[k][c.appt.slot]||0)+1}});return m};
-  function slots(d){const k=iso(d),b=booked()[k]||{n:0},now=new Date(),today=iso(now)===k;
+  /* live: the open windows come from the backend (GoHighLevel calendar or the owner's Google Calendar) */
+  let remote=null;
+  async function load(){if(!CFG.backend)return;try{const j=await(await fetch(`${CFG.backend}?action=slots&days=${S.ahead}`)).json();if(j&&j.ok&&j.days){remote=j.days;window.dispatchEvent(new Event('rl-slots'))}}catch(x){}}
+  function slots(d){if(remote)return(remote[iso(d)]||[]).map(w=>({w,left:1,past:false}));const k=iso(d),b=booked()[k]||{n:0},now=new Date(),today=iso(now)===k;
     return(S.open[d.getDay()]||[]).filter(w=>WIN.includes(w)).sort((a,b2)=>WIN.indexOf(a)-WIN.indexOf(b2)).map(w=>{const taken=b[w]||0,past=today&&now.getHours()>=START[w]-1;return{w,left:Math.max(0,S.perWin-taken),past}})}
-  function state(d){const t0=day0(new Date()),dd=day0(d),diff=Math.round((dd-t0)/864e5);
+  function state(d){if(remote)return(remote[iso(d)]||[]).length?'open':(day0(d)<day0(new Date())?'out':'closed');const t0=day0(new Date()),dd=day0(d),diff=Math.round((dd-t0)/864e5);
     if(diff<S.notice||diff>S.ahead)return'out';if(S.blocked.includes(iso(d)))return'blocked';const sl=slots(d);if(!sl.length)return'closed';
     const b=booked()[iso(d)];if(b&&b.n>=S.maxDay)return'full';return sl.some(s=>s.left>0&&!s.past)?'open':'full'}
   function weekLeft(){const now=day0(new Date()),mon=new Date(now);mon.setDate(now.getDate()-((now.getDay()+6)%7));let n=0;const b=booked();for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);n+=(b[iso(d)]||{n:0}).n}return Math.max(0,S.weekCap-n)}
@@ -1563,15 +1583,16 @@ const AV=(()=>{const KEY='rl-avail',WIN=['8 to 10 AM','10 AM to noon','1 to 3 PM
       const sl=slots(sel).filter(s=>!s.past);if(slot==null){const f=sl.find(s=>s.left>0);slot=f?f.w:null}
       slotEl.innerHTML=`<p class="calday">${sel.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p><div class="chips">${sl.map(s=>`<button type="button" role="radio" aria-checked="${s.w===slot}" data-w="${s.w}" ${s.left?'':'disabled'}>${s.w}${s.left?'':' · booked'}</button>`).join('')}</div>`;
       [...slotEl.querySelectorAll('[data-w]')].forEach(b=>b.onclick=()=>{slot=b.dataset.w;render()});onPick(sel,slot)};
+    window.addEventListener('rl-slots',()=>{if(!sel||state(sel)!=='open'){sel=firstOpen();slot=null;if(sel)view=new Date(sel.getFullYear(),sel.getMonth(),1,12)}render()});
     render();return{refresh:render}}
-  return{S,WIN,save,iso,slots,state,grid,weekLeft,mountPicker,DEF}})();
+  load();return{S,WIN,save,iso,slots,state,grid,weekLeft,mountPicker,DEF,load,live:()=>!!remote}})();
 /* the "spots left this week" line follows the owner's real weekly cap */
 {const sc=$('.scar span');if(sc){const n=AV.weekLeft();sc.textContent=`This week: ${n} of ${AV.S.weekCap} inspection spots left`;const dots=$('.scar .dots');if(dots)dots.innerHTML=Array.from({length:AV.S.weekCap},(_,i)=>`<i class="${i<AV.S.weekCap-n?'t':''}"></i>`).join('')}}
 
 /* owner screen: Availability */
 function oAvail(){const S=AV.S,DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const sel=(id,val,opts)=>`<select id="${id}">${opts.map(([v,t])=>`<option value="${v}" ${String(v)===String(val)?'selected':''}>${t}</option>`).join('')}</select>`;
-  return`<section class="ocard"><h3>When customers can book</h3><p class="muted">Tap a time to turn it on or off. The website only offers what’s on here.</p>
+  return`${CFG.backend?`<section class="ocard"><h3>Live calendar</h3><p class="muted">Your website now books straight into your GoHighLevel calendar. Change your hours, days off and limits there (or in the LeadConnector app). Busy times on your synced Google Calendar are hidden automatically.</p></section>`:''}<section class="ocard"><h3>When customers can book</h3><p class="muted">Tap a time to turn it on or off. The website only offers what’s on here.</p>
     <div class="avweek">${[1,2,3,4,5,6,0].map(d=>`<div class="avrow"><b>${DN[d]}</b><div class="avwins">${AV.WIN.map(w=>`<button type="button" class="avw" data-avd="${d}" data-avw="${w}" aria-pressed="${(S.open[d]||[]).includes(w)}">${w}</button>`).join('')}</div></div>`).join('')}</div></section>
   <section class="ocard"><h3>Limits</h3><div class="avlims">
     <div class="field"><label for="avPer">Inspections at the same time</label>${sel('avPer',S.perWin,[[1,'1 (just me)'],[2,'2 crews'],[3,'3 crews']])}</div>
@@ -1600,22 +1621,25 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
     const J={repair:'Leak or water stain',storm:'Storm or hail damage',replace:'Old roof, thinking about replacing',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof'};if(q&&q.touched&&J[q.job])$('#iIssue').value=J[q.job]}catch(x){}
   /* when the visitor uses the instant quote, carry the job into the form */
   const qs=$('#quote');if(qs)['input','click'].forEach(ev=>qs.addEventListener(ev,()=>{setTimeout(()=>{try{const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q){q.touched=true;localStorage.setItem('rl-quote',JSON.stringify(q));const J={repair:'Leak or water stain',storm:'Storm or hail damage',replace:'Old roof, thinking about replacing',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof'};if(J[q.job])$('#iIssue').value=J[q.job];if(q.addr&&!$('#iAddr').value)$('#iAddr').value=q.addr}}catch(x){}},50)}));
-  f.addEventListener('submit',e=>{e.preventDefault();const v=id=>$(id).value.trim(),err=$('#iErr');
+  f.addEventListener('submit',async e=>{e.preventDefault();const v=id=>$(id).value.trim(),err=$('#iErr');
     const D={name:v('#iName'),phone:v('#iPhone'),email:v('#iEmail'),addr:v('#iAddr'),issue:v('#iIssue')};
     const bad=!D.name?'#iName':!phoneOk(D.phone)?'#iPhone':!/^\S+@\S+\.\S+$/.test(D.email)?'#iEmail':D.addr.length<5?'#iAddr':!D.issue?'#iIssue':null;
     $$('#iForm .bad').forEach(x=>x.classList.remove('bad'));
     if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':'Add a 10-digit mobile number.','#iEmail':'Add a valid email.','#iAddr':'Add the property address.','#iIssue':'Pick what’s going on.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
     if(!selD||!selS){err.hidden=false;err.textContent='Pick a day and a time on the calendar.';$('#iCal').scrollIntoView({block:'center'});return}
     err.hidden=true;const appt={t:selD.getTime(),slot:selS,confirmed:false};
+    const btn=f.querySelector('.ibtn'),bt=btn.textContent;let sent=false;
+    if(CFG.backend){btn.disabled=true;btn.textContent='Booking…';const r=await sendLead({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best});btn.disabled=false;btn.textContent=bt;
+      if(r&&r.ok===false){err.hidden=false;err.textContent=r.reason==='taken'?'That time was just taken. Pick another one.':'Something went wrong. Please try again or text us.';AV.load();return}sent=true}
     let q=null;try{q=JSON.parse(localStorage.getItem('rl-quote')||'null')}catch(x){}
-    const c=upsert({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best});
+    const c=upsert({name:D.name,phone:D.phone,addr:D.addr,msg:D.issue,source:'Free inspection (homepage)',appt,email:D.email,best,_sent:sent});
     Object.assign(c,{email:D.email,contactPref:best});if(q)c.quote=q;save();
     try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:best}))}catch(x){}
     const first=D.name.split(' ')[0],when=`${fmt(selD)}, ${selS}`;
     $('#iDone').innerHTML=`<p class="ikick">You’re booked</p><h2>See you ${fmt(selD)}, ${esc(first)}.</h2>
-      <p class="idsub">Here’s the text that just went to ${esc(D.phone)}:</p>
-      <div class="ibubble"><small>Ridgeline Roofing</small>Hi ${esc(first)}, you’re booked for a free roof inspection at ${esc(D.addr)} on ${when}. Your inspector is Marcus. You don’t need to be home. Your photo report arrives within 24 hours of the visit. Reply C to change the time.</div>
-      <p class="idemo">Demo: on a live site this text sends automatically and the owner gets the lead on their phone.</p>
+      <p class="idsub">Your confirmation just went to ${esc(D.email)}:</p>
+      <div class="ibubble"><small>Ridgeline Roofing · email</small>Hi ${esc(first)}, you’re booked for a free roof inspection at ${esc(D.addr)} on ${when}. You don’t need to be home. Your photo report arrives within 24 hours of the visit. Need a different time? Just reply.</div>
+      <p class="idemo">${CFG.backend?'The owner just got your request and will reach you by '+best.toLowerCase()+' to confirm.':'Demo: on a live site this email sends automatically and the owner gets an instant alert on their phone.'}</p>
       <ul class="iperks"><li><b>Inspection:</b> ${when}</li><li><b>Issue:</b> ${esc(D.issue)}</li>${q&&q.touched&&q.range?`<li><b>Your price held 30 days:</b> ${esc(q.name)}, ${esc(q.range)}</li>`:''}<li><b>We’ll reach you by:</b> ${best.toLowerCase()}</li></ul>
       <div class="row"><a class="btn btn-main" href="#quote">See my price while you wait</a><button class="btn btn-line" type="button" id="iEdit">Change something</button></div>`;
     f.hidden=true;$('#iDone').hidden=false;$('#iCard').classList.add('done');$('#iEdit').onclick=()=>{f.hidden=false;$('#iDone').hidden=true;$('#iCard').classList.remove('done')};
@@ -1694,7 +1718,7 @@ if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"
    1 address (autocomplete) + satellite roof outline → 2 job details → 3 contact → 4 price.
    Demo services, no key: Esri address suggest + Esri satellite + FEMA USA Structures roof outlines (OSM fallback).
    Live client sites: set MAPS_KEY (Google Maps Static satellite, key locked to the domain). */
-const MAPS_KEY='';
+const MAPS_KEY=CFG.mapsKey;
 const QD=$('#quote');
 let qStep=1,qUnlocked=false;
 function qGo(n){if(!QD)return;if(n===3&&qUnlocked)n=4;if(n===3){const m=me();if(m&&m.name&&m.phone&&m.email){qUnlock(m,true);n=4}}
@@ -1719,7 +1743,8 @@ if(QD){
   if(location.hash==='#quote')setTimeout(()=>qOpen(),400);
   /* "Need a roof quote?" bubble once per visit */
   const tip=$('#qTip');let seen=false;try{seen=sessionStorage.getItem('rl-qtip')==='1'}catch(x){}
-  if(tip&&!seen)setTimeout(()=>{if(QD.hidden){tip.hidden=false;try{sessionStorage.setItem('rl-qtip','1')}catch(x){}}},5000);
+  if(tip&&!seen)setTimeout(()=>{if(QD.hidden){tip.hidden=false;try{sessionStorage.setItem('rl-qtip','1')}catch(x){}setTimeout(()=>tip.hidden=true,9000)}},5000);
+  document.addEventListener('pointerdown',e=>{if(tip&&!tip.hidden&&!tip.contains(e.target))tip.hidden=true},true);
   if(tip){tip.querySelector('.qtipx').onclick=()=>tip.hidden=true;tip.querySelector('.qtipgo').onclick=()=>qOpen()}
   $('#q1Skip').onclick=()=>qGo(2);$('#q1Next').onclick=()=>qGo(2);$('#q2Next').onclick=()=>qGo(3);
   /* contact step: the price shows only after this */
@@ -1736,13 +1761,14 @@ if(QD){
 
 /* ---- step 1: address autocomplete + satellite roof outline ---- */
 {const view=$('#rmView');if(view){const tiles=$('#rmTiles'),svg=$('#rmSvg'),pin=$('#rmPin'),msg=$('#rmMsg'),out=$('#rmOut'),inp=$('#rmAddr'),list=$('#acList');
+  const newTok=()=>(crypto.randomUUID?crypto.randomUUID():String(Math.random()).slice(2));let gTok=newTok();
   const Z=19,TS=256,GEO='https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/';let C=null,S=1,blds=[],pick=null,addr='',sugg=[],act=-1,seq=0;
   const wx=(lon,z)=>(lon+180)/360*TS*2**z,wy=(lat,z)=>{const r=lat*Math.PI/180;return(1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*TS*2**z};
   const lonOf=(x,z)=>x/(TS*2**z)*360-180,latOf=(y,z)=>{const n=Math.PI-2*Math.PI*y/(TS*2**z);return 180/Math.PI*Math.atan(.5*(Math.exp(n)-Math.exp(-n)))};
   const say=(t,bad)=>{msg.textContent=t;msg.classList.toggle('bad',!!bad)};
   function draw(lat,lon,scale){C={lat,lon,x:wx(lon,Z),y:wy(lat,Z)};S=scale;const w=view.clientWidth||600,h=view.clientHeight||450;tiles.innerHTML='';
-    if(MAPS_KEY){const im=new Image();im.alt='';im.src=`https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lon}&zoom=${Z}&size=640x640&scale=2&maptype=satellite&key=${MAPS_KEY}`;
-      Object.assign(im.style,{position:'absolute',width:640*S+'px',height:640*S+'px',left:(w/2-320*S)+'px',top:(h/2-320*S)+'px'});tiles.appendChild(im)}
+    if(MAPS_KEY){const z=S>=1.6?20:19,k=z===20?.5:1,px2=640*k*S;const im=new Image();im.alt='';im.src=`https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lon}&zoom=${z}&size=640x640&scale=2&maptype=satellite&key=${MAPS_KEY}`;
+      Object.assign(im.style,{position:'absolute',width:px2+'px',height:px2+'px',left:(w/2-px2/2)+'px',top:(h/2-px2/2)+'px'});tiles.appendChild(im)}
     else{const hw=w/2/S,hh=h/2/S,x0=Math.floor((C.x-hw)/TS),x1=Math.floor((C.x+hw)/TS),y0=Math.floor((C.y-hh)/TS),y1=Math.floor((C.y+hh)/TS);
       for(let tx=x0;tx<=x1;tx++)for(let ty=y0;ty<=y1;ty++){const im=new Image();im.alt='';im.decoding='async';im.src=`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${Z}/${ty}/${tx}`;
         Object.assign(im.style,{position:'absolute',width:TS*S+1+'px',height:TS*S+1+'px',left:(w/2+(tx*TS-C.x)*S)+'px',top:(h/2+(ty*TS-C.y)*S)+'px'});tiles.appendChild(im)}}
@@ -1764,29 +1790,45 @@ if(QD){
     try{const oq=`[out:json][timeout:12];way(around:70,${lat},${lon})["building"];out geom;`;
       const o=await(await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(oq),headers:{'Content-Type':'application/x-www-form-urlencoded'}})).json();
       return(o.elements||[]).filter(e=>e.geometry&&e.geometry.length>3).map(e=>mk(e.geometry.map(p=>({lat:p.lat,lon:p.lon}))))}catch(x){return[]}}
-  const roofOf=b=>Math.round(b.ft*1.1*1.12/10)*10;
+  let solar=null;
+  async function getSolar(lat,lon){if(!MAPS_KEY)return null;for(const q of['HIGH','MEDIUM','BASE']){try{const r=await fetch(`https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lon}&requiredQuality=${q}&key=${MAPS_KEY}`);if(!r.ok)continue;const j=await r.json();const sp=j.solarPotential||{};
+      const segs=(sp.roofSegmentStats||[]).map(x=>({p:x.pitchDegrees||0,a:(x.stats&&x.stats.areaMeters2)||0}));const area=(sp.wholeRoofStats&&sp.wholeRoofStats.areaMeters2)||segs.reduce((a,x)=>a+x.a,0);if(!area)continue;
+      const tot=segs.reduce((a,x)=>a+x.a,0)||1,pitch=segs.reduce((a,x)=>a+x.p*x.a,0)/tot;return{sqft:Math.round(area*10.7639/10)*10,pitch,segs:segs.length,quality:j.imageryQuality||q,center:j.center}}catch(x){}}return null}
+  const pitchKey=d=>d<9.5?'flat':d<18.5?'low':d<30?'med':'steep';
+  const PNAME={flat:'flat',low:'gentle',med:'medium',steep:'steep'};
+  const roofOf=b=>solar?solar.sqft:Math.round(b.ft*1.1*1.12/10)*10;
   function result(){const nice=addr.replace(/, USA$/,'');
-    if(pick){const roof=roofOf(pick),lo=Math.round(roof*.9/50)*50,hi=Math.round(roof*1.1/50)*50;
-      out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><div class="rmstats"><div><b>${lo.toLocaleString()}–${hi.toLocaleString()}</b><span>sq ft of roof (estimate)</span></div><div><b>${Math.round(roof/100)}</b><span>squares</span></div></div><p class="rmnote">Not your house? Tap your roof on the photo.</p>`;
+    if(pick||solar){const roof=roofOf(pick),lo=Math.round(roof*(solar?.95:.9)/50)*50,hi=Math.round(roof*(solar?1.05:1.1)/50)*50;
+      if(solar){QT.pitch=pitchKey(solar.pitch);$$('[data-pitch]').forEach(x=>x.setAttribute('aria-checked',String(x.dataset.pitch===QT.pitch)))}
+      out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><div class="rmstats"><div><b>${lo.toLocaleString()}–${hi.toLocaleString()}</b><span>sq ft of roof (${solar?'measured from satellite':'estimate'})</span></div><div><b>${Math.round(roof/100)}</b><span>squares</span></div></div>${solar?`<p class="rmnote">${PNAME[QT.pitch][0].toUpperCase()+PNAME[QT.pitch].slice(1)} slope (about ${Math.round(solar.pitch)}°), ${solar.segs} roof sections. We confirm it on the roof at your free inspection.</p>`:''}<p class="rmnote">Not your house? Tap your roof on the photo.</p>`;
       QT.size=String(roof);QT.unit='roof';QT.unsure=false;const s=$('#qSize'),u=$('#qUnit');if(s)s.value=roof;if(u)u.value='roof';$('#q1Next').textContent='Yes, that’s my roof'}
     else{out.innerHTML=`<p class="rmaddr">${esc(nice)}</p><p class="rmnote">We found your address but couldn’t outline this roof from public maps. Tap your roof on the photo, or keep going and type your size.</p>`;$('#q1Next').textContent='Keep going'}
     out.hidden=false;$('#q1Next').hidden=false;view.classList.add('found');
     QT.addr=nice;const qa=$('#qAddr');if(qa)qa.value=nice;const ia=$('#iAddr');if(ia&&!ia.value)ia.value=nice;
     try{localStorage.setItem('rl-roof',JSON.stringify({addr:nice,roof:pick?roofOf(pick):null}))}catch(x){}}
   async function locate(item){hideList();inp.value=item.text.replace(/, USA$/,'');say('Finding your house…');out.hidden=true;$('#q1Next').hidden=true;pick=null;blds=[];
-    try{const c=await(await fetch(`${GEO}findAddressCandidates?f=json&maxLocations=1&outFields=Addr_type${item.magicKey?'&magicKey='+encodeURIComponent(item.magicKey):''}&SingleLine=${encodeURIComponent(item.text)}&location=-95.37,29.76`)).json();
-      const k=c.candidates&&c.candidates[0];if(!k)throw 0;const lat=k.location.y,lon=k.location.x;addr=k.address;
-      draw(lat,lon,1.8);view.classList.add('found');say('Outlining your roof…');blds=await getBlds(lat,lon);pick=choose({lat,lon});
+    solar=null;
+    try{let lat,lon;
+      if(MAPS_KEY&&item.placeId){const d=await(await fetch(`https://places.googleapis.com/v1/places/${item.placeId}?sessionToken=${gTok}`,{headers:{'X-Goog-Api-Key':MAPS_KEY,'X-Goog-FieldMask':'location,formattedAddress'}})).json();gTok=newTok();
+        if(!d.location)throw 0;lat=d.location.latitude;lon=d.location.longitude;addr=d.formattedAddress}
+      else{const c=await(await fetch(`${GEO}findAddressCandidates?f=json&maxLocations=1&outFields=Addr_type${item.magicKey?'&magicKey='+encodeURIComponent(item.magicKey):''}&SingleLine=${encodeURIComponent(item.text)}&location=${CFG.lon},${CFG.lat}`)).json();
+      const k=c.candidates&&c.candidates[0];if(!k)throw 0;lat=k.location.y;lon=k.location.x;addr=k.address}
+      draw(lat,lon,1.8);view.classList.add('found');say(MAPS_KEY?'Measuring your roof…':'Outlining your roof…');[blds,solar]=await Promise.all([getBlds(lat,lon),getSolar(lat,lon)]);pick=choose({lat,lon});
       if(pick){const w=view.clientWidth;const xs=pick.g.map(p=>wx(p.lon,Z)),ys=pick.g.map(p=>wy(p.lat,Z));const span=Math.max(Math.max(...xs)-Math.min(...xs),(Math.max(...ys)-Math.min(...ys))*w/view.clientHeight);draw(pick.c.lat,pick.c.lon,clamp(w*.5/span,1,2.6))}
-      say(pick?'Is this your roof?':'Here’s your address.');result()}
+      say(pick||solar?'Is this your roof?':'Here’s your address.');result()}
     catch(x){say('We couldn’t find that address. Pick it from the list as you type.',true)}}
   /* autocomplete list */
   function hideList(){list.hidden=true;inp.setAttribute('aria-expanded','false');act=-1}
   function showList(){list.innerHTML=sugg.map((s,i)=>`<li role="option" id="ac${i}" aria-selected="${i===act}" data-i="${i}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.2" fill="currentColor"/></svg>${esc(s.text.replace(/, USA$/,''))}</li>`).join('');
     list.hidden=!sugg.length;inp.setAttribute('aria-expanded',String(!!sugg.length));if(act>=0)inp.setAttribute('aria-activedescendant','ac'+act);else inp.removeAttribute('aria-activedescendant')}
   let tmr;inp.addEventListener('input',()=>{clearTimeout(tmr);const v=inp.value.trim();if(v.length<3){sugg=[];hideList();return}
-    tmr=setTimeout(async()=>{const my=++seq;try{const j=await(await fetch(`${GEO}suggest?f=json&countryCode=USA&category=Address&maxSuggestions=6&location=-95.37,29.76&text=${encodeURIComponent(v)}`)).json();
-      if(my!==seq)return;sugg=(j.suggestions||[]).filter(s=>!s.isCollection);act=-1;showList()}catch(x){}},220)});
+    tmr=setTimeout(async()=>{const my=++seq;try{
+      if(MAPS_KEY){const j=await(await fetch('https://places.googleapis.com/v1/places:autocomplete',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':MAPS_KEY},
+          body:JSON.stringify({input:v,sessionToken:gTok,includedRegionCodes:['us'],includedPrimaryTypes:['street_address','premise','subpremise'],locationBias:{circle:{center:{latitude:CFG.lat,longitude:CFG.lon},radius:50000}}})})).json();
+        if(my!==seq)return;sugg=(j.suggestions||[]).filter(s=>s.placePrediction).map(s=>({text:s.placePrediction.text.text,placeId:s.placePrediction.placeId}))}
+      else{const j=await(await fetch(`${GEO}suggest?f=json&countryCode=USA&category=Address&maxSuggestions=6&location=${CFG.lon},${CFG.lat}&text=${encodeURIComponent(v)}`)).json();
+        if(my!==seq)return;sugg=(j.suggestions||[]).filter(s=>!s.isCollection)}
+      act=-1;showList()}catch(x){}},220)});
   inp.addEventListener('keydown',e=>{if(list.hidden)return;if(e.key==='ArrowDown'){e.preventDefault();act=(act+1)%sugg.length;showList()}else if(e.key==='ArrowUp'){e.preventDefault();act=(act-1+sugg.length)%sugg.length;showList()}
     else if(e.key==='Enter'&&act>=0){e.preventDefault();locate(sugg[act])}else if(e.key==='Escape'){e.stopPropagation();hideList()}});
   list.addEventListener('mousedown',e=>e.preventDefault());
@@ -1796,7 +1838,8 @@ if(QD){
   view.addEventListener('click',e=>{if(!C||!blds.length)return;const r=view.getBoundingClientRect();const x=C.x+(e.clientX-r.left-r.width/2)/S,y=C.y+(e.clientY-r.top-r.height/2)/S;
     const pt={lat:latOf(y,Z),lon:lonOf(x,Z)};const b=blds.find(b=>inside(pt,b.g));if(b){pick=b;outline();result();say('Got it. Is this your roof?')}});
   let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(C)draw(C.lat,C.lon,S)},200)});
-  window.addEventListener('rl-qopen',()=>{if(!C)setTimeout(()=>{if(!C){draw(29.7058,-95.4588,1.4);view.classList.remove('found')}},350)},{once:false})}}
+  if(MAPS_KEY){const f=$('#quote .rmfine');if(f)f.textContent='Imagery and roof measurements © Google · roof outlines: FEMA USA Structures.'}
+  window.addEventListener('rl-qopen',()=>{if(!C)setTimeout(()=>{if(!C){draw(CFG.lat,CFG.lon,1.4);view.classList.remove('found')}},350)},{once:false})}}
 
 /* ---- season switcher (demo): pick a season, the sky and the hero follow ---- */
 {const box=$('#seaPick');if(box){const SEA=[['fall','Fall','Hurricane season'],['spring','Spring','Hail season'],['summer','Summer','Heat'],['winter','Winter','Freeze']];
