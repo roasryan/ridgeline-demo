@@ -847,6 +847,17 @@ html{background:#070C11}
 /* v10: let the sky breathe between panels so the clouds and lightning read while scrolling */
 .sec:not(.offer):not(.end){padding:28px 14px!important}
 @media (max-width:640px){.sec:not(.offer):not(.end){padding:18px 10px!important}}
+/* team (Oct 4) */
+.team{list-style:none;margin:22px 0 10px;padding:0;display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.team li{background:#EEF2F4;border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.team img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:#D7DEE3}
+.team li>div{padding:14px 16px 18px}.team b{display:block;font:800 19px/1.2 var(--head,inherit);color:var(--ink)}
+.team .role{display:inline-block;margin:6px 0 8px;padding:3px 10px;border-radius:99px;background:var(--slate);color:#FFD400;font:800 12.5px/1.4 var(--body);letter-spacing:.02em;text-transform:uppercase}
+.team p{margin:0;color:#4A5863;font-size:15.5px;line-height:1.45}
+@media (max-width:640px){.team{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:78%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}.team li{scroll-snap-align:start}}
+.demonote{font-size:13px;color:#6B7882;margin:12px 0 0}
+.team img{aspect-ratio:1/1!important;height:auto!important;object-fit:cover!important;object-position:50% 62%!important;max-height:none}
+.team b{font-weight:800!important;font-size:19px!important;line-height:1.2}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -1243,7 +1254,7 @@ addEventListener('hashchange',routeHash);
 /* ---------- season + region ---------- */
 const BIZ_CITY='Houston';
 const GULF=/Houston|Galveston|Corpus Christi|Beaumont|Brownsville|New Orleans|Baton Rouge|Lake Charles|Mobile|Biloxi|Gulfport|Pensacola|Panama City|Tampa|Sarasota|Fort Myers|Naples|Miami|Key West/i;
-const READY=new Set(["dillo", "dillo2", "f1", "f2", "f3", "fa1", "fa2", "fa3", "fa_felt", "fa_ply", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "sp1", "sp2", "sv_attic", "sv_claim", "sv_gutter", "sv_leak", "sv_roof", "sv_storm", "w1", "w2", "w3", "w4"]);
+const READY=new Set(["dillo", "dillo2", "f1", "f2", "f3", "fa1", "fa2", "fa3", "fa_felt", "fa_ply", "freeze", "hail", "heat", "s1", "s2", "s3", "s4", "s5", "s6", "sp1", "sp2", "sv_attic", "sv_claim", "sv_gutter", "sv_leak", "sv_roof", "sv_storm", "team-ben", "team-dale", "team-luis", "team-mark", "team-priya", "team-tasha", "w1", "w2", "w3", "w4"]);
 const SET={
   hurricane:{done:'fa3',hero:'s6',under:'fa2',lens:'Rot under the shingles',before:'fa1',after:'s5',why:'Hurricane season. Find the leaks before the storm does.',capB:'Worn shingles, water getting in',capA:'New roof, hurricane rated',sms:'the next storm',stages:[['fa2','Tear-off: every old shingle, nail and the rotted felt comes off'],['fa_ply','Rotted decking cut out, new plywood nailed down sheet by sheet'],['fa_felt','Ice and water shield at the edges, synthetic underlayment course by course'],['fa3','New impact-rated shingles laid course by course, ridge cap last']]},
   usWinter:{hero:'w4',under:'w2',lens:'Water behind the ice',before:'w1',after:'w4',why:'Ice dam season. Water backs up under the shingles at the edge.',capB:'Ice dam, water backing up',capA:'New roof, edge stays clear',sms:'ice dams start'},
