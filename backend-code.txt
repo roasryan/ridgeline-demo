@@ -69,10 +69,16 @@ function doPost(e) {
   }
   if (L.hp) return json({ ok: true });
   L.phone = String(L.phone || '').replace(/\D/g, '').slice(-10);
-  if (!L.name || L.phone.length < 10) return json({ ok: false, reason: 'missing' });
+  L.email = String(L.email || '').trim();
+  const okE = /^\S+@\S+\.\S+$/.test(L.email);
+  if (L.phone.length < 10) L.phone = '';
+  if (!okE) L.email = '';
+  if (!L.name || (!L.phone && !L.email)) return json({ ok: false, reason: 'missing' });
+  if (L.best === 'Email' && !L.email) L.best = L.phone ? 'Text' : 'Email';
+  if (L.best !== 'Email' && !L.phone) L.best = 'Email';
   L.best = ['Text', 'Call', 'Email'].indexOf(L.best) >= 0 ? L.best : 'Text';
 
-  const cache = CacheService.getScriptCache(), ck = 'rate_' + L.phone, n = +(cache.get(ck) || 0);
+  const cache = CacheService.getScriptCache(), ck = 'rate_' + (L.phone || L.email), n = +(cache.get(ck) || 0);
   if (n >= 5) return json({ ok: false, reason: 'slow_down' });
   cache.put(ck, String(n + 1), 600);
 
@@ -144,7 +150,7 @@ function calSlots(days, onlyDate) {
 function calBook(L, appt) {
   const ev = bookingCal().createEvent(`Inspection: ${L.name}`, appt.start, appt.end, {
     location: L.address || '',
-    description: `Phone: ${pretty(L.phone)}\nBest way: ${L.best}${L.best === 'Text' && !L.sms ? ' (no auto-text consent)' : ''}\nEmail: ${L.email || ''}\nIssue: ${L.issue || ''}${L.quote ? `\nInstant quote: ${L.quote.name}, ${L.quote.range}` : ''}\n\nDrag this event to reschedule; the customer is told automatically. Delete it to cancel.`
+    description: `Phone: ${L.phone ? pretty(L.phone) : 'none'}\nBest way: ${L.best}${L.best === 'Text' && !L.sms ? ' (no auto-text consent)' : ''}\nEmail: ${L.email || ''}\nIssue: ${L.issue || ''}${L.quote ? `\nInstant quote: ${L.quote.name}, ${L.quote.range}` : ''}\n\nDrag this event to reschedule; the customer is told automatically. Delete it to cancel.`
   });
   P.setProperty('bk_' + ev.getId(), JSON.stringify({ n: L.name, p: L.phone, e: L.email || '', b: L.best, s: !!L.sms, a: L.address || '', t: appt.start.toISOString(), r: 0 }));
 }
@@ -190,7 +196,7 @@ function notifyCustomer(kind, L, appt) {
   }[kind];
   const subj = { booked: `You're booked: roof inspection ${appt ? fmt(appt.start, 'EEE MMM d') : ''}`, moved: 'Your roof inspection time changed', cancelled: 'Your roof inspection was cancelled', reminder: 'Reminder: roof inspection tomorrow', club: `Welcome to the Roof Care Club (demo), ${first}`, lead: `We got your request, ${first}` }[kind];
   if (L.best === 'Text') {
-    if (L.sms && smsReady()) { try { sendSms(L.phone, msg + (kind === 'booked' || kind === 'lead' ? ' Reply STOP to opt out.' : '')); return 'sms'; } catch (x) { logErr('sms', x); } }
+    if (L.sms && L.phone && smsReady()) { try { sendSms(L.phone, msg + (kind === 'booked' || kind === 'lead' ? ' Reply STOP to opt out.' : '')); return 'sms'; } catch (x) { logErr('sms', x); } }
     return 'none';                              // owner texts them by hand (alert says so)
   }
   if (L.best === 'Email' && L.email) {
@@ -206,7 +212,7 @@ function ownerAlert(L, appt, notified) {
   const when = appt ? fmt(appt.start, "EEE MMM d 'at' h:mm a") : '';
   const todo = L.best === 'Call' ? `CALL ${first} to confirm` : L.best === 'Text' && notified !== 'sms' ? `TEXT ${first} to confirm` : notified === 'sms' ? `${first} got a confirmation text` : notified === 'email' ? `${first} got a confirmation email` : `Reach ${first} by ${L.best.toLowerCase()}`;
   if (how.indexOf('sms') >= 0 || how === 'both') {
-    if (smsReady() && cfg('OWNER_PHONE')) try { sendSms(cfg('OWNER_PHONE'), `New ${appt ? 'inspection ' + when : 'lead'}: ${L.name} ${pretty(L.phone)}. ${todo}. ${L.address || ''}`); } catch (x) { logErr('owner sms', x); }
+    if (smsReady() && cfg('OWNER_PHONE')) try { sendSms(cfg('OWNER_PHONE'), `New ${appt ? 'inspection ' + when : 'lead'}: ${L.name} ${L.phone ? pretty(L.phone) : L.email}. ${todo}. ${L.address || ''}`); } catch (x) { logErr('owner sms', x); }
   }
   if (how === 'sms' && smsReady()) return;
   const to = cfg('OWNER_EMAIL'); if (!to) return;
@@ -216,14 +222,14 @@ function ownerAlert(L, appt, notified) {
     <p style="font-size:20px;font-weight:800;margin:0 0 4px">${esc(L.name)} · ${esc(L.type)}</p>
     <p style="margin:0 0 12px;padding:8px 12px;background:#FFF6CC;border-radius:8px;font-weight:700">${esc(todo)} (prefers ${esc(L.best.toLowerCase())})</p>
     ${when ? `<p style="margin:0 0 6px"><b>Inspection:</b> ${esc(when)}</p>` : ''}
-    <p style="margin:0 0 6px"><b>Mobile:</b> <a href="${sms}" style="color:#1A56DB;text-decoration:underline;font-weight:700">${pretty(L.phone)}</a> &nbsp;·&nbsp; <a href="tel:+1${L.phone}" style="color:#1A56DB">call</a></p>
+    ${L.phone ? `<p style="margin:0 0 6px"><b>Mobile:</b> <a href="${sms}" style="color:#1A56DB;text-decoration:underline;font-weight:700">${pretty(L.phone)}</a> &nbsp;·&nbsp; <a href="tel:+1${L.phone}" style="color:#1A56DB">call</a></p>` : '<p style="margin:0 0 6px"><b>Mobile:</b> not given (email only)</p>'}
     ${L.email ? `<p style="margin:0 0 6px"><b>Email:</b> <a href="mailto:${esc(L.email)}" style="color:#1A56DB">${esc(L.email)}</a></p>` : ''}
     ${L.address ? `<p style="margin:0 0 6px"><b>Address:</b> <a href="https://maps.google.com/?q=${encodeURIComponent(L.address)}" style="color:#1A56DB">${esc(L.address)}</a></p>` : ''}
     ${L.issue ? `<p style="margin:0 0 6px"><b>Issue:</b> ${esc(L.issue)}</p>` : ''}
     ${L.club ? `<p style="margin:0 0 6px"><b>Roof Care Club:</b> ${esc(L.club)} (demo, nothing charged)</p>` : ''}
     ${L.quote ? `<p style="margin:0 0 6px"><b>Instant quote:</b> ${esc(L.quote.name)}, ${esc(L.quote.range)}</p>` : ''}
-    <p style="margin:16px 0"><a href="${sms}" style="background:#FFD400;color:#1F2A33;padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none">Text ${esc(first)}</a>
-    &nbsp; <a href="tel:+1${L.phone}" style="border:2px solid #1F2A33;color:#1F2A33;padding:10px 16px;border-radius:10px;font-weight:800;text-decoration:none">Call</a></p>
+    ${L.phone ? `<p style="margin:16px 0"><a href="${sms}" style="background:#FFD400;color:#1F2A33;padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none">Text ${esc(first)}</a>
+    &nbsp; <a href="tel:+1${L.phone}" style="border:2px solid #1F2A33;color:#1F2A33;padding:10px 16px;border-radius:10px;font-weight:800;text-decoration:none">Call</a></p>` : `<p style="margin:16px 0"><a href="mailto:${esc(L.email)}" style="background:#FFD400;color:#1F2A33;padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none">Email ${esc(first)}</a></p>`}
     ${appt ? '<p style="color:#6B7882;font-size:13px">It’s on your inspections calendar. Drag it to reschedule; the customer is told automatically.</p>' : ''}</div>`;
   MailApp.sendEmail({ to, subject: `${appt ? 'New inspection' : L.club ? 'New Roof Care Club member (demo)' : 'New lead'}: ${L.name}${when ? ' · ' + when : ''}`, htmlBody: html, name: cfg('BIZ_NAME', 'Website') + ' website', replyTo: L.email || undefined });
 }
@@ -275,7 +281,7 @@ function ghlSave(L, appt) {
   const parts = String(L.name).trim().split(/\s+/);
   const up = ghlFetch('post', '/contacts/upsert', {
     locationId: cfg('GHL_LOCATION_ID'), firstName: parts[0], lastName: parts.slice(1).join(' '), name: L.name,
-    phone: '+1' + L.phone, email: L.email || undefined, address1: L.address || undefined, source: 'Website: ' + L.type,
+    phone: L.phone ? '+1' + L.phone : undefined, email: L.email || undefined, address1: L.address || undefined, source: 'Website: ' + L.type,
     tags: ['website', slug(L.type), 'prefers-' + L.best.toLowerCase()].concat(L.sms ? ['sms-consent'] : [])
   });
   const contactId = (up.contact && up.contact.id) || up.id;
@@ -299,7 +305,7 @@ function leadsSheet() {
   return sh;
 }
 function sheetRow(L, appt, ghl) {
-  leadsSheet().appendRow([new Date(), L.type, L.name, pretty(L.phone), L.email || '', L.best || '', L.sms ? 'yes' : '', L.address || '', L.issue || '', L.quote ? L.quote.name : '', L.quote ? L.quote.range : '',
+  leadsSheet().appendRow([new Date(), L.type, L.name, L.phone ? pretty(L.phone) : '', L.email || '', L.best || '', L.sms ? 'yes' : '', L.address || '', L.issue || '', L.quote ? L.quote.name : '', L.quote ? L.quote.range : '',
     appt ? fmt(appt.start, 'EEE MMM d, h:mm a') : '', appt ? appt.start.toISOString() : '', ghl ? (ghl.error ? 'ERROR: ' + ghl.error.slice(0, 200) : 'saved') : '', L.page || '']);
 }
 /* the owner view on the website reads real leads from here (PIN-protected) */

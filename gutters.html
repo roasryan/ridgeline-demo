@@ -829,6 +829,9 @@ html.qopen,html.qopen body{overflow:hidden}
 #qSize.bad{border-color:#B3261E!important}
 .smsc.bad{outline:2px solid #B3261E;outline-offset:4px;border-radius:8px}
 .smsc b{color:var(--ink)}
+.acfield{display:block;width:100%}
+.acfield>input{width:100%}
+.icard .aclist{z-index:30}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -912,9 +915,9 @@ html.qopen,html.qopen body{overflow:hidden}
       <form id="qcForm" novalidate>
         <div class="field"><label for="qcName">Full name</label><input id="qcName" autocomplete="name"></div>
         <div class="field"><label for="qcPhone">Mobile</label><input id="qcPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div>
-        <div class="field"><label for="qcEmail">Email</label><input id="qcEmail" type="email" inputmode="email" autocomplete="email"></div>
+        <div class="field"><label for="qcEmail">Email</label><input id="qcEmail" type="email" inputmode="email" autocomplete="email"><small class="qhint2">Mobile or email: one is enough.</small></div>
         <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="qcBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
-        <label class="smsc" id="qcSmsC"><input type="checkbox" id="qcSms"> <span><b>Required to get texts:</b> I agree to receive texts from Ridgeline Roofing about my quote and inspection. No marketing texts. Don’t want texts? Choose Call or Email above. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
+        <label class="smsc" id="qcSmsC"><input type="checkbox" id="qcSms"> <span>Text me my price and inspection updates. Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
         <p class="err" id="qcErr" role="alert" hidden></p>
         <div class="qdnav"><button class="btn btn-line" type="button" data-qgo="2">Back</button><button class="btn btn-main" type="submit">Show my price</button></div>
       </form>
@@ -1010,7 +1013,7 @@ if(!DB||DB.v!==3)DB=seedDB();
 const save=()=>{try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}};save();
 const byPhone=p=>DB.customers.find(c=>c.phone===digits(p));
 const byId=id=>DB.customers.find(c=>c.id===id);
-function upsert(o){const p=digits(o.phone);let c=byPhone(p);
+function upsert(o){const p=digits(o.phone);let c=p?byPhone(p):(o.email?DB.customers.find(x=>!x.phone&&x.email===o.email):null);
   if(!c){c={id:'c'+Math.random().toString(36).slice(2,8),phone:p,name:o.name||'New customer',addr:'',source:o.source||'Website',created:Date.now(),stage:'lead',photos:[],updates:[],portal:false,show:{},notes:''};DB.customers.unshift(c)}
   ['name','addr','msg','source'].forEach(k=>{if(o[k]&&(!c[k]||k!=='source'))c[k]=o[k]});if(o.photos&&o.photos.length)c.photos=(c.photos||[]).concat(o.photos);
   if(o.appt){c.appt=o.appt;if(stageIx(c.stage)<1)c.stage='booked';c.show.schedule=true}
@@ -1653,10 +1656,11 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
   const qs=$('#quote');if(qs)['input','click'].forEach(ev=>qs.addEventListener(ev,()=>{setTimeout(()=>{try{const q=JSON.parse(localStorage.getItem('rl-quote')||'null');if(q){q.touched=true;localStorage.setItem('rl-quote',JSON.stringify(q));const J={repair:'Leak or water stain',storm:'Storm or hail damage',replace:'Old roof, thinking about replacing',gutters:'Gutters',vent:'Attic heat or ventilation',commercial:'Commercial roof'};if(J[q.job])$('#iIssue').value=J[q.job];if(q.addr&&!$('#iAddr').value)$('#iAddr').value=q.addr}}catch(x){}},50)}));
   f.addEventListener('submit',async e=>{e.preventDefault();const v=id=>$(id).value.trim(),err=$('#iErr');
     const D={name:v('#iName'),phone:v('#iPhone'),email:v('#iEmail'),addr:v('#iAddr'),issue:v('#iIssue')};
-    const bad=!D.name?'#iName':!phoneOk(D.phone)?'#iPhone':!/^\S+@\S+\.\S+$/.test(D.email)?'#iEmail':D.addr.length<5?'#iAddr':!D.issue?'#iIssue':null;
+    const okP=phoneOk(D.phone),okE=/^\S+@\S+\.\S+$/.test(D.email);
+    const bad=!D.name?'#iName':(!okP&&!okE)?'#iPhone':(best!=='Email'&&!okP)?'#iPhone':(best==='Email'&&!okE)?'#iEmail':(D.phone&&!okP)?'#iPhone':(D.email&&!okE)?'#iEmail':D.addr.length<5?'#iAddr':!D.issue?'#iIssue':null;
     $$('#iForm .bad').forEach(x=>x.classList.remove('bad'));
-    if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':'Add a 10-digit mobile number.','#iEmail':'Add a valid email.','#iAddr':'Add the property address.','#iIssue':'Pick what’s going on.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
-    if(best==='Text'&&!$('#iSms').checked){err.hidden=false;err.textContent='Check the box so we can text you, or choose Call or Email.';$('#iSmsC').classList.add('bad');$('#iSms').focus();return}$('#iSmsC').classList.remove('bad');
+    if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':(!okP&&!okE)?'Add a mobile number or an email so we can reach you.':best==='Email'?'That mobile number looks short. Fix it or leave it blank.':'Add a 10-digit mobile number so we can '+(best==='Call'?'call':'text')+' you.','#iEmail':best==='Email'&&!okE?'Add your email so we can email you.':'That email doesn’t look right. Fix it or leave it blank.','#iAddr':'Add the property address.','#iIssue':'Pick what’s going on.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
+    
     if(!selD||!selS){err.hidden=false;err.textContent='Pick a day and a time on the calendar.';$('#iCal').scrollIntoView({block:'center'});return}
     err.hidden=true;const appt={t:selD.getTime(),time:selS,slot:AV.label(selS),confirmed:false};const smsOk=best==='Text'&&!!($('#iSms')&&$('#iSms').checked);
     const btn=f.querySelector('.ibtn'),bt=btn.textContent;let sent=false;
@@ -1693,12 +1697,14 @@ addEventListener('scroll',()=>{const i=$('#inspect');const r=i?i.getBoundingClie
 let plan='m';$$('[data-plan]').forEach(b=>b.onclick=()=>{plan=b.dataset.plan;$$('[data-plan]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));$('#pPrice').textContent=plan==='m'?'$12':'$129';$('#pPer').textContent=plan==='m'?'a month, cancel anytime':'a year, saves $15'});
 if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="jH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="jH">Join the Roof Care Club</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
     <p class="muted">${plan==='m'?'$12 a month':'$129 a year'}. Your first checkup gets scheduled right after.</p>
-    <div class="field"><label for="jn">Your name</label><input id="jn" autocomplete="name"></div><div class="field"><label for="jp">Mobile number</label><input id="jp" type="tel" inputmode="tel" autocomplete="tel"></div><div class="field"><label for="ja">Home address</label><input id="ja" autocomplete="street-address"></div>
+    <div class="field"><label for="jn">Your name</label><input id="jn" autocomplete="name"></div><div class="field"><label for="jp">Mobile number</label><input id="jp" type="tel" inputmode="tel" autocomplete="tel"></div><div class="field"><label for="jm">Email</label><input id="jm" type="email" inputmode="email" autocomplete="email"></div><p class="muted" style="font-size:14px;margin:-6px 0 10px">Mobile or email: one is enough.</p><div class="field"><label for="ja">Home address</label><input id="ja" autocomplete="street-address"></div>
     <p class="err" id="je" role="alert" hidden></p><button class="btn btn-main" type="button" id="jGo">Join for ${plan==='m'?'$12 a month':'$129 a year'}</button>
     <p class="muted" style="font-size:14px">On the live site this goes to a secure card checkout. Nothing is charged in this demo.</p></div></div>`,'#jn');
-  $('#jGo').onclick=()=>{const n=$('#jn').value.trim(),p=$('#jp').value.trim(),a=$('#ja').value.trim();if(!n||!phoneOk(p)||!a){$('#je').textContent='Add your name, a 10-digit mobile number and your address.';$('#je').hidden=false;return}
-    const c=upsert({name:n,phone:p,addr:a,source:'Roof Care Club',club:{plan:plan==='m'?'Monthly, $12':'Yearly, $129'}});c.portal=true;save();
-    $('#layer .sheet').innerHTML=`<span class="okpill">You’re in</span><h3>Welcome to the club, ${esc(first(n))}.</h3><p class="muted">We’ll text you to schedule your first checkup. You can see your plan any time under Customer login.</p><button class="btn btn-line" type="button" id="jDone">Done</button>`;$('#jDone').onclick=close}};
+  $('#jGo').onclick=()=>{const n=$('#jn').value.trim(),p=$('#jp').value.trim(),m=$('#jm').value.trim(),a=$('#ja').value.trim(),okP=phoneOk(p),okM=/^\S+@\S+\.\S+$/.test(m);
+    const bad=!n?'Add your name.':(!okP&&!okM)?'Add a 10-digit mobile number or an email.':(p&&!okP)?'Check the mobile number (10 digits).':(m&&!okM)?'Check the email address.':a.length<5?'Add your home address.':'';
+    if(bad){$('#je').textContent=bad;$('#je').hidden=false;return}
+    const c=upsert({name:n,phone:okP?p:'',email:okM?m:'',best:okP?'Text':'Email',addr:a,source:'Roof Care Club',club:{plan:plan==='m'?'Monthly, $12':'Yearly, $129'}});c.portal=true;save();
+    $('#layer .sheet').innerHTML=`<span class="okpill">You’re in</span><h3>Welcome to the club, ${esc(first(n))}.</h3><p class="muted">We’ll ${okP?'text':'email'} you to schedule your first checkup. You can see your plan any time under Customer login.</p><button class="btn btn-line" type="button" id="jDone">Done</button>`;$('#jDone').onclick=close}};
 
 
 
@@ -1787,9 +1793,9 @@ if(QD){
   let qbest='Text';$$('#qcBest [data-best]').forEach(b=>b.onclick=()=>{qbest=b.dataset.best;$$('#qcBest [data-best]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));$('#qcSmsC').hidden=qbest!=='Text'});
   {const m=me();if(m){if(m.name)$('#qcName').value=m.name;if(m.phone)$('#qcPhone').value=m.phone;if(m.email)$('#qcEmail').value=m.email}}
   $('#qcForm').onsubmit=e=>{e.preventDefault();const v=s=>$(s).value.trim(),D={name:v('#qcName'),phone:v('#qcPhone'),email:v('#qcEmail')},err=$('#qcErr');
-    const bad=!D.name?'#qcName':!phoneOk(D.phone)?'#qcPhone':!/^\S+@\S+\.\S+$/.test(D.email)?'#qcEmail':null;$$('#qcForm .bad').forEach(x=>x.classList.remove('bad'));
-    if(bad){err.hidden=false;err.textContent={'#qcName':'Add your name.','#qcPhone':'Add a 10-digit mobile number.','#qcEmail':'Add a valid email.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
-    if(qbest==='Text'&&!$('#qcSms').checked){err.hidden=false;err.textContent='Check the box so we can text you, or choose Call or Email.';$('#qcSmsC').classList.add('bad');$('#qcSms').focus();return}$('#qcSmsC').classList.remove('bad');
+    const okP=phoneOk(D.phone),okE=/^\S+@\S+\.\S+$/.test(D.email);
+    const bad=!D.name?'#qcName':(!okP&&!okE)?'#qcPhone':(qbest!=='Email'&&!okP)?'#qcPhone':(qbest==='Email'&&!okE)?'#qcEmail':(D.phone&&!okP)?'#qcPhone':(D.email&&!okE)?'#qcEmail':null;$$('#qcForm .bad').forEach(x=>x.classList.remove('bad'));
+    if(bad){err.hidden=false;err.textContent={'#qcName':'Add your name.','#qcPhone':(!okP&&!okE)?'Add a mobile number or an email so we can send your price.':qbest==='Email'?'That mobile number looks short. Fix it or leave it blank.':'Add a 10-digit mobile number so we can '+(qbest==='Call'?'call':'text')+' you.','#qcEmail':qbest==='Email'&&!okE?'Add your email so we can email you.':'That email doesn’t look right. Fix it or leave it blank.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
     err.hidden=true;const r=qCalc();const c=upsert({name:D.name,phone:D.phone,addr:QT.addr,source:'Instant roof quote',msg:`${r.name}: ${qmoney(r.lo)}–${qmoney(r.hi)}`,email:D.email,best:qbest,sms:qbest==='Text'&&$('#qcSms').checked});
     Object.assign(c,{email:D.email,contactPref:qbest,quote:{name:r.name,range:qmoney(r.lo)+'–'+qmoney(r.hi),addr:QT.addr}});save();
     try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:qbest}))}catch(x){}
@@ -1814,6 +1820,23 @@ if(QD){
   list.addEventListener('pointerdown',pickLi);list.addEventListener('mousedown',e=>e.preventDefault());list.addEventListener('click',pickLi);
   inp.addEventListener('blur',()=>setTimeout(hideList,350));
   $('#rmForm').onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(act>=0&&sugg[act])return useAddr(sugg[act].text);if(v.length<6){say('Type your street address, city and ZIP.',true);return}useAddr(v)}}}
+
+/* ---- address type-ahead for any address box (inspection form, club sign-up): street + city + ZIP in one tap ---- */
+function addrTypeahead(inp){if(!inp||inp.dataset.ta)return;inp.dataset.ta='1';inp.setAttribute('autocomplete','off');inp.setAttribute('role','combobox');inp.setAttribute('aria-autocomplete','list');
+  const wrap=document.createElement('div');wrap.className='acwrap acfield';inp.parentNode.insertBefore(wrap,inp);wrap.appendChild(inp);
+  const list=document.createElement('ul');list.className='aclist';list.setAttribute('role','listbox');list.hidden=true;list.id=inp.id+'List';inp.setAttribute('aria-controls',list.id);wrap.appendChild(list);
+  const GEO='https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/';let sugg=[],act=-1,seq=0,tmr;
+  const hide=()=>{list.hidden=true;inp.setAttribute('aria-expanded','false');act=-1};
+  const show=()=>{list.innerHTML=sugg.map((x,i)=>`<li role="option" aria-selected="${i===act}" data-i="${i}">${esc(x.text.replace(/, USA$/,''))}</li>`).join('');list.hidden=!sugg.length;inp.setAttribute('aria-expanded',String(!!sugg.length))};
+  const use=t=>{inp.value=String(t).replace(/, USA$/,'');hide();inp.dispatchEvent(new Event('change',{bubbles:true}))};
+  inp.addEventListener('input',()=>{clearTimeout(tmr);const v=inp.value.trim();if(v.length<3){sugg=[];hide();return}
+    tmr=setTimeout(async()=>{const my=++seq;try{const j=await(await fetch(`${GEO}suggest?f=json&countryCode=USA&category=Address&maxSuggestions=6&location=${CFG.lon},${CFG.lat}&text=${encodeURIComponent(v)}`)).json();if(my!==seq)return;sugg=(j.suggestions||[]).filter(x=>!x.isCollection);act=-1;show()}catch(x){hide()}},220)});
+  inp.addEventListener('keydown',e=>{if(list.hidden)return;if(e.key==='ArrowDown'){e.preventDefault();act=(act+1)%sugg.length;show()}else if(e.key==='ArrowUp'){e.preventDefault();act=(act-1+sugg.length)%sugg.length;show()}else if(e.key==='Enter'&&act>=0){e.preventDefault();use(sugg[act].text)}else if(e.key==='Escape')hide()});
+  let picked=false;const pick=e=>{const li=e.target.closest('li');if(!li)return;e.preventDefault();if(picked)return;picked=true;setTimeout(()=>picked=false,600);use(sugg[+li.dataset.i].text)};
+  list.addEventListener('pointerdown',pick);list.addEventListener('mousedown',e=>e.preventDefault());list.addEventListener('click',pick);inp.addEventListener('blur',()=>setTimeout(hide,350))}
+addrTypeahead($('#iAddr'));
+/* sign-up sheets are built on the fly: attach when they open */
+new MutationObserver(()=>{['#ja','#oaddr'].forEach(s=>{const e=$(s);if(e)addrTypeahead(e)})}).observe(document.getElementById('layer')||document.body,{childList:true,subtree:true});
 
 /* ---- season switcher (demo): pick a season, the sky and the hero follow ---- */
 {const box=$('#seaPick');if(box){const SEA=[['fall','Fall','Hurricane season'],['spring','Spring','Hail season'],['summer','Summer','Heat'],['winter','Winter','Freeze']];
