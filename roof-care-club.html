@@ -930,7 +930,7 @@ const M=window.Motion||null;
    backend: the client's Google Apps Script web app URL (/exec). Leads, owner alerts, the booking calendar and GoHighLevel all go through it.
    mapsKey: the client's Google Maps Platform browser key (Places API (New), Maps Static API, Solar API), restricted to the client's domain.
    Leave either empty and the site falls back to demo mode (leads stay on this device, free map services). */
-const CFG={biz:'Ridgeline Roofing',city:'Houston',tz:'America/Chicago',lat:29.7604,lon:-95.3698,backend:'',mapsKey:''};
+const CFG={biz:'Ridgeline Roofing',city:'Houston',tz:'America/Chicago',lat:29.7604,lon:-95.3698,backend:'https://script.google.com/macros/s/AKfycbyAH-VeQsKxZEnmBuQIfmz0bhsFxF9hr7h61UsIYIoeZXBaD9hDOd4JS70rdRo_rBmI/exec',mapsKey:''};
 
 const HOME=document.getElementById('inspect')?'':'index.html';
 /* the photo sits exactly under the real header height (in-app browsers and notches change it) */
@@ -1818,7 +1818,7 @@ if(QD){
       draw(lat,lon,1.8);view.classList.add('found');say(MAPS_KEY?'Measuring your roof…':'Outlining your roof…');[blds,solar]=await Promise.all([getBlds(lat,lon),getSolar(lat,lon)]);pick=choose({lat,lon});
       if(pick){const w=view.clientWidth;const xs=pick.g.map(p=>wx(p.lon,Z)),ys=pick.g.map(p=>wy(p.lat,Z));const span=Math.max(Math.max(...xs)-Math.min(...xs),(Math.max(...ys)-Math.min(...ys))*w/view.clientHeight);draw(pick.c.lat,pick.c.lon,clamp(w*.5/span,1,2.6))}
       say(pick||solar?'Is this your roof?':'Here’s your address.');result()}
-    catch(x){say('We couldn’t find that address. Pick it from the list as you type.',true)}}
+    catch(x){say(x&&x.name==='TypeError'?'Address search is blocked in this preview. Open the site in Safari or Chrome.':'We couldn’t find that address. Pick it from the list as you type.',true)}}
   /* autocomplete list */
   function hideList(){list.hidden=true;inp.setAttribute('aria-expanded','false');act=-1}
   function showList(){list.innerHTML=sugg.map((s,i)=>`<li role="option" id="ac${i}" aria-selected="${i===act}" data-i="${i}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="2.2" fill="currentColor"/></svg>${esc(s.text.replace(/, USA$/,''))}</li>`).join('');
@@ -1830,12 +1830,13 @@ if(QD){
         if(my!==seq)return;sugg=(j.suggestions||[]).filter(s=>s.placePrediction).map(s=>({text:s.placePrediction.text.text,placeId:s.placePrediction.placeId}))}
       else{const j=await(await fetch(`${GEO}suggest?f=json&countryCode=USA&category=Address&maxSuggestions=6&location=${CFG.lon},${CFG.lat}&text=${encodeURIComponent(v)}`)).json();
         if(my!==seq)return;sugg=(j.suggestions||[]).filter(s=>!s.isCollection)}
-      act=-1;showList()}catch(x){}},220)});
+      act=-1;showList();if(!sugg.length&&v.length>=8)say('Keep typing your street address, or tap Start.')}catch(x){say('Address search is blocked in this preview. Open the site in Safari or Chrome, or tap Start to type your size.',true)}},220)});
   inp.addEventListener('keydown',e=>{if(list.hidden)return;if(e.key==='ArrowDown'){e.preventDefault();act=(act+1)%sugg.length;showList()}else if(e.key==='ArrowUp'){e.preventDefault();act=(act-1+sugg.length)%sugg.length;showList()}
     else if(e.key==='Enter'&&act>=0){e.preventDefault();locate(sugg[act])}else if(e.key==='Escape'){e.stopPropagation();hideList()}});
-  list.addEventListener('mousedown',e=>e.preventDefault());
-  list.addEventListener('click',e=>{const li=e.target.closest('li');if(li)locate(sugg[+li.dataset.i])});
-  inp.addEventListener('blur',()=>setTimeout(hideList,150));
+  /* phones: pick on pointerdown (fires before the input blurs and the list closes) */
+  let picked=false;const pickLi=e=>{const li=e.target.closest('li');if(!li)return;e.preventDefault();if(picked)return;picked=true;setTimeout(()=>picked=false,600);inp.blur();locate(sugg[+li.dataset.i])};
+  list.addEventListener('pointerdown',pickLi);list.addEventListener('mousedown',e=>e.preventDefault());list.addEventListener('click',pickLi);
+  inp.addEventListener('blur',()=>setTimeout(hideList,350));
   $('#rmForm').onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(sugg.length)return locate(sugg[act>=0?act:0]);if(v.length<6){say('Type your street address and pick it from the list.',true);return}locate({text:v})};
   view.addEventListener('click',e=>{if(!C||!blds.length)return;const r=view.getBoundingClientRect();const x=C.x+(e.clientX-r.left-r.width/2)/S,y=C.y+(e.clientY-r.top-r.height/2)/S;
     const pt={lat:latOf(y,Z),lon:lonOf(x,Z)};const b=blds.find(b=>inside(pt,b.g));if(b){pick=b;outline();result();say('Got it. Is this your roof?')}});
