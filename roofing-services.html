@@ -825,6 +825,8 @@ html.qopen,html.qopen body{overflow:hidden}
 .avsave{position:sticky;bottom:0;padding:12px 0;background:var(--night);display:grid;gap:8px}
 .qhint2{display:block;font-size:13px;color:#55636E;margin-top:6px;line-height:1.4}
 #qSize.bad{border-color:#B3261E!important}
+.smsc.bad{outline:2px solid #B3261E;outline-offset:4px;border-radius:8px}
+.smsc b{color:var(--ink)}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <canvas id="sky" aria-hidden="true"></canvas>
@@ -898,7 +900,7 @@ html.qopen,html.qopen body{overflow:hidden}
         <div class="field"><label for="qcPhone">Mobile</label><input id="qcPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div>
         <div class="field"><label for="qcEmail">Email</label><input id="qcEmail" type="email" inputmode="email" autocomplete="email"></div>
         <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="qcBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
-        <label class="smsc" id="qcSmsC"><input type="checkbox" id="qcSms"> <span>Text me my price and updates. Consent isn’t required. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
+        <label class="smsc" id="qcSmsC"><input type="checkbox" id="qcSms"> <span><b>Required to get texts:</b> I agree to receive texts from Ridgeline Roofing about my quote and inspection. No marketing texts. Don’t want texts? Choose Call or Email above. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
         <p class="err" id="qcErr" role="alert" hidden></p>
         <div class="qdnav"><button class="btn btn-line" type="button" data-qgo="2">Back</button><button class="btn btn-main" type="submit">Show my price</button></div>
       </form>
@@ -1640,6 +1642,7 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
     const bad=!D.name?'#iName':!phoneOk(D.phone)?'#iPhone':!/^\S+@\S+\.\S+$/.test(D.email)?'#iEmail':D.addr.length<5?'#iAddr':!D.issue?'#iIssue':null;
     $$('#iForm .bad').forEach(x=>x.classList.remove('bad'));
     if(bad){err.hidden=false;err.textContent={'#iName':'Add your name.','#iPhone':'Add a 10-digit mobile number.','#iEmail':'Add a valid email.','#iAddr':'Add the property address.','#iIssue':'Pick what’s going on.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
+    if(best==='Text'&&!$('#iSms').checked){err.hidden=false;err.textContent='Check the box so we can text you, or choose Call or Email.';$('#iSmsC').classList.add('bad');$('#iSms').focus();return}$('#iSmsC').classList.remove('bad');
     if(!selD||!selS){err.hidden=false;err.textContent='Pick a day and a time on the calendar.';$('#iCal').scrollIntoView({block:'center'});return}
     err.hidden=true;const appt={t:selD.getTime(),time:selS,slot:AV.label(selS),confirmed:false};const smsOk=best==='Text'&&!!($('#iSms')&&$('#iSms').checked);
     const btn=f.querySelector('.ibtn'),bt=btn.textContent;let sent=false;
@@ -1772,6 +1775,7 @@ if(QD){
   $('#qcForm').onsubmit=e=>{e.preventDefault();const v=s=>$(s).value.trim(),D={name:v('#qcName'),phone:v('#qcPhone'),email:v('#qcEmail')},err=$('#qcErr');
     const bad=!D.name?'#qcName':!phoneOk(D.phone)?'#qcPhone':!/^\S+@\S+\.\S+$/.test(D.email)?'#qcEmail':null;$$('#qcForm .bad').forEach(x=>x.classList.remove('bad'));
     if(bad){err.hidden=false;err.textContent={'#qcName':'Add your name.','#qcPhone':'Add a 10-digit mobile number.','#qcEmail':'Add a valid email.'}[bad];$(bad).classList.add('bad');$(bad).focus();return}
+    if(qbest==='Text'&&!$('#qcSms').checked){err.hidden=false;err.textContent='Check the box so we can text you, or choose Call or Email.';$('#qcSmsC').classList.add('bad');$('#qcSms').focus();return}$('#qcSmsC').classList.remove('bad');
     err.hidden=true;const r=qCalc();const c=upsert({name:D.name,phone:D.phone,addr:QT.addr,source:'Instant roof quote',msg:`${r.name}: ${qmoney(r.lo)}–${qmoney(r.hi)}`,email:D.email,best:qbest,sms:qbest==='Text'&&$('#qcSms').checked});
     Object.assign(c,{email:D.email,contactPref:qbest,quote:{name:r.name,range:qmoney(r.lo)+'–'+qmoney(r.hi),addr:QT.addr}});save();
     try{localStorage.setItem('rl-me',JSON.stringify({phone:digits(D.phone),name:D.name,email:D.email,contact:qbest}))}catch(x){}
