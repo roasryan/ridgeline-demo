@@ -936,9 +936,14 @@ html.imopen{overflow:hidden}
 .htray{scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
 .hthumb{scroll-snap-align:start}
 .heroact,.htray{min-width:0;max-width:100%}.tleft{min-width:0}
+
+/* ===== v13 background: brand wallpaper (Ryan, Oct 4): logo marks in a half-drop repeat, like wrapping paper ===== */
+html{background:#141E27!important}
+#wall{position:fixed;inset:0;z-index:0;pointer-events:none;background-color:#141E27;background-image:radial-gradient(ellipse at 50% 30%,rgba(20,30,39,0) 40%,rgba(8,13,18,.55) 100%),url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22260%22 height=%22260%22 viewBox=%220 0 260 260%22%3E%3Cg transform=%22translate%2865 58%29 scale%281.6%29 translate%28-16 -16%29%22%3E%3Cpath d=%22M3 17 16 6l13 11%22 fill=%22none%22 stroke=%22%23FFD400%22 stroke-opacity=%22.26%22 stroke-width=%223.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3Cpath d=%22M8 15v11h16V15%22 fill=%22none%22 stroke=%22%23fff%22 stroke-opacity=%22.12%22 stroke-width=%222.4%22 stroke-linejoin=%22round%22/%3E%3C/g%3E%3Ctext x=%2265%22 y=%2298%22 text-anchor=%22middle%22 font-family=%22Arial%2CHelvetica%2Csans-serif%22 font-weight=%22800%22 font-size=%2211%22 letter-spacing=%223%22 fill=%22%23fff%22 fill-opacity=%22.08%22%3ERIDGELINE%3C/text%3E%3Cg transform=%22translate%28195 188%29 scale%281.6%29 translate%28-16 -16%29%22%3E%3Cpath d=%22M3 17 16 6l13 11%22 fill=%22none%22 stroke=%22%23FFD400%22 stroke-opacity=%22.34%22 stroke-width=%223.2%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3Cpath d=%22M8 15v11h16V15%22 fill=%22none%22 stroke=%22%23fff%22 stroke-opacity=%22.16%22 stroke-width=%222.4%22 stroke-linejoin=%22round%22/%3E%3C/g%3E%3Ctext x=%22195%22 y=%22228%22 text-anchor=%22middle%22 font-family=%22Arial%2CHelvetica%2Csans-serif%22 font-weight=%22800%22 font-size=%2211%22 letter-spacing=%223%22 fill=%22%23fff%22 fill-opacity=%22.11%22%3ERIDGELINE%3C/text%3E%3C/svg%3E");background-size:auto,260px 260px;background-position:center,center top}
+@media (max-width:640px){#wall{background-size:auto,200px 200px}}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
-<canvas id="sky" aria-hidden="true"></canvas>
+<div id="wall" aria-hidden="true"></div>
 <header class="bar solid" id="bar">
   <div class="bar1">
     <a class="logo" href="index.html" aria-label="Ridgeline Roofing, home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>Ridgeline</a>
@@ -1755,7 +1760,7 @@ const RT={rnd:(a,b)=>a+Math.random()*(b-a),
     hint.style.left=p[0]*k+'px';hint.style.top=p[1]*k+'px';setTimeout(()=>hint.classList.remove('demo'),1800)}
   function modeLayout(){const m=MODE();hero.dataset.mode=m;if(m==='heat'){if(!sunEl){sunEl=document.createElement('div');sunEl.className='hsun';sunEl.tabIndex=0;sunEl.setAttribute('role','slider');sunEl.setAttribute('aria-label','Drag the sun across the sky');hero.appendChild(sunEl);
         sunEl.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowUp'){heatSet(HEAT.p+.08);e.preventDefault()}})}
-      const S=window.RL_SET||{};if(S.hot&&(!HEAT.img||HEAT.img.__n!==S.hot)){HEAT.img=new Image();HEAT.img.__n=S.hot;HEAT.img.onload=()=>{build()};HEAT.img.src=`img/${S.hot}.webp`}
+      const S=window.RL_SET||{};if(S.hot&&(!HEAT.img||HEAT.img.__n!==S.hot)){HEAT.img=new Image();HEAT.img.__n=S.hot;HEAT.img.onload=()=>{if(top)top.__src='';build()};HEAT.img.src=`img/${S.hot}.webp`}
       sunEl.hidden=false;const[x,y]=sunAt(HEAT.p);sunEl.style.left=x*100+'%';sunEl.style.top=y*100+'%';if(!HEAT.p)chip('Attic <b>96°F</b>')}
     else{if(sunEl)sunEl.hidden=true}
     if(m==='hail'&&!hailFound.length)chip(`Hail hits <b>0 of ${((window.RL_SET||{}).hits||[]).length}</b>`);
