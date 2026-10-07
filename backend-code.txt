@@ -34,6 +34,7 @@ function settings() { try { return Object.assign({}, DEFAULT_SETTINGS, JSON.pars
 function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.action === 'settings') return json({ ok: true, settings: settings() });
+  if (p.action === 'status') return json({ ok: true, sms: !!smsReady(), email: true });
   if (p.action === 'slots') {
     const S = settings(), days = Math.min(+p.days || S.ahead, 60), key = 'slots_' + days;
     const cache = CacheService.getScriptCache(), hit = cache.get(key);
@@ -51,6 +52,14 @@ function doPost(e) {
   let L;
   try { L = JSON.parse(e.postData.contents); } catch (x) { return json({ ok: false, reason: 'bad_json' }); }
 
+  if (L.action === 'test') {                          // owner checks the real pipes: one email + one text to the owner
+    if (!cfg('OWNER_PIN') || String(L.pin) !== cfg('OWNER_PIN')) { Utilities.sleep(800); return json({ ok: false, reason: 'pin' }); }
+    const out = { ok: true, email: 'skipped', sms: smsReady() ? 'pending' : 'not set up' };
+    try { if (cfg('OWNER_EMAIL')) { MailApp.sendEmail(cfg('OWNER_EMAIL'), 'Test: your website emails work', 'This is a test from your website backend. Customer confirmations and lead alerts will look like this.'); out.email = 'sent'; } } catch (x) { out.email = 'error: ' + x.message; }
+    if (smsReady()) { try { sendSms(cfg('OWNER_PHONE'), 'Test from your website: customer confirmation texts work.'); out.sms = 'sent'; } catch (x) { out.sms = 'error: ' + String(x.message).slice(0, 160); } }
+    out.quota = MailApp.getRemainingDailyQuota();
+    return json(out);
+  }
   if (L.action === 'settings') {
     if (!cfg('OWNER_PIN') || String(L.pin) !== cfg('OWNER_PIN')) { Utilities.sleep(800); return json({ ok: false, reason: 'pin' }); }
     const s = L.settings || {}, clean = {
@@ -99,7 +108,7 @@ function doPost(e) {
     if (appt) clearSlotCache();
 
     sheetRow(L, appt, ghl);
-    const notified = notifyCustomer(appt ? 'booked' : L.club ? 'club' : L.lock ? 'lock' : 'lead', L, appt);
+    const notified = notifyCustomer(appt ? 'booked' : L.club ? 'club' : L.lock ? 'lock' : /^Service inquiry/.test(L.type || '') ? 'inquiry' : 'lead', L, appt);
     ownerAlert(L, appt, notified);
     return json({ ok: true, booked: !!appt, notified });
   } finally { lock.releaseLock(); }
@@ -192,12 +201,13 @@ function notifyCustomer(kind, L, appt) {
     cancelled: `Hi ${first}, ${owner} from ${biz} here. We had to cancel your inspection on ${when}. Reply and we'll set a new time.`,
     reminder: `Hi ${first}, reminder: your free roof inspection with ${biz} is tomorrow, ${when}. Reply if you need to change it.`,
     lock: L.lock ? `Hi ${first}, your ${biz} price is locked: ${L.lock.name}, ${L.lock.range}, good until ${L.lock.until}. Lock code ${L.lock.code}. Book your free inspection and ${owner} confirms the exact price on site.` : '',
-    club: `Hi ${first}, welcome to the ${biz} Roof Care Club (${L.club}). This is a demo sign-up, so no card was charged. ${owner} will reach out to schedule your first roof checkup.`,
+    club: `Hi ${first}, welcome to the ${biz} Roof Care Club (${L.club}). Nothing has been charged yet: ${owner} will reach out to set up billing and schedule your first roof checkup.`,
+    inquiry: `Hi ${first}, thanks for asking ${biz} about ${String(L.type || '').replace(/^Service inquiry:\s*/, '').toLowerCase() || 'your project'}. ${owner} will reach out within a few business hours to set up a free look. Price comes after we see it.`,
     lead: `Hi ${first}, thanks for reaching out to ${biz}.${L.quote ? ` Your instant quote: ${L.quote.name}, ${L.quote.range} (held 30 days).` : ''} ${owner} will be in touch shortly.`
   }[kind];
-  const subj = { booked: `You're booked: roof inspection ${appt ? fmt(appt.start, 'EEE MMM d') : ''}`, moved: 'Your roof inspection time changed', cancelled: 'Your roof inspection was cancelled', reminder: 'Reminder: roof inspection tomorrow', club: `Welcome to the Roof Care Club (demo), ${first}`, lead: `We got your request, ${first}`, lock: `Your price is locked until ${L.lock ? L.lock.until : ''}`}[kind];
+  const subj = { booked: `You're booked: roof inspection ${appt ? fmt(appt.start, 'EEE MMM d') : ''}`, moved: 'Your roof inspection time changed', cancelled: 'Your roof inspection was cancelled', reminder: 'Reminder: roof inspection tomorrow', club: `Welcome to the Roof Care Club, ${first}`, inquiry: `We got your question, ${first}`, lead: `We got your request, ${first}`, lock: `Your price is locked until ${L.lock ? L.lock.until : ''}`}[kind];
   if (L.best === 'Text') {
-    if (L.sms && L.phone && smsReady()) { try { sendSms(L.phone, msg + (kind === 'booked' || kind === 'lead' || kind === 'lock' ? ' Reply STOP to opt out.' : '')); return 'sms'; } catch (x) { logErr('sms', x); } }
+    if (L.sms && L.phone && smsReady()) { try { sendSms(L.phone, msg + (kind === 'booked' || kind === 'lead' || kind === 'lock' || kind === 'inquiry' || kind === 'club' ? ' Reply STOP to opt out.' : '')); return 'sms'; } catch (x) { logErr('sms', x); } }
     return 'none';                              // owner texts them by hand (alert says so)
   }
   if (L.best === 'Email' && L.email) {
@@ -227,13 +237,13 @@ function ownerAlert(L, appt, notified) {
     ${L.email ? `<p style="margin:0 0 6px"><b>Email:</b> <a href="mailto:${esc(L.email)}" style="color:#1A56DB">${esc(L.email)}</a></p>` : ''}
     ${L.address ? `<p style="margin:0 0 6px"><b>Address:</b> <a href="https://maps.google.com/?q=${encodeURIComponent(L.address)}" style="color:#1A56DB">${esc(L.address)}</a></p>` : ''}
     ${L.issue ? `<p style="margin:0 0 6px"><b>Issue:</b> ${esc(L.issue)}</p>` : ''}
-    ${L.club ? `<p style="margin:0 0 6px"><b>Roof Care Club:</b> ${esc(L.club)} (demo, nothing charged)</p>` : ''}
+    ${L.club ? `<p style="margin:0 0 6px"><b>Roof Care Club:</b> ${esc(L.club)} (set up billing)</p>` : ''}
     ${L.lock ? `<p style="margin:0 0 6px"><b>Price locked:</b> ${esc(L.lock.name)}, ${esc(L.lock.range)} until ${esc(L.lock.until)} (code ${esc(L.lock.code)})</p>` : ''}
     ${L.quote ? `<p style="margin:0 0 6px"><b>Instant quote:</b> ${esc(L.quote.name)}, ${esc(L.quote.range)}</p>` : ''}
     ${L.phone ? `<p style="margin:16px 0"><a href="${sms}" style="background:#FFD400;color:#1F2A33;padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none">Text ${esc(first)}</a>
     &nbsp; <a href="tel:+1${L.phone}" style="border:2px solid #1F2A33;color:#1F2A33;padding:10px 16px;border-radius:10px;font-weight:800;text-decoration:none">Call</a></p>` : `<p style="margin:16px 0"><a href="mailto:${esc(L.email)}" style="background:#FFD400;color:#1F2A33;padding:12px 18px;border-radius:10px;font-weight:800;text-decoration:none">Email ${esc(first)}</a></p>`}
     ${appt ? '<p style="color:#6B7882;font-size:13px">It’s on your inspections calendar. Drag it to reschedule; the customer is told automatically.</p>' : ''}</div>`;
-  MailApp.sendEmail({ to, subject: `${appt ? 'New inspection' : L.club ? 'New Roof Care Club member (demo)' : L.lock ? 'Price locked' : 'New lead'}: ${L.name}${when ? ' · ' + when : ''}`, htmlBody: html, name: cfg('BIZ_NAME', 'Website') + ' website', replyTo: L.email || undefined });
+  MailApp.sendEmail({ to, subject: `${appt ? 'New inspection' : L.club ? 'New Roof Care Club member' : L.lock ? 'Price locked' : 'New lead'}: ${L.name}${when ? ' · ' + when : ''}`, htmlBody: html, name: cfg('BIZ_NAME', 'Website') + ' website', replyTo: L.email || undefined });
 }
 
 /* ------------------------------------------------------------------ SMS providers */

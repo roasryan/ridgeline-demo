@@ -310,6 +310,8 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .st-lost{background:#f3d6d6!important;color:#7a1f1f!important}
 @media (max-width:640px){.frow{grid-template-columns:110px 1fr 34px}.frow small{grid-column:2/4;margin-top:-6px}}
 
+.setupbox{display:grid;gap:6px}.setupbox b.ok{color:#1c7c3a}.setupbox b.no{color:#a5541b}
+
 .app .kicker,.sheet .kicker{font-size:14px;font-weight:700;color:var(--hivis);margin:0}
 .app{color:var(--text)}
 .app h2{font-size:30px}
@@ -1265,7 +1267,7 @@ function metrics(days){const since=Date.now()-days*DAY,C=DB.customers,inP=t=>t&&
   return{leads:leads.length,avgReply,booked,inspected,sent:sent.length,won:won.length,close:sent.length?Math.round(won.length/sent.length*100):null,pipe,paid,owed,portal:C.filter(c=>c.portal).length,club:C.filter(c=>c.club).length,src}}
 const fmtDur=ms=>{const m=Math.round(ms/6e4);return !ms?'n/a':m<60?m+' min':Math.round(m/6)/10+' hr'};
 function chip(c){return `<span class="chip st-${c.stage}">${stageName(c.stage)}</span>`}
-function oToday(){const C=DB.customers,now=Date.now();const smp=samplesOn()?'<p class="samp-note">Showing sample jobs. <button class="linkbtn" type="button" id="sampOff">Remove samples</button></p>':(C.length?'':'<p class="samp-note">No customers yet. <button class="linkbtn" type="button" id="sampOn">Load sample jobs</button> to see the owner screen and customer portal working.</p>');
+function oToday(){const C=DB.customers,now=Date.now();const smp=setupBox()+(C.length?'':'<p class="samp-note">No customers yet. Real requests from the website show up here the moment they come in.</p>');
   const leads=C.filter(c=>c.stage==='lead').sort((a,b)=>a.created-b.created);
   const up=C.filter(c=>c.appt&&c.appt.t>now-6*36e5&&c.stage==='booked').sort((a,b)=>a.appt.t-b.appt.t);
   const nudge=C.filter(c=>c.estimate&&c.estimate.status==='sent'&&now-c.estimate.t>3*DAY);
@@ -1411,7 +1413,7 @@ function oMaterials(){const P=DB.purchases||[],thisM=MON(Date.now()),inbox=P.fil
   const jobs=DB.customers.filter(c=>c.matPlan||P.some(p=>p.job===c.id)),vend={};P.filter(p=>p.job&&p.job!=='overhead').forEach(p=>vend[p.vendor]=(vend[p.vendor]||0)+p.total);
   const mx=Math.max(1,...Object.values(vend)),tile=(l,v,h)=>`<div class="tile"><small>${l}</small><b>${v}</b>${h?`<span>${h}</span>`:''}</div>`;
   const opts=DB.customers.filter(c=>stageIx(c.stage)>=stageIx('estimate')||c.matPlan).map(c=>`<option value="${c.id}">${esc(c.name)}${c.addr?' · '+esc(c.addr.split(',')[0]):''}</option>`).join('');
-  return `${samplesOn()?'<p class="samp-note">Showing sample jobs and purchases. <button class="linkbtn" type="button" id="sampOff">Remove samples</button></p>':`<p class="samp-note">No jobs yet. <button class="linkbtn" type="button" id="sampOn">Load sample jobs</button> to see how this works.</p>`}
+  return `${(DB.purchases||[]).length||DB.customers.length?'':`<p class="samp-note">No jobs or purchases yet. Add a purchase by hand, or connect receipts below.</p>`}
     <div class="tiles">${tile('Materials this month',usd(mo.reduce((a,p)=>a+p.total,0)),mo.length+(mo.length===1?' purchase':' purchases')+' on jobs')}${tile('Waiting to be tagged',inbox.length,inbox.length?usd(inbox.reduce((a,p)=>a+p.total,0)):'all caught up')}${tile('Jobs with materials',jobs.length)}${tile('Overhead (not a job)',usd(P.filter(p=>p.job==='overhead').reduce((a,p)=>a+p.total,0)),'fuel, tools, office')}</div>
     <section class="pcard msrc"><p class="kicker">Where purchases come from</p>
       <div class="mconn"><div><b>Gmail receipts</b><span>Home Depot, Lowe’s and supply-house e-receipts in the owner’s inbox are read automatically. Pro Xtra job names match the job.</span></div><button class="btn btn-line btn-sm" type="button" data-conn="gmail">${CFG.backend?'How it works':'Demo: connected'}</button></div>
@@ -1497,6 +1499,17 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.closest||!t.closes
   if(t.dataset.spend!=null){DB.spend=DB.spend||{};delete DB.spend.sample;DB.spend[t.dataset.spend]=+t.value||0;save();openOwner()}
   else if(t.dataset.cfg){const v=+t.value||0;DB[t.dataset.cfg]=t.dataset.cfg==='fee'?v:v/100;save();openOwner()}});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#obody .warnbox [data-open],#obody .plist [data-open]');if(b){e.stopPropagation();custSheet(b.dataset.open)}},true);
+
+/* ---------- real data only (Oct 7): sample jobs retired; clear any left in this browser ---------- */
+if(DB.customers.some(c=>c.sample)||(DB.purchases||[]).some(p=>p.sample)||(DB.spend&&DB.spend.sample)){DB.customers=DB.customers.filter(c=>!c.sample);DB.purchases=(DB.purchases||[]).filter(p=>!p.sample);if(DB.spend&&DB.spend.sample)DB.spend={};save()}
+/* ---------- setup check: are customer texts/emails really going out? ---------- */
+let SETUP=null;
+function setupBox(){if(!CFG.backend)return '';if(!SETUP){fetch(CFG.backend+'?action=status').then(r=>r.json()).then(j=>{SETUP=j;if(oTab==='today')openOwner()}).catch(()=>{});return ''}
+  return `<div class="pbox setupbox"><b>Automatic messages</b><span>Emails to customers: <b class="${SETUP.email?'ok':'no'}">${SETUP.email?'On':'Off'}</b> · Texts to customers: <b class="${SETUP.sms?'ok':'no'}">${SETUP.sms?'On':'Off, you text them by hand (the alert says who)'}</b></span>
+    <button class="btn btn-line btn-sm" type="button" id="setupTest">Send me a test email${SETUP.sms?' + text':''}</button><span class="muted" id="setupRes"></span></div>`}
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('#setupTest');if(!b)return;let pin='';try{pin=sessionStorage.getItem('rl-pin')||''}catch(x){}
+  b.disabled=true;$('#setupRes').textContent='Sending…';try{const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'test',pin})})).json();
+  $('#setupRes').textContent=j.ok?`Email: ${j.email}. Text: ${j.sms}.`:'PIN not accepted.'}catch(x){$('#setupRes').textContent='Could not reach the backend.'}b.disabled=false});
 
 /* ---------- backend: every lead and booking goes to the client's Apps Script web app
    (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
@@ -2093,7 +2106,7 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
 
 /* ---------- header menu, thumb bar, club ---------- */
 $('#menuBtn').onclick=()=>{const close=open(`<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mH"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="mH">Menu</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>
-    <nav class="menu"><a class="btn-main" href="${HOME}#quote" data-go="nav">Get my quote today</a><button type="button" data-go="start">Book a free inspection</button><a href="roofing-services.html">All services</a><a href="roof-replacement.html">Roof replacement</a><a href="roof-repair.html">Leak repair</a><a href="storm-damage.html">Storm and hail damage</a><a href="insurance-claims.html">Insurance claims</a><a href="commercial-roofing.html">Commercial roofing</a><a href="roof-replacement-cost.html">Roof cost guide</a><a href="about.html#team">Meet the team</a><a href="reviews.html">Reviews</a><a href="roof-care-club.html">Roof Care Club</a><a href="faq.html">Questions</a><a href="#" data-sms="fab">Text us</a><button type="button" data-go="login">Customer login</button></nav></div></div>`,'#layer .menu .btn-main');
+    <nav class="menu"><a class="btn-main" href="${HOME}#quote" data-go="nav">Get my quote today</a><button type="button" data-go="start">Book a free inspection</button><a href="roofing-services.html">All services</a><a href="roof-replacement.html">Roof replacement</a><a href="roof-repair.html">Leak repair</a><a href="storm-damage.html">Storm and hail damage</a><a href="insurance-claims.html">Insurance claims</a><a href="commercial-roofing.html">Commercial roofing</a><a href="roof-replacement-cost.html">Roof cost guide</a><a href="reviews.html">Reviews</a><a href="roof-care-club.html">Roof Care Club</a><a href="faq.html">Questions</a><a href="#" data-sms="fab">Text us</a><button type="button" data-go="login">Customer login</button></nav></div></div>`,'#layer .menu .btn-main');
   refreshSms(document);
   $$('#layer [data-go]').forEach(x=>x.addEventListener('click',()=>{const g=x.dataset.go;close();if(g==='start')startSheet();if(g==='login')loginSheet()}))};
 addEventListener('scroll',()=>{const i=$('#inspect');const r=i?i.getBoundingClientRect():null;$('#thumbbar').classList.toggle('on',scrollY>120&&!(r&&r.top<innerHeight&&r.bottom>0))},{passive:true});
@@ -2102,7 +2115,7 @@ if($('#joinBtn'))$('#joinBtn').onclick=()=>{const close=open(`<div class="scrim"
     <p class="muted">${plan==='m'?'$12 a month':'$129 a year'}. Your first checkup gets scheduled right after.</p>
     <div class="field"><label for="jn">Your name</label><input id="jn" autocomplete="name"></div><div class="field"><label for="jp">Mobile number</label><input id="jp" type="tel" inputmode="tel" autocomplete="tel"></div><div class="field"><label for="jm">Email</label><input id="jm" type="email" inputmode="email" autocomplete="email"></div><p class="muted" style="font-size:14px;margin:-6px 0 10px">Mobile or email: one is enough.</p><div class="field"><label for="ja">Home address</label><input id="ja" autocomplete="street-address"></div>
     <p class="err" id="je" role="alert" hidden></p><button class="btn btn-main" type="button" id="jGo">Join for ${plan==='m'?'$12 a month':'$129 a year'}</button>
-    <p class="muted" style="font-size:14px">On the live site this goes to a secure card checkout. Nothing is charged in this demo.</p></div></div>`,'#jn');
+    <p class="muted" style="font-size:14px">Nothing is charged now. We reach out to set up billing and your first checkup.</p></div></div>`,'#jn');
   $('#jGo').onclick=()=>{const n=$('#jn').value.trim(),p=$('#jp').value.trim(),m=$('#jm').value.trim(),a=$('#ja').value.trim(),okP=phoneOk(p),okM=/^\S+@\S+\.\S+$/.test(m);
     const bad=!n?'Add your name.':(!okP&&!okM)?'Add a 10-digit mobile number or an email.':(p&&!okP)?'Check the mobile number (10 digits).':(m&&!okM)?'Check the email address.':a.length<5?'Add your home address.':'';
     if(bad){$('#je').textContent=bad;$('#je').hidden=false;return}
