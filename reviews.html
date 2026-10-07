@@ -963,6 +963,11 @@ html{background:#141E27!important}
 .rmframe{border-radius:14px;overflow:hidden;border:3px solid var(--hivis);background:#dfe5ea}
 .rmframe iframe{display:block;width:100%;aspect-ratio:4/3;border:0}
 @media (max-width:640px){.rmframe iframe{aspect-ratio:1/1}}
+
+/* legal pages */
+.legal{max-width:760px}.legal h2{font-size:24px;margin:28px 0 8px}.legal p,.legal li{font-size:17px}
+.smsx{background:#eef6ee;border-left:4px solid #1c7c3a;padding:12px 14px;border-radius:10px}
+.smsc a{font-weight:700;text-decoration:underline}
 </style>
 <a class="skip" href="#top" style="position:absolute;left:-9999px">Skip to content</a>
 <div id="wall" aria-hidden="true"></div>
@@ -1017,7 +1022,7 @@ html{background:#141E27!important}
               <div class="field"><label for="iAddr">Property address</label><input id="iAddr" autocomplete="street-address" placeholder="Street, city, ZIP"></div>
               <div class="field"><span class="flabel" id="iIssueL">What do you need? Pick all that apply</span><input type="hidden" id="iIssue"><div class="chips ijobs" id="iJobs" role="group" aria-label="What do you need"><button type="button" aria-pressed="false" data-ij="Roof replacement">Roof replacement</button><button type="button" aria-pressed="false" data-ij="Leak or roof repair">Leak or roof repair</button><button type="button" aria-pressed="false" data-ij="Missing or damaged shingles">Missing or damaged shingles</button><button type="button" aria-pressed="false" data-ij="Storm or hail damage">Storm or hail damage</button><button type="button" aria-pressed="false" data-ij="Insurance claim help">Insurance claim help</button><button type="button" aria-pressed="false" data-ij="Gutters">Gutters</button><button type="button" aria-pressed="false" data-ij="Attic heat or ventilation">Attic heat or ventilation</button><button type="button" aria-pressed="false" data-ij="Commercial roof">Commercial roof</button><button type="button" aria-pressed="false" data-ij="Not sure, just check it">Not sure, just check it</button></div></div>
               <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="iBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
-              <label class="smsc" id="iSmsC"><input type="checkbox" id="iSms"> <span>Text me about my inspection (confirmation, reminder, time changes). Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
+              <label class="smsc" id="iSmsC"><input type="checkbox" id="iSms"> <span>Text me about my inspection from Ridgeline Roofing (confirmation, reminder, time changes). Optional, not required to book. About 1–4 texts per request, no marketing. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. <a href="sms-terms.html" target="_blank">SMS terms</a> · <a href="privacy.html" target="_blank">Privacy</a></span></label>
               <p class="err" id="iErr" role="alert" hidden></p>
               <div class="imnav"><button class="btn btn-line" type="button" id="iBack">Back</button><button class="btn btn-main ibtn" type="submit">Book my free inspection</button></div>
             </section>
@@ -1031,7 +1036,7 @@ html{background:#141E27!important}
     <div class="ftcols">
       <div><h4>Ridgeline Roofing</h4><ul><li>Houston, TX (demo business)</li><li><a href="#" data-sms="footer"><span data-phone>(346) 774-0053</span></a></li><li>Mon–Sat 7 AM–7 PM · 24/7 storm line</li></ul></div>
       <div><h4>Services</h4><ul><li><a href="roof-replacement.html">Roof replacement</a></li><li><a href="roof-repair.html">Leak repair</a></li><li><a href="storm-damage.html">Storm and hail damage</a></li><li><a href="gutters.html">Gutters</a></li><li><a href="attic-ventilation.html">Attic ventilation</a></li><li><a href="insurance-claims.html">Insurance claims</a></li><li><a href="commercial-roofing.html">Commercial roofing</a></li></ul></div>
-      <div><h4>Company</h4><ul><li><a href="about.html">About us</a></li><li><a href="reviews.html">Reviews</a></li><li><a href="roof-care-club.html">Roof Care Club</a></li><li><a href="roof-replacement-cost.html">Roof cost guide</a></li><li><a href="faq.html">Questions</a></li><li><a href="roofing-services.html">All services</a></li></ul></div>
+      <div><h4>Company</h4><ul><li><a href="about.html">About us</a></li><li><a href="reviews.html">Reviews</a></li><li><a href="roof-care-club.html">Roof Care Club</a></li><li><a href="roof-replacement-cost.html">Roof cost guide</a></li><li><a href="faq.html">Questions</a></li><li><a href="privacy.html">Privacy policy</a></li><li><a href="sms-terms.html">SMS terms</a></li><li><a href="roofing-services.html">All services</a></li></ul></div>
       <div><h4>Service areas</h4><ul class="ar"><li>Houston</li><li>Katy</li><li>Sugar Land</li><li>Pearland</li><li>The Woodlands</li><li>Cypress</li><li>Spring</li><li>Kingwood</li><li>League City</li><li>Missouri City</li><li>Bellaire</li><li>Humble</li><li>Friendswood</li><li>Tomball</li><li>Richmond</li><li>Rosenberg</li></ul></div>
     </div>
     <div class="fbot"><div><b style="color:#fff">Ridgeline Roofing</b> is a made-up Houston roofer for this demo.</div>
@@ -1075,7 +1080,7 @@ html{background:#141E27!important}
         <div class="field"><label for="qcPhone">Mobile</label><input id="qcPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(346) 555-0123"></div>
         <div class="field"><label for="qcEmail">Email</label><input id="qcEmail" type="email" inputmode="email" autocomplete="email"></div>
         <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="qcBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
-        <label class="smsc" id="qcSmsC"><input type="checkbox" id="qcSms"> <span>Text me my price and inspection updates. Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
+        <label class="smsc" id="qcSmsC"><input type="checkbox" id="qcSms"> <span>Text me my price and inspection updates from Ridgeline Roofing. Optional, not required. About 1–4 texts per request, no marketing. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. <a href="sms-terms.html" target="_blank">SMS terms</a> · <a href="privacy.html" target="_blank">Privacy</a></span></label>
         <p class="err" id="qcErr" role="alert" hidden></p>
         <div class="qdnav"><button class="btn btn-line" type="button" data-qgo="2">Back</button><button class="btn btn-main" type="submit">Show my price</button></div>
       </form>
@@ -1102,7 +1107,7 @@ html{background:#141E27!important}
 <div class="field"><label for="aEmail">Email</label><input id="aEmail" type="email" inputmode="email" autocomplete="email"></div>
 <div class="field"><label for="aAddr">Property address</label><input id="aAddr" autocomplete="street-address" placeholder="Street, city, ZIP"></div>
 <div class="field"><span class="flabel">Best way to reach you</span><div class="chips" id="aBest" role="radiogroup" aria-label="Best way to reach you"><button type="button" role="radio" aria-checked="true" data-best="Text">Text</button><button type="button" role="radio" aria-checked="false" data-best="Call">Call</button><button type="button" role="radio" aria-checked="false" data-best="Email">Email</button></div></div>
-<label class="smsc" id="aSmsC"><input type="checkbox" id="aSms"> <span>Text me about my question. Optional. No marketing texts. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.</span></label>
+<label class="smsc" id="aSmsC"><input type="checkbox" id="aSms"> <span>Text me about my question from Ridgeline Roofing. Optional, not required. About 1–4 texts per request, no marketing. Msg &amp; data rates may apply. Reply STOP to opt out, HELP for help. <a href="sms-terms.html" target="_blank">SMS terms</a> · <a href="privacy.html" target="_blank">Privacy</a></span></label>
 <p class="err" id="aErr" role="alert" hidden></p>
 <div class="imnav"><button class="btn btn-line" type="button" id="aBack">Back</button><button class="btn btn-main ibtn" type="submit">Send my question</button></div></section>
 </form><div id="aDone" hidden></div></div></div><script>
