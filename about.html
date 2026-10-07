@@ -300,6 +300,16 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .mrow small.samp{display:inline-block;font-size:11px}
 @media (max-width:640px){.mrow span[data-l]::before{content:attr(data-l);display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}}
 
+/* Numbers v2 */
+.funnel{display:grid;gap:8px}.frow{display:grid;grid-template-columns:150px 1fr 44px 120px;gap:10px;align-items:center;font-size:14.5px}
+.frow i{display:block;height:14px;border-radius:7px;background:var(--hivis)}.frow b{text-align:right}.frow small{color:var(--muted,#6b7785)}
+.srow{grid-template-columns:1.6fr repeat(6,1fr)!important}
+.warnbox{border-left:4px solid #E8A400}.warnbox span{display:block;margin-top:4px}
+.plist{margin:8px 0;padding-left:18px;font-size:14.5px}.plist small{color:#6b7785}
+.spend{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}.spend .field span{display:block;font-size:13.5px;font-weight:700;margin-bottom:4px}
+.st-lost{background:#f3d6d6!important;color:#7a1f1f!important}
+@media (max-width:640px){.frow{grid-template-columns:110px 1fr 34px}.frow small{grid-column:2/4;margin-top:-6px}}
+
 .app .kicker,.sheet .kicker{font-size:14px;font-weight:700;color:var(--hivis);margin:0}
 .app{color:var(--text)}
 .app h2{font-size:30px}
@@ -1152,7 +1162,7 @@ const first=n=>String(n||'').trim().split(/\s+/)[0]||'there';
 const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' hr ago':Math.round(m/1440)+' days ago'};
 const fmtDay=t=>new Date(t).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 const usd=n=>'$'+Math.round(n).toLocaleString('en-US');
-const STAGES=[['lead','New request'],['booked','Inspection booked'],['inspected','Inspected'],['estimate','Estimate sent'],['approved','Approved'],['work','Work in progress'],['invoiced','Invoiced'],['paid','Paid']];
+const STAGES=[['lead','New request'],['booked','Inspection booked'],['inspected','Inspected'],['estimate','Estimate sent'],['approved','Approved'],['work','Work in progress'],['invoiced','Invoiced'],['paid','Paid'],['lost','Lost']];
 const stageIx=s=>STAGES.findIndex(x=>x[0]===s);
 const stageName=s=>(STAGES.find(x=>x[0]===s)||['',s])[1];
 const OWNER_KEY='owner';
@@ -1308,7 +1318,7 @@ function custSheet(id){const c=byId(id);if(!c)return;const s=c.show=c.show||{};
     <p class="kicker" style="margin-top:6px">What ${esc(first(c.name))} can see</p><p class="muted" style="font-size:14px;margin-top:-6px">Nothing shows until you create it and switch it on.</p>
     <div class="vis">${Object.keys(lab).map(k=>`<div class="visrow"><label class="tog ${has[k]?'':'off'}"><input type="checkbox" data-show="${k}" ${has[k]&&s[k]?'checked':''} ${has[k]?'':'disabled'}> ${lab[k]}${has[k]?'':' <small>· not created yet</small>'}</label>${make[k]&&(k==='updates'||(!has[k]&&k!=='materials'))?make[k]:''}</div>`).join('')}</div>
     <div class="smsrow"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. `)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" id="cprev" ${c.portal?'':'disabled'}>See their portal</button></div>`));
-  $('#cst').onchange=e=>{c.stage=e.target.value;save()};
+  $('#cst').onchange=e=>{c.stage=e.target.value;if(c.stage==='lost'){c.lostT=c.lostT||Date.now();lostAsk(c,()=>{close();custSheet(c.id)})}else{delete c.lostReason;delete c.lostT}save()};
   $('#cport').onchange=e=>{c.portal=e.target.checked;save();close();custSheet(c.id)};
   $$('#layer [data-show]').forEach(x=>x.onchange=()=>{s[x.dataset.show]=x.checked;save()});
   $$('#layer [data-mk]').forEach(b=>b.onclick=()=>{close();({report:reportSheet,estimate:estSheet,update:updSheet,invoice:invSheet,book:bookSheet,mat:matSheet})[b.dataset.mk](c.id)});
@@ -1363,6 +1373,8 @@ function sampleJobs(){const t=d=>NOW+d*DAY,P=(i)=>'28155501'+String(40+i);
      updates:[{t:t(-30),text:'Chimney flashing replaced and sealed. Water test passed.',photos:[]}],
      invoice:{t:t(-29),amount:1350,desc:'Chimney flashing repair',status:'paid',paidT:t(-27)},
      matPlan:[{k:'shingle',desc:'Architectural shingles',qty:2,unit:'bundle',unitCost:42},{k:'flash',desc:'Step + counter flashing kit',qty:1,unit:'kit',unitCost:96},{k:'sealant',desc:'Roofing sealant',qty:3,unit:'tube',unitCost:9}]}];
+  J.push({id:'x_eli',sample:true,name:'Eli Turner',phone:P(5),email:'eli.t@example.com',addr:'3318 Shady Oak Ln, Houston, TX 77043',source:'Google',created:t(-25),stage:'lost',lostReason:'Went with another roofer',lostT:t(-12),contactPref:'Text',photos:[],updates:[],portal:false,show:{},notes:'',
+     report:{t:t(-22),notes:'Storm damage on two slopes.',photos:[]},estimate:{t:t(-20),status:'declined',opts:[{name:'Full replacement',price:15200,items:[]}]}});
   const purchases=[
    buy('gmail','Home Depot','Visa •••• 4417',-30,[{desc:'Step flashing, 4x4x8 (50 pc)',qty:1,unit:'box',unitCost:58},{desc:'Counter flashing, 10 ft',qty:2,unit:'piece',unitCost:19},{desc:'Roofing sealant',qty:3,unit:'tube',unitCost:9},{desc:'Architectural shingles',qty:2,unit:'bundle',unitCost:42}],'x_dev'),
    buy('gmail','ABC Supply','Account (net 30)',-3,plan.filter(m=>m.k!=='ply'&&m.k!=='sealant').map(m=>({desc:m.desc,qty:m.qty,unit:m.unit,unitCost:m.unitCost})),'x_cam'),
@@ -1374,7 +1386,7 @@ function sampleJobs(){const t=d=>NOW+d*DAY,P=(i)=>'28155501'+String(40+i);
 DB.purchases=DB.purchases||[];
 function samplesOn(){return DB.customers.some(c=>c.sample)}
 function setSamples(on){DB.customers=DB.customers.filter(c=>!c.sample);DB.purchases=(DB.purchases||[]).filter(p=>!p.sample);
-  if(on){const S=sampleJobs();DB.customers=DB.customers.concat(S.jobs);DB.purchases=S.purchases.concat(DB.purchases)}save()}
+  if(on){const S=sampleJobs();DB.customers=DB.customers.concat(S.jobs);DB.purchases=S.purchases.concat(DB.purchases);if(!DB.spend||DB.spend.sample||!Object.keys(DB.spend).length)DB.spend={sample:true,Google:1200,'Instant roof quote':0,'Yard sign':150}}else if(DB.spend&&DB.spend.sample)DB.spend={};save()}
 const jobSpent=c=>(DB.purchases||[]).filter(p=>p.job===c.id).reduce((a,p)=>a+p.total,0)+matTotal(c.matExtra);
 const jobPrice=c=>c.invoice?c.invoice.amount:c.estimate&&c.estimate.status==='approved'?c.estimate.opts[c.estimate.pick||0].price:0;
 function oMaterials(){const P=DB.purchases||[],thisM=MON(Date.now()),inbox=P.filter(p=>!p.job),mo=P.filter(p=>MON(p.t)===thisM&&p.job&&p.job!=='overhead');
@@ -1427,6 +1439,46 @@ function matSheet(id){const c=byId(id),bought=(DB.purchases||[]).filter(p=>p.job
   const cp=$('#mcopy');if(cp)cp.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(pl.map(m=>m.qty+' '+m.unit+' '+m.desc).join('\n'));toast('List copied.')};
   $('#mbuy').onclick=()=>{close();buySheet(id)};
   $('#mshow').onchange=e=>{c.show=c.show||{};c.show.materials=e.target.checked;save()}}
+
+/* ---------- Numbers v2 (Oct 7): full funnel, lost reasons, spend → CAC, gross profit → LTV ---------- */
+const LOST_WHY=['Went with another roofer','Price too high','Insurance denied','No answer after 3 tries','Decided to wait','Not a real lead / spam','Other'];
+function lostAsk(c,done){const close=open(sheetWrap('lsH','Why was it lost?',`<p class="muted" style="margin-top:-6px">${esc(c.name)}. A reason is required so your numbers stay honest.</p>
+  <div class="chips" id="lsC" role="radiogroup" aria-label="Reason">${LOST_WHY.map(r=>`<button type="button" role="radio" aria-checked="${c.lostReason===r}" data-why="${esc(r)}">${esc(r)}</button>`).join('')}</div>`));
+  $$('#lsC [data-why]').forEach(b=>b.onclick=()=>{c.lostReason=b.dataset.why;save();close();done&&done()})}
+const isWon=c=>stageIx(c.stage)>=stageIx('approved')&&c.stage!=='lost';
+function oNumbers(){const D=oPeriod,since=Date.now()-D*DAY,C=DB.customers.filter(c=>c.created>=since),sp=DB.spend||{};
+  const tile=(l,v,h)=>`<div class="tile"><small>${l}</small><b>${v}</b>${h?`<span>${h}</span>`:''}</div>`;
+  const pct=(a,b)=>b?Math.round(a/b*100)+'%':'n/a';
+  const n={leads:C.length,booked:C.filter(c=>c.appt||stageIx(c.stage)>=1&&c.stage!=='lost'||c.report).length,insp:C.filter(c=>c.report).length,est:C.filter(c=>c.estimate&&c.estimate.status!=='draft').length,won:C.filter(isWon).length,paid:C.filter(c=>c.stage==='paid').length,lost:C.filter(c=>c.stage==='lost').length};
+  const won=C.filter(isWon),rev=won.reduce((a,c)=>a+jobPrice(c),0),gp=won.reduce((a,c)=>a+Math.max(0,jobPrice(c)-(jobSpent(c)||matTotal(c.matPlan||[]))-jobPrice(c)*(DB.labor??.25)),0);
+  const spendFor=k=>(+sp[k]||0)*D/30,spendAll=Object.keys(sp).filter(k=>k!=='sample').reduce((a,k)=>a+spendFor(k),0)+(+DB.fee||0)*D/30;
+  const cac=n.won?spendAll/n.won:null,avgGP=n.won?gp/n.won:0,club=DB.customers.filter(c=>c.club).length;
+  const ltv=avgGP*(1+(DB.repeat??.3)),ratio=cac?ltv/cac:null;
+  const fun=[['Requests',n.leads],['Inspections booked',n.booked],['Inspected',n.insp],['Estimates sent',n.est],['Won',n.won],['Paid',n.paid]];
+  const srcs=[...new Set(C.map(c=>c.source).concat(Object.keys(sp).filter(k=>k!=='sample')))];
+  const rows=srcs.map(k=>{const L=C.filter(c=>c.source===k),W=L.filter(isWon),r=W.reduce((a,c)=>a+jobPrice(c),0),s2=spendFor(k);return{k,l:L.length,b:L.filter(c=>c.appt||c.report).length,w:W.length,r,s:s2,cac:W.length?s2/W.length:null}}).sort((a,b)=>b.r-a.r||b.l-a.l);
+  const why={};C.filter(c=>c.stage==='lost').forEach(c=>why[c.lostReason||'No reason given']=(why[c.lostReason||'No reason given']||0)+1);
+  const noWhy=C.filter(c=>c.stage==='lost'&&!c.lostReason),stale=C.filter(c=>c.estimate&&c.estimate.status==='sent'&&Date.now()-c.estimate.t>21*DAY);
+  const lostAddr=DB.customers.filter(c=>c.stage==='lost'&&c.addr);
+  return `<div class="seg" role="group" aria-label="Time range">${[7,30,90,365].map(d=>`<button type="button" data-per="${d}" aria-pressed="${D===d}">${d===365?'1 year':d+' days'}</button>`).join('')}</div>
+  ${samplesOn()?'<p class="samp-note">Numbers include sample jobs and sample ad spend.</p>':''}
+  <div class="tiles">${tile('Revenue won',usd(rev),n.won+' jobs')}${tile('Gross profit',usd(gp),'after materials + labor')}${tile('Cost to get a customer (CAC)',cac==null?'n/a':usd(cac),usd(spendAll)+' spent in range')}${tile('Lifetime value (LTV)',n.won?usd(ltv):'n/a','profit per customer incl. repeat + referrals')}
+    ${tile('LTV : CAC',ratio==null?'n/a':ratio.toFixed(1)+'x',ratio==null?'add spend below':ratio>=3?'healthy (3x+)':'below 3x, fix leaks')}${tile('Cost per request',n.leads&&spendAll?usd(spendAll/n.leads):'n/a')}${tile('Close rate',pct(n.won,n.est),'won ÷ estimates')}${tile('Club members',club,usd(club*12)+'/mo recurring')}</div>
+  <h3 class="osec">Funnel: where requests drop off</h3><div class="funnel">${fun.map(([l,v],i)=>`<div class="frow"><span>${l}</span><i style="width:${Math.max(3,n.leads?v/n.leads*100:0)}%"></i><b>${v}</b><small>${i?pct(v,fun[i-1][1])+' of previous':''}</small></div>`).join('')}</div>
+  <h3 class="osec">By source</h3><div class="mtable" role="table"><div class="mrow mh srow" role="row"><span>Source</span><span>Requests</span><span>Booked</span><span>Won</span><span>Revenue</span><span>Spend</span><span>CAC</span></div>
+    ${rows.map(r=>`<div class="mrow srow" role="row"><span data-l="Source"><b>${esc(r.k)}</b></span><span data-l="Requests">${r.l}</span><span data-l="Booked">${r.b}</span><span data-l="Won">${r.w}</span><span data-l="Revenue">${usd(r.r)}</span><span data-l="Spend">${usd(r.s)}</span><span data-l="CAC">${r.cac==null?'—':usd(r.cac)}</span></div>`).join('')||'<p class="muted">No requests in this range.</p>'}</div>
+  <h3 class="osec">Why jobs were lost</h3>${Object.keys(why).length?`<div class="obars">${Object.entries(why).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="obar" title="${esc(k)}"><span>${esc(k)}</span><i style="width:${Math.max(4,v/n.lost*100)}%"></i><b>${v}</b></div>`).join('')}</div>`:'<p class="muted">No lost jobs in this range.</p>'}
+  ${noWhy.length||stale.length?`<div class="pbox warnbox"><b>Check these</b>${noWhy.length?`<span>${noWhy.length} lost without a reason: ${noWhy.map(c=>`<button class="linkbtn" type="button" data-open="${c.id}">${esc(c.name)}</button>`).join(', ')}</span>`:''}${stale.length?`<span>${stale.length} estimates with no answer for 3+ weeks: ${stale.map(c=>`<button class="linkbtn" type="button" data-open="${c.id}">${esc(c.name)}</button>`).join(', ')}. Mark won or lost.</span>`:''}</div>`:''}
+  ${lostAddr.length?`<div class="pbox"><b>Permit check (lost jobs)</b><span class="muted">A re-roof needs a City of Houston permit. If a permit shows up at one of these addresses, the job happened anyway.</span><ul class="plist">${lostAddr.map(c=>`<li>${esc(c.name)} · ${esc(c.addr)} <small>lost ${ago(c.lostT||c.created)}${c.lostReason?' · '+esc(c.lostReason):''}</small></li>`).join('')}</ul><a class="btn btn-line btn-sm" href="https://www.houstonpermittingcenter.org/" target="_blank" rel="noopener">Open Houston permit search</a></div>`:''}
+  <h3 class="osec">What you spend each month</h3><p class="muted" style="margin-top:-6px">Used for CAC. Ads per source, plus your website/marketing fee.</p>
+  <div class="spend">${srcs.filter(k=>k).concat(srcs.includes('Google')?[]:['Google']).map(k=>`<label class="field"><span>${esc(k)}</span><input type="number" min="0" step="50" inputmode="numeric" data-spend="${esc(k)}" value="${+sp[k]||''}" placeholder="$0"></label>`).join('')}
+    <label class="field"><span>Website / marketing fee</span><input type="number" min="0" step="50" inputmode="numeric" data-cfg="fee" value="${DB.fee||''}" placeholder="$0"></label>
+    <label class="field"><span>Labor + overhead (% of job price)</span><input type="number" min="0" max="90" step="5" data-cfg="labor" value="${Math.round((DB.labor??.25)*100)}"></label>
+    <label class="field"><span>Repeat + referral boost (%)</span><input type="number" min="0" max="300" step="10" data-cfg="repeat" value="${Math.round((DB.repeat??.3)*100)}"></label></div>`}
+document.addEventListener('change',e=>{const t=e.target;if(!t.closest||!t.closest('#obody'))return;
+  if(t.dataset.spend!=null){DB.spend=DB.spend||{};delete DB.spend.sample;DB.spend[t.dataset.spend]=+t.value||0;save();openOwner()}
+  else if(t.dataset.cfg){const v=+t.value||0;DB[t.dataset.cfg]=t.dataset.cfg==='fee'?v:v/100;save();openOwner()}});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#obody .warnbox [data-open],#obody .plist [data-open]');if(b){e.stopPropagation();custSheet(b.dataset.open)}},true);
 
 /* ---------- backend: every lead and booking goes to the client's Apps Script web app
    (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
