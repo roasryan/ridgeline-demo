@@ -329,6 +329,11 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .ohbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .linkbtn{background:none;border:0;color:var(--hivis);text-decoration:underline;font:inherit;font-weight:700;cursor:pointer;padding:6px 0}
 #ogF input:not([type=checkbox]){width:100%;max-width:none}#ogF .tog{display:flex;align-items:center;gap:10px;margin:6px 0 4px;font-weight:700;line-height:1.3}#ogF .tog input{flex:none;width:22px;height:22px;margin:0;accent-color:#FFD400}#ogF .linkbtn{color:var(--hivis)}
+
+.crewlist small.capp{display:block;margin-top:2px;color:#46535F}.crewlist small.capp.on{color:#147A49;font-weight:700}
+.ccode-box{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0;padding:12px 14px;border-radius:16px;background:#FFF3BF;border:1px solid #F2C800}
+.ccode-box span{font-weight:800;color:#46535F}.ccode-box b{flex:1;font:900 30px/1 var(--display);letter-spacing:.18em;color:#14202A}
+#layer .opage .oswitch{margin:8px 0}
 /* ===== OWNER APP v2 (Oct 8): light + high contrast for sunlight, Ridgeline slate / hi-vis yellow / white ===== */
 #owner,#layer .opage{--ob:#EEF1F4;--oc:#FFFFFF;--oink:#14202A;--osoft:#46535F;--oline:#D3DAE0;--oy:#FFD400;--oy2:#F2C800;--osl:#1F2A33;--oblue:#1C5BD0;--ogreen:#147A49;--ored:#C0371C;--oamber:#FFF3BF;
   color:var(--oink);font-family:var(--body)}
@@ -1415,7 +1420,7 @@ const SITE_URL=location.href.split('#')[0];
 function seedDB(){return{v:3,customers:[]}}/* real data only: no sample customers (Ryan, Oct 3) */
 let DB;try{DB=JSON.parse(localStorage.getItem('rl-db')||'null')}catch(x){}
 if(!DB||DB.v!==3)DB=seedDB();
-const save=()=>{try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}};save();
+const save=()=>{try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}if(window.__onSave)window.__onSave()};save();
 const byPhone=p=>DB.customers.find(c=>c.phone===digits(p));
 const byId=id=>DB.customers.find(c=>c.id===id);
 function upsert(o){const p=digits(o.phone);let c=p?byPhone(p):(o.email?DB.customers.find(x=>!x.phone&&x.email===o.email):null);
@@ -1441,7 +1446,7 @@ function full(id,html){let el=document.getElementById(id);if(!el){el=document.cr
 function closeFull(id){const el=document.getElementById(id);if(el)el.hidden=true;if(!$$('.app').some(a=>!a.hidden))document.documentElement.classList.remove('app-open')}
 
 const PSTEPS=[['Request',['lead']],['Inspection',['booked','inspected']],['Estimate',['estimate','approved']],['Work',['work']],['Done',['invoiced','paid']]];
-function openPortal(id){const c=byId(id);if(!c)return;ensureJob(c);try{sessionStorage.setItem('rl-pt-'+c.id,'1')}catch(x){}window.open(portalUrl(c),'_blank')||(location.href=portalUrl(c))}
+function openPortal(id){const c=byId(id);if(!c)return;ensureJob(c);if(window.__pushNow)window.__pushNow();try{sessionStorage.setItem('rl-pt-'+c.id,'1');sessionStorage.setItem('rl-ptpin-'+c.id,c.job.pin)}catch(x){}window.open(portalUrl(c),'_blank')||(location.href=portalUrl(c))}
 
 /* ---------- owner view: private link (#owner) ---------- */
 let oTab='today',oPeriod=30;
@@ -1720,18 +1725,41 @@ function coSheet(id,ix){const c=byId(id),j=ensureJob(c),o=ix!=null?j.changes[ix]
 /* Owner → Crew & extras */
 function oTeam(){const C=DB.crew||[],A=DB.addons||[];
   return `<h3 class="osec">Your crew <span class="cnt">${C.length}</span></h3><p class="muted" style="margin-top:-6px">Customers see the photo and name of who’s coming. Retake photos any time, even right before heading out.</p>
-    <div class="crewlist">${C.map(m=>`<article class="orow"><div class="orow-m" style="display:flex;gap:12px;align-items:center">${avatar(m,56)}<div><b>${esc(m.name)}</b><small>${esc(m.role||'')}${m.photoT?' · photo '+ago(m.photoT):''}</small></div></div><div class="oacts"><label class="btn btn-line btn-sm upl1">${m.photo?'New photo':'Add photo'}<input type="file" accept="image/*" capture="user" data-cphoto="${m.id}" hidden></label><button class="btn btn-line btn-sm" type="button" data-cdel="${m.id}">Remove</button></div></article>`).join('')||'<p class="muted">No crew yet.</p>'}</div>
+    <div class="crewlist">${C.map(m=>`<article class="orow"><div class="orow-m" style="display:flex;gap:12px;align-items:center">${avatar(m,56)}<div><b>${esc(m.name)}</b><small>${esc(m.role||'')}${m.photoT?' · photo '+ago(m.photoT):''}</small><small class="capp ${m.code&&m.active!==false?'on':''}">${m.code&&m.active!==false?`Crew app · code <b>${esc(m.code)}</b> · ${permLine(m)}`:'No crew app access'}</small></div></div><div class="oacts"><button class="btn btn-main btn-sm" type="button" data-ced="${m.id}">Edit</button>${m.code&&m.active!==false?`<a class="btn btn-line btn-sm" href="${crewText(m)}" data-csend="${m.id}">Text link + code</a>`:''}<label class="btn btn-line btn-sm upl1">${m.photo?'New photo':'Add photo'}<input type="file" accept="image/*" capture="user" data-cphoto="${m.id}" hidden></label></div></article>`).join('')||'<p class="muted">No crew yet.</p>'}</div>
+    <p class="muted">Each person gets a crew code. They open <b>${esc(crewUrl())}</b>, type the code, and see their jobs: address with maps, customer, what to do, photos. You choose what each person can see and do.</p>
     <div class="pbox"><b>Add someone</b><div class="two"><div class="field"><label for="cmn">Name</label><input id="cmn" placeholder="Luis"></div><div class="field"><label for="cmr">Role</label><input id="cmr" list="cmrl" placeholder="Crew lead"><datalist id="cmrl"><option value="Crew lead"><option value="Roofer"><option value="Inspector"><option value="Project manager"><option value="Owner"></datalist></div></div><button class="btn btn-main btn-sm" type="button" id="cmadd">Add to crew</button></div>
     <h3 class="osec">Extras customers can add <span class="cnt">${A.length}</span></h3><p class="muted" style="margin-top:-6px">Shown in a customer’s portal only when you switch it on for their job. Use your real prices.</p>
     ${A.map(a=>`<article class="orow"><div class="orow-m" style="display:flex;gap:12px;align-items:center">${a.photo?`<img class="xph" src="${a.photo}" alt="">`:''}<div><b>${esc(a.name)} · ${usd(a.price)}</b><small>${esc(a.desc||'')}${a.pay?' · has pay link':''}</small></div></div><div class="oacts"><button class="btn btn-line btn-sm" type="button" data-xed="${a.id}">Edit</button><button class="btn btn-line btn-sm" type="button" data-xdel="${a.id}">Remove</button></div></article>`).join('')||'<p class="muted">None yet. Ideas: gutter guards, ridge vent upgrade, seamless gutters, attic fan, skylight reseal.</p>'}
     <button class="btn btn-main btn-sm" type="button" id="xadd">Add an extra</button>
     <h3 class="osec">Payments</h3><div class="pbox"><b>Default payment link</b><span class="muted">From Stripe, Square or QuickBooks. Pre-fills every invoice, change order and extra. Leave empty to bill at the end.</span><div class="field"><input id="dpl" type="url" value="${esc(DB.payLink||'')}" placeholder="https://buy.stripe.com/…" aria-label="Default payment link"></div></div>`}
-function bindTeam(){const add=$('#cmadd');add.onclick=()=>{const n=$('#cmn').value.trim();if(!n){toast('Add a name.');return}DB.crew=(DB.crew||[]).concat([{id:'m'+Math.random().toString(36).slice(2,7),name:n,role:$('#cmr').value.trim()}]);save();openOwner()};
+function bindTeam(){const add=$('#cmadd');add.onclick=()=>{const n=$('#cmn').value.trim();if(!n){toast('Add a name.');return}const m={id:'m'+Math.random().toString(36).slice(2,7),name:n,role:$('#cmr').value.trim(),code:newCrewCode(),active:true,perms:{photos:true,phone:true,status:true,allJobs:/owner|manager/i.test($('#cmr').value)}};DB.crew=(DB.crew||[]).concat([m]);save();openOwner();crewEdit(m.id,true)};
+  $$('#obody [data-ced]').forEach(b=>b.onclick=()=>crewEdit(b.dataset.ced));
   $$('#obody [data-cphoto]').forEach(i=>i.onchange=()=>{const f=i.files[0];if(f)faceCrop(f,u=>{const m=DB.crew.find(x=>x.id===i.dataset.cphoto);m.photo=u;m.photoT=Date.now();save();openOwner()})});
-  $$('#obody [data-cdel]').forEach(b=>b.onclick=()=>{DB.crew=DB.crew.filter(m=>m.id!==b.dataset.cdel);save();openOwner()});
   $('#xadd').onclick=()=>xSheet();$$('#obody [data-xed]').forEach(b=>b.onclick=()=>xSheet(b.dataset.xed));
   $$('#obody [data-xdel]').forEach(b=>b.onclick=()=>{DB.addons=DB.addons.filter(a=>a.id!==b.dataset.xdel);DB.customers.forEach(c=>{if(c.job)c.job.addons=(c.job.addons||[]).filter(x=>x!==b.dataset.xdel)});save();openOwner()});
   $('#dpl').onchange=e=>{DB.payLink=e.target.value.trim();save();toast('Saved.')}}
+/* crew app access (Oct 8): code + what each person may see and do on crew.html */
+const crewUrl=()=>new URL('crew.html',location.href).href;
+function newCrewCode(){const used=new Set((DB.crew||[]).map(m=>String(m.code||'')));let c;do{c=String(100000+Math.floor(Math.random()*900000))}while(used.has(c));return c}
+const PERMS=[['status','Tap “On my way”, “I’m here”, “Done”','The customer sees it live on their page.'],['photos','Add job photos','Can also show them to the customer.'],['phone','See the customer’s phone and email','Lets them call or text the customer.'],['allJobs','See every job','Off: only the visits you put them on.']];
+const permLine=m=>{const p=m.perms||{};return PERMS.filter(([k])=>k==='allJobs'?p[k]:p[k]!==false).map(([k])=>({status:'status',photos:'photos',phone:'customer info',allJobs:'all jobs'}[k])).join(', ')||'view only'};
+const crewText=m=>`sms:${m.phone?'+1'+digits(m.phone):''}${/iPhone|iPad|Mac/i.test(navigator.userAgent)?'&':'?'}body=${encodeURIComponent(`${CFG.biz} crew app: ${crewUrl()}\nYour code: ${m.code}\nSave the link to your home screen.`)}`;
+function crewEdit(mid,fresh){const m=(DB.crew||[]).find(x=>x.id===mid);if(!m)return;const p=Object.assign({photos:true,phone:true,status:true,allJobs:false},m.perms||{});let code=m.code||newCrewCode();
+  const close=open(sheetWrap('ceH',fresh?'Crew app for '+esc(m.name):esc(m.name),`
+    <div class="two"><div class="field"><label for="ceN">Name</label><input id="ceN" value="${esc(m.name)}"></div><div class="field"><label for="ceR">Role</label><input id="ceR" value="${esc(m.role||'')}" list="cmrl"></div></div>
+    <div class="field"><label for="ceP">Mobile (to text them the link)</label><input id="ceP" type="tel" inputmode="tel" value="${esc(m.phone||'')}" placeholder="(713) 555-0123"></div>
+    <label class="oswitch big"><input type="checkbox" id="ceOn" ${m.active!==false?'checked':''}><span></span><b>Crew app</b><small>Off locks them out right away.</small></label>
+    <div class="ccode-box"><span>Their code</span><b id="ceC">${esc(code)}</b><button class="btn btn-line btn-sm" type="button" id="ceNew">New code</button></div>
+    <h3 class="osec">What they can do</h3>
+    ${PERMS.map(([k,l,h])=>`<label class="oswitch"><input type="checkbox" data-perm="${k}" ${p[k]?'checked':''}><span></span><b>${l}</b><small>${h}</small></label>`).join('')}
+    <button class="btn btn-main" type="button" id="ceGo">Save</button>
+    <div class="two" style="margin-top:10px"><a class="btn btn-line" id="ceSms" href="#">Text them the link + code</a><a class="btn btn-line" href="${crewUrl()}" target="_blank" rel="noopener">Open crew app</a></div>
+    <button class="linkbtn" type="button" id="ceDel" style="margin-top:14px;color:var(--ored)">Remove ${esc(m.name)} from the crew</button>`),'#ceP');
+  const grab=()=>{m.name=$('#ceN').value.trim()||m.name;m.role=$('#ceR').value.trim();m.phone=digits($('#ceP').value);m.active=$('#ceOn').checked;m.code=code;m.perms={};$$('#layer [data-perm]').forEach(i=>m.perms[i.dataset.perm]=i.checked)};
+  const sms=$('#ceSms');sms.onclick=e=>{grab();save();sms.href=crewText(m)};
+  $('#ceNew').onclick=()=>{code=newCrewCode();$('#ceC').textContent=code;toast('New code. The old one stops working when you save.')};
+  $('#ceGo').onclick=()=>{grab();save();close();openOwner();toast('Saved. Changes reach their phone within a minute.')};
+  $('#ceDel').onclick=()=>{const b=$('#ceDel');if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Tap again to remove '+m.name;return}DB.crew=DB.crew.filter(x=>x.id!==m.id);DB.customers.forEach(c=>((c.job||{}).visits||[]).forEach(v=>{if(v.crew)v.crew=v.crew.filter(x=>x!==m.id)}));save();close();openOwner()}}
 function xSheet(xid){const a=xid?(DB.addons||[]).find(x=>x.id===xid):null;let ph=a?a.photo:'';
   const close=open(sheetWrap('xH',a?'Edit extra':'Add an extra',`<div class="field"><label for="xn">Name</label><input id="xn" value="${esc(a?a.name:'')}" placeholder="Gutter guards"></div><div class="field"><label for="xd">One line about it</label><input id="xd" value="${esc(a?a.desc:'')}" placeholder="Keeps leaves out. Installed the same day."></div>
     <div class="two"><div class="field"><label for="xp">Price</label><input id="xp" inputmode="decimal" value="${a?a.price:''}" placeholder="$"></div><div class="field"><label for="xl">Payment link (optional)</label><input id="xl" type="url" value="${esc(a?a.pay||'':DB.payLink||'')}"></div></div>
@@ -1798,6 +1826,8 @@ function doAct(c,a){const id=c.id;({book:()=>visitSheet(id,null,'inspection'),vi
 /* ---------- shell ---------- */
 const OPAGES={today:'Home',people:'Jobs',schedule:'Schedule',money:'Money',more:'More',team:'Crew & extras',mat:'Materials',avail:'Availability',numbers:'Numbers',job:''};
 function openOwner(){if(CFG.backend&&!window.__ownerLive)return ownerGate();
+  /* every booked inspection becomes a visit, so it shows on Home and Schedule (website bookings arrive with only a time) */
+  DB.customers.forEach(c=>{if(c.appt&&c.appt.t&&!(c.job&&c.job.apptIn))ensureJob(c)});
   if(oTab==='job'&&!byId(oJob))oTab='people';
   const c=oTab==='job'?byId(oJob):null;
   const body=oTab==='today'?oHome():oTab==='people'?oJobs():oTab==='job'?oJobPage(c):oTab==='schedule'?oSchedule():oTab==='money'?oMoney():oTab==='more'?oMore():oTab==='team'?oTeam():oTab==='avail'?oAvail():oTab==='mat'?oMaterials():oNumbers();
@@ -1982,7 +2012,7 @@ function oMoney(){const C=DB.customers,now=Date.now(),bill=C.filter(readyToBill)
     <h2 class="osec2">Paid lately</h2><div class="olist">${paid.map(c=>row(c,usd(c.invoice.amount),`<p class="muted2">Paid ${fmtDay(c.invoice.paidT)}${c.invoice.method?' · '+esc(c.invoice.method):''}</p>`)).join('')||'<p class="muted2">Nothing paid in the last 60 days.</p>'}</div>`}
 
 /* ---------- MORE ---------- */
-function oMore(){return `<div class="omore">${[['team','team','Crew & extras','Crew photos, extras customers can add, payment link'],['mat','box','Materials','Material lists, receipts, spend by store'],['numbers','chart','Numbers','Revenue, close rate, cost per customer'],['avail','clock','Availability','Hours and days the website can book']].map(([k,i,l,s])=>`<button type="button" data-go="${k}">${oi(i)}<span><b>${l}</b><small>${s}</small></span>${oi('back','flip')}</button>`).join('')}
+function oMore(){return `<div class="omore">${[['team','team','Crew & extras','Crew codes and photos, extras, payment link'],['mat','box','Materials','Material lists, receipts, spend by store'],['numbers','chart','Numbers','Revenue, close rate, cost per customer'],['avail','clock','Availability','Hours and days the website can book']].map(([k,i,l,s])=>`<button type="button" data-go="${k}">${oi(i)}<span><b>${l}</b><small>${s}</small></span>${oi('back','flip')}</button>`).join('')}
   <button type="button" id="mSite">${oi('globe')}<span><b>Back to the website</b><small>See what customers see</small></span>${oi('back','flip')}</button>${CFG.backend?`<button type="button" id="mOut">${oi('out')}<span><b>Sign out</b><small>On this device</small></span>${oi('back','flip')}</button>`:''}</div>`}
 
 /* ---------- + quick actions and job picker ---------- */
@@ -2015,21 +2045,52 @@ function sendLead(o){if(!CFG.backend)return Promise.resolve({ok:true,demo:true})
 /* anything that failed to send (no signal, backend down) is retried on the next visit */
 if(CFG.backend){const q=outbox();if(q.length){setOutbox([]);q.forEach(row=>postBackend(row).catch(()=>setOutbox(outbox().concat([row]))))}}
 {const _up=upsert;upsert=function(o){const c=_up(o);if(!o._sent)sendLead(o);return c}}
-/* ---------- owner view, live: real leads from the backend (PIN), no sample data ---------- */
-async function loadOwnerLeads(token){const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'leads',token})})).json();if(!j.ok)return j;
-  const real=j.leads.map((L,i)=>{const t=L.start?new Date(L.start):null;
-    return{id:'s'+i+'_'+L.phone,name:L.name||'Customer',phone:L.phone,addr:L.address||'',email:L.email||'',contactPref:L.best||'',source:L.type||'Website',created:Date.parse(L.received)||Date.now(),
-      stage:t?'booked':'lead',msg:L.issue||'',quote:L.quote,photos:[],updates:[],portal:false,show:{schedule:!!t},notes:'',
-      appt:t?{t:t.getTime(),time:L.startTime,slot:AV.label(L.startTime),confirmed:false}:undefined}});
-  const seen=new Set(real.map(c=>c.phone+'|'+c.created));
-  DB.customers=real.concat(DB.customers.filter(c=>c.id&&c.id[0]!=='s'&&!seen.has(c.phone+'|'+c.created)));save();window.__ownerLive=true;return j}
+/* ---------- owner view, live (v10, Oct 8): one shared job store on the backend ----------
+   Sign-in pulls every job (db_get) + new website requests (leads). Every owner edit is pushed (db_put) a second later.
+   Crew and customers change the same jobs from their own phones; the owner view checks for changes every minute. */
+const SYNC={last:{},meta:'',act:'',timer:0,poll:0,loaded:false};
+const jh=o=>JSON.stringify(o);
+const metaObj=()=>({crew:DB.crew||[],addons:DB.addons||[],settings:{payLink:DB.payLink||'',spend:DB.spend||{},fee:DB.fee,labor:DB.labor,repeat:DB.repeat}});
+function markSynced(skip){SYNC.last={};DB.customers.forEach(c=>{if(!skip||!skip.has(c.id))SYNC.last[c.id]=jh(c)});SYNC.meta=jh(metaObj());SYNC.act=jh(DB.activity||[])}
+window.__onSave=()=>{if(!SYNC.loaded)return;clearTimeout(SYNC.timer);SYNC.timer=setTimeout(pushNow,1200)};
+async function pushNow(){const t=otok();if(!t||!CFG.backend||!SYNC.loaded)return;clearTimeout(SYNC.timer);
+  const put={};DB.customers.forEach(c=>{if(SYNC.last[c.id]!==jh(c))put[c.id]=c});const body={action:'db_put',token:t,put};
+  const m=jh(metaObj()),a=jh(DB.activity||[]);if(m!==SYNC.meta){const o=metaObj();body.crew=o.crew;body.addons=o.addons;body.settings=o.settings}if(a!==SYNC.act)body.activity=DB.activity||[];
+  if(!Object.keys(put).length&&!body.crew&&!body.activity)return;
+  try{const r=await ownerPost(body);if(r.ok){Object.keys(put).forEach(id=>SYNC.last[id]=jh(put[id]));if(body.crew)SYNC.meta=m;if(body.activity)SYNC.act=a}else if(r.reason==='auth'){setTok('');window.__ownerLive=false}}catch(x){SYNC.timer=setTimeout(pushNow,15000)}}
+window.__pushNow=pushNow;
+function leadToJob(L){const rec=Date.parse(L.received)||Date.now(),key=digits(L.phone)+'|'+rec,t=L.start?new Date(L.start):null;
+  return{id:'w'+rec.toString(36)+(digits(L.phone).slice(-4)||'x'),leadKey:key,name:L.name||'Customer',phone:digits(L.phone),addr:L.address||'',email:L.email||'',contactPref:L.best||'',smsOk:!!L.sms,source:L.type||'Website',created:rec,
+    stage:t?'booked':'lead',msg:L.issue||'',quote:L.quote,photos:[],updates:[],portal:false,show:{schedule:!!t},notes:'',fresh:true,
+    appt:t?{t:t.getTime(),time:L.startTime,slot:AV.label(L.startTime),confirmed:false}:undefined}}
+async function loadOwnerLeads(token){const [db,ld]=await Promise.all([ownerPost({action:'db_get',token}),ownerPost({action:'leads',token})]);
+  if(!db.ok)return db;const dirty=new Set(SYNC.loaded?DB.customers.filter(c=>SYNC.last[c.id]!==jh(c)).map(c=>c.id):[]);
+  const local=new Map(DB.customers.filter(c=>c.id&&c.id[0]!=='s').map(c=>[c.id,c]));
+  db.jobs=db.jobs||{};const merged=Object.values(db.jobs).map(sc=>dirty.has(sc.id)&&local.get(sc.id)?local.get(sc.id):sc);
+  local.forEach((c,id)=>{if(!db.jobs[id])merged.push(c)});
+  const added=[],fresh=new Set();
+  ((ld&&ld.leads)||[]).forEach(L=>{const j=leadToJob(L);if(merged.some(c=>c.leadKey===j.leadKey||c.id===j.id))return;
+    const same=merged.find(c=>!c.leadKey&&c.phone&&c.phone===j.phone&&Math.abs((c.created||0)-j.created)<15*6e4);if(same){same.leadKey=j.leadKey;if(!same.appt&&j.appt){same.appt=j.appt;same.stage=j.stage}fresh.add(same.id);return}
+    merged.push(j);added.push(j);fresh.add(j.id)});
+  DB.customers=merged.sort((a,b)=>(b.created||0)-(a.created||0));
+  if((db.crew||[]).length||SYNC.loaded)DB.crew=db.crew;if((db.addons||[]).length||SYNC.loaded)DB.addons=db.addons;
+  const st=db.settings||{};['payLink','spend','fee','labor','repeat'].forEach(k=>{if(st[k]!==undefined&&st[k]!==null)DB[k]=st[k]});
+  const seen=new Set((DB.activity||[]).filter(a=>a.seen).map(a=>a.t)),byT=new Map();(DB.activity||[]).concat(db.activity||[]).forEach(a=>{const o=Object.assign({},a);if(seen.has(a.t))o.seen=true;byT.set(a.t+'|'+a.cid,o)});DB.activity=[...byT.values()].sort((a,b)=>a.t-b.t).slice(-200);
+  DB.customers.forEach(c=>{if(c.appt&&!(c.job&&c.job.apptIn))ensureJob(c)});
+  const firstLoad=!SYNC.loaded;markSynced(firstLoad?new Set(DB.customers.filter(c=>!db.jobs[c.id]).map(c=>c.id)):fresh);
+  added.forEach(c=>delete SYNC.last[c.id]);SYNC.loaded=true;save();window.__ownerLive=true;pushNow();
+  if(!SYNC.poll)SYNC.poll=setInterval(ownerPoll,60000);return{ok:true,added}}
+async function ownerPoll(){const o=$('#owner');if(!o||o.hidden||document.hidden||!otok())return;
+  try{const r=await loadOwnerLeads(otok());if(!r.ok)return;if(r.added&&r.added.length){toast(r.added.length===1?`New request: ${r.added[0].name}`:`${r.added.length} new requests`)}
+    if(!$('#layer .sheet'))openOwner()}catch(x){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&SYNC.loaded)ownerPoll()});
 /* ---------- owner sign-in (Oct 8): email + password checked by the backend; the website only keeps a sign-in token ----------
    No master codes. A customer link or PIN can never open the owner view. First time / forgot: a 6-digit code is emailed to the owner's address. */
 const otok=()=>{try{return localStorage.getItem('rl-otok')||sessionStorage.getItem('rl-otok')||''}catch(x){return''}};
 function setTok(t,remember){try{localStorage.removeItem('rl-otok');sessionStorage.removeItem('rl-otok');if(t)(remember?localStorage:sessionStorage).setItem('rl-otok',t)}catch(x){}}
 window.ownerToken=otok;
 async function ownerPost(o){return(await fetch(CFG.backend,{method:'POST',body:JSON.stringify(o)})).json()}
-window.ownerSignOut=async()=>{const t=otok();setTok('');window.__ownerLive=false;try{if(t)await ownerPost({action:'logout',token:t})}catch(x){}closeFull('owner');toast('Signed out.');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
+window.ownerSignOut=async()=>{await pushNow();const t=otok();setTok('');window.__ownerLive=false;SYNC.loaded=false;clearInterval(SYNC.poll);SYNC.poll=0;try{if(t)await ownerPost({action:'logout',token:t})}catch(x){}closeFull('owner');toast('Signed out.');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
 let gateTried=false;
 async function ownerGate(msg,mode){const t=otok();
   if(t&&!gateTried&&!mode){gateTried=true;full('owner',`<div class="appbody"><p class="muted" style="text-align:center;margin-top:30vh">Signing you in…</p></div>`);

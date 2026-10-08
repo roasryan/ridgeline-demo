@@ -214,6 +214,7 @@ svg{display:block}
 .again .pin-card,.again .lg-r,.again .lg-h,.again .vcal,.again .crew li,.again .ring-fg{animation:none!important;stroke-dashoffset:0}
 .again .ring-fg{stroke-dashoffset:var(--o)}
 .again [data-anim]{opacity:1;transform:none;transition:none}
+.pin-card.busy .pin-dots i{animation:pdot .8s ease-in-out infinite alternate}.pin-card.busy .pin-dots i:nth-child(2){animation-delay:.15s}.pin-card.busy .pin-dots i:nth-child(3){animation-delay:.3s}.pin-card.busy .pin-dots i:nth-child(4){animation-delay:.45s}@keyframes pdot{to{opacity:.35;transform:scale(.8)}}
 </style></head><body><div id="wall" aria-hidden="true"></div><div id="papp"></div><div id="player"></div><script>/* ============ Ridgeline customer portal (portal.html?j=JOB) — Oct 7, round 1 ============
    Separate screen for customers on a current job. PIN unlock, English/Español, arrival window + who's coming,
    change orders and add-ons they can approve and pay, invoice, job photos. Owner sets everything up in Owner → customer.
@@ -257,7 +258,7 @@ const W={en:{
   warr:'10-year workmanship warranty',warrP:'If anything we did leaks, text us and we come back free.',
   book:'Book another service',bookP:'Gutters, attic vents, storm checks and more.',visit:'Visit our website',
   text:'Text us',call:'Call',close:'Close',photo:'Photo',nothing:'We’re on it. Your visit time, photos and updates will show up here.',
-  lang:'Language',langEn:'English',langEs:'Español',demo:'Demo: this page shows what’s saved on this device.',
+  lang:'Language',langEn:'English',langEs:'Español',checking:'Checking…',lockedLong:'Too many tries. Wait 15 minutes or text us.',err:'Couldn’t connect. Check your signal and try again.',sending:'Sending…',loading:'Opening your project…',demo:'Demo: this page shows what’s saved on this device.',
   sms:{diff:(n,d)=>`Hi Ridgeline, it’s ${n}. I need a different time for my visit on ${d}.`,q:n=>`Hi Ridgeline, it’s ${n}. I have a question about my roof job.`,co:(n,t)=>`Hi Ridgeline, it’s ${n}. Question about the change “${t}”.`,pin:'Hi Ridgeline, I need my portal PIN again.'}
 },es:{
   portal:'Su portal del proyecto',enterPin:'Escriba su PIN de 4 dígitos',pinHelp:'Está en el mensaje de texto que le enviamos con este enlace.',wrong:'Ese PIN no coincide. Intente otra vez.',
@@ -285,12 +286,16 @@ const W={en:{
   warr:'Garantía de mano de obra de 10 años',warrP:'Si algo que hicimos gotea, envíenos un texto y regresamos gratis.',
   book:'Reservar otro servicio',bookP:'Canaletas, ventilación del ático, revisión por tormenta y más.',visit:'Visitar nuestro sitio web',
   text:'Enviar texto',call:'Llamar',close:'Cerrar',photo:'Foto',nothing:'Ya estamos trabajando en ello. Aquí aparecerán la hora de su visita, fotos y novedades.',
-  lang:'Idioma',langEn:'English',langEs:'Español',demo:'Demo: esta página muestra lo guardado en este dispositivo.',
+  lang:'Idioma',langEn:'English',langEs:'Español',checking:'Verificando…',lockedLong:'Demasiados intentos. Espere 15 minutos o envíenos un texto.',err:'No pudimos conectar. Revise su señal e intente otra vez.',sending:'Enviando…',loading:'Abriendo su proyecto…',demo:'Demo: esta página muestra lo guardado en este dispositivo.',
   sms:{diff:(n,d)=>`Hola Ridgeline, soy ${n}. Necesito otro horario para mi visita del ${d}.`,q:n=>`Hola Ridgeline, soy ${n}. Tengo una pregunta sobre mi trabajo de techo.`,co:(n,t)=>`Hola Ridgeline, soy ${n}. Pregunta sobre el cambio “${t}”.`,pin:'Hola Ridgeline, necesito mi PIN del portal otra vez.'}
 }};
 let DB={customers:[]};try{DB=JSON.parse(localStorage.getItem('rl-db')||'null')||DB}catch(x){}
-const save=()=>{try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}};
-const C=(DB.customers||[]).find(c=>c.id===JOB);
+/* live (v10): with a backend the PIN is checked on the server and the job comes from the shared store, so it works on the customer's own phone */
+const REMOTE=!!(CFG&&CFG.backend);let LIVE=false,PIN='';try{PIN=sessionStorage.getItem('rl-ptpin-'+JOB)||''}catch(x){}
+const save=()=>{if(LIVE)return;try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}};
+let C=(DB.customers||[]).find(c=>c.id===JOB);const LOCALC=C;if(!C&&REMOTE&&JOB)C={id:JOB,name:'',job:{},ph:1};
+async function api(o){const r=await fetch(CFG.backend,{method:'POST',body:JSON.stringify(Object.assign({j:JOB,pin:PIN},o))});return r.json()}
+function takeView(r){C=r.c;C.job=C.job||{};DB={customers:[C],crew:r.crew||[],addons:r.addons||[]};LIVE=true}
 let LANG=(()=>{let l='';try{l=localStorage.getItem('rl-lang')||''}catch(x){}return l||(C&&C.job&&C.job.lang)||((navigator.language||'').startsWith('es')?'es':'en')})();
 const T=()=>W[LANG];const LOC=()=>LANG==='es'?'es-US':'en-US';
 const usd=n=>'$'+Math.round(+n||0).toLocaleString('en-US');
@@ -301,7 +306,7 @@ const tm=hm=>{if(!hm)return'';const[h,m]=hm.split(':').map(Number),d=new Date();
 const at=(date,hm)=>{const[y,mo,d]=date.split('-').map(Number),[h,m]=(hm||'08:00').split(':').map(Number);return new Date(y,mo-1,d,h,m||0).getTime()};
 const isPhone=()=>/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&innerWidth<900);
 const smsHref=b=>`sms:${BIZ_PHONE}${/iPhone|iPad|Mac/i.test(navigator.userAgent)?'&':'?'}body=${encodeURIComponent(b)}`;
-const setLang=l=>{LANG=l;try{localStorage.setItem('rl-lang',l)}catch(x){}document.documentElement.lang=l;if(C){C.job=C.job||{};if(C.job.lang!==l){C.job.lang=l;save()}}};
+const setLang=l=>{LANG=l;try{localStorage.setItem('rl-lang',l)}catch(x){}document.documentElement.lang=l;if(C){C.job=C.job||{};if(C.job.lang!==l){C.job.lang=l;if(LIVE)api({action:'portal_act',act:'lang',lang:l}).catch(()=>{});else save()}}};
 document.documentElement.lang=LANG;
 
 /* ---------- icons ---------- */
@@ -354,9 +359,18 @@ function pinScreen(){const t=T();let v='';
   const dots=$$('.pin-dots i'),err=$('#pinErr'),inp=$('#pinIn'),card=$('.pin-card');
   const draw=()=>dots.forEach((d,i)=>d.classList.toggle('on',i<v.length));
   const lockMsg=()=>{const s=Math.ceil((lockUntil-Date.now())/1000);if(s>0){err.textContent=t.locked(s);setTimeout(lockMsg,1000);return true}err.textContent='';return false};
+  const good=()=>{tries=0;saveTries();try{sessionStorage.setItem(KEY,'1')}catch(x){}card.classList.add('ok');dots.forEach(d=>d.classList.add('ok'));setTimeout(()=>{$('#pin').classList.add('leave');setTimeout(portal,reduce?0:520)},reduce?0:650)};
+  const localOk=x=>LOCALC&&(x===String((LOCALC.job||{}).pin||'')||x===MASTER_PIN);
   const check=()=>{if(Date.now()<lockUntil){lockMsg();v='';draw();return}
-    if(v===String((C.job||{}).pin||'')||v===MASTER_PIN){tries=0;saveTries();try{sessionStorage.setItem(KEY,'1')}catch(x){}card.classList.add('ok');dots.forEach(d=>d.classList.add('ok'));setTimeout(()=>{$('#pin').classList.add('leave');setTimeout(portal,reduce?0:520)},reduce?0:650);return}
-    tries++;if(tries>=5){lockUntil=Date.now()+60e3;tries=0}saveTries();card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');if(navigator.vibrate)navigator.vibrate([60,40,60]);
+    if(REMOTE){const x=v;card.classList.add('busy');err.textContent=t.checking;
+      api({action:'portal_get',pin:x}).then(r=>{card.classList.remove('busy');err.textContent='';
+        if(r.ok){PIN=x;try{sessionStorage.setItem('rl-ptpin-'+JOB,x)}catch(e){}takeView(r);good();return}
+        if(r.reason==='nojob'&&localOk(x)){C=LOCALC;good();return}
+        if(r.reason==='locked'){err.textContent=t.lockedLong;v='';inp.value='';draw();return}
+        if(r.reason==='nojob'){err.textContent=t.noJobP;v='';inp.value='';draw();return}
+        bad()}).catch(()=>{card.classList.remove('busy');if(localOk(x)){C=LOCALC;good();return}err.textContent=t.err;v='';inp.value='';draw()});return}
+    if(localOk(v)){good();return}bad()};
+  const bad=()=>{tries++;if(tries>=5){lockUntil=Date.now()+60e3;tries=0}saveTries();card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');if(navigator.vibrate)navigator.vibrate([60,40,60]);
     err.textContent=Date.now()<lockUntil?'':t.wrong;if(Date.now()<lockUntil)lockMsg();setTimeout(()=>{v='';inp.value='';draw()},380)};
   const push=k=>{if(k==='del'){v=v.slice(0,-1)}else if(v.length<4){v+=k}inp.value=v;draw();err.textContent=err.textContent===t.wrong?'':err.textContent;if(v.length===4)check()};
   $$('.pt-key[data-k]').forEach(b=>b.addEventListener('click',()=>{b.classList.remove('hit');void b.offsetWidth;b.classList.add('hit');push(b.dataset.k)}));
@@ -425,18 +439,18 @@ function portal(){const again=shown;shown=true;const t=T(),c=C,j=c.job=c.job||{}
       ${P.join('')}
       <section class="pc pc-more" data-anim><a class="more" href="index.html#inspect"><b>${t.book}</b><span>${t.bookP}</span></a><a class="more" href="index.html"><b>${t.visit}</b><span>ridgeline · ${esc(CFG.city)}</span></a></section>
       <div class="pcontact" data-anim><a class="pbtn pbtn-main" href="${smsHref(t.sms.q(c.name))}">${I.chat}${t.text}</a><a class="pbtn pbtn-line" href="tel:${BIZ_PHONE}">${I.phone}${t.call} ${BIZ_PRETTY}</a></div>
-      ${CFG.backend&&!j.synced?`<p class="pdemo">${t.demo}</p>`:''}
+      ${REMOTE&&!LIVE?`<p class="pdemo">${t.demo}</p>`:''}
     </main></div>`;
   bindLang(portal);
   $('#pLock').onclick=()=>{try{sessionStorage.removeItem(KEY)}catch(x){}pinScreen()};
   $$('[data-anim]').forEach((el,i)=>{el.style.setProperty('--i',i)});
   $$('.zoomable[data-zoom]').forEach(b=>b.onclick=()=>{const cl=sheet(`<div class="pzoom"><img src="${esc(b.dataset.zoom)}" alt="${t.photo}"><button type="button" class="pbtn pbtn-line" data-close>${t.close}</button></div>`)});
   $$('[data-ics]').forEach(b=>b.onclick=()=>ics(j.visits.find(x=>x.id===b.dataset.ics)));
-  $$('[data-coa]').forEach(b=>b.onclick=()=>signSheet(t.signT,changes[+b.dataset.coa],n=>{Object.assign(changes[+b.dataset.coa],{status:'approved',signed:n,signedT:Date.now()});log(`Approved change: ${changes[+b.dataset.coa].title} (${usd(changes[+b.dataset.coa].price)})`);confetti();toast(t.thanksApp);portal()}));
-  $$('[data-cod]').forEach(b=>b.onclick=()=>{const o=changes[+b.dataset.cod];o.status='declined';o.decT=Date.now();log(`Said not now to change: ${o.title}`);toast(t.thanksDec);portal()});
-  $$('[data-est]').forEach(b=>b.onclick=()=>{const i=+b.dataset.est,o=c.estimate.opts[i];signSheet(o.name,{title:o.name,price:o.price},n=>{Object.assign(c.estimate,{status:'approved',pick:i,signed:n,signedT:Date.now()});c.stage='approved';log(`Approved estimate: ${o.name} (${usd(o.price)})`);confetti();toast(t.thanksApp);portal()})});
+  $$('[data-coa]').forEach(b=>b.onclick=()=>signSheet(t.signT,changes[+b.dataset.coa],n=>{if(LIVE)return remoteAct({act:'co_ok',i:+b.dataset.coa,name:n},t.thanksApp,1);Object.assign(changes[+b.dataset.coa],{status:'approved',signed:n,signedT:Date.now()});log(`Approved change: ${changes[+b.dataset.coa].title} (${usd(changes[+b.dataset.coa].price)})`);confetti();toast(t.thanksApp);portal()}));
+  $$('[data-cod]').forEach(b=>b.onclick=()=>{if(LIVE)return remoteAct({act:'co_no',i:+b.dataset.cod},t.thanksDec);const o=changes[+b.dataset.cod];o.status='declined';o.decT=Date.now();log(`Said not now to change: ${o.title}`);toast(t.thanksDec);portal()});
+  $$('[data-est]').forEach(b=>b.onclick=()=>{const i=+b.dataset.est,o=c.estimate.opts[i];signSheet(o.name,{title:o.name,price:o.price},n=>{if(LIVE)return remoteAct({act:'est_ok',i,name:n},t.thanksApp,1);Object.assign(c.estimate,{status:'approved',pick:i,signed:n,signedT:Date.now()});c.stage='approved';log(`Approved estimate: ${o.name} (${usd(o.price)})`);confetti();toast(t.thanksApp);portal()})});
   $$('[data-add]').forEach(b=>b.onclick=()=>{const a=(DB.addons||[]).find(x=>x.id===b.dataset.add);const cl=sheet(`<h2>${t.addT}</h2><div class="sheet-x">${a.photo?`<img src="${esc(a.photo)}" alt="">`:''}<div><b>${esc(a.name)}</b><p class="pm">${esc(a.desc||'')}</p><p class="price big"><b>${usd(a.price)}</b></p></div></div><div class="prow"><button type="button" class="pbtn pbtn-main" id="addGo">${I.check}${t.addBtn}</button><button type="button" class="pbtn pbtn-line" data-close>${t.notNow}</button></div>`,'#addGo');
-    $('#addGo').onclick=()=>{j.picks=(j.picks||[]).concat([{addon:a.id,name:a.name,price:a.price,status:'requested',t:Date.now()}]);log(`Added extra: ${a.name} (${usd(a.price)})`);cl();confetti();toast(t.addOk);portal()}});
+    $('#addGo').onclick=()=>{if(LIVE){cl();return remoteAct({act:'extra',id:a.id},t.addOk,1)}j.picks=(j.picks||[]).concat([{addon:a.id,name:a.name,price:a.price,status:'requested',t:Date.now()}]);log(`Added extra: ${a.name} (${usd(a.price)})`);cl();confetti();toast(t.addOk);portal()}});
   if(!reduce&&!again){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});$$('[data-anim]').forEach(el=>io.observe(el))}else $$('[data-anim]').forEach(el=>el.classList.add('in'));
   requestAnimationFrame(()=>$('#pwrap').classList.add('ready'))}
 function log(text){const c=C;c.job.log=(c.job.log||[]).concat([{t:Date.now(),text}]);c.fresh=true;DB.activity=(DB.activity||[]).concat([{t:Date.now(),cid:c.id,text,seen:false}]).slice(-200);save();
@@ -448,7 +462,16 @@ function ics(v){if(!v)return;const p=x=>String(x).padStart(2,'0'),f=ms=>{const d
   const u=URL.createObjectURL(new Blob([txt],{type:'text/calendar'})),l=document.createElement('a');l.href=u;l.download='ridgeline-visit.ics';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
 
 /* live refresh: when the owner changes something in another tab on this device, update without a reload */
-addEventListener('storage',e=>{if(e.key!=='rl-db'||!unlocked())return;try{const n=JSON.parse(e.newValue||'null');if(!n)return;DB=n;const c=(DB.customers||[]).find(x=>x.id===JOB);if(c){Object.keys(C).forEach(k=>delete C[k]);Object.assign(C,c);DB.customers[DB.customers.indexOf(c)]=C;portal()}}catch(x){}});
-if(C&&unlocked())portal();else pinScreen();
+addEventListener('storage',e=>{if(LIVE||e.key!=='rl-db'||!unlocked())return;try{const n=JSON.parse(e.newValue||'null');if(!n)return;DB=n;const c=(DB.customers||[]).find(x=>x.id===JOB);if(c){Object.keys(C).forEach(k=>delete C[k]);Object.assign(C,c);DB.customers[DB.customers.indexOf(c)]=C;portal()}}catch(x){}});
+async function remoteAct(o,msg,party){const t=T();toast(t.sending);
+  try{const r=await api(Object.assign({action:'portal_act'},o));if(r.ok){takeView(r);if(party)confetti();toast(msg);portal();return}
+    if(r.reason==='pin'||r.reason==='locked'){try{sessionStorage.removeItem(KEY)}catch(x){}pinScreen();return}toast(t.err)}catch(x){toast(t.err)}}
+/* customer's phone: pull fresh info every minute and when they come back to the page */
+async function refresh(){if(!LIVE||document.hidden||!unlocked()||$('#player .psheet'))return;
+  try{const r=await api({action:'portal_get'});if(r.ok){const was=JSON.stringify([C,DB.crew,DB.addons]);takeView(r);if(JSON.stringify([C,DB.crew,DB.addons])!==was)portal()}else if(r.reason==='pin'){try{sessionStorage.removeItem(KEY)}catch(x){}pinScreen()}}catch(x){}}
+if(REMOTE){setInterval(refresh,60000);document.addEventListener('visibilitychange',refresh)}
+if(REMOTE&&JOB&&unlocked()&&PIN){$('#papp').innerHTML=`<main class="pin" id="pin"><section class="pin-card"><div class="pin-brand">${LOGO}<span>Ridgeline<small>Roofing</small></span></div><p class="pin-help">${T().loading}</p></section></main>`;
+  api({action:'portal_get'}).then(r=>{if(r.ok){takeView(r);portal()}else if(r.reason==='nojob'&&LOCALC){C=LOCALC;portal()}else{try{sessionStorage.removeItem(KEY)}catch(x){}pinScreen()}}).catch(()=>{if(LOCALC){C=LOCALC;portal()}else pinScreen()})}
+else if(C&&unlocked()&&!C.ph)portal();else pinScreen();
 })();
 </script></body></html>

@@ -4,6 +4,7 @@
  *
  *   GET  ?action=slots&days=28   → open start times per day ("08:00", "09:30"…) + the owner's settings
  *   GET  ?action=settings        → the owner's availability settings
+ *   POST {action:'db_get'|'db_put'} (owner token) · {action:'portal_get'|'portal_act', j, pin} · {action:'crew_get'|'crew_act', code}  → shared job store (v10)
  *   POST {action:'login'|'reset_request'|'reset_set'|'logout'|'whoami'}  → owner email + password sign-in (v9); owner actions send {token}
  *   POST {action:'settings', token, settings}  → owner saves hours / limits from the website's owner screen
  *   POST (lead JSON from the site) → Sheet row, owner alert, booking on the "<Biz> inspections" calendar,
@@ -60,6 +61,15 @@ function doPost(e) {
   if (L.action === 'reset_set') return json(ownerResetSet(L));
   if (L.action === 'logout') { if (L.token) P.deleteProperty('TOK_' + sha(String(L.token))); return json({ ok: true }); }
   if (L.action === 'whoami') return json({ ok: ownerOk(L) });
+
+
+  /* ---- shared job store (v10, Oct 8): owner app, crew screen and customer portal all read/write the same jobs ---- */
+  if (L.action === 'db_get') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(dbGet()); }
+  if (L.action === 'db_put') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(dbPut(L)); }
+  if (L.action === 'portal_get') return json(portalGet(L));
+  if (L.action === 'portal_act') return json(portalAct(L));
+  if (L.action === 'crew_get') return json(crewGet(L));
+  if (L.action === 'crew_act') return json(crewAct(L));
 
   if (L.action === 'test') {                          // owner checks the real pipes: one email + one text to the owner
     if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); }
@@ -352,6 +362,84 @@ const clampN = (v, a, b, d) => { v = +v; return isFinite(v) ? Math.max(a, Math.m
 const pretty = p => String(p || '').replace(/^(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3');
 const slug = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+/* ===================== shared job store (v10) =====================
+   Sheet "Jobs": A id · B updated (ms) · C… JSON in 45k-character chunks. Special rows: _crew, _addons, _settings, _activity. */
+function jobsSheet() { const ss = leadsSheet().getParent(); let sh = ss.getSheetByName('Jobs'); if (!sh) { sh = ss.insertSheet('Jobs'); sh.appendRow(['id', 'updated', 'data']); sh.setFrozenRows(1); sh.hideSheet(); } return sh; }
+function readAll() { const sh = jobsSheet(), n = sh.getLastRow(); const out = {}; if (n < 2) return out;
+  const v = sh.getRange(2, 1, n - 1, sh.getLastColumn()).getValues(); v.forEach((r, i) => { if (!r[0]) return; try { out[r[0]] = { row: i + 2, t: +r[1] || 0, d: JSON.parse(r.slice(2).join('')) }; } catch (x) { logErr('jobs-parse', x); } }); return out; }
+function writeRow(sh, row, id, obj) { const j = JSON.stringify(obj), parts = []; for (let i = 0; i < j.length; i += 45000) parts.push(j.slice(i, i + 45000));
+  const vals = [id, Date.now()].concat(parts.length ? parts : ['null']); if (sh.getMaxColumns() < vals.length) sh.insertColumnsAfter(sh.getMaxColumns(), vals.length - sh.getMaxColumns());
+  const last = Math.max(sh.getLastColumn(), vals.length); const rowVals = vals.concat(new Array(last - vals.length).fill('')); sh.getRange(row, 1, 1, last).setValues([rowVals]); }
+function saveObj(all, id, obj) { const sh = jobsSheet(); const ex = all[id]; if (obj === null) { if (ex) sh.deleteRow(ex.row); return; } writeRow(sh, ex ? ex.row : sh.getLastRow() + 1, id, obj); }
+function withLock(fn) { const lock = LockService.getScriptLock(); lock.waitLock(20000); try { return fn(); } finally { lock.releaseLock(); } }
+function dbGet() { const all = readAll(), jobs = {}; Object.keys(all).forEach(k => { if (k[0] !== '_') jobs[k] = all[k].d; });
+  return { ok: true, jobs, crew: (all._crew || {}).d || [], addons: (all._addons || {}).d || [], settings: (all._settings || {}).d || {}, activity: (all._activity || {}).d || [], ts: Date.now() }; }
+function dbPut(L) { return withLock(() => { let all = readAll(); const put = L.put || {};
+  Object.keys(put).forEach(id => { if (!/^[\w-]{2,40}$/.test(id) || id[0] === '_') return; saveObj(all, id, put[id]); all = readAll(); });
+  ['crew', 'addons', 'settings', 'activity'].forEach(k => { if (L[k] !== undefined) { saveObj(all, '_' + k, L[k]); all = readAll(); } });
+  return { ok: true, ts: Date.now() }; }); }
+function pushActivity(all, cid, text) { const a = ((all._activity || {}).d || []).concat([{ t: Date.now(), cid, text, seen: false }]).slice(-200); saveObj(all, '_activity', a); }
+/* ---- customer portal: PIN checked here, never in the browser ---- */
+const MASTER_PORTAL_PIN = '0000';   // TEMPORARY demo code (Ryan, Oct 7). Remove before a real client goes live.
+function portalCheck(L) { const id = String(L.j || ''); if (failCount('pt_' + id) >= 8) return { err: 'locked' };
+  const all = readAll(), row = all[id]; if (!row) { Utilities.sleep(700); return { err: 'nojob' }; }
+  const c = row.d, pin = String(L.pin || ''); if (!c.portal || !c.job || !(pin === String(c.job.pin) || pin === MASTER_PORTAL_PIN)) { bumpFail('pt_' + id); Utilities.sleep(900); return { err: 'pin' }; }
+  return { all, c }; }
+function portalView(all, c) { const crew = (all._crew || {}).d || [], addons = (all._addons || {}).d || [], j = c.job || {};
+  const ids = {}; (j.visits || []).forEach(v => (v.crew || []).forEach(x => ids[x] = 1));
+  const safe = JSON.parse(JSON.stringify(c)); delete safe.notes; delete safe.lostReason; if (safe.matPlan) safe.matPlan = safe.matPlan.map(m => ({ desc: m.desc, qty: m.qty, unit: m.unit }));
+  if (safe.job) { delete safe.job.pin; }
+  return { ok: true, c: safe, crew: crew.filter(m => ids[m.id]).map(m => ({ id: m.id, name: m.name, role: m.role, photo: m.photo })), addons: addons.filter(a => (j.addons || []).indexOf(a.id) >= 0), biz: cfg('BIZ_NAME'), phone: cfg('OWNER_PHONE') }; }
+function portalGet(L) { const r = portalCheck(L); if (r.err) return { ok: false, reason: r.err }; return portalView(r.all, r.c); }
+function portalAct(L) { return withLock(() => { const r = portalCheck(L); if (r.err) return { ok: false, reason: r.err }; const c = r.c, j = c.job = c.job || {}; let msg = '';
+  const usd = n => '$' + Math.round(+n || 0).toLocaleString('en-US'), name = String(L.name || '').slice(0, 80);
+  if (L.act === 'lang' && /^(en|es)$/.test(L.lang)) j.lang = L.lang;
+  else if (L.act === 'co_ok' || L.act === 'co_no') { const o = (j.changes || [])[+L.i]; if (!o || o.status !== 'waiting') return { ok: false, reason: 'state' };
+    if (L.act === 'co_ok') { if (name.length < 3) return { ok: false, reason: 'name' }; Object.assign(o, { status: 'approved', signed: name, signedT: Date.now() }); msg = `Approved change: ${o.title} (${usd(o.price)})`; }
+    else { o.status = 'declined'; o.decT = Date.now(); msg = `Said not now to change: ${o.title}`; } }
+  else if (L.act === 'est_ok') { const e = c.estimate, o = e && e.opts[+L.i]; if (!o || e.status === 'approved' || name.length < 3) return { ok: false, reason: 'state' };
+    Object.assign(e, { status: 'approved', pick: +L.i, signed: name, signedT: Date.now() }); if (['lead', 'booked', 'inspected', 'estimate'].indexOf(c.stage) >= 0) c.stage = 'approved'; msg = `Approved estimate: ${o.name} (${usd(o.price)})`; }
+  else if (L.act === 'extra') { const a = ((r.all._addons || {}).d || []).find(x => x.id === L.id); if (!a || (j.addons || []).indexOf(a.id) < 0 || (j.picks || []).some(p => p.addon === a.id)) return { ok: false, reason: 'state' };
+    j.picks = (j.picks || []).concat([{ addon: a.id, name: a.name, price: a.price, status: 'requested', t: Date.now() }]); msg = `Added extra: ${a.name} (${usd(a.price)})`; }
+  else return { ok: false, reason: 'act' };
+  if (msg) { j.log = (j.log || []).concat([{ t: Date.now(), text: msg }]); c.fresh = true; }
+  saveObj(r.all, c.id, c); const all2 = readAll(); if (msg) { pushActivity(all2, c.id, msg); portalAlert(c, msg); }
+  return portalView(readAll(), c); }); }
+function portalAlert(c, msg) { try { const to = cfg('OWNER_EMAIL'); if (!to) return; MailApp.sendEmail({ to, subject: `${c.name}: ${msg}`, htmlBody: `<div style="font:16px/1.5 Arial,sans-serif"><p><b>${esc(c.name)}</b> just did this in their project page:</p><p style="font-size:18px">${esc(msg)}</p><p>Open your owner view to see it.</p></div>`, name: cfg('BIZ_NAME', 'Website') }); } catch (x) { logErr('portal-alert', x); } }
+/* ---- crew screen: each crew member has a code + permissions set by the owner ---- */
+function failCount(k) { return +(CacheService.getScriptCache().get(k) || 0); }
+function bumpFail(k) { const c = CacheService.getScriptCache(); c.put(k, String(failCount(k) + 1), 900); }
+function crewCheck(L) { const code = String(L.code || ''); if (failCount('crew_fail') >= 12) return { err: 'locked' };
+  const all = readAll(), me = ((all._crew || {}).d || []).find(m => m.code && String(m.code) === code && m.active !== false);
+  if (!me || code.length < 4) { bumpFail('crew_fail'); Utilities.sleep(900); return { err: 'code' }; } return { all, me }; }
+function crewView(all, me) { const p = me.perms || {}, from = fmt(new Date(Date.now() - 864e5), 'yyyy-MM-dd'), to = fmt(new Date(Date.now() + 21 * 864e5), 'yyyy-MM-dd'), crew = (all._crew || {}).d || [], out = [];
+  Object.keys(all).forEach(k => { if (k[0] === '_') return; const c = all[k].d, j = c.job || {};
+    (j.visits || []).forEach(v => { if (v.status === 'cancelled' || v.date < from || v.date > to) return; if (!p.allJobs && (v.crew || []).indexOf(me.id) < 0) return;
+      out.push({ jid: c.id, vid: v.id, type: v.type, date: v.date, from: v.from, to: v.to, status: v.status || 'scheduled', eta: v.eta || 0, note: v.note || '', lead: v.lead, crew: (v.crew || []).map(id => { const m = crew.find(x => x.id === id); return m ? { id: m.id, name: m.name, role: m.role, photo: m.photo } : null; }).filter(Boolean),
+        name: c.name, addr: c.addr || '', phone: p.phone !== false ? c.phone : '', email: p.phone !== false ? (c.email || '') : '', msg: c.msg || '', stage: c.stage,
+        work: c.estimate && c.estimate.status === 'approved' ? { name: c.estimate.opts[c.estimate.pick || 0].name, items: c.estimate.opts[c.estimate.pick || 0].items } : null,
+        changes: (j.changes || []).filter(o => o.status === 'approved' || o.status === 'paid').map(o => o.title),
+        mats: (c.matPlan || []).map(m => ({ desc: m.desc, qty: m.qty, unit: m.unit })), photos: p.photos !== false ? (c.updates || []).filter(u => (u.photos || []).length).slice(-6).map(u => ({ t: u.t, text: u.text, by: u.by || '', photos: u.photos.slice(0, 4) })) : [] }); }); });
+  out.sort((a, b) => (a.date + a.from).localeCompare(b.date + b.from));
+  return { ok: true, me: { id: me.id, name: me.name, role: me.role, photo: me.photo, perms: p }, visits: out, biz: cfg('BIZ_NAME'), owner: cfg('OWNER_NAME'), ownerPhone: cfg('OWNER_PHONE') }; }
+function crewGet(L) { const r = crewCheck(L); if (r.err) return { ok: false, reason: r.err }; return crewView(r.all, r.me); }
+function crewAct(L) { return withLock(() => { const r = crewCheck(L); if (r.err) return { ok: false, reason: r.err }; const me = r.me, p = me.perms || {};
+  if (L.act === 'selfie') { if (!/^data:image\/jpeg;base64,/.test(L.photo || '') || L.photo.length > 400000) return { ok: false, reason: 'photo' };
+    const crew = (r.all._crew || {}).d || []; const m = crew.find(x => x.id === me.id); m.photo = L.photo; m.photoT = Date.now(); saveObj(r.all, '_crew', crew); return crewView(readAll(), m); }
+  const row = r.all[L.jid]; if (!row) return { ok: false, reason: 'job' }; const c = row.d, v = ((c.job || {}).visits || []).find(x => x.id === L.vid);
+  if (!v || (!p.allJobs && (v.crew || []).indexOf(me.id) < 0)) return { ok: false, reason: 'visit' }; let msg = '';
+  if (L.act === 'status') { if (p.status === false || ['confirmed', 'onway', 'arrived', 'done'].indexOf(L.status) < 0) return { ok: false, reason: 'perm' };
+    v.status = L.status; v.statusT = Date.now(); v.by = me.name; if (L.eta) v.eta = clampN(L.eta, 1, 240, 0);
+    if (L.status === 'done' && v.type === 'inspection' && ['lead', 'booked'].indexOf(c.stage) >= 0) c.stage = 'inspected';
+    if ((L.status === 'onway' || L.status === 'arrived') && v.type === 'work' && ['approved'].indexOf(c.stage) >= 0) c.stage = 'work';
+    msg = `${me.name}: ${{ confirmed: 'confirmed', onway: 'on the way', arrived: 'arrived', done: 'done for today' }[L.status]}`; }
+  else if (L.act === 'photo') { if (p.photos === false) return { ok: false, reason: 'perm' }; const ph = (L.photos || []).filter(x => /^data:image\/jpeg;base64,/.test(x) && x.length < 400000).slice(0, 6);
+    if (!ph.length && !String(L.text || '').trim()) return { ok: false, reason: 'empty' };
+    c.updates = (c.updates || []).concat([{ t: Date.now(), text: String(L.text || '').slice(0, 1000), photos: ph, by: me.name, crew: true }]); c.show = c.show || {}; if (L.share) c.show.updates = true; msg = `${me.name} posted ${ph.length} photo${ph.length === 1 ? '' : 's'}`; }
+  else if (L.act === 'note') { c.crewNotes = (c.crewNotes || []).concat([{ t: Date.now(), by: me.name, text: String(L.text || '').slice(0, 1000) }]); msg = `${me.name} left a note`; }
+  else return { ok: false, reason: 'act' };
+  c.fresh = true; saveObj(r.all, c.id, c); pushActivity(readAll(), c.id, msg + ' · ' + c.name); return crewView(readAll(), me); }); }
+
 /* ===== owner auth helpers (v9) ===== */
 function sha(t) { return Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, t, Utilities.Charset.UTF_8)); }
 function slowHash(pw, salt) { let h = salt + '|' + pw; for (let i = 0; i < 500; i++) h = sha(h + salt); return h; }
