@@ -219,6 +219,8 @@ svg{display:block}
    change orders and add-ons they can approve and pay, invoice, job photos. Owner sets everything up in Owner → customer.
    Data: same store as the website ('rl-db'). Demo: this browser. Live: synced through the backend (next step). */
 (()=>{
+/* ---------- blank slate (Ryan, Oct 7 11:38 PM): bump RESET to wipe every saved customer, crew, job and setting in each browser once ---------- */
+{const RESET='R1-2026-10-07';try{if(localStorage.getItem('rl-reset')!==RESET){[localStorage,sessionStorage].forEach(S=>Object.keys(S).filter(k=>k.indexOf('rl-')===0).forEach(k=>S.removeItem(k)));localStorage.setItem('rl-reset',RESET)}}catch(x){}}
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=v=>String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
