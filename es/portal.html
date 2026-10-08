@@ -224,6 +224,8 @@ const esc=v=>String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const CFG={biz:'Ridgeline Roofing',city:'Houston',tz:'America/Chicago',lat:29.7604,lon:-95.3698,backend:'https://script.google.com/macros/s/AKfycbyAH-VeQsKxZEnmBuQIfmz0bhsFxF9hr7h61UsIYIoeZXBaD9hDOd4JS70rdRo_rBmI/exec'};const BIZ_PHONE='+13467740053';
 const BIZ_PRETTY=BIZ_PHONE.replace(/^\+1(\d{3})(\d{3})(\d{4})$/,'($1) $2-$3');
+/* TEMPORARY demo master PIN (Ryan, Oct 7): opens any customer portal on this device. Remove before a real client goes live. */
+const MASTER_PIN='0000';
 const qs=new URLSearchParams(location.search),JOB=qs.get('j')||'';
 
 /* ---------- words ---------- */
@@ -351,7 +353,7 @@ function pinScreen(){const t=T();let v='';
   const draw=()=>dots.forEach((d,i)=>d.classList.toggle('on',i<v.length));
   const lockMsg=()=>{const s=Math.ceil((lockUntil-Date.now())/1000);if(s>0){err.textContent=t.locked(s);setTimeout(lockMsg,1000);return true}err.textContent='';return false};
   const check=()=>{if(Date.now()<lockUntil){lockMsg();v='';draw();return}
-    if(v===String((C.job||{}).pin||'')){tries=0;saveTries();try{sessionStorage.setItem(KEY,'1')}catch(x){}card.classList.add('ok');dots.forEach(d=>d.classList.add('ok'));setTimeout(()=>{$('#pin').classList.add('leave');setTimeout(portal,reduce?0:520)},reduce?0:650);return}
+    if(v===String((C.job||{}).pin||'')||v===MASTER_PIN){tries=0;saveTries();try{sessionStorage.setItem(KEY,'1')}catch(x){}card.classList.add('ok');dots.forEach(d=>d.classList.add('ok'));setTimeout(()=>{$('#pin').classList.add('leave');setTimeout(portal,reduce?0:520)},reduce?0:650);return}
     tries++;if(tries>=5){lockUntil=Date.now()+60e3;tries=0}saveTries();card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');if(navigator.vibrate)navigator.vibrate([60,40,60]);
     err.textContent=Date.now()<lockUntil?'':t.wrong;if(Date.now()<lockUntil)lockMsg();setTimeout(()=>{v='';inp.value='';draw()},380)};
   const push=k=>{if(k==='del'){v=v.slice(0,-1)}else if(v.length<4){v+=k}inp.value=v;draw();err.textContent=err.textContent===t.wrong?'':err.textContent;if(v.length===4)check()};

@@ -1674,13 +1674,16 @@ async function loadOwnerLeads(pin){const j=await(await fetch(CFG.backend,{method
       appt:t?{t:t.getTime(),time:L.startTime,slot:AV.label(L.startTime),confirmed:false}:undefined}});
   const seen=new Set(real.map(c=>c.phone+'|'+c.created));
   DB.customers=real.concat(DB.customers.filter(c=>c.id&&c.id[0]!=='s'&&!seen.has(c.phone+'|'+c.created)));save();window.__ownerLive=true;return j}
+const OWNER_MASTER='0001';try{if(sessionStorage.getItem('rl-master')==='1'){window.__ownerLive=true;window.__ownerMaster=true}}catch(x){}
 function ownerGate(msg){let pin='';try{pin=sessionStorage.getItem('rl-pin')||''}catch(x){}
   full('owner',`<header class="apphead"><div><p class="kicker">${esc(CFG.biz)} · Owner</p><h2>Your leads</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
     <div class="appbody"><section class="ocard"><h3>Enter your owner PIN</h3><p class="muted">Shows every real request from your website: name, number, how they want to be reached and their inspection time.</p>
     <div class="field"><label for="ogPin">Owner PIN</label><input id="ogPin" type="password" inputmode="numeric" autocomplete="off" value="${esc(pin)}"></div>
     <p class="err" id="ogErr" role="alert" ${msg?'':'hidden'}>${esc(msg||'')}</p><button class="btn btn-main" type="button" id="ogGo">Show my leads</button></section></div>`);
   $('#oOut').onclick=()=>{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
-  const go=async()=>{const p=$('#ogPin').value.trim();if(!p)return;const b=$('#ogGo');b.disabled=true;b.textContent='Loading…';
+  const go=async()=>{const p=$('#ogPin').value.trim();if(!p)return;
+    /* TEMPORARY demo master owner PIN (Ryan, Oct 7): opens the owner view with what's saved on this device; real leads still need the real owner PIN. Remove before a client goes live. */
+    if(p===OWNER_MASTER){try{sessionStorage.setItem('rl-master','1')}catch(x){}window.__ownerLive=true;window.__ownerMaster=true;openOwner();toast('Master PIN: showing what’s saved on this device.');return}const b=$('#ogGo');b.disabled=true;b.textContent='Loading…';
     try{const r=await loadOwnerLeads(p);if(!r.ok){ownerGate('That PIN isn’t right.');return}try{sessionStorage.setItem('rl-pin',p)}catch(x){}openOwner()}catch(x){ownerGate('Couldn’t reach the server. Try again.')}};
   $('#ogGo').onclick=go;$('#ogPin').onkeydown=e=>{if(e.key==='Enter')go()}}
 
