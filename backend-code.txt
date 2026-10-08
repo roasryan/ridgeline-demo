@@ -4,7 +4,8 @@
  *
  *   GET  ?action=slots&days=28   → open start times per day ("08:00", "09:30"…) + the owner's settings
  *   GET  ?action=settings        → the owner's availability settings
- *   POST {action:'settings', pin, settings}  → owner saves hours / limits from the website's owner screen
+ *   POST {action:'login'|'reset_request'|'reset_set'|'logout'|'whoami'}  → owner email + password sign-in (v9); owner actions send {token}
+ *   POST {action:'settings', token, settings}  → owner saves hours / limits from the website's owner screen
  *   POST (lead JSON from the site) → Sheet row, owner alert, booking on the "<Biz> inspections" calendar,
  *        customer confirmation the way THEY picked (text / email / call → owner calls), GoHighLevel if connected.
  *
@@ -52,8 +53,16 @@ function doPost(e) {
   let L;
   try { L = JSON.parse(e.postData.contents); } catch (x) { return json({ ok: false, reason: 'bad_json' }); }
 
+
+  /* ---- owner sign-in (v9, Oct 8): email + password; password set/reset only with a code emailed to OWNER_EMAIL ---- */
+  if (L.action === 'login') return json(ownerLogin(L));
+  if (L.action === 'reset_request') return json(ownerResetRequest(L));
+  if (L.action === 'reset_set') return json(ownerResetSet(L));
+  if (L.action === 'logout') { if (L.token) P.deleteProperty('TOK_' + sha(String(L.token))); return json({ ok: true }); }
+  if (L.action === 'whoami') return json({ ok: ownerOk(L) });
+
   if (L.action === 'test') {                          // owner checks the real pipes: one email + one text to the owner
-    if (!cfg('OWNER_PIN') || String(L.pin) !== cfg('OWNER_PIN')) { Utilities.sleep(800); return json({ ok: false, reason: 'pin' }); }
+    if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); }
     const out = { ok: true, email: 'skipped', sms: smsReady() ? 'pending' : 'not set up' };
     try { if (cfg('OWNER_EMAIL')) { MailApp.sendEmail(cfg('OWNER_EMAIL'), 'Test: your website emails work', 'This is a test from your website backend. Customer confirmations and lead alerts will look like this.'); out.email = 'sent'; } } catch (x) { out.email = 'error: ' + x.message; }
     if (smsReady()) { try { sendSms(cfg('OWNER_PHONE'), 'Test from your website: customer confirmation texts work.'); out.sms = 'sent'; } catch (x) { out.sms = 'error: ' + String(x.message).slice(0, 160); } }
@@ -61,7 +70,7 @@ function doPost(e) {
     return json(out);
   }
   if (L.action === 'settings') {
-    if (!cfg('OWNER_PIN') || String(L.pin) !== cfg('OWNER_PIN')) { Utilities.sleep(800); return json({ ok: false, reason: 'pin' }); }
+    if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); }
     const s = L.settings || {}, clean = {
       hours: {}, len: clampN(s.len, 15, 240, 60), step: clampN(s.step, 15, 240, 60), buffer: clampN(s.buffer, 0, 120, 0),
       noticeH: clampN(s.noticeH, 0, 168, 3), ahead: clampN(s.ahead, 1, 60, 28), maxDay: clampN(s.maxDay, 1, 20, 4), weekCap: clampN(s.weekCap, 1, 60, 12),
@@ -73,7 +82,7 @@ function doPost(e) {
   }
 
   if (L.action === 'leads') {
-    if (!cfg('OWNER_PIN') || String(L.pin) !== cfg('OWNER_PIN')) { Utilities.sleep(800); return json({ ok: false, reason: 'pin' }); }
+    if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); }
     return json({ ok: true, leads: ownerLeads() });
   }
   if (L.hp) return json({ ok: true });
@@ -343,6 +352,33 @@ const clampN = (v, a, b, d) => { v = +v; return isFinite(v) ? Math.max(a, Math.m
 const pretty = p => String(p || '').replace(/^(\d{3})(\d{3})(\d{4})$/, '($1) $2-$3');
 const slug = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+/* ===== owner auth helpers (v9) ===== */
+function sha(t) { return Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, t, Utilities.Charset.UTF_8)); }
+function slowHash(pw, salt) { let h = salt + '|' + pw; for (let i = 0; i < 500; i++) h = sha(h + salt); return h; }
+function ownerEmail() { return String(cfg('OWNER_EMAIL') || '').trim().toLowerCase(); }
+function ownerOk(L) { const t = String(L.token || ''); if (t.length < 30) return false; const exp = +(P.getProperty('TOK_' + sha(t)) || 0); return exp > Date.now(); }
+function tooMany(key, max, mins) { const c = CacheService.getScriptCache(), n = +(c.get(key) || 0); if (n >= max) return true; c.put(key, String(n + 1), mins * 60); return false; }
+function newToken(remember) { const t = Utilities.getUuid() + Utilities.getUuid(); const now = Date.now();
+  const all = P.getProperties(); Object.keys(all).forEach(k => { if (k.indexOf('TOK_') === 0 && +all[k] < now) P.deleteProperty(k); });
+  P.setProperty('TOK_' + sha(t), String(now + (remember ? 30 : 0.5) * 864e5)); return t; }
+function ownerLogin(L) { if (tooMany('login_fail', 8, 15)) { Utilities.sleep(1000); return { ok: false, reason: 'locked' }; }
+  const em = String(L.email || '').trim().toLowerCase(), pw = String(L.password || '');
+  if (!cfg('OWNER_PASS')) return { ok: false, reason: 'nopass' };
+  if (em !== ownerEmail() || slowHash(pw, cfg('OWNER_SALT')) !== cfg('OWNER_PASS')) { Utilities.sleep(900); return { ok: false, reason: 'wrong' }; }
+  CacheService.getScriptCache().remove('login_fail'); return { ok: true, token: newToken(!!L.remember), name: cfg('OWNER_NAME') }; }
+function ownerResetRequest(L) { const em = String(L.email || '').trim().toLowerCase();
+  if (tooMany('reset_req', 5, 60)) return { ok: true };
+  if (em && em === ownerEmail()) { const code = String(100000 + Math.floor(Math.random() * 900000));
+    P.setProperty('RESET', sha(code) + '|' + (Date.now() + 15 * 6e4) + '|0');
+    MailApp.sendEmail({ to: cfg('OWNER_EMAIL'), subject: 'Your website sign-in code: ' + code, htmlBody: '<div style="font:16px/1.55 Arial,sans-serif"><p>Your code to set a new owner password:</p><p style="font-size:28px;font-weight:800;letter-spacing:4px">' + code + '</p><p>It works for 15 minutes. If you didn\'t ask for this, ignore this email. Your password stays the same.</p></div>', name: cfg('BIZ_NAME', 'Website') }); }
+  return { ok: true }; }
+function ownerResetSet(L) { const r = String(P.getProperty('RESET') || '').split('|'); const em = String(L.email || '').trim().toLowerCase(), pw = String(L.password || '');
+  if (r.length < 3 || +r[1] < Date.now() || +r[2] >= 5) return { ok: false, reason: 'expired' };
+  if (em !== ownerEmail() || sha(String(L.code || '').trim()) !== r[0]) { P.setProperty('RESET', r[0] + '|' + r[1] + '|' + (+r[2] + 1)); Utilities.sleep(900); return { ok: false, reason: 'code' }; }
+  if (pw.length < 8) return { ok: false, reason: 'short' };
+  const salt = Utilities.getUuid(); P.setProperties({ OWNER_SALT: salt, OWNER_PASS: slowHash(pw, salt) }); P.deleteProperty('RESET');
+  const all = P.getProperties(); Object.keys(all).forEach(k => { if (k.indexOf('TOK_') === 0) P.deleteProperty(k); });   // new password signs out every other device
+  return { ok: true, token: newToken(!!L.remember), name: cfg('OWNER_NAME') }; }
 function json(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function logErr(where, x) { console.error(where + ': ' + x); }
 
