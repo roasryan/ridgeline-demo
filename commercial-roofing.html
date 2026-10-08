@@ -328,6 +328,192 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .ohbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .linkbtn{background:none;border:0;color:var(--hivis);text-decoration:underline;font:inherit;font-weight:700;cursor:pointer;padding:6px 0}
 #ogF input:not([type=checkbox]){width:100%;max-width:none}#ogF .tog{display:flex;align-items:center;gap:10px;margin:6px 0 4px;font-weight:700;line-height:1.3}#ogF .tog input{flex:none;width:22px;height:22px;margin:0;accent-color:#FFD400}#ogF .linkbtn{color:var(--hivis)}
+/* ===== OWNER APP v2 (Oct 8): light + high contrast for sunlight, Ridgeline slate / hi-vis yellow / white ===== */
+#owner,#layer .opage{--ob:#EEF1F4;--oc:#FFFFFF;--oink:#14202A;--osoft:#46535F;--oline:#D3DAE0;--oy:#FFD400;--oy2:#F2C800;--osl:#1F2A33;--oblue:#1C5BD0;--ogreen:#147A49;--ored:#C0371C;--oamber:#FFF3BF;
+  color:var(--oink);font-family:var(--body)}
+#owner{background:var(--ob)}
+svg.oi{width:22px;height:22px;flex:none}.oi.flip{transform:rotate(180deg)}
+#owner h1,#owner h2,#owner h3,#layer .opage h3{color:var(--oink)}
+.ow{min-height:100%;display:grid;grid-template-columns:1fr}
+.oside{display:none}
+.omain{min-width:0;padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+.otop{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:var(--osl);color:#fff;box-shadow:0 2px 0 var(--oy)}
+#owner .otop h1{flex:1;min-width:0;margin:0;color:#fff;font:850 22px/1.15 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.otop-brand svg{width:34px;height:34px;display:block}
+.oback{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px 0 4px;border:0;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font:800 16px var(--body);cursor:pointer}
+#layer .opage .oback{background:var(--osl)}
+.otop-more{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1.5px solid rgba(255,255,255,.45);border-radius:12px;background:none;color:#fff;font:800 15px var(--body);cursor:pointer}
+.obody{max-width:760px;margin:0 auto;padding:16px 14px 24px;display:grid;gap:14px}
+/* bottom nav */
+.obot{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;gap:2px;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid var(--oline);box-shadow:0 -6px 20px rgba(20,32,42,.08)}
+.obot button{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:56px;padding:6px 2px;border:0;border-radius:14px;background:none;color:var(--osoft);font:800 12.5px var(--body);cursor:pointer}
+.obot button[aria-current="page"]{color:var(--oink);background:var(--oamber)}
+.obot button[aria-current="page"] .oi{color:var(--oink)}
+.obot .obot-plus{align-self:center;justify-self:center;width:62px;height:62px;min-height:0;border-radius:50%;background:var(--oy);color:var(--osl);box-shadow:0 8px 20px rgba(242,200,0,.45),0 0 0 4px #fff;margin-top:-26px}
+.obot .obot-plus .oi{width:30px;height:30px;stroke-width:2.8}
+/* buttons */
+.ob{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 18px;border-radius:14px;font:800 16.5px var(--body);text-decoration:none;cursor:pointer;border:2px solid transparent;line-height:1.15;text-align:center;transition:transform .1s,filter .15s}
+.ob:active{transform:scale(.98)}
+.ob-main{background:var(--oy);color:var(--osl);border-color:var(--oy2);box-shadow:0 3px 0 var(--oy2)}
+.ob-main:hover{filter:brightness(1.04)}
+.ob-line{background:#fff;color:var(--oink);border-color:var(--oline)}
+.ob-line:hover{border-color:var(--osl)}
+.ob-xl{min-height:60px;font-size:19px;width:100%}
+.ob-tall{min-height:64px}
+.olink{background:none;border:0;padding:8px 0;color:var(--ored);font:800 15px var(--body);text-decoration:underline;cursor:pointer}
+.obtns{display:flex;flex-wrap:wrap;gap:10px}.obtns .ob{flex:1 1 180px}
+/* home */
+.ohello p{margin:0;color:var(--osoft);font-weight:700}.ohello h2{margin:2px 0 0;font:900 30px/1.1 var(--display)}
+.ostats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ostats>*{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:16px;background:#fff;border:1px solid var(--oline);text-align:left;cursor:pointer;font:inherit;color:var(--oink)}
+.ostats small{font-size:12.5px;font-weight:800;color:var(--osoft);line-height:1.2}.ostats b{font:900 22px/1.1 var(--display);font-variant-numeric:tabular-nums}
+.oquick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.oquick button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:84px;padding:10px 4px;border-radius:16px;border:1px solid var(--oline);background:#fff;color:var(--oink);font:800 13.5px/1.15 var(--body);text-align:center;cursor:pointer}
+.oquick button .oi{width:28px;height:28px;padding:6px;box-sizing:content-box;border-radius:12px;background:var(--osl);color:var(--oy)}
+.osec2{display:flex;align-items:center;gap:8px;margin:8px 0 -4px;font:900 21px/1.1 var(--display)}.osec2.past{color:var(--osoft)}
+.ocount{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:999px;background:var(--osl);color:var(--oy);font:800 13.5px var(--body)}
+.olist{display:grid;gap:10px}
+.otask,.ojob,.ovisit{position:relative;background:#fff;border:1px solid var(--oline);border-radius:18px;padding:14px;cursor:pointer;box-shadow:0 1px 0 rgba(20,32,42,.04)}
+.otask.late{border-left:6px solid var(--ored)}.otask.fresh,.ojob.fresh{border-color:var(--oy2);box-shadow:0 0 0 3px rgba(255,212,0,.35)}
+.otask-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.okick{font:800 12.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--osoft)}
+.obadge{font:800 12.5px var(--body);padding:3px 9px;border-radius:999px;background:var(--ob);color:var(--osoft)}.obadge.red{background:#FDE3DC;color:var(--ored)}
+.otask h3,.ovisit h3,.ojob h3{margin:4px 0 0;font:850 20px/1.2 var(--display)}
+.otask-t{margin:4px 0 0;font-size:16.5px;color:var(--oink)}.otask-s{margin:4px 0 0;color:var(--osoft);font-size:15px}
+.otask-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.otask-acts .ob{flex:1 1 140px}
+.oempty{display:grid;justify-items:center;gap:6px;text-align:center;padding:28px 16px;border-radius:18px;background:#fff;border:2px dashed var(--oline)}
+.oempty .oi{width:40px;height:40px;color:var(--ogreen)}.oempty b{font:850 19px var(--display)}.oempty span{color:var(--osoft)}
+/* visits */
+.ovisit{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px}
+.ovisit-time{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:2px;border-right:3px solid var(--oy);padding-right:8px}
+.ovisit-time b{font:900 18px var(--display);white-space:nowrap}.ovisit-time small{color:var(--osoft);font-size:13px;font-weight:700}
+.ovisit-m p{margin:2px 0 0;color:var(--osoft)}
+.vstat{display:inline-block;padding:3px 10px;border-radius:999px;font:800 12.5px var(--body);background:var(--ob);color:var(--osoft)}
+#owner .vs-confirmed,#layer .opage .vs-confirmed{background:#DFF3E7;color:var(--ogreen)}#owner .vs-onway,#owner .vs-arrived,#layer .opage .vs-onway,#layer .opage .vs-arrived{background:var(--oy);color:var(--osl)}
+#owner .vs-done,#layer .opage .vs-done{background:#E1EAFB;color:var(--oblue)}
+/* jobs */
+.osearch2{display:flex;flex-wrap:wrap;gap:8px}.osearch2 .ob{flex:none}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.osearch2 input{flex:1 1 200px;min-width:0;min-height:52px;border-radius:14px;border:2px solid var(--oline);background:#fff;color:var(--oink);padding:0 14px;font:17px var(--body)}
+.osearch2 input:focus{outline:none;border-color:var(--osl)}
+.ochips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin:0 -14px;padding-left:14px;padding-right:14px}.ochips::-webkit-scrollbar{display:none}
+.ochips button{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:42px;padding:0 14px;border-radius:999px;border:1.5px solid var(--oline);background:#fff;color:var(--oink);font:800 14.5px var(--body);cursor:pointer}
+.ochips button i{font-style:normal;color:var(--osoft);font-weight:700}
+.ochips button[aria-pressed="true"]{background:var(--osl);color:#fff;border-color:var(--osl)}.ochips button[aria-pressed="true"] i{color:var(--oy)}
+.ojob{display:grid;grid-template-columns:46px minmax(0,1fr);gap:12px;align-items:start}
+.oinit{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;font:900 20px var(--display);background:var(--ob);color:var(--oink)}
+.ojob-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.ojob-h h3{margin:0}
+.ojob-m p{margin:2px 0 0;color:var(--osoft);font-size:15px}
+.ojob-n{display:flex;align-items:center;gap:6px;color:var(--oink)!important;font-weight:700}.ojob-n .oi{width:16px;height:16px;color:var(--oy2)}
+.omoney{font:900 18px var(--display);white-space:nowrap}
+.opill{flex:none;display:inline-block;padding:4px 10px;border-radius:999px;font:800 12.5px var(--body);white-space:nowrap}
+.st2-lead{background:#FDE3DC;color:var(--ored)}.st2-booked,.st2-inspected{background:#E1EAFB;color:var(--oblue)}.st2-estimate,.st2-approved{background:var(--oamber);color:#6B5200}
+.st2-work{background:var(--oy);color:var(--osl)}.st2-invoiced{background:#EDE4FB;color:#5B2DB0}.st2-paid{background:#DFF3E7;color:var(--ogreen)}.st2-lost{background:#E4E7EA;color:#5A646D}
+.oinit.st2-work{background:var(--osl);color:var(--oy)}
+/* job page */
+.jhead{display:grid;gap:12px}.jhead-m{display:grid;gap:6px}.jhead-m p{margin:0;font-size:16px}.jhead-m a{display:inline-flex;align-items:center;gap:6px;color:var(--oink);font-weight:700}.jhead-m small{color:var(--osoft)}
+.jcontact{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.jcontact a{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:64px;justify-content:center;border-radius:16px;background:var(--osl);color:#fff;text-decoration:none;font:800 14px var(--body)}
+.jcontact a .oi{color:var(--oy)}.jcontact a.off{opacity:.35;pointer-events:none}
+.onext{display:grid;gap:8px;padding:16px;border-radius:20px;background:#fff;border:3px solid var(--oy);box-shadow:0 10px 26px rgba(20,32,42,.08)}
+.onext h2{margin:0;font:900 24px/1.15 var(--display)}.onext p{margin:0;color:var(--osoft)}
+.onext-more{display:flex;flex-wrap:wrap;gap:8px}.onext-more .ob{flex:1 1 130px;min-height:46px;font-size:15px}
+.jsteps{list-style:none;margin:0;padding:12px 10px;display:grid;grid-template-columns:repeat(8,minmax(88px,1fr));scrollbar-width:none;background:#fff;border:1px solid var(--oline);border-radius:18px;overflow-x:auto}
+.jsteps li{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;font:800 11px var(--body);color:var(--osoft);text-align:center;min-width:40px}
+.jsteps li:not(:last-child)::after{content:'';position:absolute;top:16px;left:calc(50% + 17px);right:calc(-50% + 17px);height:3px;background:var(--oline);border-radius:3px}
+.jsteps li.done:not(:last-child)::after{background:var(--ogreen)}
+.jsteps button{width:34px;height:34px;border-radius:50%;border:2px solid var(--oline);background:#fff;color:var(--osoft);font:800 13px var(--body);display:grid;place-items:center;cursor:pointer;padding:0}
+.jsteps button .oi{width:18px;height:18px}
+.jsteps li.done button{background:var(--ogreen);border-color:var(--ogreen);color:#fff}.jsteps li.now button{background:var(--oy);border-color:var(--osl);color:var(--osl);box-shadow:0 0 0 4px rgba(255,212,0,.35)}.jsteps li.now{color:var(--oink)}
+.otiles{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.otile{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"i l" "v v" "s s";align-items:center;gap:2px 8px;text-align:left;padding:14px;border-radius:18px;background:#fff;border:1px solid var(--oline);color:var(--oink);font:inherit;cursor:pointer;min-height:104px}
+.otile .oi{grid-area:i;width:30px;height:30px;padding:5px;box-sizing:content-box;border-radius:10px;background:var(--ob);color:var(--osl)}
+.otile-l{grid-area:l;font:800 15px var(--body)}.otile b{grid-area:v;font:900 22px var(--display);margin-top:6px}.otile small{grid-area:s;color:var(--osoft);font-size:13.5px;line-height:1.25}
+.otile.warn{border:2px solid var(--oy2);background:#FFFBEA}.otile.good .oi{background:#DFF3E7;color:var(--ogreen)}
+.otile:hover{border-color:var(--osl)}
+.jlost{text-align:center;margin:4px 0 0}
+.muted2{color:var(--osoft)}
+/* more */
+.omore{display:grid;gap:10px}.omore button{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:16px;border-radius:18px;border:1px solid var(--oline);background:#fff;color:var(--oink);font:inherit;text-align:left;cursor:pointer}
+.omore button span{display:grid;gap:2px}.omore b{font:850 18px var(--display)}.omore small{color:var(--osoft)}.omore .oi:first-child{width:30px;height:30px;padding:6px;box-sizing:content-box;border-radius:12px;background:var(--osl);color:var(--oy)}
+/* pages (sheets) in the owner app */
+#layer .opage{position:fixed;inset:0;z-index:60;background:var(--ob);display:block;overflow:auto}
+#layer .opage .sheet{display:block;max-width:640px;width:100%;max-height:none;min-height:100%;margin:0 auto;border:0;border-radius:0;background:var(--ob);color:var(--oink);padding:0 0 40px;box-shadow:none}
+.ophead{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:var(--osl);box-shadow:0 2px 0 var(--oy)}
+#layer .opage .ophead h3{margin:0;color:#fff;font:850 20px/1.2 var(--display);flex:1;min-width:0}
+.opbody{display:grid;gap:14px;padding:16px 14px}
+#layer .opage .muted,#layer .opage .muted2{color:var(--osoft)}
+#layer .opage .field label,#layer .opage .flabel{color:var(--oink);font-weight:800}
+#layer .opage .field input,#layer .opage .field textarea,#layer .opage .field select,#owner .field input,#owner .field select,#owner .field textarea{background:#fff;color:var(--oink);border:2px solid var(--oline)}
+#layer .opage .field input:focus,#layer .opage .field textarea:focus,#layer .opage .field select:focus{border-color:var(--osl)}
+#layer .opage .btn-main,#owner .btn-main{background:var(--oy);color:var(--osl);border:2px solid var(--oy2)}
+#layer .opage .btn-line,#owner .btn-line{background:#fff;color:var(--oink);border:2px solid var(--oline)}
+#layer .opage .btn{min-height:50px;font-size:16.5px}
+#layer .opage .tog{color:var(--oink)}#layer .opage .tog.off{color:var(--osoft)}
+#layer .opage .pbox,#layer .opage .estopt,#layer .opage .ocard2,#layer .opage .mcalc{background:#fff;border:1px solid var(--oline);border-radius:16px;padding:12px 14px;color:var(--oink)}
+#layer .opage .err{color:var(--ored);font-weight:800}
+#layer .opage .upl{border:2px dashed var(--oline);background:#fff;color:var(--oink);border-radius:14px}
+#layer .opage .chips button,#layer .opage .day,#layer .opage .slot{background:#fff;color:var(--oink);border:2px solid var(--oline)}
+#layer .opage .chips button[aria-checked="true"],#layer .opage .day[aria-pressed="true"],#layer .opage .slot[aria-pressed="true"]{background:var(--osl);color:#fff;border-color:var(--osl)}
+#layer .opage .mli,#layer .opage .visrow,#layer .opage .jrow{border-color:var(--oline)}
+#layer .opage .mli input{background:#fff;color:var(--oink);border:1.5px solid var(--oline)}
+#layer .opage .kicker{color:#7A5F00}
+#layer .opage .cpk{background:#fff;border:2px solid var(--oline)}
+#layer .opage .oav{border-color:var(--oy2)}
+.ocard2{display:grid;gap:6px;margin:0;background:#fff;border:1px solid var(--oline);border-radius:16px;padding:12px 14px}
+.ocard2.on{border:2px solid var(--ogreen);background:#F1FAF4}.ocard2 p{margin:0}.ocard2 ul{margin:0;padding-left:18px;color:var(--osoft)}
+.oline{display:flex;justify-content:space-between;gap:10px}.otot{border-top:2px solid var(--oink);padding-top:6px;margin-top:4px;font-size:18px}
+.obig{text-align:center;justify-items:center}.obig-n{font:900 44px/1 var(--display)}
+.obig-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.obig-btn{display:grid;justify-items:center;gap:6px;padding:16px 10px;border-radius:18px;border:1px solid var(--oline);background:#fff;color:var(--oink);font:inherit;text-align:center;cursor:pointer;min-height:132px;align-content:center}
+.obig-btn .oi{width:32px;height:32px;padding:8px;box-sizing:content-box;border-radius:14px;background:var(--osl);color:var(--oy)}.obig-btn b{font:850 17px var(--display)}.obig-btn small{color:var(--osoft);font-size:13.5px}
+.opick{display:grid;grid-template-columns:46px 1fr;gap:12px;align-items:center;padding:12px;border-radius:16px;border:1px solid var(--oline);background:#fff;color:var(--oink);font:inherit;text-align:left;cursor:pointer}.opick span{display:grid}.opick small{color:var(--osoft)}
+.orow2{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;background:#fff;border:1px solid var(--oline);border-radius:16px}
+.orow2>div:first-child{display:grid;gap:3px}.orow2 small{color:var(--osoft)}.orow2 .oacts .ob,.orow2 .oacts .btn{min-height:44px}
+.osub{margin:8px 0 0;font:850 17px var(--display);color:var(--oink)}
+.oswitch{display:grid;grid-template-columns:52px 1fr;grid-template-areas:"s b" "s m";align-items:center;gap:2px 12px;padding:12px 14px;border-radius:16px;background:#fff;border:1px solid var(--oline);cursor:pointer}
+.oswitch input{position:absolute;opacity:0;width:1px;height:1px}.oswitch span{grid-area:s;width:52px;height:30px;border-radius:999px;background:#C8D0D7;position:relative;transition:background .2s}
+.oswitch span::after{content:'';position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.oswitch input:checked+span{background:var(--ogreen)}.oswitch input:checked+span::after{transform:translateX(22px)}.oswitch input:focus-visible+span{outline:3px solid var(--oblue);outline-offset:2px}
+.oswitch b{grid-area:b;font-weight:800}.oswitch small{grid-area:m;color:var(--osoft)}.oswitch.off{opacity:.55;cursor:default}.oswitch.big b{font-size:20px}
+.opin{text-align:center;justify-items:center}.opin-n{font:900 40px/1 var(--display);letter-spacing:.2em}
+.okc{color:var(--ogreen)}
+.plist{margin:0;padding-left:18px}.plist small{color:var(--osoft)}
+/* older owner sections (Crew & extras, Materials, Numbers, Availability, setup box) on the light theme */
+#owner .tile,#owner .orow,#owner .pcard,#owner .pbox,#owner .mrow:not(.mh),#owner .samp-note{background:#fff;border:1px solid var(--oline);color:var(--oink)}
+#owner .tile b,#owner .orow-m b{color:var(--oink)}#owner .tile small,#owner .tile span,#owner .orow-m small,#owner .muted,#owner .mconn span,#owner .mrow small,#owner .mrow.mh{color:var(--osoft)}
+#owner .orow-m p,#owner .obar span{color:var(--oink)}#owner .osec{color:var(--oink)}#owner .cnt{background:var(--osl);color:var(--oy)}
+#owner .seg button{background:#fff;color:var(--oink);border:1.5px solid var(--oline)}#owner .seg button[aria-pressed="true"]{background:var(--osl);color:#fff;border-color:var(--osl)}
+#owner .obar i{background:var(--oy2)}#owner .funnel i,#owner .frow i{background:var(--oy2)}
+#owner .setupbox b.ok{color:var(--ogreen)}#owner .setupbox b.no{color:var(--ored)}
+#owner .kicker{color:#7A5F00}#owner .mbuy select,#owner .spend input{background:#fff;color:var(--oink);border:1.5px solid var(--oline)}
+#owner .linkbtn{color:var(--oblue)}
+/* owner sign-in screen on the light theme */
+#owner .apphead{background:var(--osl);box-shadow:0 2px 0 var(--oy)}#owner .apphead h2{color:#fff}#owner .apphead .kicker{color:var(--oy)}
+#owner .apphead .btn-line{color:#fff;border-color:rgba(255,255,255,.6);background:none}
+#owner .appbody .ocard{background:#fff;border:1px solid var(--oline);color:var(--oink);border-radius:20px;padding:18px}
+#owner .appbody .ocard .muted{color:var(--osoft)}#owner #ogF .linkbtn{color:var(--oblue)}#owner #ogF .tog{color:var(--oink)}#owner .err{color:var(--ored)}
+/* desktop: sidebar + wider pages for the heavy work */
+@media (min-width:980px){
+  .ow{grid-template-columns:240px minmax(0,1fr)}
+  .oside{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;padding:18px 12px;background:var(--osl);color:#fff}
+  .obrand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px;font:900 20px var(--display);text-transform:uppercase;letter-spacing:.02em}.obrand svg{width:36px;height:36px}.obrand small{display:block;font-size:11px;letter-spacing:.3em;color:var(--oy)}
+  .oside-new{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;margin:0 0 12px;border-radius:14px;border:0;background:var(--oy);color:var(--osl);font:850 17px var(--body);cursor:pointer}
+  .oside-i{display:flex;align-items:center;gap:12px;min-height:46px;padding:0 12px;border-radius:12px;border:0;background:none;color:#D5DEE5;font:800 15.5px var(--body);text-align:left;cursor:pointer}
+  .oside-i:hover{background:rgba(255,255,255,.08);color:#fff}.oside-i[aria-current="page"]{background:rgba(255,212,0,.16);color:#fff;box-shadow:inset 3px 0 0 var(--oy)}.oside-i[aria-current="page"] .oi{color:var(--oy)}
+  .oside-foot{margin-top:auto;display:grid;gap:4px}
+  .obot,.otop-more,.otop-brand{display:none}
+  .omain{padding-bottom:30px}.otop{position:static;background:none;color:var(--oink);box-shadow:none;padding:22px 28px 0}#owner .otop h1{color:var(--oink);font-size:30px}
+  .otop .oback{background:var(--osl)}
+  .obody{max-width:1100px;padding:18px 28px 40px}
+  .olist{grid-template-columns:repeat(auto-fill,minmax(330px,1fr));align-items:start}
+  .otiles{grid-template-columns:repeat(4,1fr)}
+  .oquick button{min-height:96px;font-size:15px}
+  .ostats b{font-size:28px}
+}
+
+.app-open .toast{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+#layer .opage .chips{display:flex;flex-wrap:wrap;gap:8px}#layer .opage .chips button{min-height:52px;padding:0 18px;border-radius:14px;font:800 16px var(--body)}
+@media (min-width:980px){.app-open .toast{bottom:24px}}
 
 .app .kicker,.sheet .kicker{font-size:14px;font-weight:700;color:var(--hivis);margin:0}
 .app{color:var(--text)}
@@ -1264,48 +1450,6 @@ function metrics(days){const since=Date.now()-days*DAY,C=DB.customers,inP=t=>t&&
   return{leads:leads.length,avgReply,booked,inspected,sent:sent.length,won:won.length,close:sent.length?Math.round(won.length/sent.length*100):null,pipe,paid,owed,portal:C.filter(c=>c.portal).length,club:C.filter(c=>c.club).length,src}}
 const fmtDur=ms=>{const m=Math.round(ms/6e4);return !ms?'n/a':m<60?m+' min':Math.round(m/6)/10+' hr'};
 function chip(c){return `<span class="chip st-${c.stage}">${stageName(c.stage)}</span>`}
-function oToday(){const C=DB.customers,now=Date.now();const smp=setupBox()+(C.length?'':'<p class="samp-note">No customers yet. Real requests from the website show up here the moment they come in.</p>');
-  const leads=C.filter(c=>c.stage==='lead').sort((a,b)=>a.created-b.created);
-  const up=C.filter(c=>c.appt&&c.appt.t>now-6*36e5&&c.stage==='booked').sort((a,b)=>a.appt.t-b.appt.t);
-  const nudge=C.filter(c=>c.estimate&&c.estimate.status==='sent'&&now-c.estimate.t>3*DAY);
-  const owed=C.filter(c=>c.invoice&&c.invoice.status==='sent');
-  const late=t=>now-t>36e5;
-  return smp+portalToday()+`<h3 class="osec">New requests to answer <span class="cnt">${leads.length}</span></h3>${leads.length?leads.map(c=>`<article class="orow ${late(c.created)?'late':''}" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(c.source)} · ${ago(c.created)}${late(c.created)?' · answer soon':''}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small>${c.quote?`<p class="muted">Instant quote: ${esc(c.quote.name||'')}${c.quote.range?', '+esc(c.quote.range):''}</p>`:''}${c.msg?`<p>“${esc(c.msg)}”</p>`:''}</div>
-      <div class="oacts"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, this is ${ownerName} with Ridgeline Roofing. Got your request for a free roof inspection. What day works best this week?`)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" data-book="${c.id}">Book inspection</button></div></article>`).join(''):'<p class="muted">All caught up.</p>'}
-    <h3 class="osec">Inspections coming up <span class="cnt">${up.length}</span></h3>${up.length?up.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${fmtDay(c.appt.t)}, ${c.appt.slot} · ${esc(c.addr||'No address yet')}</small>${c.appt.confirmed?'<span class="okpill sm">Confirmed</span>':'<span class="warnpill">Not confirmed yet</span>'}</div>
-      <div class="oacts">${c.appt.confirmed?'':`<a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. Confirming your free roof inspection ${fmtDay(c.appt.t)}, ${c.appt.slot}. Reply YES to confirm or text a better time.`)}">Text to confirm</a><button class="btn btn-line btn-sm" type="button" data-confirm="${c.id}">They confirmed</button>`}
-        <a class="btn btn-line btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, ${ownerName} from Ridgeline here. On my way, about 20 minutes out.`)}">On my way</a><button class="btn btn-line btn-sm" type="button" data-report="${c.id}">Done, add report</button></div></article>`).join(''):'<p class="muted">Nothing booked yet.</p>'}
-    ${nudge.length?`<h3 class="osec">Estimates waiting on an answer <span class="cnt">${nudge.length}</span></h3>${nudge.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>Sent ${ago(c.estimate.t)} · up to ${usd(Math.max(...c.estimate.opts.map(o=>o.price)))}</small></div><div class="oacts"><a class="btn btn-line btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, ${ownerName} with Ridgeline. Any questions on the estimate? Happy to walk through it. You can approve it from your portal: ${SITE_URL}`)}">Text a check-in</a></div></article>`).join('')}`:''}
-    ${owed.length?`<h3 class="osec">Invoices not paid yet <span class="cnt">${owed.length}</span></h3>${owed.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${usd(c.invoice.amount)} · sent ${ago(c.invoice.t)}</small></div><div class="oacts"><a class="btn btn-line btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, friendly reminder your Ridgeline invoice for ${usd(c.invoice.amount)} is ready in your portal: ${SITE_URL}`)}">Text a reminder</a></div></article>`).join('')}`:''}`}
-function oCustomers(q){const C=DB.customers.filter(c=>!q||(c.name+c.phone+c.addr).toLowerCase().includes(q.toLowerCase()));
-  return `<div class="osearch"><input id="oq" type="search" placeholder="Search name, phone or address" value="${esc(q||'')}" aria-label="Search customers"><button class="btn btn-main btn-sm" type="button" id="oadd">Add customer</button></div>
-    ${C.map(c=>`<article class="orow" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}${c.sample?' <small class="samp">sample</small>':''}</b><small>${pretty(c.phone)}${c.addr?' · '+esc(c.addr):''}</small></div><div class="oright">${chip(c)}${c.portal?'<small class="muted">Portal on</small>':''}</div></article>`).join('')||'<p class="muted">No matches.</p>'}`}
-function oNumbers(){const m=metrics(oPeriod),src=Object.entries(m.src).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...src.map(s=>s[1]));
-  const tile=(l,v,h)=>`<div class="tile"><small>${l}</small><b>${v}</b>${h?`<span>${h}</span>`:''}</div>`;
-  return `<div class="seg" role="group" aria-label="Time range">${[7,30,90].map(d=>`<button type="button" data-per="${d}" aria-pressed="${oPeriod===d}">${d} days</button>`).join('')}</div>
-    <div class="tiles">${tile('New requests',m.leads)}${tile('Avg time to first reply',fmtDur(m.avgReply),m.avgReply>36e5?'Aim for under 5 min':'')}${tile('Inspections booked',m.booked)}${tile('Inspections done',m.inspected)}
-    ${tile('Estimates sent',m.sent)}${tile('Close rate',m.close==null?'n/a':m.close+'%',m.won+' approved')}${tile('Open estimates',usd(m.pipe),'waiting on an answer')}${tile('Collected',usd(m.paid),m.owed?usd(m.owed)+' still owed':'')}
-    ${tile('Customers with portal',m.portal)}${tile('Roof Care Club members',m.club)}</div>
-    <h3 class="osec">Where requests came from</h3><div class="obars">${src.map(([k,v])=>`<div class="obar" title="${esc(k)}: ${v}"><span>${esc(k)}</span><i style="width:${Math.max(4,v/mx*100)}%"></i><b>${v}</b></div>`).join('')||'<p class="muted">No requests in this range.</p>'}</div>
-    `}
-function openOwner(){if(CFG.backend&&!window.__ownerLive)return ownerGate();const body=oTab==='today'?oToday():oTab==='people'?oCustomers(''):oTab==='team'?oTeam():oTab==='avail'?oAvail():oTab==='mat'?oMaterials():oNumbers();
-  full('owner',`<header class="apphead"><div><p class="kicker">Ridgeline · Owner</p><h2>${oTab==='today'?'Today':oTab==='people'?'Customers':oTab==='team'?'Crew & extras':oTab==='avail'?'Availability':oTab==='mat'?'Materials':'Numbers'}</h2></div><span class="ohbtns"><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button>${CFG.backend?'<button class="btn btn-line btn-sm" type="button" id="oSign">Sign out</button>':''}</span></header>
-    <nav class="otabs" aria-label="Owner sections">${[['today','Today'],['people','Customers'],['team','Crew & extras'],['mat','Materials'],['avail','Availability'],['numbers','Numbers']].map(([k,l])=>`<button type="button" data-otab="${k}" aria-current="${oTab===k?'page':'false'}">${l}</button>`).join('')}</nav>
-    <div class="appbody" id="obody">${body}</div>`);
-  $('#oOut').onclick=()=>{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
-  $$('[data-otab]').forEach(b=>b.onclick=()=>{oTab=b.dataset.otab;openOwner()});{const so=$('#oSign');if(so)so.onclick=()=>window.ownerSignOut()}
-  bindOwner();if(oTab==='team')bindTeam();if(oTab==='avail')bindAvail();if(oTab==='mat')bindMaterials()}
-function bindOwner(){const ob=$('#obody');
-  $$('#obody [data-open]').forEach(r=>r.addEventListener('click',e=>{if(e.target.closest('a,button'))return;custSheet(r.dataset.open)}));
-  $$('#obody [data-book]').forEach(b=>b.onclick=()=>bookSheet(b.dataset.book));
-  $$('#obody [data-confirm]').forEach(b=>b.onclick=()=>{byId(b.dataset.confirm).appt.confirmed=true;save();openOwner()});
-  $$('#obody [data-report]').forEach(b=>b.onclick=()=>reportSheet(b.dataset.report));
-  $$('#obody [data-per]').forEach(b=>b.onclick=()=>{oPeriod=+b.dataset.per;openOwner()});
-  const q=$('#oq');if(q){q.oninput=()=>{ob.innerHTML=oCustomers(q.value);bindOwner();const nq=$('#oq');nq.focus();nq.setSelectionRange(nq.value.length,nq.value.length)}}
-  const add=$('#oadd');if(add)add.onclick=addSheet;{const so=$('#sampOn'),sf=$('#sampOff');if(so)so.onclick=()=>{setSamples(true);openOwner()};if(sf)sf.onclick=()=>{setSamples(false);openOwner()}}
-  $$('#obody a[href^="sms:"]').forEach(a=>a.addEventListener('click',e=>{if(!isPhone()){e.preventDefault();toast('Opens your texting app on your phone.')}}));
-  $$('#obody [data-open]').forEach(r=>{const c=byId(r.dataset.open);if(c&&c.fresh){r.classList.add('fresh');c.fresh=false}});save()}
-function sheetWrap(id,title,inner){return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="${id}"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 id="${id}">${title}</h3><button class="btn btn-line btn-sm" type="button" data-close>Close</button></div>${inner}</div></div>`}
 function bookSheet(id){const c=byId(id);let d=0,s=null;const close=open(sheetWrap('bkH','Book '+esc(first(c.name))+'’s inspection',`<div class="days" id="odays"></div><div class="slots" id="oslots"></div><div class="field"><label for="oaddr">Address</label><input id="oaddr" value="${esc(c.addr||'')}" autocomplete="street-address"></div><p class="err" id="obe" role="alert" hidden></p><button class="btn btn-main" type="button" id="obk">Book it</button>`));
   const draw=()=>{$('#odays').innerHTML=days.map((x,i)=>`<button type="button" class="day" data-od="${i}" aria-pressed="${d===i}"><small>${x.toLocaleDateString('en-US',{weekday:'short'})}</small><b>${x.getDate()}</b></button>`).join('');$('#oslots').innerHTML=SL.map((x,j)=>`<button type="button" class="slot" data-os="${j}" aria-pressed="${s===j}">${x}</button>`).join('');$$('[data-od]').forEach(b=>b.onclick=()=>{d=+b.dataset.od;draw()});$$('[data-os]').forEach(b=>b.onclick=()=>{s=+b.dataset.os;draw()})};draw();
   $('#obk').onclick=()=>{if(s==null){$('#obe').textContent='Pick a time window.';$('#obe').hidden=false;return}c.addr=$('#oaddr').value.trim()||c.addr;c.appt={t:days[d].getTime(),slot:SL[s],confirmed:false};c.stage='booked';c.show.schedule=true;if(!c.replied)c.replied=Date.now();save();close();openOwner();toast('Booked. Text them to confirm from Today.')}}
@@ -1319,32 +1463,6 @@ function addSheet(){const close=open(sheetWrap('adH','Add a customer',`<div clas
     <label class="tog"><input type="checkbox" id="aport" checked> Let them log in to the customer portal with this number</label><p class="err" id="ae" role="alert" hidden></p><button class="btn btn-main" type="button" id="ago">Add customer</button>`),'#an');
   $('#ago').onclick=()=>{const n=$('#an').value.trim(),p=$('#ap').value;if(!n||digits(p).length<10){$('#ae').textContent='Add a name and a 10-digit mobile number.';$('#ae').hidden=false;return}
     const c=upsert({name:n,phone:p,addr:$('#aa').value.trim(),source:$('#as').value.trim()||'Owner added'});c.portal=$('#aport').checked;c.replied=c.replied||Date.now();save();close();custSheet(c.id)}}
-function custSheet(id){const c=byId(id);if(!c)return;const s=c.show=c.show||{};
-  const has={schedule:!!c.appt,report:!!c.report,estimate:!!(c.estimate&&c.estimate.status!=='draft'),updates:!!(c.updates&&c.updates.length),invoice:!!(c.invoice&&c.invoice.status!=='draft'),materials:!!(c.matPlan&&c.matPlan.length),club:!!c.club};
-  const lab={schedule:'Inspection time',report:'Inspection report',estimate:'Estimate',updates:'Job updates and photos',invoice:'Invoice',materials:'What’s going on your roof (no prices)',club:'Roof Care Club plan'};
-  const make={report:'<button class="btn btn-line btn-sm" type="button" data-mk="report">Add report</button>',estimate:'<button class="btn btn-line btn-sm" type="button" data-mk="estimate">Write estimate</button>',updates:'<button class="btn btn-line btn-sm" type="button" data-mk="update">Post update</button>',invoice:'<button class="btn btn-line btn-sm" type="button" data-mk="invoice">Create invoice</button>',materials:'<button class="btn btn-line btn-sm" type="button" data-mk="mat">Materials</button>',schedule:'<button class="btn btn-line btn-sm" type="button" data-mk="book">Book inspection</button>',club:''};
-    const close=open(sheetWrap('cuH',esc(c.name),`<p class="muted" style="margin-top:-6px">${pretty(c.phone)}${c.addr?' · '+esc(c.addr):''} · came from ${esc(c.source)}</p>
-    ${c.email?`<p style="margin:0"><a href="mailto:${esc(c.email)}" style="color:var(--hivis)">${esc(c.email)}</a>${c.contactPref?` · prefers ${esc(c.contactPref)}${c.bestTime?', '+esc(c.bestTime.toLowerCase()):''}`:''}</p>`:''}
-    ${c.quote?`<div class="pbox" style="padding:10px 12px"><b>Instant estimate they saw</b><span class="muted" style="font-size:14.5px">${esc(c.quote.verdict)}. ${esc(c.quote.range)}${c.quote.age?` · roof ${c.quote.age==='u'?'age unknown':'~'+c.quote.age+' yrs'}`:''}${c.quote.stories?` · ${c.quote.stories}-story`:''}</span></div>`:''}
-    ${c.msg?`<p>“${esc(c.msg)}”</p>`:''}${c.photos&&c.photos.length?`<div class="thumbs">${c.photos.map(u=>`<img src="${u}" alt="">`).join('')}</div>`:''}
-    <div class="field"><label for="cst">Where they are</label><select id="cst">${STAGES.map(([k,l])=>`<option value="${k}" ${c.stage===k?'selected':''}>${l}</option>`).join('')}</select></div>
-    <div class="pbox"><label class="tog"><input type="checkbox" id="cport" ${c.portal?'checked':''}> Customer portal (their own page with a PIN)</label>
-      ${c.portal?`<span class="muted" style="font-size:14.5px">PIN <b style="color:var(--text);letter-spacing:.12em">${ensureJob(c).pin}</b> · ${c.job.lang==='es'?'reads it in Español':'reads it in English'}</span><div class="smsrow"><a class="btn btn-line btn-sm" href="${smsTo(c.phone,portalInvite(c))}">Text link + PIN</a>${c.email?`<a class="btn btn-line btn-sm" href="mailto:${esc(c.email)}?subject=${encodeURIComponent(c.job.lang==='es'?'Su proyecto con Ridgeline Roofing':'Your Ridgeline Roofing project')}&body=${encodeURIComponent(portalInvite(c))}">Email it</a>`:''}<button class="btn btn-line btn-sm" type="button" id="cplink">Copy link</button><button class="btn btn-line btn-sm" type="button" id="cpin">New PIN</button></div>
-      <button class="btn btn-main btn-sm" type="button" id="cjob">Job portal: visits, crew, changes, extras</button>`:''}</div>
-    <div class="pbox mjob"><b>Materials</b><span class="muted">Planned ${usd(matTotal(c.matPlan))} · bought ${usd(jobSpent(c))}${jobPrice(c)?' · job price '+usd(jobPrice(c)):''}</span><button class="btn btn-line btn-sm" type="button" data-mk="mat">Open materials list</button></div>
-    <p class="kicker" style="margin-top:6px">What ${esc(first(c.name))} can see</p><p class="muted" style="font-size:14px;margin-top:-6px">Nothing shows until you create it and switch it on.</p>
-    <div class="vis">${Object.keys(lab).map(k=>`<div class="visrow"><label class="tog ${has[k]?'':'off'}"><input type="checkbox" data-show="${k}" ${has[k]&&s[k]?'checked':''} ${has[k]?'':'disabled'}> ${lab[k]}${has[k]?'':' <small>· not created yet</small>'}</label>${make[k]&&(k==='updates'||(!has[k]&&k!=='materials'))?make[k]:''}</div>`).join('')}</div>
-    <div class="smsrow"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. `)}">Text</a><a class="btn btn-line btn-sm" href="tel:+1${c.phone}">Call</a><button class="btn btn-line btn-sm" type="button" id="cprev" ${c.portal?'':'disabled'}>See their portal</button></div>`));
-  $('#cst').onchange=e=>{c.stage=e.target.value;if(c.stage==='lost'){c.lostT=c.lostT||Date.now();lostAsk(c,()=>{close();custSheet(c.id)})}else{delete c.lostReason;delete c.lostT}save()};
-  $('#cport').onchange=e=>{c.portal=e.target.checked;if(c.portal)ensureJob(c);save();close();custSheet(c.id)};
-  {const b=$('#cplink');if(b)b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(portalUrl(c));toast('Link copied. Send the PIN separately or use Text link + PIN.')}}
-  {const b=$('#cpin');if(b)b.onclick=()=>{c.job.pin=newPin();save();close();custSheet(c.id);toast('New PIN made. Send it to them.')}}
-  {const b=$('#cjob');if(b)b.onclick=()=>{close();jobSheet(c.id)}}
-  $$('#layer [data-show]').forEach(x=>x.onchange=()=>{s[x.dataset.show]=x.checked;save()});
-  $$('#layer [data-mk]').forEach(b=>b.onclick=()=>{close();({report:reportSheet,estimate:estSheet,update:updSheet,invoice:invSheet,book:bookSheet,mat:matSheet})[b.dataset.mk](c.id)});
-  $('#cprev').onclick=()=>{close();openPortal(c.id)};
-  $$('#layer a[href^="sms:"]').forEach(a=>a.addEventListener('click',e=>{if(!isPhone()){e.preventDefault();toast('Opens your texting app on your phone.')}}));
-  openOwner()}
 function estSheet(id){const c=byId(id);const close=open(sheetWrap('esH','Estimate for '+esc(first(c.name)),`<p class="muted">Give one to three options. Plain words, one price each.</p>
     ${[0,1,2].map(i=>`<div class="estopt"><div class="two"><div class="field"><label for="eo${i}">Option ${i+1}${i?' (optional)':''}</label><input id="eo${i}" placeholder="${['Repair the leak area','Full roof replacement',''][i]}"></div><div class="field"><label for="ep${i}">Price</label><input id="ep${i}" inputmode="decimal" placeholder="$"></div></div><div class="field"><label for="ei${i}">What’s included (one per line)</label><textarea id="ei${i}" rows="2"></textarea></div></div>`).join('')}
     <label class="tog"><input type="checkbox" id="eshow" checked> Show in ${esc(first(c.name))}’s portal now</label><p class="err" id="ee" role="alert" hidden></p><button class="btn btn-main" type="button" id="ego">Save estimate</button>`),'#eo0');
@@ -1354,9 +1472,6 @@ function estSheet(id){const c=byId(id);const close=open(sheetWrap('esH','Estimat
 function updSheet(id){const c=byId(id);const pics=[];const close=open(sheetWrap('upH','Post an update',`<div class="field"><label for="upt">What happened today</label><textarea id="upt" rows="3" placeholder="Tear-off done. Shingles go on tomorrow."></textarea></div><div class="field"><span class="flabel">Photos</span><label class="upl" for="upf"><span>Add photos</span><input id="upf" type="file" accept="image/*" multiple></label><div class="thumbs" id="upth"></div></div><button class="btn btn-main" type="button" id="upgo">Post</button>`),'#upt');
   $('#upf').onchange=e=>{[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*k;cv.height=im.height*k;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);pics.push(cv.toDataURL('image/jpeg',.7));$('#upth').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('')};im.src=r.result};r.readAsDataURL(f)})};
   $('#upgo').onclick=()=>{const t=$('#upt').value.trim();if(!t&&!pics.length)return;c.updates=(c.updates||[]).concat([{t:Date.now(),text:t,photos:pics}]);c.show.updates=true;if(stageIx(c.stage)<stageIx('work'))c.stage='work';save();close();custSheet(c.id)}}
-function invSheet(id){const c=byId(id);const est=c.estimate&&c.estimate.status==='approved'?c.estimate.opts[c.estimate.pick||0]:null;const close=open(sheetWrap('ivH','Invoice for '+esc(first(c.name)),`<div class="field"><label for="ivd">For</label><input id="ivd" value="${esc(est?est.name:'')}"></div><div class="field"><label for="iva">Amount</label><input id="iva" inputmode="decimal" value="${est?est.price:''}"></div><div class="field"><label for="ivp">Payment link (optional)</label><input id="ivp" type="url" placeholder="Stripe, Square or QuickBooks pay link" value="${esc((c.invoice&&c.invoice.pay)||DB.payLink||'')}"></div>
-    <label class="tog"><input type="checkbox" id="ivshow" checked> Show in their portal with a Pay button</label><p class="err" id="ive" role="alert" hidden></p><button class="btn btn-main" type="button" id="ivgo">Save invoice</button>`),'#ivd');
-  $('#ivgo').onclick=()=>{const a=+String($('#iva').value).replace(/[^\d.]/g,'');if(!a){$('#ive').textContent='Add the amount.';$('#ive').hidden=false;return}c.invoice={t:Date.now(),amount:a,desc:$('#ivd').value.trim(),status:'sent',pay:$('#ivp').value.trim()};c.stage='invoiced';c.show.invoice=$('#ivshow').checked;c.portal=true;save();close();custSheet(c.id)}}
 function routeHash(){if(location.hash==='#'+OWNER_KEY){oTab='today';openOwner()}}
 
 /* ================= MATERIALS + PURCHASES (Oct 4) =================
@@ -1539,10 +1654,6 @@ function faceCrop(file,cb){const r=new FileReader();r.onload=()=>{const im=new I
 const avatar=(m,sz=44)=>`<span class="oav" style="width:${sz}px;height:${sz}px">${m&&m.photo?`<img src="${m.photo}" alt="">`:`<b>${esc(((m&&m.name)||'?')[0])}</b>`}</span>`;
 
 /* Today: what customers did in their portals + visits today */
-function portalToday(){const A=(DB.activity||[]).filter(a=>!a.seen).slice().reverse(),now=new Date(),td=isoDay(now.getTime());
-  const V=[];DB.customers.forEach(c=>((c.job||{}).visits||[]).forEach(v=>{if(v.date===td&&v.status!=='cancelled')V.push([c,v])}));V.sort((a,b)=>a[1].from.localeCompare(b[1].from));
-  return (A.length?`<h3 class="osec">From customer portals <span class="cnt">${A.length}</span></h3>${A.map(a=>{const c=byId(a.cid);return c?`<article class="orow fresh" data-open="${c.id}"><div class="orow-m"><b>${esc(c.name)}</b><small>${ago(a.t)}</small><p>${esc(a.text)}</p></div><div class="oacts"><button class="btn btn-line btn-sm" type="button" data-pjob="${c.id}">Open job</button><button class="btn btn-line btn-sm" type="button" data-seen="${a.t}">Seen</button></div></article>`:''}).join('')}`:'')
-    +(V.length?`<h3 class="osec">Visits today <span class="cnt">${V.length}</span></h3>${V.map(([c,v])=>`<article class="orow"><div class="orow-m"><b>${esc(c.name)}</b><small>${esc(VTYPE[v.type]||'Visit')} · ${t12(v.from)}${v.to?'–'+t12(v.to):''} · ${esc(c.addr||'')}</small><span class="vstat vs-${v.status}">${vstName(v.status)}</span></div><div class="oacts">${statusBtns(c,v)}</div></article>`).join('')}`:'')}
 function statusBtns(c,v){const nx={scheduled:['confirmed','Confirmed'],confirmed:['onway','On the way'],onway:['arrived','Arrived'],arrived:['done','Done for today']}[v.status];
   return (nx?`<button class="btn btn-main btn-sm" type="button" data-vst="${c.id}|${v.id}|${nx[0]}">${nx[1]}</button>`:'')+`<button class="btn btn-line btn-sm" type="button" data-snap="${c.id}|${v.id}">Who’s going (photos)</button>`}
 function setVisit(c,v,st,eta){v.status=st;v.statusT=Date.now();if(eta!=null)v.eta=eta;if(st==='done'&&v.type==='inspection'&&stageIx(c.stage)<stageIx('inspected'))c.stage='inspected';if((st==='onway'||st==='arrived')&&v.type==='work'&&stageIx(c.stage)<stageIx('work'))c.stage='work';save();
@@ -1562,34 +1673,9 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
   if(st==='onway')etaAsk(c,v,()=>{openOwner()});else{setVisit(c,v,st);openOwner()}},true);
 
 /* the job sheet: everything the customer sees in their portal */
-function jobSheet(id){const c=byId(id);if(!c)return;const j=ensureJob(c);const crewN=ids=>(ids||[]).map(x=>(DB.crew||[]).find(m=>m.id===x)).filter(Boolean);
-  const V=j.visits.slice().sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));
-  const close=open(sheetWrap('jbH','Job portal: '+esc(c.name),`<p class="muted" style="margin-top:-6px">PIN <b style="color:var(--text);letter-spacing:.12em">${j.pin}</b> · ${j.lang==='es'?'Español':'English'} · <a href="#" id="jprev" style="color:var(--hivis)">See it as ${esc(first(c.name))}</a></p>
-    <p class="kicker">Visits</p>
-    ${V.map(v=>`<div class="jrow"><div><b>${esc(VTYPE[v.type]||'Visit')}</b><small>${vWhen(v)} · <span class="vstat vs-${v.status}">${vstName(v.status)}</span></small>
-      <span class="jcrew">${v.team&&v.team.photo?`<img class="jteam" src="${v.team.photo}" alt="Team photo">`:''}${crewN(v.crew).map(m=>avatar(m,34)).join('')}${!crewN(v.crew).length&&!(v.team&&v.team.photo)?'<small class="muted">No crew picked yet</small>':''}</span></div>
-      <div class="oacts">${v.status!=='done'&&v.status!=='cancelled'?statusBtns(c,v):''}<button class="btn btn-line btn-sm" type="button" data-ved="${v.id}">Edit</button></div></div>`).join('')||'<p class="muted">No visits yet.</p>'}
-    <button class="btn btn-line btn-sm" type="button" id="jvadd">Add a visit</button>
-    <p class="kicker" style="margin-top:14px">Changes to the job (change orders)</p>
-    ${j.changes.map((o,i)=>`<div class="jrow"><div><b>${esc(o.title)} · ${usd(o.price)}</b><small>${{waiting:'Waiting for their OK',approved:'Approved'+(o.signed?' by '+esc(o.signed):''),declined:'They said not now',paid:'Paid'}[o.status]}${o.pay?' · has pay link':''}</small></div>
-      <div class="oacts">${o.status==='approved'?`<button class="btn btn-line btn-sm" type="button" data-copaid="${i}">Mark paid</button>`:''}${o.status==='waiting'?`<button class="btn btn-line btn-sm" type="button" data-coed="${i}">Edit</button>`:''}<button class="btn btn-line btn-sm" type="button" data-codel="${i}">Remove</button></div></div>`).join('')||'<p class="muted">None. Add one when you find something extra on the job (rotten decking, extra layer…).</p>'}
-    <button class="btn btn-line btn-sm" type="button" id="jcoadd">New change order</button>
-    <p class="kicker" style="margin-top:14px">Extras offered in their portal</p>
-    ${(DB.addons||[]).length?`<div class="vis">${DB.addons.map(a=>{const pk=j.picks.find(p=>p.addon===a.id);return`<div class="visrow"><label class="tog"><input type="checkbox" data-offer="${a.id}" ${j.addons.includes(a.id)?'checked':''}> ${esc(a.name)} · ${usd(a.price)}${pk?` <small>· they added it${pk.status==='paid'?', paid':''}</small>`:''}</label>${pk&&pk.status!=='paid'?`<button class="btn btn-line btn-sm" type="button" data-pkpaid="${a.id}">Mark paid</button>`:''}</div>`}).join('')}</div>`:'<p class="muted">No extras yet. Add them once under Owner → Crew & extras.</p>'}
-    ${j.log.length?`<p class="kicker" style="margin-top:14px">What they did in the portal</p><ul class="plist">${j.log.slice().reverse().slice(0,8).map(l=>`<li>${esc(l.text)} <small>${ago(l.t)}</small></li>`).join('')}</ul>`:''}
-    <div class="smsrow" style="margin-top:12px"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,portalInvite(c))}">Text link + PIN</a><button class="btn btn-line btn-sm" type="button" id="jback">Customer page</button></div>`));
-  const re=()=>{close();jobSheet(id)};
-  $('#jprev').onclick=e=>{e.preventDefault();openPortal(c.id)};$('#jback').onclick=()=>{close();custSheet(c.id)};
-  $('#jvadd').onclick=()=>{close();visitSheet(c.id)};$$('#layer [data-ved]').forEach(b=>b.onclick=()=>{close();visitSheet(c.id,b.dataset.ved)});
-  $('#jcoadd').onclick=()=>{close();coSheet(c.id)};$$('#layer [data-coed]').forEach(b=>b.onclick=()=>{close();coSheet(c.id,+b.dataset.coed)});
-  $$('#layer [data-copaid]').forEach(b=>b.onclick=()=>{const o=j.changes[+b.dataset.copaid];o.status='paid';o.paidT=Date.now();save();re()});
-  $$('#layer [data-codel]').forEach(b=>b.onclick=()=>{j.changes.splice(+b.dataset.codel,1);save();re()});
-  $$('#layer [data-offer]').forEach(x=>x.onchange=()=>{const k=x.dataset.offer;j.addons=x.checked?[...new Set(j.addons.concat([k]))]:j.addons.filter(a=>a!==k);save()});
-  $$('#layer [data-pkpaid]').forEach(b=>b.onclick=()=>{const p=j.picks.find(p=>p.addon===b.dataset.pkpaid);p.status='paid';p.paidT=Date.now();save();re()});
-  $$('#layer a[href^="sms:"]').forEach(a=>a.addEventListener('click',e=>{if(!isPhone()){e.preventDefault();toast('Opens your texting app on your phone.')}}))}
-function visitSheet(id,vid){const c=byId(id),j=ensureJob(c),v=vid?j.visits.find(x=>x.id===vid):null,C=DB.crew||[];let team=v&&v.team?{...v.team}:null;
+function visitSheet(id,vid,defType){const c=byId(id),j=ensureJob(c),v=vid?j.visits.find(x=>x.id===vid):null,C=DB.crew||[];let team=v&&v.team?{...v.team}:null;
   const d0=v?v.date:isoDay(Date.now()+DAY);
-  const close=open(sheetWrap('vtH',(v?'Edit visit':'Add a visit')+': '+esc(first(c.name)),`<div class="two"><div class="field"><label for="vty">What visit</label><select id="vty">${Object.entries(VTYPE).map(([k,l])=>`<option value="${k}" ${v&&v.type===k||!v&&k==='work'?'selected':''}>${l}</option>`).join('')}</select></div><div class="field"><label for="vdt">Day</label><input id="vdt" type="date" value="${d0}"></div></div>
+  const close=open(sheetWrap('vtH',(v?'Edit visit':'Add a visit')+': '+esc(first(c.name)),`<div class="two"><div class="field"><label for="vty">What visit</label><select id="vty">${Object.entries(VTYPE).map(([k,l])=>`<option value="${k}" ${v&&v.type===k||!v&&k===(defType||'work')?'selected':''}>${l}</option>`).join('')}</select></div><div class="field"><label for="vdt">Day</label><input id="vdt" type="date" value="${d0}"></div></div>
     <div class="two"><div class="field"><label for="vfr">Arrive between</label><input id="vfr" type="time" value="${v?v.from:'08:00'}"></div><div class="field"><label for="vto">and</label><input id="vto" type="time" value="${v?v.to||'':'09:00'}"></div></div>
     <div class="field"><label for="vst">Status</label><select id="vst">${VST.map(([k,l])=>`<option value="${k}" ${(v?v.status:'confirmed')===k?'selected':''}>${l}</option>`).join('')}</select></div>
     <div class="field"><span class="flabel">Who’s going</span>${C.length?`<div class="crewpick">${C.map(m=>`<label class="cpk"><input type="checkbox" data-vcm="${m.id}" ${v&&(v.crew||[]).includes(m.id)?'checked':''}>${avatar(m,40)}<span class="cpn">${esc(m.name)}<small>${esc(m.role||'')}</small></span><span class="cplead"><input type="radio" name="vlead" value="${m.id}" ${v&&v.lead===m.id?'checked':''} aria-label="${esc(m.name)} is crew lead"> Lead</span></label>`).join('')}</div>`:'<p class="muted">Add your crew once under Owner → Crew & extras (name, role, photo).</p>'}</div>
@@ -1601,7 +1687,7 @@ function visitSheet(id,vid){const c=byId(id),j=ensureJob(c),v=vid?j.visits.find(
     const crew=$$('#layer [data-vcm]').filter(x=>x.checked).map(x=>x.dataset.vcm),ld=($$('#layer [name="vlead"]').find(x=>x.checked)||{}).value||crew[0]||'';
     const o={type:$('#vty').value,date:dt,from:fr,to:$('#vto').value,status:$('#vst').value,crew,lead:ld,note:$('#vnt').value.trim(),team:team&&team.photo?{photo:team.photo,names:$('#vtn').value.trim()}:null};
     if(v)Object.assign(v,o);else j.visits.push(Object.assign({id:'v'+Math.random().toString(36).slice(2,7)},o));
-    if(o.type==='inspection'&&stageIx(c.stage)<1)c.stage='booked';c.portal=true;save();close();jobSheet(id);toast('Visit saved. It shows in their portal now.')};
+    if(o.type==='inspection'){j.apptIn=true;if(stageIx(c.stage)<1)c.stage='booked';c.appt={t:new Date(o.date+'T'+o.from).getTime(),slot:t12(o.from)+(o.to?' to '+t12(o.to):''),confirmed:o.status!=='scheduled'};c.show=c.show||{};c.show.schedule=true;if(!c.replied)c.replied=Date.now()}save();close();custSheet(id);toast('Visit saved.')};
   const del=$('#vdel');if(del)del.onclick=()=>{j.visits=j.visits.filter(x=>x!==v);save();close();jobSheet(id)}}
 function snapSheet(c,v){const crew=(v.crew||[]).map(x=>(DB.crew||[]).find(m=>m.id===x)).filter(Boolean);
   const close=open(sheetWrap('snH','Who’s going: '+esc(first(c.name)),`<p class="muted" style="margin-top:-6px">Snap a fresh photo before you head out, so ${esc(first(c.name))} knows who’s at the door.</p>
@@ -1650,6 +1736,260 @@ function xSheet(xid){const a=xid?(DB.addons||[]).find(x=>x.id===xid):null;let ph
 addEventListener('storage',e=>{if(e.key!=='rl-db')return;try{const n=JSON.parse(e.newValue||'null');if(n&&n.v===3){DB=n;const o=$('#owner');if(o&&!o.hidden&&!$('#layer .sheet'))openOwner()}}catch(x){}});
 /* one PIN per customer: if two customers ever share a PIN (or have 0000), give the later one a new PIN */
 {const seen=new Set(['0000']);let fixed=false;DB.customers.slice().reverse().forEach(c=>{if(!c.job||!c.job.pin)return;if(seen.has(c.job.pin)){c.job.pin=newPin();fixed=true}seen.add(c.job.pin)});if(fixed)save()}
+/* ================= OWNER APP v2 (Oct 8): light, high-contrast, logo colors, pages instead of crowded sheets =================
+   Ryan: "most people just want to send an invoice, show up to the site, do the work, and get paid" — every screen leads with
+   ONE big next action (2–3 taps from opening the app), with the full detail one tap deeper for owners who want it. */
+let oJob=null;
+const OI={
+  home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>',jobs:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  money:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+  back:'<path d="M15 5l-7 7 7 7"/>',chat:'<path d="M4 5h16v11H9l-5 4z"/>',phone:'<path d="M6 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L16 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2z"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>',
+  cam:'<path d="M4 7h4l2-2h4l2 2h4v12H4z"/><circle cx="12" cy="13" r="3.5"/>',check:'<path d="M5 12.5 10 17l9-10"/>',file:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/>',
+  truck:'<path d="M2 7h11v9H2zM13 10h5l3 3v3h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',tool:'<path d="M14 6a4 4 0 0 0-5 5L3 17l4 4 6-6a4 4 0 0 0 5-5l-3 3-3-3z"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',key:'<circle cx="8" cy="14" r="4"/><path d="m11 11 9-9M17 5l2 2"/>',box:'<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',team:'<circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2 20c.8-3.5 3.5-5.5 7-5.5s6.2 2 7 5.5M16 14.5c3 0 5 1.8 6 4.5"/>',
+  out:'<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+  star:'<path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>'};
+const oi=(k,c='')=>`<svg class="oi ${c}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${OI[k]||''}</svg>`;
+const STEP8=[['lead','Request'],['booked','Booked'],['inspected','Inspected'],['estimate','Estimate'],['approved','Approved'],['work','Working'],['invoiced','Invoiced'],['paid','Paid']];
+const mapsUrl=a=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a||'');
+const greet=()=>{const h=new Date().getHours();return h<12?'Good morning':h<17?'Good afternoon':'Good evening'};
+const todayIso=()=>isoDay(Date.now());
+const visitsOf=c=>((c.job||{}).visits||[]).filter(v=>v.status!=='cancelled');
+const nextVisit=c=>{const now=todayIso();return visitsOf(c).filter(v=>v.date>=now&&v.status!=='done').sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from))[0]};
+const invoiceLines=c=>{const L=[];const e=c.estimate&&c.estimate.status==='approved'?c.estimate.opts[c.estimate.pick||0]:null;if(e)L.push({desc:e.name,amount:e.price});
+  ((c.job||{}).changes||[]).filter(o=>o.status==='approved'||o.status==='paid').forEach(o=>L.push({desc:'Change: '+o.title,amount:o.price,paid:o.status==='paid'}));
+  ((c.job||{}).picks||[]).forEach(p=>L.push({desc:'Extra: '+p.name,amount:p.price,paid:p.status==='paid'}));return L};
+const owed=c=>c.invoice&&c.invoice.status==='sent'?c.invoice.amount:0;
+const readyToBill=c=>!c.invoice&&(c.stage==='work'||c.stage==='approved'&&visitsOf(c).some(v=>v.type==='work'&&v.status==='done'));
+/* sms links only work on a phone: tell desktop users instead of failing silently */
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('#owner a[href^="sms:"],#layer a[href^="sms:"]');if(a&&!isPhone()){e.preventDefault();toast('Texting opens on your phone. On a computer, use Call or Email.')}},true);
+
+/* ---------- what's the ONE next thing for this job ---------- */
+function nextStep(c){const f=first(c.name),v=nextVisit(c),today=v&&v.date===todayIso();
+  const visitAct=v&&today&&!['estimate','invoiced','paid','lost'].includes(c.stage)?({scheduled:['confirmed','They confirmed'],confirmed:['onway','On my way'],onway:['arrived','I’m here'],arrived:['done','Done for today']})[v.status]:null;
+  if(visitAct)return{k:'Today · '+(VTYPE[v.type]||'Visit'),t:`${t12(v.from)}${v.to?'–'+t12(v.to):''} at ${esc((c.addr||'').split(',')[0]||'their place')}`,p:{label:visitAct[1],vst:`${c.id}|${v.id}|${visitAct[0]}`},m:[{label:'Directions',href:mapsUrl(c.addr)},{label:'Who’s going (photos)',snap:`${c.id}|${v.id}`}]};
+  switch(c.stage){
+    case'lead':return{k:'New request',t:`Answer ${esc(f)} and book the free inspection`,s:c.msg?`“${esc(c.msg)}”`:'',p:{label:'Text '+esc(f),href:smsTo(c.phone,`Hi ${f}, this is ${ownerName} with Ridgeline Roofing. Got your request. What day works for a free roof inspection?`)},m:[{label:'Book inspection',act:'book'},{label:'Call',href:'tel:+1'+c.phone}]};
+    case'booked':return{k:'Inspection booked',t:v?vWhen(v):'Inspection time not set',p:{label:'Add inspection report',act:'report'},m:[{label:v?'Change time':'Set time',act:v?'visits':'book'},{label:'Directions',href:mapsUrl(c.addr)}]};
+    case'inspected':return{k:'Inspected',t:`Send ${esc(f)} the estimate`,p:{label:'Write estimate',act:'estimate'},m:[{label:'See report',act:'updates'}]};
+    case'estimate':return{k:'Estimate sent',t:`Waiting on ${esc(f)}`,s:c.estimate?`Sent ${ago(c.estimate.t)}`:'',p:{label:'They said yes',act:'approve'},m:[{label:'Text a check-in',href:smsTo(c.phone,`Hi ${f}, ${ownerName} with Ridgeline. Any questions on the estimate? Happy to walk through it.`)},{label:'They said no',act:'lost'}]};
+    case'approved':return{k:'Approved',t:'Schedule the work day',p:{label:'Add work day',act:'work'},m:[{label:'Materials list',act:'mat'},{label:'Send invoice now',act:'invoice'}]};
+    case'work':return{k:'Job in progress',t:'Post photos as you go, then bill it',p:{label:'Job done · send invoice',act:'invoice'},m:[{label:'Post photos / update',act:'update'},{label:'Add a change',act:'change'}]};
+    case'invoiced':return{k:'Invoice sent',t:`${usd(owed(c))} waiting`,s:c.invoice?`Sent ${ago(c.invoice.t)}`:'',p:{label:'Mark paid',act:'paid'},m:[{label:'Text a reminder',href:smsTo(c.phone,`Hi ${f}, friendly reminder: your Ridgeline invoice for ${usd(owed(c))} is ready.${c.portal?' Pay here: '+portalUrl(c):''}`)}]};
+    case'paid':return{k:'Paid',t:'Ask for a review while they’re happy',p:{label:'Text a thank-you',href:smsTo(c.phone,`Hi ${f}, thank you for choosing Ridgeline Roofing! If you're happy with the work, a quick Google review would mean a lot.`)},m:[{label:'Book another job',act:'book'}]};
+    case'lost':return{k:'Lost',t:esc(c.lostReason||'No reason given'),p:{label:'Reopen job',act:'reopen'},m:[]};}
+  return{k:stageName(c.stage),t:'',p:{label:'Open',act:'details'},m:[]}}
+const actBtn=(c,a,cls)=>a.href?`<a class="${cls}" href="${a.href}" ${/^https?:/.test(a.href)?'target="_blank" rel="noopener"':''}>${a.label}</a>`:a.vst?`<button class="${cls}" type="button" data-vst="${a.vst}">${a.label}</button>`:a.snap?`<button class="${cls}" type="button" data-snap="${a.snap}">${a.label}</button>`:`<button class="${cls}" type="button" data-act="${a.act}" data-cid="${c.id}">${a.label}</button>`;
+function doAct(c,a){const id=c.id;({book:()=>visitSheet(id,null,'inspection'),visits:()=>jobSheet(id,'visits'),report:()=>reportSheet(id),estimate:()=>estSheet(id),approve:()=>approveSheet(c),work:()=>visitSheet(id,null,'work'),
+  update:()=>updSheet(id),updates:()=>jobSheet(id,'updates'),invoice:()=>invoiceSheet(c),paid:()=>paidSheet(c),mat:()=>matSheet(id),change:()=>coSheet(id),details:()=>jobSheet(id,'details'),
+  lost:()=>{c.stage='lost';c.lostT=Date.now();save();lostAsk(c,()=>custSheet(id))},reopen:()=>{c.stage='lead';delete c.lostReason;delete c.lostT;save();custSheet(id)}}[a]||(()=>{}))()}
+
+/* ---------- shell ---------- */
+const OPAGES={today:'Home',people:'Jobs',schedule:'Schedule',money:'Money',more:'More',team:'Crew & extras',mat:'Materials',avail:'Availability',numbers:'Numbers',job:''};
+function openOwner(){if(CFG.backend&&!window.__ownerLive)return ownerGate();
+  if(oTab==='job'&&!byId(oJob))oTab='people';
+  const c=oTab==='job'?byId(oJob):null;
+  const body=oTab==='today'?oHome():oTab==='people'?oJobs():oTab==='job'?oJobPage(c):oTab==='schedule'?oSchedule():oTab==='money'?oMoney():oTab==='more'?oMore():oTab==='team'?oTeam():oTab==='avail'?oAvail():oTab==='mat'?oMaterials():oNumbers();
+  const nav=[['today','home','Home'],['people','jobs','Jobs'],['plus','plus',''],['schedule','cal','Schedule'],['money','money','Money']];
+  const sub=['team','mat','avail','numbers'].includes(oTab);
+  const el=full('owner',`<div class="ow">
+    <aside class="oside"><div class="obrand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg><span>Ridgeline<small>Owner</small></span></div>
+      <button class="oside-new" type="button" data-plus>${oi('plus')}New</button>
+      ${[['today','home','Home'],['people','jobs','Jobs'],['schedule','cal','Schedule'],['money','money','Money'],['team','team','Crew & extras'],['mat','box','Materials'],['numbers','chart','Numbers'],['avail','clock','Availability']].map(([k,i,l])=>`<button type="button" class="oside-i" data-otab="${k}" aria-current="${oTab===k||oTab==='job'&&k==='people'?'page':'false'}">${oi(i)}${l}</button>`).join('')}
+      <div class="oside-foot"><button type="button" class="oside-i" id="oOut">${oi('globe')}Website</button>${CFG.backend?`<button type="button" class="oside-i" id="oSign">${oi('out')}Sign out</button>`:''}</div></aside>
+    <div class="omain"><header class="otop">${oTab==='job'||sub||oTab==='more'?`<button class="oback" type="button" data-otab="${oTab==='job'?'people':oTab==='more'?'today':'more'}">${oi('back')}<span>${oTab==='job'?'Jobs':oTab==='more'?'Home':'More'}</span></button>`:`<span class="otop-brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 17 16 6l13 11" fill="none" stroke="#FFD400" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 15v11h16V15" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span>`}
+      <h1>${oTab==='job'?esc(c.name):OPAGES[oTab]}</h1><button class="otop-more" type="button" data-otab="more" aria-label="More">${oi('more')}<span>More</span></button></header>
+      <div class="obody" id="obody">${body}</div></div>
+    <nav class="obot" aria-label="Owner sections">${nav.map(([k,i,l])=>k==='plus'?`<button type="button" class="obot-plus" data-plus aria-label="New">${oi('plus')}</button>`:`<button type="button" data-otab="${k}" aria-current="${oTab===k||oTab==='job'&&k==='people'?'page':'false'}">${oi(i)}<span>${l}</span></button>`).join('')}</nav></div>`);
+  $$('#owner [data-otab]').forEach(b=>b.onclick=()=>{oTab=b.dataset.otab;openOwner();const o=$('#owner');if(o)o.scrollTop=0});
+  $$('#owner [data-plus]').forEach(b=>b.onclick=plusSheet);
+  {const b=$('#oOut');if(b)b.onclick=()=>{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)}}
+  {const so=$('#oSign');if(so)so.onclick=()=>window.ownerSignOut()}
+  bindOwner();if(oTab==='team')bindTeam();if(oTab==='avail')bindAvail();if(oTab==='mat')bindMaterials();if(oTab==='job')bindJob(c);}
+function bindOwner(){const ob=$('#obody');if(!ob)return;
+  $$('#obody [data-open]').forEach(r=>r.addEventListener('click',e=>{if(e.target.closest('a,button:not([data-open]),input,select'))return;custSheet(r.dataset.open)}));
+  $$('#obody [data-act]').forEach(b=>b.onclick=e=>{e.stopPropagation();const c=byId(b.dataset.cid);if(c)doAct(c,b.dataset.act)});
+  $$('#obody [data-per]').forEach(b=>b.onclick=()=>{oPeriod=+b.dataset.per;openOwner()});
+  $$('#obody [data-chip]').forEach(b=>b.onclick=()=>{oFilter=b.dataset.chip;openOwner()});
+  const q=$('#oq');if(q){q.oninput=()=>{oQuery=q.value;const box=$('#ojlist');if(box){box.innerHTML=jobRows();bindOwner()}}}
+  $$('#obody [data-go]').forEach(b=>b.onclick=()=>{oTab=b.dataset.go;openOwner()});
+  {const a=$('#oadd');if(a)a.onclick=addSheet}
+  $$('#obody [data-open]').forEach(r=>{const c=byId(r.dataset.open);if(c&&c.fresh){r.classList.add('fresh');c.fresh=false}});save()}
+function custSheet(id){oJob=id;oTab='job';const cl=$('#layer');if(cl)cl.innerHTML='';openOwner();const o=$('#owner');if(o)o.scrollTop=0}
+function jobSheet(id,sec){if(!sec){custSheet(id);return}const c=byId(id);if(!c)return;({visits:visitsPage,updates:updatesPage,details:detailsPage,portal:portalPage,estimate:estPage,invoice:invoicePage,changes:changesPage}[sec]||(()=>custSheet(id)))(c)}
+/* pages: every sheet is a full-screen page with a Back button in the owner app */
+function sheetWrap(id,title,inner){return `<div class="scrim opage"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="${id}"><header class="ophead"><button class="oback" type="button" data-close>${oi('back')}<span>Back</span></button><h3 id="${id}">${title}</h3></header><div class="opbody">${inner}</div></div></div>`}
+
+/* ---------- HOME ---------- */
+function taskCard(c,o){const n=nextStep(c);return `<article class="otask ${o.cls||''}" data-open="${c.id}">
+  <div class="otask-top"><span class="okick">${o.kick||n.k}</span>${o.badge||''}</div>
+  <h3>${esc(c.name)}</h3><p class="otask-t">${o.t||n.t}</p>${(o.s||n.s)?`<p class="otask-s">${o.s||n.s}</p>`:''}
+  <div class="otask-acts">${actBtn(c,o.p||n.p,'ob ob-main')}${(o.m||n.m).slice(0,2).map(a=>actBtn(c,a,'ob ob-line')).join('')}</div></article>`}
+function oHome(){const C=DB.customers,now=Date.now(),td=todayIso();
+  const visits=[];C.forEach(c=>visitsOf(c).forEach(v=>{if(v.date===td)visits.push([c,v])}));visits.sort((a,b)=>a[1].from.localeCompare(b[1].from));
+  const leads=C.filter(c=>c.stage==='lead').sort((a,b)=>a.created-b.created);
+  const A=(DB.activity||[]).filter(a=>!a.seen&&byId(a.cid)).slice().reverse();
+  const nudge=C.filter(c=>c.stage==='estimate'&&c.estimate&&now-c.estimate.t>3*DAY);
+  const bill=C.filter(readyToBill),unpaid=C.filter(c=>owed(c));
+  const owedAll=unpaid.reduce((a,c)=>a+owed(c),0),paidM=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&MON(c.invoice.paidT)===MON(now)).reduce((a,c)=>a+c.invoice.amount,0);
+  const tasks=[...leads.map(c=>taskCard(c,{cls:now-c.created>36e5?'late':'',badge:`<span class="obadge ${now-c.created>36e5?'red':''}">${ago(c.created)}</span>`})),
+    ...A.map(a=>{const c=byId(a.cid);return `<article class="otask fresh" data-open="${c.id}"><div class="otask-top"><span class="okick">From their portal</span><span class="obadge">${ago(a.t)}</span></div><h3>${esc(c.name)}</h3><p class="otask-t">${esc(a.text)}</p><div class="otask-acts"><button class="ob ob-main" type="button" data-seenopen="${a.t}">Open job</button><button class="ob ob-line" type="button" data-seen="${a.t}">Got it</button></div></article>`}),
+    ...bill.map(c=>taskCard(c,{kick:'Ready to bill',t:`Send ${esc(first(c.name))} the invoice`,p:{label:'Send invoice',act:'invoice'},m:[]})),
+    ...nudge.map(c=>taskCard(c,{kick:'Estimate waiting',badge:`<span class="obadge">${ago(c.estimate.t)}</span>`})),
+    ...unpaid.map(c=>taskCard(c,{kick:'Waiting for payment'}))];
+  return `<section class="ohello"><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p><h2>${greet()}, ${esc(ownerName)}</h2></section>
+    ${setupBox()}
+    <div class="ostats"><button type="button" data-go="money"><small>Waiting to be paid</small><b>${usd(owedAll)}</b></button><button type="button" data-go="money"><small>Paid this month</small><b>${usd(paidM)}</b></button><button type="button" data-go="schedule"><small>Visits today</small><b>${visits.length}</b></button></div>
+    <div class="oquick">${[['add','user','New job'],['invoice','file','Send invoice'],['photos','cam','Post photos'],['buy','box','Log a purchase']].map(([k,i,l])=>`<button type="button" data-quick="${k}">${oi(i)}<span>${l}</span></button>`).join('')}</div>
+    ${visits.length?`<h2 class="osec2">Today</h2><div class="olist">${visits.map(([c,v])=>visitCard(c,v)).join('')}</div>`:''}
+    <h2 class="osec2">Needs you ${tasks.length?`<span class="ocount">${tasks.length}</span>`:''}</h2>
+    ${tasks.length?`<div class="olist">${tasks.join('')}</div>`:`<div class="oempty">${oi('check')}<b>You’re all caught up.</b><span>New website requests show up here the moment they come in.</span></div>`}`}
+function visitCard(c,v){const nx={scheduled:['confirmed','They confirmed'],confirmed:['onway','On my way'],onway:['arrived','I’m here'],arrived:['done','Done for today']}[v.status];const crew=(v.crew||[]).map(x=>(DB.crew||[]).find(m=>m.id===x)).filter(Boolean);
+  return `<article class="ovisit vs2-${v.status}" data-open="${c.id}"><div class="ovisit-time"><b>${t12(v.from)}</b>${v.to?`<small>to ${t12(v.to)}</small>`:''}</div>
+    <div class="ovisit-m"><span class="vstat vs-${v.status}">${vstName(v.status)}</span><h3>${esc(c.name)}</h3><p>${esc(VTYPE[v.type]||'Visit')} · ${esc((c.addr||'No address').split(',')[0])}</p>${crew.length?`<span class="jcrew">${crew.map(m=>avatar(m,28)).join('')}</span>`:''}
+    <div class="otask-acts">${nx?`<button class="ob ob-main" type="button" data-vst="${c.id}|${v.id}|${nx[0]}">${nx[1]}</button>`:''}<a class="ob ob-line" href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}Directions</a></div></div></article>`}
+
+/* ---------- JOBS ---------- */
+let oFilter='all',oQuery='';
+const FILTERS=[['all','All',c=>c.stage!=='lost'],['lead','New',c=>c.stage==='lead'],['booked','Booked',c=>['booked','inspected'].includes(c.stage)],['estimate','Estimates',c=>['estimate','approved'].includes(c.stage)],['work','Working',c=>c.stage==='work'],['bill','To bill',readyToBill],['unpaid','Unpaid',c=>!!owed(c)],['paid','Paid',c=>c.stage==='paid'],['lost','Lost',c=>c.stage==='lost']];
+function jobRows(){const f=(FILTERS.find(x=>x[0]===oFilter)||FILTERS[0])[2],q=oQuery.toLowerCase();
+  const C=DB.customers.filter(f).filter(c=>!q||(c.name+' '+c.phone+' '+(c.addr||'')+' '+(c.email||'')).toLowerCase().includes(q)).sort((a,b)=>(b.created||0)-(a.created||0));
+  return C.map(c=>{const n=nextStep(c);return `<article class="ojob" data-open="${c.id}"><span class="oinit st2-${c.stage}">${esc((c.name||'?')[0])}</span><div class="ojob-m"><div class="ojob-h"><h3>${esc(c.name)}</h3><span class="opill st2-${c.stage}">${stageName(c.stage)}</span></div>
+    <p>${esc((c.addr||pretty(c.phone)||'').split(',')[0])}</p><p class="ojob-n">${oi('back','flip')}${esc(n.k)}: ${n.t.replace(/<[^>]+>/g,'')}</p></div></article>`}).join('')||`<div class="oempty">${oi('jobs')}<b>No jobs here yet.</b><span>Website requests land here automatically, or add one yourself.</span></div>`}
+function oJobs(){return `<div class="osearch2"><label class="sr" for="oq">Search jobs</label><input id="oq" type="search" placeholder="Search name, phone or address" value="${esc(oQuery)}" autocomplete="off"><button class="ob ob-main" type="button" id="oadd">${oi('plus')}New job</button></div>
+  <div class="ochips" role="group" aria-label="Filter">${FILTERS.map(([k,l,f])=>`<button type="button" data-chip="${k}" aria-pressed="${oFilter===k}">${l} <i>${DB.customers.filter(f).length}</i></button>`).join('')}</div>
+  <div class="olist" id="ojlist">${jobRows()}</div>`}
+
+/* ---------- JOB PAGE ---------- */
+function oJobPage(c){const n=nextStep(c),j=c.job||{},si=STEP8.findIndex(s=>s[0]===c.stage),V=visitsOf(c),nv=nextVisit(c);
+  const est=c.estimate&&c.estimate.status!=='draft'?c.estimate:null,ch=(j.changes||[]),wait=ch.filter(o=>o.status==='waiting').length,ups=(c.updates||[]).length+(c.report?1:0),inv=c.invoice;
+  const tile=(k,i,l,v,s,cls='')=>`<button type="button" class="otile ${cls}" data-sec="${k}">${oi(i)}<span class="otile-l">${l}</span><b>${v}</b>${s?`<small>${s}</small>`:''}</button>`;
+  return `<section class="jhead"><div class="jhead-m"><span class="opill st2-${c.stage}">${stageName(c.stage)}</span><p>${c.addr?`<a href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}${esc(c.addr)}</a>`:'<span class="muted2">No address yet</span>'}</p><small>${esc(c.source||'')} · ${ago(c.created||Date.now())}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small></div>
+    <div class="jcontact"><a href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. `)}">${oi('chat')}Text</a><a href="tel:+1${c.phone}">${oi('phone')}Call</a>${c.email?`<a href="mailto:${esc(c.email)}">${oi('mail')}Email</a>`:`<a aria-disabled="true" class="off">${oi('mail')}Email</a>`}<a href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}Map</a></div></section>
+  <section class="onext"><span class="okick">Next step · ${n.k}</span><h2>${n.t}</h2>${n.s?`<p>${n.s}</p>`:''}${actBtn(c,n.p,'ob ob-main ob-xl')}${n.m.length?`<div class="onext-more">${n.m.map(a=>actBtn(c,a,'ob ob-line')).join('')}</div>`:''}</section>
+  ${c.stage!=='lost'?`<ol class="jsteps" aria-label="Job stage">${STEP8.map(([k,l],i)=>`<li class="${i<si?'done':i===si?'now':''}"><button type="button" data-stage="${k}" aria-label="Set stage: ${l}">${i<si?oi('check'):i+1}</button><span>${l}</span></li>`).join('')}</ol>`:''}
+  <div class="otiles">
+    ${tile('visits','cal','Visits',V.length,nv?vWhen(nv):'None scheduled')}
+    ${tile('estimate','file','Estimate',est?(est.status==='approved'?'Approved':usd(Math.max(...est.opts.map(o=>o.price)))):'—',est?(est.status==='approved'?usd(est.opts[est.pick||0].price):'Waiting'):'Not written')}
+    ${tile('updates','cam','Photos & updates',ups,ups?'Report and job photos':'Nothing yet')}
+    ${tile('changes','tool','Changes',ch.length,wait?wait+' waiting for OK':'Extra work','' + (wait?'warn':''))}
+    ${tile('invoice','money','Invoice',inv?usd(inv.amount):'—',inv?(inv.status==='paid'?'Paid '+fmtDay(inv.paidT):'Waiting'):'Not sent',inv&&inv.status==='paid'?'good':'')}
+    ${tile('mat','box','Materials',usd(matTotal(c.matPlan)),'bought '+usd(jobSpent(c)))}
+    ${tile('portal','key','Customer portal',c.portal?'On':'Off',c.portal?'PIN '+ensureJob(c).pin:'Their own page')}
+    ${tile('details','user','Details','',pretty(c.phone))}
+  </div>
+  ${c.stage!=='lost'?`<p class="jlost"><button type="button" class="olink" data-act="lost" data-cid="${c.id}">Mark as lost</button></p>`:''}`}
+function bindJob(c){{const now=$('#obody .jsteps li.now');if(now)now.scrollIntoView({block:'nearest',inline:'center'})}$$('#obody [data-sec]').forEach(b=>b.onclick=()=>{const k=b.dataset.sec;if(k==='mat')return matSheet(c.id);jobSheet(c.id,k)});
+  $$('#obody [data-stage]').forEach(b=>b.onclick=()=>{const k=b.dataset.stage;if(k===c.stage)return;c.stage=k;if(k==='paid'&&c.invoice&&c.invoice.status!=='paid'){c.invoice.status='paid';c.invoice.paidT=Date.now()}save();openOwner();toast('Stage: '+stageName(k))})}
+
+/* ---------- job sub-pages ---------- */
+function visitsPage(c){const j=ensureJob(c),V=j.visits.slice().sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));
+  const close=open(sheetWrap('vpH','Visits · '+esc(first(c.name)),`${V.map(v=>`<div class="orow2"><div><b>${esc(VTYPE[v.type]||'Visit')}</b><small>${vWhen(v)}</small><span class="vstat vs-${v.status}">${vstName(v.status)}</span></div><div class="oacts">${v.status!=='done'&&v.status!=='cancelled'?statusBtns(c,v):''}<button class="ob ob-line" type="button" data-ved="${v.id}">Edit</button></div></div>`).join('')||'<p class="muted2">No visits yet.</p>'}
+    <div class="obtns"><button class="ob ob-main" type="button" data-nv="inspection">Book inspection</button><button class="ob ob-line" type="button" data-nv="work">Add work day</button></div>`));
+  $$('#layer [data-ved]').forEach(b=>b.onclick=()=>{close();visitSheet(c.id,b.dataset.ved)});$$('#layer [data-nv]').forEach(b=>b.onclick=()=>{close();visitSheet(c.id,null,b.dataset.nv)})}
+function updatesPage(c){const U=(c.updates||[]).slice().reverse();
+  const close=open(sheetWrap('upP','Photos & updates · '+esc(first(c.name)),`<div class="obtns"><button class="ob ob-main" type="button" id="upNew">${oi('cam')}Post photos / update</button><button class="ob ob-line" type="button" id="rpNew">${c.report?'Redo':'Add'} inspection report</button></div>
+    ${c.report?`<div class="ocard2"><span class="okick">Inspection report · ${fmtDay(c.report.t)}</span><p>${esc(c.report.notes)}</p>${c.report.photos.length?`<div class="pgrid">${c.report.photos.map(u=>`<img src="${u}" alt="">`).join('')}</div>`:''}</div>`:''}
+    ${U.map(u=>`<div class="ocard2"><span class="okick">${fmtDay(u.t)}</span>${u.text?`<p>${esc(u.text)}</p>`:''}${(u.photos||[]).length?`<div class="pgrid">${u.photos.map(p=>`<img src="${p}" alt="">`).join('')}</div>`:''}</div>`).join('')||(c.report?'':'<p class="muted2">Nothing posted yet.</p>')}`));
+  $('#upNew').onclick=()=>{close();updSheet(c.id)};$('#rpNew').onclick=()=>{close();reportSheet(c.id)}}
+function estPage(c){const e=c.estimate&&c.estimate.status!=='draft'?c.estimate:null;if(!e)return estSheet(c.id);
+  const close=open(sheetWrap('epH','Estimate · '+esc(first(c.name)),`<p class="muted2" style="margin-top:0">Sent ${fmtDay(e.t)} · ${e.status==='approved'?`<b class="okc">Approved${e.signed?' by '+esc(e.signed):''}</b>`:e.status==='declined'?'Declined':'Waiting for an answer'}</p>
+    ${e.opts.map((o,i)=>`<div class="ocard2 ${e.status==='approved'&&(e.pick||0)===i?'on':''}"><div class="oline"><b>${esc(o.name)}</b><b>${usd(o.price)}</b></div>${o.items.length?`<ul>${o.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${e.status!=='approved'?`<button class="ob ob-main" type="button" data-ap="${i}">${oi('check')}They chose this</button>`:''}</div>`).join('')}
+    <div class="obtns"><button class="ob ob-line" type="button" id="epNew">Write a new estimate</button>${e.status!=='approved'?`<a class="ob ob-line" href="${smsTo(c.phone,`Hi ${first(c.name)}, ${ownerName} with Ridgeline. Any questions on the estimate?`)}">Text a check-in</a>`:''}</div>`));
+  $('#epNew').onclick=()=>{close();estSheet(c.id)};$$('#layer [data-ap]').forEach(b=>b.onclick=()=>{approveIt(c,+b.dataset.ap);close();custSheet(c.id)})}
+function approveIt(c,i){Object.assign(c.estimate,{status:'approved',pick:i,signedT:Date.now(),signed:c.estimate.signed||'(owner marked)'});c.stage='approved';save();toast('Approved. Next: schedule the work day.')}
+function approveSheet(c){const e=c.estimate;if(!e||!e.opts||!e.opts.length){estSheet(c.id);return}if(e.opts.length===1){approveIt(c,0);custSheet(c.id);return}estPage(c)}
+function changesPage(c){const j=ensureJob(c);
+  const close=open(sheetWrap('chP','Changes · '+esc(first(c.name)),`<p class="muted2" style="margin-top:0">Extra work found on the job. ${esc(first(c.name))} approves it with a signature in their portal${c.portal?'':' (turn the portal on to send these)'}.</p>
+    ${j.changes.map((o,i)=>`<div class="orow2"><div><b>${esc(o.title)} · ${usd(o.price)}</b><small>${{waiting:'Waiting for their OK',approved:'Approved'+(o.signed?' by '+esc(o.signed):''),declined:'They said not now',paid:'Paid'}[o.status]}</small></div><div class="oacts">${o.status==='approved'?`<button class="ob ob-line" type="button" data-copaid="${i}">Mark paid</button>`:''}${o.status==='waiting'?`<button class="ob ob-line" type="button" data-coed="${i}">Edit</button>`:''}</div></div>`).join('')||'<p class="muted2">None yet.</p>'}
+    <div class="obtns"><button class="ob ob-main" type="button" id="coNew">${oi('plus')}New change order</button></div>`));
+  $('#coNew').onclick=()=>{close();coSheet(c.id)};$$('#layer [data-coed]').forEach(b=>b.onclick=()=>{close();coSheet(c.id,+b.dataset.coed)});
+  $$('#layer [data-copaid]').forEach(b=>b.onclick=()=>{const o=j.changes[+b.dataset.copaid];o.status='paid';o.paidT=Date.now();save();close();changesPage(c)})}
+function detailsPage(c){const close=open(sheetWrap('dtH','Details',`<div class="field"><label for="dn">Name</label><input id="dn" value="${esc(c.name)}"></div>
+    <div class="two"><div class="field"><label for="dp">Mobile</label><input id="dp" type="tel" inputmode="tel" value="${esc(pretty(c.phone))}"></div><div class="field"><label for="de">Email</label><input id="de" type="email" value="${esc(c.email||'')}"></div></div>
+    <div class="field"><label for="da">Address</label><input id="da" value="${esc(c.addr||'')}"></div><div class="field"><label for="ds">How they found you</label><input id="ds" value="${esc(c.source||'')}"></div>
+    <div class="field"><label for="dno">Private notes (only you see these)</label><textarea id="dno" rows="3">${esc(c.notes||'')}</textarea></div>
+    ${c.quote?`<div class="ocard2"><span class="okick">Instant estimate they saw</span><p>${esc(c.quote.verdict||c.quote.name||'')} ${esc(c.quote.range||'')}</p></div>`:''}${c.msg?`<div class="ocard2"><span class="okick">Their message</span><p>“${esc(c.msg)}”</p></div>`:''}
+    ${c.photos&&c.photos.length?`<div class="pgrid">${c.photos.map(u=>`<img src="${u}" alt="">`).join('')}</div>`:''}
+    <div class="obtns"><button class="ob ob-main" type="button" id="dgo">Save</button></div>`),'#dn');
+  $('#dgo').onclick=()=>{c.name=$('#dn').value.trim()||c.name;const p=digits($('#dp').value);if(p.length===10)c.phone=p;c.email=$('#de').value.trim();c.addr=$('#da').value.trim();c.source=$('#ds').value.trim()||c.source;c.notes=$('#dno').value;save();close();custSheet(c.id);toast('Saved.')}}
+function portalPage(c){const s=c.show=c.show||{},j=c.portal?ensureJob(c):null;
+  const has={schedule:!!(c.appt||visitsOf(c).length),report:!!c.report,estimate:!!(c.estimate&&c.estimate.status!=='draft'),updates:!!(c.updates&&c.updates.length),invoice:!!(c.invoice&&c.invoice.status!=='draft'),materials:!!(c.matPlan&&c.matPlan.length),club:!!c.club};
+  const lab={schedule:'Visit times and who’s coming',report:'Inspection report',estimate:'Estimate (they can approve it)',updates:'Job photos and updates',invoice:'Invoice with Pay button',materials:'What’s going on the roof (no prices)',club:'Roof Care Club plan'};
+  const close=open(sheetWrap('ppH','Customer portal',`<label class="oswitch big"><input type="checkbox" id="ppOn" ${c.portal?'checked':''}><span></span><b>${c.portal?'On':'Off'}</b><small>${esc(first(c.name))} gets their own page: visit times, crew photos, approvals and bills.</small></label>
+    ${c.portal?`<div class="ocard2 opin"><span class="okick">Their PIN</span><b class="opin-n">${j.pin}</b><small>${j.lang==='es'?'Reads it in Español':'Reads it in English'}</small></div>
+      <div class="obtns"><a class="ob ob-main" href="${smsTo(c.phone,portalInvite(c))}">${oi('chat')}Text link + PIN</a>${c.email?`<a class="ob ob-line" href="mailto:${esc(c.email)}?subject=${encodeURIComponent(j.lang==='es'?'Su proyecto con Ridgeline Roofing':'Your Ridgeline Roofing project')}&body=${encodeURIComponent(portalInvite(c))}">${oi('mail')}Email it</a>`:''}<button class="ob ob-line" type="button" id="ppCopy">Copy link</button><button class="ob ob-line" type="button" id="ppPrev">See it as ${esc(first(c.name))}</button><button class="ob ob-line" type="button" id="ppPin">New PIN</button></div>
+      <h4 class="osub">What ${esc(first(c.name))} can see</h4>${Object.keys(lab).map(k=>`<label class="oswitch ${has[k]?'':'off'}"><input type="checkbox" data-show="${k}" ${has[k]&&s[k]?'checked':''} ${has[k]?'':'disabled'}><span></span><b>${lab[k]}</b>${has[k]?'':'<small>Nothing made yet</small>'}</label>`).join('')}
+      ${(DB.addons||[]).length?`<h4 class="osub">Extras they can add</h4>${DB.addons.map(a=>{const pk=j.picks.find(p=>p.addon===a.id);return`<label class="oswitch"><input type="checkbox" data-offer="${a.id}" ${j.addons.includes(a.id)?'checked':''}><span></span><b>${esc(a.name)} · ${usd(a.price)}</b>${pk?`<small>They added it${pk.status==='paid'?' · paid':''}</small>`:''}</label>${pk&&pk.status!=='paid'?`<button class="ob ob-line" type="button" data-pkpaid="${a.id}">Mark ${esc(a.name)} paid</button>`:''}`}).join('')}`:`<p class="muted2">Add extras (gutter guards, vents…) under More → Crew & extras.</p>`}
+      ${j.log.length?`<h4 class="osub">What they did</h4><ul class="plist">${j.log.slice().reverse().slice(0,10).map(l=>`<li>${esc(l.text)} <small>${ago(l.t)}</small></li>`).join('')}</ul>`:''}`:''}`));
+  $('#ppOn').onchange=e=>{c.portal=e.target.checked;if(c.portal)ensureJob(c);save();close();portalPage(c)};
+  if(!c.portal)return;
+  $('#ppCopy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(portalUrl(c));toast('Link copied. Send the PIN with it.')};$('#ppPrev').onclick=()=>openPortal(c.id);
+  $('#ppPin').onclick=()=>{j.pin=newPin();save();close();portalPage(c);toast('New PIN made. Send it to them.')};
+  $$('#layer [data-show]').forEach(x=>x.onchange=()=>{s[x.dataset.show]=x.checked;save()});
+  $$('#layer [data-offer]').forEach(x=>x.onchange=()=>{const k=x.dataset.offer;j.addons=x.checked?[...new Set(j.addons.concat([k]))]:j.addons.filter(a=>a!==k);save()});
+  $$('#layer [data-pkpaid]').forEach(b=>b.onclick=()=>{const p=j.picks.find(p=>p.addon===b.dataset.pkpaid);p.status='paid';p.paidT=Date.now();save();close();portalPage(c)})}
+
+/* ---------- INVOICE: 3 taps — Send invoice → check amount → Text it ---------- */
+function invoiceSheet(c){const L=invoiceLines(c),tot=L.reduce((a,l)=>a+(+l.amount||0),0),cur=c.invoice;
+  const close=open(sheetWrap('ivH','Invoice · '+esc(first(c.name)),`${L.length?`<div class="ocard2"><span class="okick">From the job</span>${L.map(l=>`<div class="oline"><span>${esc(l.desc)}${l.paid?' <small>(paid)</small>':''}</span><b>${usd(l.amount)}</b></div>`).join('')}<div class="oline otot"><span>Total</span><b>${usd(tot)}</b></div></div>`:''}
+    <div class="field"><label for="ivd">What it’s for</label><input id="ivd" value="${esc(cur?cur.desc:(L[0]?L[0].desc:''))}" placeholder="Roof replacement"></div>
+    <div class="field"><label for="iva">Amount due</label><input id="iva" inputmode="decimal" value="${cur?cur.amount:(tot-L.filter(l=>l.paid).reduce((a,l)=>a+l.amount,0))||''}" placeholder="$"></div>
+    <div class="field"><label for="ivp">Payment link (optional)</label><input id="ivp" type="url" placeholder="Stripe, Square or QuickBooks link" value="${esc((cur&&cur.pay)||DB.payLink||'')}"></div>
+    <label class="oswitch"><input type="checkbox" id="ivshow" ${c.portal?'checked':''}><span></span><b>Show it in their portal with a Pay button</b></label>
+    <p class="err" id="ive" role="alert" hidden></p><div class="obtns"><button class="ob ob-main ob-xl" type="button" id="ivgo">${cur?'Save invoice':'Create invoice'}</button></div>`),'#iva');
+  $('#ivgo').onclick=()=>{const a=+String($('#iva').value).replace(/[^\d.]/g,'');if(!a){$('#ive').textContent='Add the amount.';$('#ive').hidden=false;return}
+    c.invoice=Object.assign(cur||{},{t:cur?cur.t:Date.now(),amount:a,desc:$('#ivd').value.trim(),status:cur&&cur.status==='paid'?'paid':'sent',pay:$('#ivp').value.trim(),lines:L});c.stage=c.invoice.status==='paid'?'paid':'invoiced';c.show=c.show||{};c.show.invoice=$('#ivshow').checked;if(c.show.invoice&&!c.portal){c.portal=true;ensureJob(c)}save();close();sendInvoiceSheet(c)}}
+function sendInvoiceSheet(c){const i=c.invoice,f=first(c.name),es=(c.job||{}).lang==='es';
+  const msg=es?`Hola ${f}, su factura de Ridgeline Roofing por ${usd(i.amount)} está lista.${c.portal?' Véala y pague aquí: '+portalUrl(c)+' (PIN '+ensureJob(c).pin+')':i.pay?' Pague aquí: '+i.pay:''} ¡Gracias!`:`Hi ${f}, your Ridgeline Roofing invoice for ${usd(i.amount)} is ready.${c.portal?' See it and pay here: '+portalUrl(c)+' (PIN '+ensureJob(c).pin+')':i.pay?' Pay here: '+i.pay:''} Thank you!`;
+  const close=open(sheetWrap('siH','Send the invoice',`<div class="ocard2 obig"><span class="okick">${esc(i.desc||'Invoice')}</span><b class="obig-n">${usd(i.amount)}</b></div><p class="muted2">Message:</p><p class="ocard2">${esc(msg)}</p>
+    <div class="obtns"><a class="ob ob-main ob-xl" href="${smsTo(c.phone,msg)}">${oi('chat')}Text it to ${esc(f)}</a>${c.email?`<a class="ob ob-line" href="mailto:${esc(c.email)}?subject=${encodeURIComponent('Your Ridgeline Roofing invoice')}&body=${encodeURIComponent(msg)}">${oi('mail')}Email it</a>`:''}<button class="ob ob-line" type="button" data-close>Done</button></div>`));
+  $$('#layer [data-close]').forEach(b=>b.addEventListener('click',()=>custSheet(c.id)))}
+function invoicePage(c){if(!c.invoice)return invoiceSheet(c);const i=c.invoice;
+  const close=open(sheetWrap('ipH','Invoice · '+esc(first(c.name)),`<div class="ocard2 obig ${i.status==='paid'?'on':''}"><span class="okick">${esc(i.desc||'Invoice')} · ${fmtDay(i.t)}</span><b class="obig-n">${usd(i.amount)}</b><small>${i.status==='paid'?`Paid ${fmtDay(i.paidT)}${i.method?' · '+esc(i.method):''}`:'Waiting for payment'}</small></div>
+    <div class="obtns">${i.status!=='paid'?`<button class="ob ob-main ob-xl" type="button" id="ipPaid">${oi('check')}Mark paid</button><button class="ob ob-line" type="button" id="ipSend">Send it again</button>`:''}<button class="ob ob-line" type="button" id="ipEdit">Edit invoice</button></div>`));
+  const p=$('#ipPaid');if(p)p.onclick=()=>{close();paidSheet(c)};const s=$('#ipSend');if(s)s.onclick=()=>{close();sendInvoiceSheet(c)};$('#ipEdit').onclick=()=>{close();invoiceSheet(c)}}
+function paidSheet(c){if(!c.invoice){invoiceSheet(c);return}
+  const close=open(sheetWrap('pdH','How did they pay?',`<div class="ocard2 obig"><span class="okick">${esc(first(c.name))}</span><b class="obig-n">${usd(c.invoice.amount)}</b></div>
+    <div class="obig-grid">${['Card / online','Check','Cash','Zelle / Venmo','Financing','Insurance check'].map(m=>`<button class="ob ob-line ob-tall" type="button" data-pm="${m}">${m}</button>`).join('')}</div>`));
+  $$('#layer [data-pm]').forEach(b=>b.onclick=()=>{Object.assign(c.invoice,{status:'paid',paidT:Date.now(),method:b.dataset.pm});c.stage='paid';save();close();custSheet(c.id);toast('Paid. Nice work.')})}
+
+/* ---------- SCHEDULE ---------- */
+function oSchedule(){const td=todayIso(),from=isoDay(Date.now()-2*DAY),to=isoDay(Date.now()+45*DAY),V=[];
+  DB.customers.forEach(c=>visitsOf(c).forEach(v=>{if(v.date>=from&&v.date<=to)V.push([c,v])}));V.sort((a,b)=>(a[1].date+a[1].from).localeCompare(b[1].date+b[1].from));
+  const days=[...new Set(V.map(x=>x[1].date))];const lbl=d=>d===td?'Today':d===isoDay(Date.now()+DAY)?'Tomorrow':new Date(d+'T12:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  return `<div class="obtns"><button class="ob ob-main" type="button" data-quick="visit">${oi('plus')}Add a visit</button></div>
+    ${days.map(d=>`<h2 class="osec2 ${d<td?'past':''}">${lbl(d)}</h2><div class="olist">${V.filter(x=>x[1].date===d).map(([c,v])=>visitCard(c,v)).join('')}</div>`).join('')||`<div class="oempty">${oi('cal')}<b>Nothing scheduled.</b><span>Inspections booked on the website and visits you add show up here.</span></div>`}`}
+
+/* ---------- MONEY ---------- */
+function oMoney(){const C=DB.customers,now=Date.now(),bill=C.filter(readyToBill),unpaid=C.filter(c=>owed(c)),paid=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&now-c.invoice.paidT<60*DAY).sort((a,b)=>b.invoice.paidT-a.invoice.paidT);
+  const row=(c,right,btn)=>`<article class="ojob" data-open="${c.id}"><span class="oinit st2-${c.stage}">${esc((c.name||'?')[0])}</span><div class="ojob-m"><div class="ojob-h"><h3>${esc(c.name)}</h3><b class="omoney">${right}</b></div><p>${esc((c.invoice&&c.invoice.desc)||(c.addr||'').split(',')[0])}</p>${btn||''}</div></article>`;
+  return `<div class="ostats"><div><small>Waiting to be paid</small><b>${usd(unpaid.reduce((a,c)=>a+owed(c),0))}</b></div><div><small>Paid this month</small><b>${usd(C.filter(c=>c.invoice&&c.invoice.status==='paid'&&MON(c.invoice.paidT)===MON(now)).reduce((a,c)=>a+c.invoice.amount,0))}</b></div><div><small>Ready to bill</small><b>${bill.length}</b></div></div>
+    <div class="obtns"><button class="ob ob-main" type="button" data-quick="invoice">${oi('file')}Send an invoice</button><button class="ob ob-line" type="button" data-go="numbers">${oi('chart')}Numbers</button></div>
+    <h2 class="osec2">Ready to bill ${bill.length?`<span class="ocount">${bill.length}</span>`:''}</h2><div class="olist">${bill.map(c=>row(c,usd(invoiceLines(c).reduce((a,l)=>a+l.amount,0)),`<div class="otask-acts"><button class="ob ob-main" type="button" data-act="invoice" data-cid="${c.id}">Send invoice</button></div>`)).join('')||'<p class="muted2">Nothing waiting to be billed.</p>'}</div>
+    <h2 class="osec2">Waiting for payment ${unpaid.length?`<span class="ocount">${unpaid.length}</span>`:''}</h2><div class="olist">${unpaid.map(c=>row(c,usd(owed(c)),`<p class="muted2">Sent ${ago(c.invoice.t)}</p><div class="otask-acts"><button class="ob ob-main" type="button" data-act="paid" data-cid="${c.id}">Mark paid</button><a class="ob ob-line" href="${smsTo(c.phone,`Hi ${first(c.name)}, friendly reminder: your Ridgeline invoice for ${usd(owed(c))} is ready.${c.portal?' Pay here: '+portalUrl(c):''}`)}">Text a reminder</a></div>`)).join('')||'<p class="muted2">No unpaid invoices.</p>'}</div>
+    <h2 class="osec2">Paid lately</h2><div class="olist">${paid.map(c=>row(c,usd(c.invoice.amount),`<p class="muted2">Paid ${fmtDay(c.invoice.paidT)}${c.invoice.method?' · '+esc(c.invoice.method):''}</p>`)).join('')||'<p class="muted2">Nothing paid in the last 60 days.</p>'}</div>`}
+
+/* ---------- MORE ---------- */
+function oMore(){return `<div class="omore">${[['team','team','Crew & extras','Crew photos, extras customers can add, payment link'],['mat','box','Materials','Material lists, receipts, spend by store'],['numbers','chart','Numbers','Revenue, close rate, cost per customer'],['avail','clock','Availability','Hours and days the website can book']].map(([k,i,l,s])=>`<button type="button" data-go="${k}">${oi(i)}<span><b>${l}</b><small>${s}</small></span>${oi('back','flip')}</button>`).join('')}
+  <button type="button" id="mSite">${oi('globe')}<span><b>Back to the website</b><small>See what customers see</small></span>${oi('back','flip')}</button>${CFG.backend?`<button type="button" id="mOut">${oi('out')}<span><b>Sign out</b><small>On this device</small></span>${oi('back','flip')}</button>`:''}</div>`}
+
+/* ---------- + quick actions and job picker ---------- */
+function plusSheet(){const close=open(sheetWrap('plH','What do you need?',`<div class="obig-grid">${[['add','user','New job','Someone called or stopped you'],['invoice','file','Send an invoice','Bill a finished job'],['visit','cal','Add a visit','Inspection or work day'],['photos','cam','Post photos','Update from the roof'],['buy','box','Log a purchase','Materials or receipt'],['paid','check','Record a payment','Check, cash, card']].map(([k,i,l,s])=>`<button type="button" class="obig-btn" data-quick="${k}">${oi(i)}<b>${l}</b><small>${s}</small></button>`).join('')}</div>`));
+  $$('#layer [data-quick]').forEach(b=>b.onclick=()=>{close();quick(b.dataset.quick)})}
+function quick(k){if(k==='add')return addSheet();if(k==='buy')return buySheet('');
+  const cfg={invoice:['Invoice who?',c=>c.stage!=='lost'&&c.stage!=='paid',c=>invoiceSheet(c)],visit:['Visit for who?',c=>c.stage!=='lost',c=>visitSheet(c.id,null,['lead','booked'].includes(c.stage)?'inspection':'work')],photos:['Photos for which job?',c=>c.stage!=='lost',c=>updSheet(c.id)],paid:['Who paid?',c=>!!owed(c)||readyToBill(c)||c.stage==='approved'||c.stage==='work',c=>paidSheet(c)]}[k];
+  if(cfg)pickJob(cfg[0],cfg[1],cfg[2])}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#owner [data-quick]');if(b){e.stopPropagation();quick(b.dataset.quick)}
+  const m=e.target.closest&&e.target.closest('#mSite,#mOut');if(m){if(m.id==='mOut')window.ownerSignOut();else{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)}}
+  const so=e.target.closest&&e.target.closest('#owner [data-seenopen]');if(so){e.stopPropagation();const a=(DB.activity||[]).find(x=>String(x.t)===so.dataset.seenopen);if(a){a.seen=true;save();custSheet(a.cid)}}},true);
+function pickJob(title,filter,cb){const L=DB.customers.filter(filter).sort((a,b)=>(b.created||0)-(a.created||0));
+  const close=open(sheetWrap('pkH',title,`<div class="field"><input id="pkq" type="search" placeholder="Search name or address" aria-label="Search"></div><div class="olist" id="pkl"></div><div class="obtns"><button class="ob ob-line" type="button" id="pkNew">${oi('plus')}New job instead</button></div>`),'#pkq');
+  const draw=q=>{$('#pkl').innerHTML=L.filter(c=>!q||(c.name+' '+(c.addr||'')+c.phone).toLowerCase().includes(q.toLowerCase())).map(c=>`<button type="button" class="opick" data-pk="${c.id}"><span class="oinit st2-${c.stage}">${esc((c.name||'?')[0])}</span><span><b>${esc(c.name)}</b><small>${esc((c.addr||pretty(c.phone)).split(',')[0])} · ${stageName(c.stage)}</small></span></button>`).join('')||'<p class="muted2">No matching jobs.</p>';
+    $$('#pkl [data-pk]').forEach(b=>b.onclick=()=>{close();cb(byId(b.dataset.pk))})};draw('');$('#pkq').oninput=e=>draw(e.target.value);$('#pkNew').onclick=()=>{close();addSheet()}}
 
 /* ---------- backend: every lead and booking goes to the client's Apps Script web app
    (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
