@@ -1149,6 +1149,8 @@ html{background:#141E27!important}
 </form><div id="aDone" hidden></div></div></div><script>
 (function(){
 "use strict";
+/* ---------- blank slate (Ryan, Oct 7 11:38 PM): bump RESET to wipe every saved customer, crew, job and setting in each browser once ---------- */
+{const RESET='R1-2026-10-07';try{if(localStorage.getItem('rl-reset')!==RESET){[localStorage,sessionStorage].forEach(S=>Object.keys(S).filter(k=>k.indexOf('rl-')===0).forEach(k=>S.removeItem(k)));localStorage.setItem('rl-reset',RESET)}}catch(x){}}
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const M=window.Motion||null;
 /* ================= CLIENT SETTINGS: the only block to change per client (see SETUP.md) =================
