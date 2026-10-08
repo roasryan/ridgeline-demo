@@ -324,6 +324,9 @@ footer a,footer button{color:#D6DEE3;background:none;border:0;font:inherit;curso
 .cpk .cpn{display:flex;flex-direction:column;flex:1;min-width:0}.cpk input[type=checkbox]{width:24px;height:24px;min-height:0;margin:0;flex:none;accent-color:#FFD400}.cpk input[type=radio]{width:18px;height:18px;margin:0;accent-color:#FFD400}.cpk small{color:var(--muted)}.cplead{flex:none!important;flex-direction:row!important;align-items:center;gap:4px;font-size:14px;color:var(--muted)}
 .xph{width:56px;height:56px;object-fit:cover;border-radius:10px;flex:none}
 .upl1{position:relative;cursor:pointer}
+.ohbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.linkbtn{background:none;border:0;color:var(--hivis);text-decoration:underline;font:inherit;font-weight:700;cursor:pointer;padding:6px 0}
+#ogF input{width:100%;max-width:none}#ogF .linkbtn{color:var(--hivis)}
 
 .app .kicker,.sheet .kicker{font-size:14px;font-weight:700;color:var(--hivis);margin:0}
 .app{color:var(--text)}
@@ -1299,11 +1302,11 @@ function oNumbers(){const m=metrics(oPeriod),src=Object.entries(m.src).sort((a,b
     <h3 class="osec">Where requests came from</h3><div class="obars">${src.map(([k,v])=>`<div class="obar" title="${esc(k)}: ${v}"><span>${esc(k)}</span><i style="width:${Math.max(4,v/mx*100)}%"></i><b>${v}</b></div>`).join('')||'<p class="muted">No requests in this range.</p>'}</div>
     `}
 function openOwner(){if(CFG.backend&&!window.__ownerLive)return ownerGate();const body=oTab==='today'?oToday():oTab==='people'?oCustomers(''):oTab==='team'?oTeam():oTab==='avail'?oAvail():oTab==='mat'?oMaterials():oNumbers();
-  full('owner',`<header class="apphead"><div><p class="kicker">Ridgeline · Owner</p><h2>${oTab==='today'?'Today':oTab==='people'?'Customers':oTab==='team'?'Crew & extras':oTab==='avail'?'Availability':oTab==='mat'?'Materials':'Numbers'}</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
+  full('owner',`<header class="apphead"><div><p class="kicker">Ridgeline · Owner</p><h2>${oTab==='today'?'Today':oTab==='people'?'Customers':oTab==='team'?'Crew & extras':oTab==='avail'?'Availability':oTab==='mat'?'Materials':'Numbers'}</h2></div><span class="ohbtns"><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button>${CFG.backend?'<button class="btn btn-line btn-sm" type="button" id="oSign">Sign out</button>':''}</span></header>
     <nav class="otabs" aria-label="Owner sections">${[['today','Today'],['people','Customers'],['team','Crew & extras'],['mat','Materials'],['avail','Availability'],['numbers','Numbers']].map(([k,l])=>`<button type="button" data-otab="${k}" aria-current="${oTab===k?'page':'false'}">${l}</button>`).join('')}</nav>
     <div class="appbody" id="obody">${body}</div>`);
   $('#oOut').onclick=()=>{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
-  $$('[data-otab]').forEach(b=>b.onclick=()=>{oTab=b.dataset.otab;openOwner()});
+  $$('[data-otab]').forEach(b=>b.onclick=()=>{oTab=b.dataset.otab;openOwner()});{const so=$('#oSign');if(so)so.onclick=()=>window.ownerSignOut()}
   bindOwner();if(oTab==='team')bindTeam();if(oTab==='avail')bindAvail();if(oTab==='mat')bindMaterials()}
 function bindOwner(){const ob=$('#obody');
   $$('#obody [data-open]').forEach(r=>r.addEventListener('click',e=>{if(e.target.closest('a,button'))return;custSheet(r.dataset.open)}));
@@ -1517,14 +1520,15 @@ let SETUP=null;
 function setupBox(){if(!CFG.backend)return '';if(!SETUP){fetch(CFG.backend+'?action=status').then(r=>r.json()).then(j=>{SETUP=j;if(oTab==='today')openOwner()}).catch(()=>{});return ''}
   return `<div class="pbox setupbox"><b>Automatic messages</b><span>Emails to customers: <b class="${SETUP.email?'ok':'no'}">${SETUP.email?'On':'Off'}</b> · Texts to customers: <b class="${SETUP.sms?'ok':'no'}">${SETUP.sms?'On':'Off, you text them by hand (the alert says who)'}</b></span>
     <button class="btn btn-line btn-sm" type="button" id="setupTest">Send me a test email${SETUP.sms?' + text':''}</button><span class="muted" id="setupRes"></span></div>`}
-document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('#setupTest');if(!b)return;let pin='';try{pin=sessionStorage.getItem('rl-pin')||''}catch(x){}
-  b.disabled=true;$('#setupRes').textContent='Sending…';try{const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'test',pin})})).json();
-  $('#setupRes').textContent=j.ok?`Email: ${j.email}. Text: ${j.sms}.`:'PIN not accepted.'}catch(x){$('#setupRes').textContent='Could not reach the backend.'}b.disabled=false});
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('#setupTest');if(!b)return;const token=window.ownerToken?window.ownerToken():'';
+  b.disabled=true;$('#setupRes').textContent='Sending…';try{const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'test',token})})).json();
+  $('#setupRes').textContent=j.ok?`Email: ${j.email}. Text: ${j.sms}.`:'Sign in again first.'}catch(x){$('#setupRes').textContent='Could not reach the backend.'}b.disabled=false});
 
 /* ================= JOB PORTAL, owner side (Oct 7, round 1) =================
    Each customer with the portal on gets c.job: {pin, lang, visits[], changes[], addons[] (offered extras), picks[] (extras they added), log[]}.
    Shared: DB.crew (name, role, photo) and DB.addons (extras catalog with price + optional pay link). Customers see it at portal.html?j=ID after the PIN. */
-const newPin=()=>String(1000+Math.floor(Math.random()*9000));
+/* customer PINs are unique: never the same as another customer's, never 0000 (Ryan, Oct 8) */
+function newPin(){const used=new Set(DB.customers.map(c=>c.job&&c.job.pin).filter(Boolean));used.add('0000');let p;do{p=String(1000+Math.floor(Math.random()*9000))}while(used.has(p));return p}
 const portalUrl=c=>new URL('portal.html?j='+encodeURIComponent(c.id),location.href).href;
 const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 const isoDay=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -1533,7 +1537,7 @@ function slotTimes(slot,t){/* "8 to 10 AM", "1 to 3 PM", "9:00 AM" → ['08:00',
   if(m){const ap2=m[6],ap1=m[3]||(+m[1]>+m[4]&&/pm/i.test(ap2)?'AM':ap2);return[String(h24(m[1],ap1)).padStart(2,'0')+':'+(m[2]||'00'),String(h24(m[4],ap2)).padStart(2,'0')+':'+(m[5]||'00')]}
   const one=s.match(/(\d{1,2})(?::(\d\d))?\s*(AM|PM)/i);if(one){const h=h24(one[1],one[3]);return[String(h).padStart(2,'0')+':'+(one[2]||'00'),String(h+1).padStart(2,'0')+':'+(one[2]||'00')]}
   const d=new Date(t);return d.getHours()===12&&!d.getMinutes()?['08:00','10:00']:[hm(d),hm(new Date(t+36e5))]}
-function ensureJob(c){const j=c.job=c.job||{};if(!j.pin)j.pin=newPin();j.visits=j.visits||[];j.changes=j.changes||[];j.addons=j.addons||[];j.picks=j.picks||[];j.log=j.log||[];
+function ensureJob(c){const j=c.job=c.job||{};if(!j.pin||DB.customers.some(o=>o!==c&&o.job&&o.job.pin===j.pin))j.pin=newPin();j.visits=j.visits||[];j.changes=j.changes||[];j.addons=j.addons||[];j.picks=j.picks||[];j.log=j.log||[];
   if(c.appt&&!j.apptIn){const[f,to]=slotTimes(c.appt.slot,c.appt.t);j.visits.push({id:'v'+Math.random().toString(36).slice(2,7),type:'inspection',date:isoDay(c.appt.t),from:f,to,status:c.appt.confirmed?'confirmed':'scheduled',crew:[],note:''});j.apptIn=true}
   save();return j}
 function portalInvite(c){const j=ensureJob(c),u=portalUrl(c);return j.lang==='es'?`Hola ${first(c.name)}, le saluda ${ownerName} de Ridgeline Roofing. Aquí puede ver su proyecto: ${u}  Su PIN: ${j.pin}`:`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline Roofing. Here’s your project page: ${u}  Your PIN: ${j.pin}`}
@@ -1657,6 +1661,8 @@ function xSheet(xid){const a=xid?(DB.addons||[]).find(x=>x.id===xid):null;let ph
     const o={name:n,desc:$('#xd').value.trim(),price:p,pay:$('#xl').value.trim(),photo:ph};if(a)Object.assign(a,o);else DB.addons=(DB.addons||[]).concat([Object.assign({id:'x'+Math.random().toString(36).slice(2,7)},o)]);save();close();openOwner()}}
 /* keep the owner view fresh when a customer acts in their portal (another tab on this device) */
 addEventListener('storage',e=>{if(e.key!=='rl-db')return;try{const n=JSON.parse(e.newValue||'null');if(n&&n.v===3){DB=n;const o=$('#owner');if(o&&!o.hidden&&!$('#layer .sheet'))openOwner()}}catch(x){}});
+/* one PIN per customer: if two customers ever share a PIN (or have 0000), give the later one a new PIN */
+{const seen=new Set(['0000']);let fixed=false;DB.customers.slice().reverse().forEach(c=>{if(!c.job||!c.job.pin)return;if(seen.has(c.job.pin)){c.job.pin=newPin();fixed=true}seen.add(c.job.pin)});if(fixed)save()}
 
 /* ---------- backend: every lead and booking goes to the client's Apps Script web app
    (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
@@ -1675,25 +1681,53 @@ function sendLead(o){if(!CFG.backend)return Promise.resolve({ok:true,demo:true})
 if(CFG.backend){const q=outbox();if(q.length){setOutbox([]);q.forEach(row=>postBackend(row).catch(()=>setOutbox(outbox().concat([row]))))}}
 {const _up=upsert;upsert=function(o){const c=_up(o);if(!o._sent)sendLead(o);return c}}
 /* ---------- owner view, live: real leads from the backend (PIN), no sample data ---------- */
-async function loadOwnerLeads(pin){const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'leads',pin})})).json();if(!j.ok)return j;
+async function loadOwnerLeads(token){const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'leads',token})})).json();if(!j.ok)return j;
   const real=j.leads.map((L,i)=>{const t=L.start?new Date(L.start):null;
     return{id:'s'+i+'_'+L.phone,name:L.name||'Customer',phone:L.phone,addr:L.address||'',email:L.email||'',contactPref:L.best||'',source:L.type||'Website',created:Date.parse(L.received)||Date.now(),
       stage:t?'booked':'lead',msg:L.issue||'',quote:L.quote,photos:[],updates:[],portal:false,show:{schedule:!!t},notes:'',
       appt:t?{t:t.getTime(),time:L.startTime,slot:AV.label(L.startTime),confirmed:false}:undefined}});
   const seen=new Set(real.map(c=>c.phone+'|'+c.created));
   DB.customers=real.concat(DB.customers.filter(c=>c.id&&c.id[0]!=='s'&&!seen.has(c.phone+'|'+c.created)));save();window.__ownerLive=true;return j}
-const OWNER_MASTER='0001';try{if(sessionStorage.getItem('rl-master')==='1'){window.__ownerLive=true;window.__ownerMaster=true}}catch(x){}
-function ownerGate(msg){let pin='';try{pin=sessionStorage.getItem('rl-pin')||''}catch(x){}
-  full('owner',`<header class="apphead"><div><p class="kicker">${esc(CFG.biz)} · Owner</p><h2>Your leads</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
-    <div class="appbody"><section class="ocard"><h3>Enter your owner PIN</h3><p class="muted">Shows every real request from your website: name, number, how they want to be reached and their inspection time.</p>
-    <div class="field"><label for="ogPin">Owner PIN</label><input id="ogPin" type="password" inputmode="numeric" autocomplete="off" value="${esc(pin)}"></div>
-    <p class="err" id="ogErr" role="alert" ${msg?'':'hidden'}>${esc(msg||'')}</p><button class="btn btn-main" type="button" id="ogGo">Show my leads</button></section></div>`);
+/* ---------- owner sign-in (Oct 8): email + password checked by the backend; the website only keeps a sign-in token ----------
+   No master codes. A customer link or PIN can never open the owner view. First time / forgot: a 6-digit code is emailed to the owner's address. */
+const otok=()=>{try{return localStorage.getItem('rl-otok')||sessionStorage.getItem('rl-otok')||''}catch(x){return''}};
+function setTok(t,remember){try{localStorage.removeItem('rl-otok');sessionStorage.removeItem('rl-otok');if(t)(remember?localStorage:sessionStorage).setItem('rl-otok',t)}catch(x){}}
+window.ownerToken=otok;
+async function ownerPost(o){return(await fetch(CFG.backend,{method:'POST',body:JSON.stringify(o)})).json()}
+window.ownerSignOut=async()=>{const t=otok();setTok('');window.__ownerLive=false;try{if(t)await ownerPost({action:'logout',token:t})}catch(x){}closeFull('owner');toast('Signed out.');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
+let gateTried=false;
+async function ownerGate(msg,mode){const t=otok();
+  if(t&&!gateTried&&!mode){gateTried=true;full('owner',`<div class="appbody"><p class="muted" style="text-align:center;margin-top:30vh">Signing you in…</p></div>`);
+    try{const r=await loadOwnerLeads(t);if(r.ok){openOwner();return}setTok('')}catch(x){return ownerGate('Couldn’t reach the server. Try again.')}}
+  const reset=mode==='reset'||mode==='code';
+  full('owner',`<header class="apphead"><div><p class="kicker">${esc(CFG.biz)} · Owner</p><h2>${reset?'Set your password':'Owner sign-in'}</h2></div><button class="btn btn-line btn-sm" type="button" id="oOut">Back to website</button></header>
+    <div class="appbody"><form class="ocard" id="ogF" autocomplete="on" novalidate>
+    ${reset?`<p class="muted">${mode==='code'?'We emailed a 6-digit code to the owner email. It works for 15 minutes.':'We’ll email a 6-digit code to the owner email so only the owner can set the password.'}</p>`:`<p class="muted">For the business owner only. Customers use the link and PIN we text them.</p>`}
+    <div class="field"><label for="ogEm">Email</label><input id="ogEm" type="email" autocomplete="username" inputmode="email" required></div>
+    ${mode==='code'?`<div class="field"><label for="ogCode">6-digit code</label><input id="ogCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6"></div>
+      <div class="field"><label for="ogPw">New password (8+ characters)</label><input id="ogPw" type="password" autocomplete="new-password" minlength="8"></div>
+      <div class="field"><label for="ogPw2">Type it again</label><input id="ogPw2" type="password" autocomplete="new-password"></div>`
+    :reset?'':`<div class="field"><label for="ogPw">Password</label><input id="ogPw" type="password" autocomplete="current-password"></div>`}
+    ${reset&&mode!=='code'?'':`<label class="tog"><input type="checkbox" id="ogRem" checked> Keep me signed in on this device (30 days)</label>`}
+    <p class="err" id="ogErr" role="alert" ${msg?'':'hidden'}>${esc(msg||'')}</p>
+    <button class="btn btn-main" type="submit" id="ogGo">${mode==='code'?'Save password and sign in':reset?'Email me a code':'Sign in'}</button>
+    <p style="margin:12px 0 0"><button class="linkbtn" type="button" id="ogAlt">${reset?'Back to sign-in':'First time, or forgot your password?'}</button></p></form></div>`);
+  {const em=sessionStorage.getItem('rl-oem');if(em)$('#ogEm').value=em}
   $('#oOut').onclick=()=>{closeFull('owner');if(location.hash==='#'+OWNER_KEY)history.replaceState(null,'',location.pathname+location.search)};
-  const go=async()=>{const p=$('#ogPin').value.trim();if(!p)return;
-    /* TEMPORARY demo master owner PIN (Ryan, Oct 7): opens the owner view with what's saved on this device; real leads still need the real owner PIN. Remove before a client goes live. */
-    if(p===OWNER_MASTER){try{sessionStorage.setItem('rl-master','1')}catch(x){}window.__ownerLive=true;window.__ownerMaster=true;openOwner();toast('Master PIN: showing what’s saved on this device.');return}const b=$('#ogGo');b.disabled=true;b.textContent='Loading…';
-    try{const r=await loadOwnerLeads(p);if(!r.ok){ownerGate('That PIN isn’t right.');return}try{sessionStorage.setItem('rl-pin',p)}catch(x){}openOwner()}catch(x){ownerGate('Couldn’t reach the server. Try again.')}};
-  $('#ogGo').onclick=go;$('#ogPin').onkeydown=e=>{if(e.key==='Enter')go()}}
+  $('#ogAlt').onclick=()=>ownerGate('',reset?'':'reset');
+  const err=m=>{const e=$('#ogErr');e.textContent=m;e.hidden=false},b=$('#ogGo');
+  $('#ogF').onsubmit=async e=>{e.preventDefault();const em=$('#ogEm').value.trim();if(!/^\S+@\S+\.\S+$/.test(em))return err('Enter your email.');try{sessionStorage.setItem('rl-oem',em)}catch(x){}
+    const rem=$('#ogRem')?$('#ogRem').checked:true;b.disabled=true;const lbl=b.textContent;b.textContent='One moment…';
+    try{if(mode==='reset'){await ownerPost({action:'reset_request',email:em});ownerGate('', 'code');return}
+      if(mode==='code'){const pw=$('#ogPw').value;if(pw.length<8){b.disabled=false;b.textContent=lbl;return err('Use at least 8 characters.')}if(pw!==$('#ogPw2').value){b.disabled=false;b.textContent=lbl;return err('The two passwords don’t match.')}
+        const r=await ownerPost({action:'reset_set',email:em,code:$('#ogCode').value,password:pw,remember:rem});
+        if(!r.ok){b.disabled=false;b.textContent=lbl;return err(r.reason==='expired'?'That code expired. Ask for a new one.':r.reason==='short'?'Use at least 8 characters.':'That code or email isn’t right.')}
+        setTok(r.token,rem);const L=await loadOwnerLeads(r.token);if(L.ok){openOwner();toast('Password saved. You’re signed in.')}return}
+      const r=await ownerPost({action:'login',email:em,password:$('#ogPw').value,remember:rem});
+      if(!r.ok){b.disabled=false;b.textContent=lbl;return err(r.reason==='nopass'?'No password set yet. Tap “First time, or forgot your password?”':r.reason==='locked'?'Too many tries. Wait 15 minutes and try again.':'Email or password isn’t right.')}
+      setTok(r.token,rem);const L=await loadOwnerLeads(r.token);if(!L.ok){b.disabled=false;b.textContent=lbl;return err('Signed in, but couldn’t load your leads. Try again.')}openOwner()}
+    catch(x){b.disabled=false;b.textContent=lbl;err('Couldn’t reach the server. Try again.')}};
+  setTimeout(()=>{const f=$('#ogEm');if(f&&!f.value)f.focus();else{const p=$('#ogPw')||$('#ogCode');p&&p.focus()}},50)}
 
 addEventListener('hashchange',routeHash);
 
@@ -2151,8 +2185,7 @@ function oAvail(){const S=AV.S,DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const T=[];for(let m=5*60;m<=21*60;m+=30)T.push(AV.toHHMM(m));
   const sel=(id,val,opts,attr='')=>`<select id="${id}" ${attr}>${opts.map(([v,t])=>`<option value="${v}" ${String(v)===String(val)?'selected':''}>${t}</option>`).join('')}</select>`;
   const tsel=(id,v)=>sel(id,v,T.map(t=>[t,AV.label(t)]));
-  return`${CFG.backend?`<section class="ocard"><h3>Live calendar</h3><p class="muted">Bookings land on your “inspections” Google Calendar. Drag one to a new time and the customer is told automatically (by text, email or a call reminder, the way they picked). Anything else on that calendar blocks those times on the website.</p>
-      <div class="field"><label for="avPin">Owner PIN (to save changes)</label><input id="avPin" type="password" inputmode="numeric" autocomplete="off" placeholder="4 digits"></div></section>`:''}
+  return`${CFG.backend?`<section class="ocard"><h3>Live calendar</h3><p class="muted">Bookings land on your “inspections” Google Calendar. Drag one to a new time and the customer is told automatically (by text, email or a call reminder, the way they picked). Anything else on that calendar blocks those times on the website.</p></section>`:''}
     <section class="ocard"><h3>Your hours</h3><p class="muted">Customers can pick any start time inside these hours.</p>
     <div class="avweek">${[1,2,3,4,5,6,0].map(d=>{const h=S.hours[d];return`<div class="avrow2"><label class="avon"><input type="checkbox" data-avon="${d}" ${h?'checked':''}> <b>${DN[d]}</b></label><span class="avt">${tsel('avS'+d,h?h[0]:'08:00')}<i>to</i>${tsel('avE'+d,h?h[1]:'17:00')}</span></div>`}).join('')}</div></section>
   <section class="ocard"><h3>Inspections</h3><div class="avlims">
@@ -2167,7 +2200,6 @@ function oAvail(){const S=AV.S,DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   <div class="avsave"><button class="btn btn-main" type="button" id="avSave">Save availability</button><p class="err" id="avErr" role="alert" hidden></p></div>
   ${CFG.backend?'':'<p class="muted" style="font-size:13px">Demo: saved on this device. On a live site these settings are saved to the business’s backend.</p>'}`}
 function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
-  try{const p=sessionStorage.getItem('rl-pin');if(p&&$('#avPin'))$('#avPin').value=p}catch(x){}
   if(CFG.backend)fetch(`${CFG.backend}?action=settings`).then(r=>r.json()).then(j=>{if(j&&j.settings&&$('#avSave')){Object.assign(S,j.settings);const ob=$('#obody');if(ob){ob.innerHTML=oAvail();bindAvail2()}}}).catch(()=>{});
   bindAvail2();
   function bindAvail2(){
@@ -2179,10 +2211,10 @@ function bindAvail(){const S=AV.S;let view=new Date();view.setDate(1);
       for(let d=0;d<7;d++){const on=$(`[data-avon="${d}"]`).checked,s=$('#avS'+d).value,e=$('#avE'+d).value;if(on&&AV.toMin(e)<=AV.toMin(s)){err.textContent='An end time is before its start time.';err.hidden=false;return}S.hours[d]=on?[s,e]:null}
       [['avLen','len'],['avStep','step'],['avBuf','buffer'],['avNot','noticeH'],['avAh','ahead'],['avMax','maxDay'],['avWeek','weekCap']].forEach(([id,k])=>S[k]=+$('#'+id).value);
       AV.save();
-      if(CFG.backend){const pin=($('#avPin')||{}).value||'';if(!pin){err.textContent='Enter your owner PIN to save.';err.hidden=false;return}try{sessionStorage.setItem('rl-pin',pin)}catch(x){}
+      if(CFG.backend){const token=window.ownerToken?window.ownerToken():'';if(!token){err.textContent='Sign in again to save.';err.hidden=false;return}
         const b=$('#avSave');b.disabled=true;b.textContent='Saving…';
-        try{const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'settings',pin,settings:S})})).json();b.disabled=false;b.textContent='Save availability';
-          if(!j.ok){err.textContent=j.reason==='pin'?'That PIN isn’t right.':'Couldn’t save. Try again.';err.hidden=false;return}AV.load();toast('Saved. The website shows your new hours now.')}
+        try{const j=await(await fetch(CFG.backend,{method:'POST',body:JSON.stringify({action:'settings',token,settings:S})})).json();b.disabled=false;b.textContent='Save availability';
+          if(!j.ok){err.textContent=j.reason==='auth'?'Your sign-in expired. Sign out and back in.':'Couldn’t save. Try again.';err.hidden=false;return}AV.load();toast('Saved. The website shows your new hours now.')}
         catch(x){b.disabled=false;b.textContent='Save availability';err.textContent='Couldn’t reach the server. Try again.';err.hidden=false}}
       else toast('Saved. The website shows your new hours now.')}}}
 
