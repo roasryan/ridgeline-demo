@@ -262,7 +262,7 @@ const W={en:{
   locked:s=>`Too many tries. Try again in ${s} seconds.`,forgot:'Forgot your PIN? Text us',del:'Delete',show:'Type it instead',open:'Open',
   noJob:'We couldn’t find this project.',noJobP:'The link may be old. Text us and we’ll send you a new one.',
   hi:n=>`Hi, ${n}`,yourRoof:'Your roof project',website:'Our website',logout:'Lock',
-  steps:['Request','Inspection','Estimate','Work','Done'],stepNow:'Where your project is',
+  steps:['Request','Inspection','Estimate','Approved'],stepNow:'Where your project is',
   next:'Your next visit',arrive:(a,b)=>`Arriving between ${a} and ${b}`,arriveAt:a=>`Arriving around ${a}`,
   vt:{inspection:'Free roof inspection',work:'Work day',followup:'Follow-up visit',estimate:'Estimate walk-through',adjuster:'Insurance adjuster visit'},
   st:{scheduled:'Scheduled',confirmed:'Confirmed',onway:'On the way',arrived:'We’re here',done:'Done for today'},
@@ -282,7 +282,7 @@ const W={en:{
   prog:'Your roof, step by step',progP:(n,o)=>`${n} of ${o} done`,progNext:'Next',allPhotos:'See every photo',
   sk:{contract:'Contract signed',claim:'Insurance approved',hoa:'HOA approved',permit:'Permit approved',mat_delivered:'Materials delivered',dumpster:'Dumpster dropped off',arrived:'Crew arrived',tearoff:'Old roof torn off',decking:'Decking checked',dryin:'Dried in (your home is protected from rain)',shingles:'New shingles on',ridge:'Ridge, vents and flashing done',cleanup:'Cleanup and magnet sweep for nails',walkthrough:'Final walkthrough',inspection:'City inspection passed',warranty:'Warranty registered'},
   inv:'Your bill',invPaid:d=>`Paid ${d}. Thank you!`,
-  ups:'Job updates',report:'What we found',mats:'What’s going on your roof',matsP:'Everything we order for your home.',
+  ups:'Photos and notes',report:'What we found',mats:'What’s going on your roof',matsP:'Everything we order for your home.',
   warr:'10-year workmanship warranty',warrP:'If anything we did leaks, text us and we come back free.',
   book:'Book another service',bookP:'Gutters, attic vents, storm checks and more.',visit:'Visit our website',
   text:'Text us',call:'Call',close:'Close',photo:'Photo',nothing:'We’re on it. Your visit time, photos and updates will show up here.',
@@ -293,7 +293,7 @@ const W={en:{
   locked:s=>`Demasiados intentos. Intente de nuevo en ${s} segundos.`,forgot:'¿Olvidó su PIN? Envíenos un texto',del:'Borrar',show:'Escribirlo con el teclado',open:'Abrir',
   noJob:'No encontramos este proyecto.',noJobP:'Es posible que el enlace sea antiguo. Envíenos un texto y le mandamos uno nuevo.',
   hi:n=>`Hola, ${n}`,yourRoof:'Su proyecto de techo',website:'Nuestro sitio web',logout:'Bloquear',
-  steps:['Solicitud','Inspección','Presupuesto','Trabajo','Listo'],stepNow:'Cómo va su proyecto',
+  steps:['Solicitud','Inspección','Presupuesto','Aprobado'],stepNow:'Cómo va su proyecto',
   next:'Su próxima visita',arrive:(a,b)=>`Llegamos entre las ${a} y las ${b}`,arriveAt:a=>`Llegamos alrededor de las ${a}`,
   vt:{inspection:'Inspección de techo gratis',work:'Día de trabajo',followup:'Visita de seguimiento',estimate:'Repaso del presupuesto',adjuster:'Visita del ajustador del seguro'},
   st:{scheduled:'Programada',confirmed:'Confirmada',onway:'En camino',arrived:'Ya llegamos',done:'Terminado por hoy'},
@@ -313,7 +313,7 @@ const W={en:{
   prog:'Su techo, paso a paso',progP:(n,o)=>`${n} de ${o} listos`,progNext:'Sigue',allPhotos:'Ver todas las fotos',
   sk:{contract:'Contrato firmado',claim:'Seguro aprobado',hoa:'HOA aprobó',permit:'Permiso aprobado',mat_delivered:'Materiales entregados',dumpster:'Contenedor de basura entregado',arrived:'Llegó el equipo',tearoff:'Techo viejo retirado',decking:'Madera del techo revisada',dryin:'Techo protegido contra lluvia',shingles:'Tejas nuevas puestas',ridge:'Cumbrera, ventilas y tapajuntas listos',cleanup:'Limpieza y barrido de clavos con imán',walkthrough:'Revisión final con usted',inspection:'Inspección de la ciudad aprobada',warranty:'Garantía registrada'},
   inv:'Su cuenta',invPaid:d=>`Pagado el ${d}. ¡Gracias!`,
-  ups:'Novedades del trabajo',report:'Lo que encontramos',mats:'Lo que va en su techo',matsP:'Todo lo que pedimos para su casa.',
+  ups:'Fotos y notas',report:'Lo que encontramos',mats:'Lo que va en su techo',matsP:'Todo lo que pedimos para su casa.',
   warr:'Garantía de mano de obra de 10 años',warrP:'Si algo que hicimos gotea, envíenos un texto y regresamos gratis.',
   book:'Reservar otro servicio',bookP:'Canaletas, ventilación del ático, revisión por tormenta y más.',visit:'Visitar nuestro sitio web',
   text:'Enviar texto',call:'Llamar',close:'Cerrar',photo:'Foto',nothing:'Ya estamos trabajando en ello. Aquí aparecerán la hora de su visita, fotos y novedades.',
@@ -411,7 +411,7 @@ function pinScreen(){const t=T();let v='';
   if(!isPhone())inp.focus();lockMsg()}
 
 /* ---------- portal ---------- */
-const PSTEPS=[['lead'],['booked','inspected'],['estimate','approved'],['work'],['invoiced','paid']];
+const PSTEPS=[['lead'],['booked','inspected'],['estimate'],['approved','work','invoiced','paid']];
 function curVisit(){const V=((C.job||{}).visits||[]).filter(v=>v.status!=='cancelled'),now=Date.now();
   const live=V.find(v=>v.status==='onway'||v.status==='arrived');if(live)return live;
   const up=V.filter(v=>at(v.date,v.to||v.from)>now-3*36e5&&v.status!=='done').sort((a,b)=>at(a.date,a.from)-at(b.date,b.from));if(up[0])return up[0];
@@ -444,12 +444,13 @@ function coCard(o,i){const t=T(),done=o.status!=='waiting';
   </article>`}
 let shown=false;
 function portal(){const again=shown;shown=true;const t=T(),c=C,j=c.job=c.job||{},s=c.show||{};document.onkeydown=null;
-  const cur=Math.max(0,PSTEPS.findIndex(p=>p.includes(c.stage))),pct=[8,30,55,80,100][cur];
+  const cur=Math.max(0,PSTEPS.findIndex(p=>p.includes(c.stage)));
   const v=curVisit();const changes=(j.changes||[]);const waiting=changes.filter(o=>o.status==='waiting').length+(c.estimate&&s.estimate&&c.estimate.status==='sent'?1:0)+(c.invoice&&s.invoice&&c.invoice.status==='sent'?1:0);
   const addons=(DB.addons||[]).filter(a=>(j.addons||[]).includes(a.id));const picks=j.picks||[];
-  const est=c.estimate&&s.estimate&&c.estimate.status!=='draft'?c.estimate:null,inv=c.invoice&&s.invoice&&c.invoice.status!=='draft'?c.invoice:null,rep=c.report&&s.report?c.report:null,ups=s.updates?(c.updates||[]):[];
-  const SK=['contract','claim','hoa','permit','mat_delivered','dumpster','arrived','tearoff','decking','dryin','shingles','ridge','cleanup','walkthrough','inspection','warranty'].filter(k=>k==='claim'?!!(c.ins&&c.ins.on):k==='hoa'?!!(c.prod&&c.prod.hoa):true);
-  const dn=(c.prod||{}).done||{},nDone=SK.filter(k=>dn[k]).length,nx=SK.find(k=>!dn[k]);
+  const est=c.estimate&&s.estimate&&c.estimate.status!=='draft'?c.estimate:null,inv=c.invoice&&s.invoice&&c.invoice.status!=='draft'?c.invoice:null,rep=c.report&&(s.report||s.updates)?c.report:null,ups=(s.updates?(c.updates||[]):[]).concat(rep?[{t:rep.t,text:rep.notes,photos:rep.photos||[]}]:[]).sort((a,b)=>a.t-b.t);
+  const dn=(c.prod||{}).done||{},CORE=['contract','mat_delivered','arrived','tearoff','decking','dryin','shingles','cleanup','walkthrough','inspection'];
+  const SK=['contract','claim','hoa','permit','mat_delivered','dumpster','arrived','tearoff','decking','dryin','shingles','ridge','cleanup','walkthrough','inspection','warranty'].filter(k=>k==='claim'?!!(c.ins&&c.ins.on):k==='hoa'?!!(c.prod&&c.prod.hoa):CORE.includes(k)||!!(c.prod&&c.prod.all));
+  const nDone=SK.filter(k=>dn[k]).length,nx=SK.find(k=>!dn[k]),building=['approved','work','invoiced','paid'].includes(c.stage),pct=building?Math.max(8,Math.round(nDone/Math.max(1,SK.length)*100)):[8,30,55,100][cur];
   const prog=nDone||['approved','work','invoiced','paid'].includes(c.stage)?`<section class="pc pc-prog" data-anim><div class="pc-head"><p class="pk">${t.prog}</p><span class="pill">${t.progP(nDone,SK.length)}</span></div><ol class="psteps">${SK.map(k=>`<li class="${dn[k]?'done':k===nx?'now':''}"><span class="pst-b">${dn[k]?I.check:''}</span><span><b>${esc(t.sk[k])}</b>${dn[k]?`<small>${dayShort(dn[k].t)} · ${new Date(dn[k].t).toLocaleTimeString(LOC(),{hour:'numeric',minute:'2-digit'})}</small>`:k===nx?`<small>${t.progNext}</small>`:''}</span></li>`).join('')}</ol></section>`:'';
   const P=[];
   if(v)P.push(visitCard(v));
@@ -466,7 +467,6 @@ function portal(){const again=shown;shown=true;const t=T(),c=C,j=c.job=c.job||{}
   if(addons.length)P.push(`<section class="pc pc-extras" data-anim><p class="pk">${t.extras}</p><p class="pm">${t.extrasP}</p><div class="xgrid">${addons.map(a=>{const pk=picks.find(p=>p.addon===a.id);return`<article class="x ${pk?'on':''}">${a.photo?`<img src="${esc(a.photo)}" alt="">`:''}<div><b>${esc(a.name)}</b>${a.desc?`<p>${esc(a.desc)}</p>`:''}<span class="xp">${usd(a.price)}</span>
     ${pk?(pk.status==='paid'?`<span class="pill pill-ok">${I.check}${t.paid}</span>`:`<span class="pill pill-ok">${I.check}${t.added}</span><p class="pm sm">${t.payLater}</p>`):`<button type="button" class="pbtn pbtn-line sm" data-add="${a.id}">${t.addIt}</button>`}</div></article>`}).join('')}</div></section>`);
   if(ups.length||c.camLink)P.push(`<section class="pc" data-anim><p class="pk">${t.ups}</p>${c.camLink?`<a class="pbtn pbtn-line" href="${esc(c.camLink)}" target="_blank" rel="noopener">${t.allPhotos}</a>`:''}<ol class="tl">${ups.slice().reverse().map(u=>`<li><small>${dayShort(u.t)}</small><p>${esc(u.text)}</p>${(u.photos||[]).length?`<div class="pgrid">${u.photos.map(p=>`<button type="button" class="zoomable" data-zoom="${esc(p)}"><img src="${esc(p)}" alt="${t.photo}"></button>`).join('')}</div>`:''}</li>`).join('')}</ol></section>`);
-  if(rep)P.push(`<section class="pc" data-anim><p class="pk">${t.report} · ${dayShort(rep.t)}</p><p>${esc(rep.notes)}</p>${rep.photos.length?`<div class="pgrid">${rep.photos.map(u=>`<button type="button" class="zoomable" data-zoom="${esc(u)}"><img src="${esc(u)}" alt="${t.photo}"></button>`).join('')}</div>`:''}</section>`);
   if(c.matPlan&&c.matPlan.length&&s.materials)P.push(`<section class="pc" data-anim><p class="pk">${t.mats}</p><p class="pm">${t.matsP}</p><ul class="mats">${c.matPlan.map(m=>`<li><b>${esc(m.desc)}</b><span>${m.qty} ${esc(m.unit)}</span></li>`).join('')}</ul></section>`);
   if(c.stage==='paid')P.push(`<section class="pc pc-warr" data-anim><p class="pk">${t.warr}</p><p>${t.warrP}</p></section>`);
   if(!P.length)P.push(`<section class="pc" data-anim><p class="pm">${t.nothing}</p></section>`);
@@ -476,7 +476,7 @@ function portal(){const again=shown;shown=true;const t=T(),c=C,j=c.job=c.job||{}
     <main class="pmain">
       <section class="hello" data-anim><div class="ring" aria-hidden="true"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${R}" class="ring-bg"/><circle cx="60" cy="60" r="${R}" class="ring-fg" style="--c:${CIRC};--o:${CIRC*(1-pct/100)}"/></svg><span>${I.house}</span></div>
         <div><h1>${esc(t.hi(first(c.name)))}</h1><p class="addr">${esc(c.addr||t.yourRoof)}</p></div></section>
-      <ol class="steps" aria-label="${t.stepNow}" data-anim>${t.steps.map((x,i)=>`<li class="${i<cur?'done':i===cur?'now':''}" ${i===cur?'aria-current="step"':''}><i>${i<cur?I.check:''}</i><span>${x}</span></li>`).join('')}</ol>
+      ${building?'':`<ol class="steps" aria-label="${t.stepNow}" data-anim>${t.steps.map((x,i)=>`<li class="${i<cur?'done':i===cur?'now':''}" ${i===cur?'aria-current="step"':''}><i>${i<cur?I.check:''}</i><span>${x}</span></li>`).join('')}</ol>`}
       ${P.join('')}
       <section class="pc pc-more" data-anim><a class="more" href="index.html#inspect"><b>${t.book}</b><span>${t.bookP}</span></a><a class="more" href="index.html"><b>${t.visit}</b><span>ridgeline · ${esc(CFG.city)}</span></a></section>
       <div class="pcontact" data-anim><a class="pbtn pbtn-main" href="${smsHref(t.sms.q(c.name))}">${I.chat}${t.text}</a><a class="pbtn pbtn-line" href="tel:${BIZ_PHONE}">${I.phone}${t.call} ${BIZ_PRETTY}</a></div>
