@@ -524,7 +524,7 @@ function portalAct(L) { return withLock(() => { const r = portalCheck(L); if (r.
     if (L.act === 'co_ok') { if (name.length < 3) return { ok: false, reason: 'name' }; Object.assign(o, { status: 'approved', signed: name, signedT: Date.now() }); msg = `Approved change: ${o.title} (${usd(o.price)})`; }
     else { o.status = 'declined'; o.decT = Date.now(); msg = `Said not now to change: ${o.title}`; } }
   else if (L.act === 'est_ok') { const e = c.estimate; if (!e || e.status !== 'sent' || name.length < 3) return { ok: false, reason: 'state' };
-    Object.assign(e, { status: 'approved', okBy: name, okT: Date.now() }); if (['lead', 'booked', 'inspected', 'estimate'].indexOf(c.stage) >= 0) c.stage = 'approved'; msg = `Said yes to the estimate (${usd(e.amount)}) in their portal`; }
+    Object.assign(e, { status: 'approved', okBy: name, okT: Date.now() }); if (['lead', 'booked', 'inspected', 'estimate'].indexOf(c.stage) >= 0) c.stage = 'approved'; msg = 'Said yes to the estimate in their portal'; }
   else if (L.act === 'extra') { const a = ((r.all._addons || {}).d || []).find(x => x.id === L.id); if (!a || (j.addons || []).indexOf(a.id) < 0 || (j.picks || []).some(p => p.addon === a.id)) return { ok: false, reason: 'state' };
     j.picks = (j.picks || []).concat([{ addon: a.id, name: a.name, price: a.price, status: 'requested', t: Date.now() }]); msg = `Added extra: ${a.name} (${usd(a.price)})`; }
   else return { ok: false, reason: 'act' };

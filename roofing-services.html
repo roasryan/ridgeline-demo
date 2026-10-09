@@ -1477,8 +1477,8 @@ function metrics(days){const since=Date.now()-days*DAY,C=DB.customers,inP=t=>t&&
   const booked=C.filter(c=>c.appt&&inP(c.created)).length,inspected=C.filter(c=>c.report&&inP(c.report.t)).length;
   const sent=C.filter(c=>c.estimate&&c.estimate.status!=='draft'&&inP(c.estimate.t)),won=sent.filter(c=>c.estimate.status==='approved');
   const pipe=C.filter(c=>c.estimate&&c.estimate.status==='sent').reduce((a,c)=>a+Math.max(...c.estimate.opts.map(o=>o.price)),0);
-  const paid=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&inP(c.invoice.paidT)).reduce((a,c)=>a+c.invoice.amount,0);
-  const owed=C.filter(c=>c.invoice&&c.invoice.status==='sent').reduce((a,c)=>a+c.invoice.amount,0);
+  const paid=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&inP(c.invoice.paidT)).reduce((a,c)=>a+(+c.invoice.amount||0),0);
+  const owed=C.filter(c=>c.invoice&&c.invoice.status==='sent').reduce((a,c)=>a+(+c.invoice.amount||0),0);
   const src={};leads.forEach(c=>src[c.source]=(src[c.source]||0)+1);
   return{leads:leads.length,avgReply,booked,inspected,sent:sent.length,won:won.length,close:sent.length?Math.round(won.length/sent.length*100):null,pipe,paid,owed,portal:C.filter(c=>c.portal).length,club:C.filter(c=>c.club).length,src}}
 const fmtDur=ms=>{const m=Math.round(ms/6e4);return !ms?'n/a':m<60?m+' min':Math.round(m/6)/10+' hr'};
@@ -1550,7 +1550,7 @@ function samplesOn(){return DB.customers.some(c=>c.sample)}
 function setSamples(on){DB.customers=DB.customers.filter(c=>!c.sample);DB.purchases=(DB.purchases||[]).filter(p=>!p.sample);
   if(on){const S=sampleJobs();DB.customers=DB.customers.concat(S.jobs);DB.purchases=S.purchases.concat(DB.purchases);if(!DB.spend||DB.spend.sample||!Object.keys(DB.spend).length)DB.spend={sample:true,Google:1200,'Instant roof quote':0,'Yard sign':150}}else if(DB.spend&&DB.spend.sample)DB.spend={};save()}
 const jobSpent=c=>(DB.purchases||[]).filter(p=>p.job===c.id).reduce((a,p)=>a+p.total,0)+matTotal(c.matExtra);
-const jobPrice=c=>c.invoice?c.invoice.amount:c.estimate&&c.estimate.status==='approved'?c.estimate.opts[c.estimate.pick||0].price:0;
+const jobPrice=c=>0;
 /* per-job materials sheet: calculator → planned list; bought list from tagged purchases */
 
 /* ---------- Numbers v2 (Oct 7): full funnel, lost reasons, spend → CAC, gross profit → LTV ---------- */
@@ -1751,7 +1751,7 @@ const nextVisit=c=>{const now=todayIso();return visitsOf(c).filter(v=>v.date>=no
 const invoiceLines=c=>{const L=[];const e=c.estimate&&c.estimate.status==='approved'?c.estimate.opts[c.estimate.pick||0]:null;if(e)L.push({desc:e.name,amount:e.price});
   ((c.job||{}).changes||[]).filter(o=>o.status==='approved'||o.status==='paid').forEach(o=>L.push({desc:'Change: '+o.title,amount:o.price,paid:o.status==='paid'}));
   ((c.job||{}).picks||[]).forEach(p=>L.push({desc:'Extra: '+p.name,amount:p.price,paid:p.status==='paid'}));return L};
-const owed=c=>c.invoice&&c.invoice.amount&&c.invoice.status!=='paid'&&c.invoice.status!=='draft'?(c.invoice.balance!=null?c.invoice.balance:c.invoice.amount):0;
+const owed=c=>c.invoice&&c.invoice.status!=='paid'&&c.invoice.status!=='draft'&&(c.invoice.link||c.invoice.file)?1:0;
 const readyToBill=c=>!c.invoice&&(c.stage==='work'||c.stage==='approved'&&visitsOf(c).some(v=>v.type==='work'&&v.status==='done'));
 /* sms links only work on a phone: tell desktop users instead of failing silently */
 document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('#owner a[href^="sms:"],#layer a[href^="sms:"]');if(a&&!isPhone()){e.preventDefault();toast('Texting opens on your phone. On a computer, use Call or Email.')}},true);
@@ -1817,16 +1817,16 @@ function oHome(){const C=DB.customers,now=Date.now(),td=todayIso();
   const A=(DB.activity||[]).filter(a=>!a.seen&&byId(a.cid)).slice().reverse();
   const nudge=C.filter(c=>c.stage==='estimate'&&c.estimate&&now-c.estimate.t>3*DAY);
   const bill=C.filter(readyToBill),unpaid=C.filter(c=>owed(c));
-  const owedAll=unpaid.reduce((a,c)=>a+owed(c),0),paidM=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&MON(c.invoice.paidT)===MON(now)).reduce((a,c)=>a+c.invoice.amount,0);
+  const paidM=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&MON(c.invoice.paidT)===MON(now)).length;
   const tasks=[...leads.map(c=>taskCard(c,{cls:now-c.created>36e5?'late':'',badge:`<span class="obadge ${now-c.created>36e5?'red':''}">${ago(c.created)}</span>`})),
     ...A.map(a=>{const c=byId(a.cid);return `<article class="otask fresh" data-open="${c.id}"><div class="otask-top"><span class="okick">From their portal</span><span class="obadge">${ago(a.t)}</span></div><h3>${esc(c.name)}</h3><p class="otask-t">${esc(a.text)}</p><div class="otask-acts"><button class="ob ob-main" type="button" data-seenopen="${a.t}">Open job</button><button class="ob ob-line" type="button" data-seen="${a.t}">Got it</button></div></article>`}),
-    ...bill.map(c=>taskCard(c,{kick:'Ready to bill',t:`Send ${esc(first(c.name))} the invoice`,p:{label:'Send invoice',act:'invoice'},m:[]})),
+    ...bill.map(c=>taskCard(c,{kick:'Ready to bill',t:`Send ${esc(first(c.name))} the invoice`,p:{label:'Add the invoice',act:'invoice'},m:[]})),
     ...nudge.map(c=>taskCard(c,{kick:'Estimate waiting',badge:`<span class="obadge">${ago(c.estimate.t)}</span>`})),
     ...unpaid.map(c=>taskCard(c,{kick:'Waiting for payment'}))];
   return `<section class="ohello"><p>${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</p><h2>${greet()}, ${esc(ownerName)}</h2></section>
     ${setupBox()}
-    <div class="ostats"><button type="button" data-go="money"><small>Waiting to be paid</small><b>${usd(owedAll)}</b></button><button type="button" data-go="money"><small>Paid this month</small><b>${usd(paidM)}</b></button><button type="button" data-go="schedule"><small>Visits today</small><b>${visits.length}</b></button></div>
-    <div class="oquick">${[['add','user','New job'],['steps','check','Job steps'],['photos','cam','Post photos'],['invoice','file','Track invoice']].map(([k,i,l])=>`<button type="button" data-quick="${k}">${oi(i)}<span>${l}</span></button>`).join('')}</div>
+    <div class="ostats"><button type="button" data-go="money"><small>Not paid yet</small><b>${unpaid.length}</b></button><button type="button" data-go="money"><small>Paid this month</small><b>${paidM}</b></button><button type="button" data-go="schedule"><small>Visits today</small><b>${visits.length}</b></button></div>
+    <div class="oquick">${[['add','user','New job'],['steps','check','Job steps'],['photos','cam','Post photos'],['invoice','file','Add invoice']].map(([k,i,l])=>`<button type="button" data-quick="${k}">${oi(i)}<span>${l}</span></button>`).join('')}</div>
     ${visits.length?`<h2 class="osec2">Today</h2><div class="olist">${visits.map(([c,v])=>visitCard(c,v)).join('')}</div>`:''}
     <h2 class="osec2">Needs you ${tasks.length?`<span class="ocount">${tasks.length}</span>`:''}</h2>
     ${tasks.length?`<div class="olist">${tasks.join('')}</div>`:`<div class="oempty">${oi('check')}<b>You’re all caught up.</b><span>New website requests show up here the moment they come in.</span></div>`}`}
@@ -1888,13 +1888,6 @@ function oSchedule(){const td=todayIso(),from=isoDay(Date.now()-2*DAY),to=isoDay
     ${days.map(d=>`<h2 class="osec2 ${d<td?'past':''}">${lbl(d)}</h2><div class="olist">${V.filter(x=>x[1].date===d).map(([c,v])=>visitCard(c,v)).join('')}</div>`).join('')||`<div class="oempty">${oi('cal')}<b>Nothing scheduled.</b><span>Inspections booked on the website and visits you add show up here.</span></div>`}`}
 
 /* ---------- MONEY ---------- */
-function oMoney(){const C=DB.customers,now=Date.now(),bill=C.filter(readyToBill),unpaid=C.filter(c=>owed(c)),paid=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&now-c.invoice.paidT<60*DAY).sort((a,b)=>b.invoice.paidT-a.invoice.paidT);
-  const row=(c,right,btn)=>`<article class="ojob" data-open="${c.id}"><span class="oinit st2-${c.stage}">${esc((c.name||'?')[0])}</span><div class="ojob-m"><div class="ojob-h"><h3>${esc(c.name)}</h3><b class="omoney">${right}</b></div><p>${esc((c.invoice&&c.invoice.desc)||(c.addr||'').split(',')[0])}</p>${btn||''}</div></article>`;
-  return `<div class="ostats"><div><small>Waiting to be paid</small><b>${usd(unpaid.reduce((a,c)=>a+owed(c),0))}</b></div><div><small>Paid this month</small><b>${usd(C.filter(c=>c.invoice&&c.invoice.status==='paid'&&MON(c.invoice.paidT)===MON(now)).reduce((a,c)=>a+c.invoice.amount,0))}</b></div><div><small>Ready to bill</small><b>${bill.length}</b></div></div>
-    <div class="obtns"><button class="ob ob-main" type="button" data-quick="invoice">${oi('file')}Send an invoice</button><button class="ob ob-line" type="button" data-go="numbers">${oi('chart')}Numbers</button></div>
-    <h2 class="osec2">Ready to bill ${bill.length?`<span class="ocount">${bill.length}</span>`:''}</h2><div class="olist">${bill.map(c=>row(c,usd(invoiceLines(c).reduce((a,l)=>a+l.amount,0)),`<div class="otask-acts"><button class="ob ob-main" type="button" data-act="invoice" data-cid="${c.id}">Send invoice</button></div>`)).join('')||'<p class="muted2">Nothing waiting to be billed.</p>'}</div>
-    <h2 class="osec2">Waiting for payment ${unpaid.length?`<span class="ocount">${unpaid.length}</span>`:''}</h2><div class="olist">${unpaid.map(c=>row(c,usd(owed(c)),`<p class="muted2">Sent ${ago(c.invoice.t)}</p><div class="otask-acts"><button class="ob ob-main" type="button" data-act="paid" data-cid="${c.id}">Mark paid</button><a class="ob ob-line" href="${smsTo(c.phone,`Hi ${first(c.name)}, friendly reminder: your Ridgeline invoice for ${usd(owed(c))} is ready.${c.portal?' Pay here: '+portalUrl(c):''}`)}">Text a reminder</a></div>`)).join('')||'<p class="muted2">No unpaid invoices.</p>'}</div>
-    <h2 class="osec2">Paid lately</h2><div class="olist">${paid.map(c=>row(c,usd(c.invoice.amount),`<p class="muted2">Paid ${fmtDay(c.invoice.paidT)}${c.invoice.method?' · '+esc(c.invoice.method):''}</p>`)).join('')||'<p class="muted2">Nothing paid in the last 60 days.</p>'}</div>`}
 
 /* ---------- MORE ---------- */
 
@@ -1923,7 +1916,6 @@ const progress=c=>{const L=stepList(c),d=stepsDone(c);return{n:L.filter(s=>d[s.k
 function markStep(c,k,on,by){c.prod=c.prod||{};c.prod.done=c.prod.done||{};if(on)c.prod.done[k]={t:Date.now(),by:by||ownerName};else delete c.prod.done[k];
   if(on&&['arrived','tearoff'].includes(k)&&c.stage==='approved')c.stage='work';if(on&&k==='contract'&&['lead','booked','inspected','estimate'].includes(c.stage))c.stage='approved';
   if(on&&k==='paid'&&c.invoice&&c.invoice.status!=='paid'){c.invoice.status='paid';c.invoice.paidT=Date.now();c.stage='paid'}}
-const TOOLS_EST=['Roofr','JobNimbus','AccuLynx','QuickBooks','Paper / PDF','Other'],TOOLS_INV=['QuickBooks','Square','Jobber','FreshBooks','Wave','Paper / PDF','Other'];
 const SUPPLIERS=['ABC Supply','SRS','Beacon / QXO','Home Depot','Lowe’s','Other'];
 function chipsRow(id,list,cur){return`<div class="ochips2" id="${id}" role="radiogroup">${list.map(x=>`<button type="button" role="radio" aria-checked="${x===cur}" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`}
 function bindChips(id,cb){$$('#'+id+' [data-v]').forEach(b=>b.onclick=()=>{$$('#'+id+' [data-v]').forEach(x=>x.setAttribute('aria-checked',String(x===b)));cb&&cb(b.dataset.v)})}
@@ -1935,59 +1927,8 @@ const docBtn=(d,label)=>d&&(d.link||d.file)?`<a class="ob ob-line" href="${esc(d
 
 /* ---------- ESTIMATE (tracked, made in their tool) ---------- */
 function estSheet(id){const c=byId(id);estPage(c,true)}
-function estPage(c,edit){const e=c.estimate&&c.estimate.status!=='draft'&&c.estimate.amount!=null?c.estimate:null;
-  if(e&&!edit){const close=open(sheetWrap('epH','Estimate · '+esc(first(c.name)),`<div class="ocard2 obig ${e.status==='approved'?'on':''}"><span class="okick">${esc(e.src||'Estimate')} · sent ${fmtDay(e.t)}</span><b class="obig-n">${usd(e.amount)}</b>
-      <small>${e.status==='approved'?`Approved${e.okBy?' by '+esc(e.okBy):''} ${e.okT?fmtDay(e.okT):''}`:e.status==='declined'?'They said no':'Waiting for an answer'}</small></div>
-      ${e.scope?`<div class="ocard2"><span class="okick">Scope for the crew</span><p style="white-space:pre-line">${esc(e.scope)}</p></div>`:''}
-      <div class="obtns">${e.status!=='approved'?`<button class="ob ob-main ob-xl" type="button" id="epYes">${oi('check')}They said yes</button>`:''}${docBtn(e,'Open the estimate')}<button class="ob ob-line" type="button" id="epEdit">${oi('edit')}Edit</button>${e.status==='sent'?`<button class="ob ob-line" type="button" id="epNo">They said no</button><a class="ob ob-line" href="${smsTo(c.phone,`Hi ${first(c.name)}, ${ownerName} with Ridgeline. Any questions on the estimate? Happy to walk through it.`)}">Text a check-in</a>`:''}</div>`));
-    const y=$('#epYes');if(y)y.onclick=()=>{approveIt(c);close();custSheet(c.id)};$('#epEdit').onclick=()=>{close();estPage(c,true)};const n=$('#epNo');if(n)n.onclick=()=>{close();doAct(c,'lost')};return}
-  let file=e?e.file||'':'';
-  const close=open(sheetWrap('esH',(e?'Edit':'Add')+' estimate · '+esc(first(c.name)),`<p class="muted2" style="margin-top:0">Make the estimate in the app you already use, then keep track of it here. ${esc(first(c.name))} can open it and say yes from their portal.</p>
-    <div class="field"><span class="flabel">Made in</span>${chipsRow('esSrc',TOOLS_EST,e?e.src:'')}</div>
-    <div class="two"><div class="field"><label for="esA">Amount</label><input id="esA" inputmode="decimal" placeholder="$" value="${e?e.amount:''}"></div><div class="field"><label for="esD">Date sent</label><input id="esD" type="date" value="${isoDay(e?e.t:Date.now())}"></div></div>
-    <div class="field"><label for="esL">Link to the estimate (from that app)</label><input id="esL" type="url" placeholder="https://…" value="${esc(e?e.link||'':'')}"></div>
-    <div class="field"><span class="flabel">Or attach a photo or PDF</span><label class="upl" for="esF"><span id="esFl">${file?'Replace the file':'Attach file'}</span><input id="esF" type="file" accept="image/*,application/pdf"></label></div>
-    <div class="field"><label for="esS">Scope for the crew (one line each)</label><textarea id="esS" rows="3" placeholder="Tear off 1 layer\nGAF Timberline HDZ, Charcoal\nNew pipe boots and ridge vent">${esc(e?e.scope||'':'')}</textarea></div>
-    <label class="oswitch"><input type="checkbox" id="esShow" ${!e||(c.show||{}).estimate?'checked':''}><span></span><b>Show in ${esc(first(c.name))}’s portal</b><small>They can open it and tap “Yes, go ahead”.</small></label>
-    <p class="err" id="esE" role="alert" hidden></p><div class="obtns"><button class="ob ob-main ob-xl" type="button" id="esGo">Save</button></div>`),'#esA');
-  bindChips('esSrc');$('#esF').onchange=ev=>attachFile(ev.target.files[0],u=>{file=u;$('#esFl').textContent='File attached ✓'});
-  $('#esGo').onclick=()=>{const a=+String($('#esA').value).replace(/[^\d.]/g,''),l=$('#esL').value.trim();
-    if(!a){$('#esE').textContent='Add the amount.';$('#esE').hidden=false;return}if(l&&!/^https?:\/\//.test(l)){$('#esE').textContent='The link should start with https://';$('#esE').hidden=false;return}
-    c.estimate=Object.assign(e||{status:'sent'},{src:chipVal('esSrc')||'Other',amount:a,t:new Date($('#esD').value+'T12:00').getTime()||Date.now(),link:l,file,scope:$('#esS').value.trim()});
-    if(['lead','booked','inspected'].includes(c.stage))c.stage='estimate';c.show=c.show||{};c.show.estimate=$('#esShow').checked;if(c.show.estimate&&!c.portal){c.portal=true;ensureJob(c)}save();close();custSheet(c.id);toast('Estimate saved.')}}
-function approveIt(c){if(!c.estimate)return;Object.assign(c.estimate,{status:'approved',okT:Date.now(),okBy:c.estimate.okBy||'(you marked it)'});if(stageIx(c.stage)<stageIx('approved'))c.stage='approved';markStep(c,'contract',true);save();toast('Approved. Next: order materials and set the work day.')}
-function approveSheet(c){if(!c.estimate||c.estimate.amount==null)return estPage(c,true);approveIt(c);custSheet(c.id)}
 
 /* ---------- INVOICE (tracked, made in their tool) ---------- */
-function invoicePage(c){const i=c.invoice;if(!i||i.amount==null)return invoiceSheet(c);
-  const left=i.status==='paid'?0:(i.balance!=null?i.balance:i.amount);
-  const close=open(sheetWrap('ipH','Invoice · '+esc(first(c.name)),`<div class="ocard2 obig ${i.status==='paid'?'on':''}"><span class="okick">${esc(i.src||'Invoice')}${i.num?' #'+esc(i.num):''} · sent ${fmtDay(i.t)}${i.due?' · due '+fmtDay(i.due):''}</span><b class="obig-n">${usd(i.amount)}</b>
-      <small>${i.status==='paid'?`Paid ${fmtDay(i.paidT)}${i.method?' · '+esc(i.method):''}`:i.status==='partial'?`Partly paid · ${usd(left)} left`:'Waiting for payment'}${i.synced?' · updates itself from '+esc(i.src):''}</small></div>
-    <div class="obtns">${i.status!=='paid'?`<button class="ob ob-main ob-xl" type="button" id="ipPaid">${oi('check')}Mark paid</button>`:''}${docBtn(i,'Open the invoice')}<button class="ob ob-line" type="button" id="ipEdit">${oi('edit')}Edit</button>${i.status!=='paid'?`<a class="ob ob-line" href="${smsTo(c.phone,`Hi ${first(c.name)}, friendly reminder from ${ownerName} at Ridgeline: your invoice for ${usd(left)} is ready.${i.link?' View and pay: '+i.link:c.portal?' See it here: '+portalUrl(c):''}`)}">Text a reminder</a>`:''}</div>
-    ${CFG.backend&&!i.synced?`<p class="muted2">Tip: connect QuickBooks, Square or Jobber under More → Connections and “paid” updates by itself.</p>`:''}`));
-  const p=$('#ipPaid');if(p)p.onclick=()=>{close();paidSheet(c)};$('#ipEdit').onclick=()=>{close();invoiceSheet(c)}}
-function invoiceSheet(c){const i=c.invoice&&c.invoice.amount!=null?c.invoice:null;let file=i?i.file||'':'';
-  const sug=c.estimate&&c.estimate.status==='approved'?c.estimate.amount+((c.job||{}).changes||[]).filter(o=>o.status==='approved').reduce((a,o)=>a+(+o.price||0),0)+((c.job||{}).picks||[]).reduce((a,p)=>a+(+p.price||0),0):'';
-  const close=open(sheetWrap('ivH',(i?'Edit':'Track')+' invoice · '+esc(first(c.name)),`<p class="muted2" style="margin-top:0">Send the invoice from QuickBooks, Square or whatever you use. Then add it here so you, your crew and ${esc(first(c.name))} all see where it stands.</p>
-    <div class="field"><span class="flabel">Sent from</span>${chipsRow('ivSrc',TOOLS_INV,i?i.src:'')}</div>
-    <div class="two"><div class="field"><label for="ivA">Amount</label><input id="ivA" inputmode="decimal" placeholder="$" value="${i?i.amount:sug||''}"></div><div class="field"><label for="ivN">Invoice # (optional)</label><input id="ivN" value="${esc(i?i.num||'':'')}"></div></div>
-    <div class="two"><div class="field"><label for="ivD">Date sent</label><input id="ivD" type="date" value="${isoDay(i?i.t:Date.now())}"></div><div class="field"><label for="ivU">Due (optional)</label><input id="ivU" type="date" value="${i&&i.due?isoDay(i.due):''}"></div></div>
-    ${sug&&!i?`<p class="muted2">Suggested from the approved estimate, changes and extras: ${usd(sug)}</p>`:''}
-    <div class="field"><label for="ivL">Customer link (the “view and pay” link from that app)</label><input id="ivL" type="url" placeholder="https://…" value="${esc(i?i.link||'':'')}"></div>
-    <div class="field"><span class="flabel">Or attach a photo or PDF of it</span><label class="upl" for="ivF"><span id="ivFl">${file?'Replace the file':'Attach file'}</span><input id="ivF" type="file" accept="image/*,application/pdf"></label></div>
-    <label class="oswitch"><input type="checkbox" id="ivShow" ${!i||(c.show||{}).invoice?'checked':''}><span></span><b>Show in ${esc(first(c.name))}’s portal</b><small>They see the amount, where it stands and your link to pay.</small></label>
-    <p class="err" id="ivE" role="alert" hidden></p><div class="obtns"><button class="ob ob-main ob-xl" type="button" id="ivGo">Save</button></div>`),'#ivA');
-  bindChips('ivSrc');$('#ivF').onchange=ev=>attachFile(ev.target.files[0],u=>{file=u;$('#ivFl').textContent='File attached ✓'});
-  $('#ivGo').onclick=()=>{const a=+String($('#ivA').value).replace(/[^\d.]/g,''),l=$('#ivL').value.trim();
-    if(!a){$('#ivE').textContent='Add the amount.';$('#ivE').hidden=false;return}if(l&&!/^https?:\/\//.test(l)){$('#ivE').textContent='The link should start with https://';$('#ivE').hidden=false;return}
-    c.invoice=Object.assign(i||{status:'sent'},{src:chipVal('ivSrc')||'Other',amount:a,num:$('#ivN').value.trim(),t:new Date($('#ivD').value+'T12:00').getTime()||Date.now(),due:$('#ivU').value?new Date($('#ivU').value+'T12:00').getTime():null,link:l,file});
-    if(c.invoice.status!=='paid'&&stageIx(c.stage)<stageIx('invoiced'))c.stage='invoiced';markStep(c,'invoice',true);c.show=c.show||{};c.show.invoice=$('#ivShow').checked;if(c.show.invoice&&!c.portal){c.portal=true;ensureJob(c)}
-    save();close();custSheet(c.id);invoicePage(c);toast('Invoice tracked.')}}
-function sendInvoiceSheet(c){invoicePage(c)}
-function paidSheet(c){if(!c.invoice||c.invoice.amount==null){invoiceSheet(c);return}
-  const close=open(sheetWrap('pdH','How did they pay?',`<div class="ocard2 obig"><span class="okick">${esc(first(c.name))}</span><b class="obig-n">${usd(c.invoice.amount)}</b></div>
-    <div class="obig-grid">${['Card / online','Check','Cash','Zelle / Venmo','Financing','Insurance check'].map(m=>`<button class="ob ob-line ob-tall" type="button" data-pm="${m}">${m}</button>`).join('')}</div>`));
-  $$('#layer [data-pm]').forEach(b=>b.onclick=()=>{Object.assign(c.invoice,{status:'paid',paidT:Date.now(),method:b.dataset.pm,balance:0});c.stage='paid';markStep(c,'paid',true);save();close();custSheet(c.id);toast('Paid. Nice work.')})}
 
 /* ---------- CHANGE ORDERS: still here (decking is almost always one), but no payment links: it goes on their invoice ---------- */
 function coSheet(id,ix){const c=byId(id),j=ensureJob(c),o=ix!=null?j.changes[ix]:null,pics=o?(o.photos||[]).slice():[];
@@ -2084,10 +2025,10 @@ function updatesPage(c){const U=(c.updates||[]).slice().reverse();
     ${U.map(u=>`<div class="ocard2"><span class="okick">${fmtDay(u.t)}${u.by?' · '+esc(u.by):''}</span>${u.text?`<p>${esc(u.text)}</p>`:''}${(u.photos||[]).length?`<div class="pgrid">${u.photos.map(p=>`<img src="${p}" alt="">`).join('')}</div>`:''}</div>`).join('')||(c.report?'':'<p class="muted2">Nothing posted yet.</p>')}`));
   $('#upNew').onclick=()=>{close();updSheet(c.id)};$('#rpNew').onclick=()=>{close();reportSheet(c.id)};
   $('#ccL').onchange=e=>{const v=e.target.value.trim();if(v&&!/^https:\/\//.test(v)){toast('Paste the full https:// link.');return}c.camLink=v;c.show=c.show||{};if(v)c.show.updates=true;save();toast('Saved. Their portal shows “See every photo”.')}}
-function plusSheet(){const close=open(sheetWrap('plH','What do you need?',`<div class="obig-grid">${[['add','user','New job','Someone called or stopped you'],['steps','check','Job steps','Tear-off done, dried in…'],['visit','cal','Add a visit','Inspection or work day'],['photos','cam','Post photos','Update from the roof'],['invoice','file','Track an invoice','Sent from QuickBooks or Square'],['paid','check','Record a payment','Check, cash, card']].map(([k,i,l,s])=>`<button type="button" class="obig-btn" data-quick="${k}">${oi(i)}<b>${l}</b><small>${s}</small></button>`).join('')}</div>`));
+function plusSheet(){const close=open(sheetWrap('plH','What do you need?',`<div class="obig-grid">${[['add','user','New job','Someone called or stopped you'],['steps','check','Job steps','Tear-off done, dried in…'],['visit','cal','Add a visit','Inspection or work day'],['photos','cam','Post photos','Update from the roof'],['invoice','file','Add an invoice','Paste the QuickBooks or Square link'],['paid','check','Record a payment','Check, cash, card']].map(([k,i,l,s])=>`<button type="button" class="obig-btn" data-quick="${k}">${oi(i)}<b>${l}</b><small>${s}</small></button>`).join('')}</div>`));
   $$('#layer [data-quick]').forEach(b=>b.onclick=()=>{close();quick(b.dataset.quick)})}
 function quick(k){if(k==='add')return addSheet();
-  const cfg={steps:['Which job?',c=>['approved','work','invoiced','paid'].includes(c.stage)||!!(c.prod&&c.prod.done),c=>progressPage(c)],invoice:['Invoice for who?',c=>c.stage!=='lost',c=>c.invoice&&c.invoice.amount!=null?invoicePage(c):invoiceSheet(c)],visit:['Visit for who?',c=>c.stage!=='lost',c=>visitSheet(c.id,null,['lead','booked'].includes(c.stage)?'inspection':'work')],photos:['Photos for which job?',c=>c.stage!=='lost',c=>updSheet(c.id)],paid:['Who paid?',c=>!!owed(c)||readyToBill(c)||c.stage==='approved'||c.stage==='work',c=>paidSheet(c)]}[k];
+  const cfg={steps:['Which job?',c=>['approved','work','invoiced','paid'].includes(c.stage)||!!(c.prod&&c.prod.done),c=>progressPage(c)],invoice:['Invoice for who?',c=>c.stage!=='lost',c=>invoicePage(c)],visit:['Visit for who?',c=>c.stage!=='lost',c=>visitSheet(c.id,null,['lead','booked'].includes(c.stage)?'inspection':'work')],photos:['Photos for which job?',c=>c.stage!=='lost',c=>updSheet(c.id)],paid:['Who paid?',c=>!!owed(c)||readyToBill(c)||c.stage==='approved'||c.stage==='work',c=>paidSheet(c)]}[k];
   if(cfg)pickJob(cfg[0],cfg[1],cfg[2])}
 function deleteSheet(c){const f=first(c.name),future=c.appt&&c.appt.t>Date.now();
   const close=open(sheetWrap('dlH','Delete '+esc(f)+'’s job?',`<p class="muted">Removes ${esc(c.name)} and everything on this job (visits, steps, photos, invoice tracking) from your owner view on every device, and takes the visits off your Google Calendar. Use this for test bookings, duplicates or mistakes. If they just said no, use “Mark as lost” instead so your numbers stay honest.</p>
@@ -2105,23 +2046,23 @@ function nextStep(c){const f=first(c.name),v=nextVisit(c),today=v&&v.date===toda
   switch(c.stage){
     case'lead':return{k:'New request',t:`Answer ${esc(f)} and book the free inspection`,s:c.msg?`“${esc(c.msg)}”`:'',p:{label:'Text '+esc(f),href:smsTo(c.phone,`Hi ${f}, this is ${ownerName} with Ridgeline Roofing. Got your request. What day works for a free roof inspection?`)},m:[{label:'Book inspection',act:'book'},{label:'Call',href:'tel:+1'+c.phone}]};
     case'booked':return{k:'Inspection booked',t:v?vWhen(v):'Inspection time not set',p:{label:'Add inspection report',act:'report'},m:[{label:v?'Change time':'Set time',act:v?'visits':'book'},{label:'Directions',href:mapsUrl(c.addr)}]};
-    case'inspected':return{k:'Inspected',t:`Send ${esc(f)} the estimate`,s:'Make it in your estimate app, then add it here.',p:{label:'Add the estimate',act:'estimate'},m:[{label:'See report',act:'updates'},{label:'Insurance claim',act:'ins'}]};
+    case'inspected':return{k:'Inspected',t:`Send ${esc(f)} the estimate`,s:'Make it in your estimate app, then paste the link or upload it here.',p:{label:'Add the estimate',act:'estimate'},m:[{label:'See report',act:'updates'},{label:'Insurance claim',act:'ins'}]};
     case'estimate':return{k:'Estimate sent',t:`Waiting on ${esc(f)}`,s:c.estimate?`Sent ${ago(c.estimate.t)}`:'',p:{label:'They said yes',act:'approve'},m:[{label:'Text a check-in',href:smsTo(c.phone,`Hi ${f}, ${ownerName} with Ridgeline. Any questions on the estimate? Happy to walk through it.`)},{label:'They said no',act:'lost'}]};
     case'approved':return{k:'Approved',t:p.next?'Next: '+esc(p.next.l):'Schedule the work day',p:{label:'Add work day',act:'work'},m:[{label:'Materials order',act:'mat'},{label:'Job steps',act:'progress'}]};
-    case'work':return{k:'Job in progress',t:p.next?`${p.n}/${p.of} steps · next: ${esc(p.next.l)}`:'All steps done',p:p.next?{label:'✓ '+p.next.l,step:p.next.k}:{label:'Track the invoice',act:'invoice'},m:[{label:'Job steps',act:'progress'},{label:'Post photos',act:'update'},{label:'Add a change',act:'change'},{label:'Track the invoice',act:'invoice'}]};
-    case'invoiced':return{k:'Invoice sent',t:`${usd(owed(c))} waiting`,s:c.invoice?`Sent ${ago(c.invoice.t)}${c.invoice.src?' from '+esc(c.invoice.src):''}`:'',p:{label:'Mark paid',act:'paid'},m:[{label:'See the invoice',act:'invpage'},{label:'Text a reminder',href:smsTo(c.phone,`Hi ${f}, friendly reminder: your Ridgeline invoice for ${usd(owed(c))} is ready.${c.invoice&&c.invoice.link?' View and pay: '+c.invoice.link:c.portal?' See it here: '+portalUrl(c):''}`)}]};
+    case'work':return{k:'Job in progress',t:p.next?`${p.n}/${p.of} steps · next: ${esc(p.next.l)}`:'All steps done',p:p.next?{label:'✓ '+p.next.l,step:p.next.k}:{label:'Add the invoice',act:'invoice'},m:[{label:'Job steps',act:'progress'},{label:'Post photos',act:'update'},{label:'Add a change',act:'change'},{label:'Add the invoice',act:'invoice'}]};
+    case'invoiced':return{k:'Invoice sent',t:'Waiting for payment',s:c.invoice?`Added ${ago(c.invoice.t)}`:'',p:{label:'Mark paid',act:'paid'},m:[{label:'See the invoice',act:'invpage'},{label:'Text a reminder',href:smsTo(c.phone,`Hi ${f}, friendly reminder: your Ridgeline invoice is ready.${c.invoice&&c.invoice.link?' View and pay: '+c.invoice.link:c.portal?' See it here: '+portalUrl(c):''}`)}]};
     case'paid':return{k:'Paid',t:'Ask for a review while they’re happy',p:{label:'Text a thank-you',href:smsTo(c.phone,`Hi ${f}, thank you for choosing Ridgeline Roofing! If you're happy with the work, a quick Google review would mean a lot.`)},m:[{label:'Job steps',act:'progress'},{label:'Book another job',act:'book'}]};
     case'lost':return{k:'Lost',t:esc(c.lostReason||'No reason given'),p:{label:'Reopen job',act:'reopen'},m:[]};}
   return{k:stageName(c.stage),t:'',p:{label:'Open',act:'details'},m:[]}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-qstep]');if(!b||!b.closest('#owner,#layer'))return;e.preventDefault();e.stopPropagation();
   const[cid,k]=b.dataset.qstep.split('|'),c=byId(cid);if(!c)return;markStep(c,k,true);save();openOwner();toast('✓ '+(stepList(c).find(s=>s.k===k)||{}).l)},true);
-function doAct(c,a){const id=c.id;({book:()=>visitSheet(id,null,'inspection'),visits:()=>jobSheet(id,'visits'),report:()=>reportSheet(id),estimate:()=>estPage(c,!c.estimate),approve:()=>approveSheet(c),work:()=>visitSheet(id,null,'work'),
-  update:()=>updSheet(id),updates:()=>jobSheet(id,'updates'),invoice:()=>c.invoice&&c.invoice.amount!=null?invoicePage(c):invoiceSheet(c),invpage:()=>invoicePage(c),paid:()=>paidSheet(c),mat:()=>matSheet(id),change:()=>coSheet(id),details:()=>jobSheet(id,'details'),
+function doAct(c,a){const id=c.id;({book:()=>visitSheet(id,null,'inspection'),visits:()=>jobSheet(id,'visits'),report:()=>reportSheet(id),estimate:()=>estPage(c),approve:()=>approveSheet(c),work:()=>visitSheet(id,null,'work'),
+  update:()=>updSheet(id),updates:()=>jobSheet(id,'updates'),invoice:()=>invoicePage(c),invpage:()=>invoicePage(c),paid:()=>paidSheet(c),mat:()=>matSheet(id),change:()=>coSheet(id),details:()=>jobSheet(id,'details'),
   progress:()=>progressPage(c),ins:()=>insurancePage(c),del:()=>deleteSheet(c),
   lost:()=>{c.stage='lost';c.lostT=Date.now();save();lostAsk(c,()=>custSheet(id))},reopen:()=>{c.stage='lead';delete c.lostReason;delete c.lostT;save();custSheet(id)}}[a]||(()=>{}))()}
-function jobSheet(id,sec){if(!sec){custSheet(id);return}const c=byId(id);if(!c)return;({visits:visitsPage,updates:updatesPage,details:detailsPage,portal:portalPage,estimate:x=>estPage(x),invoice:x=>x.invoice&&x.invoice.amount!=null?invoicePage(x):invoiceSheet(x),changes:changesPage,progress:progressPage,ins:insurancePage,mat:x=>matSheet(x.id)}[sec]||(()=>custSheet(id)))(c)}
+function jobSheet(id,sec){if(!sec){custSheet(id);return}const c=byId(id);if(!c)return;({visits:visitsPage,updates:updatesPage,details:detailsPage,portal:portalPage,estimate:x=>estPage(x),invoice:x=>invoicePage(x),changes:changesPage,progress:progressPage,ins:insurancePage,mat:x=>matSheet(x.id)}[sec]||(()=>custSheet(id)))(c)}
 function oJobPage(c){const n=nextStep(c),j=c.job||{},si=STEP8.findIndex(s=>s[0]===c.stage),V=visitsOf(c),nv=nextVisit(c),p=progress(c);
-  const est=c.estimate&&c.estimate.amount!=null?c.estimate:null,ch=(j.changes||[]),wait=ch.filter(o=>o.status==='waiting').length,ups=(c.updates||[]).length+(c.report?1:0),inv=c.invoice&&c.invoice.amount!=null?c.invoice:null,m=c.mat||{};
+  const est=hasDoc(c.estimate)?c.estimate:null,ch=(j.changes||[]),wait=ch.filter(o=>o.status==='waiting').length,ups=(c.updates||[]).length+(c.report?1:0),inv=hasDoc(c.invoice)||c.invoice&&c.invoice.status==='paid'?c.invoice:null,m=c.mat||{};
   const tile=(k,i,l,v,s,cls='')=>`<button type="button" class="otile ${cls}" data-sec="${k}">${oi(i)}<span class="otile-l">${l}</span><b>${v}</b>${s?`<small>${s}</small>`:''}</button>`;
   const pBtn=n.p.step?`<button class="ob ob-main ob-xl" type="button" data-qstep="${c.id}|${n.p.step}">${esc(n.p.label)}</button>`:actBtn(c,n.p,'ob ob-main ob-xl');
   return `<section class="jhead"><div class="jhead-m"><span class="opill st2-${c.stage}">${stageName(c.stage)}</span>${c.ins&&c.ins.on?'<span class="opill">Insurance</span>':''}<p>${c.addr?`<a href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}${esc(c.addr)}</a>`:'<span class="muted2">No address yet</span>'}</p><small>${esc(c.source||'')} · ${ago(c.created||Date.now())}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small></div>
@@ -2131,11 +2072,11 @@ function oJobPage(c){const n=nextStep(c),j=c.job||{},si=STEP8.findIndex(s=>s[0]=
   <div class="otiles">
     ${tile('progress','check','Job steps',`${p.n}/${p.of}`,p.next?'Next: '+esc(p.next.l):'All done',p.n===p.of?'good':'')}
     ${tile('visits','cal','Visits',V.length,nv?vWhen(nv):'None scheduled')}
-    ${tile('estimate','file','Estimate',est?usd(est.amount):'—',est?(est.status==='approved'?'Approved':est.status==='declined'?'Declined':'Waiting'):'Not added')}
+    ${tile('estimate','file','Estimate',est?(est.status==='approved'?'Yes':est.status==='declined'?'No':'Sent'):'—',est?(est.status==='approved'?'They said yes':est.status==='declined'?'They said no':'Waiting for an answer'):'Paste link or upload')}
     ${tile('updates','cam','Photos & updates',ups,ups?'Report and job photos':'Nothing yet')}
     ${tile('changes','tool','Changes',ch.length,wait?wait+' waiting for OK':'Extra work found','' + (wait?'warn':''))}
     ${tile('mat','truck','Materials',m.sup?esc(m.sup):'—',m.date?'Delivery '+fmtDay(new Date(m.date+'T12:00').getTime()):'Order and delivery')}
-    ${tile('invoice','money','Invoice',inv?usd(inv.amount):'—',inv?(inv.status==='paid'?'Paid '+fmtDay(inv.paidT):inv.status==='partial'?usd(owed(c))+' left':'Waiting'):'Not added',inv&&inv.status==='paid'?'good':'')}
+    ${tile('invoice','money','Invoice',inv?(inv.status==='paid'?'Paid':'Sent'):'—',inv?(inv.status==='paid'?fmtDay(inv.paidT):'Not paid yet'):'Paste link or upload',inv&&inv.status==='paid'?'good':'')}
     ${tile('ins','file','Insurance',c.ins&&c.ins.on?(c.ins.claim?'#'+esc(c.ins.claim):'On'):'—',c.ins&&c.ins.on?esc(c.ins.carrier||'Claim details'):'Not an insurance job')}
     ${tile('portal','key','Customer portal',c.portal?'On':'Off',c.portal?'PIN '+ensureJob(c).pin:'Their own page')}
     ${tile('details','user','Details','',pretty(c.phone))}
@@ -2146,6 +2087,51 @@ function bindJob(c){{const now=$('#obody .jsteps li.now');if(now)now.scrollIntoV
 function oMore(){return `<div class="omore">${[['team','team','Crew & extras','Crew codes and photos, extras customers can request'],['conn','globe','Connections','Google Calendar, Slack, QuickBooks / Square invoices'],['numbers','chart','Numbers','Leads, close rate, cost per customer'],['avail','clock','Availability','Hours and days the website can book']].map(([k,i,l,s])=>`<button type="button" data-go="${k}">${oi(i)}<span><b>${l}</b><small>${s}</small></span>${oi('back','flip')}</button>`).join('')}
   <button type="button" id="mSite">${oi('globe')}<span><b>Back to the website</b><small>See what customers see</small></span>${oi('back','flip')}</button>${CFG.backend?`<button type="button" id="mOut">${oi('out')}<span><b>Sign out</b><small>On this device</small></span>${oi('back','flip')}</button>`:''}</div>`}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#owner [data-go="conn"]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();connPage()},true);
+
+/* ---------- ESTIMATE + INVOICE (Ryan, Oct 9): we are not a cost tracker. Paste the link their app made (QuickBooks, Square, Roofr…)
+   or upload a photo/PDF. The customer gets a big button to open it. The owner flips "paid" (or "said yes") by hand. No amounts, no totals. ---------- */
+const hasDoc=d=>!!(d&&(d.link||d.file));
+function docForm(kind,c,d,done){const K=kind==='inv',f=first(c.name);let file=d?d.file||'':'';
+  const close=open(sheetWrap('dfH',(hasDoc(d)?'Change ':'Add ')+(K?'invoice':'estimate')+' · '+esc(f),`<p class="muted2" style="margin-top:0">${K?'Make the invoice in QuickBooks, Square or whatever you use. Paste its link here (the one customers use to pay), or upload a photo or PDF of it.':'Make the estimate in the app you use. Paste its link, or upload a photo or PDF of it.'}</p>
+    <div class="field"><label for="dfL">Link</label><input id="dfL" type="url" placeholder="https://…" value="${esc(d&&d.link||'')}"></div>
+    <div class="field"><span class="flabel">Or upload it</span><label class="upl" for="dfF"><span id="dfFl">${file?'File attached ✓ (tap to replace)':'Photo or PDF'}</span><input id="dfF" type="file" accept="image/*,application/pdf"></label></div>
+    ${K?'':`<div class="field"><label for="dfS">Scope for the crew (optional, one line each)</label><textarea id="dfS" rows="3" placeholder="Tear off 1 layer\nGAF Timberline HDZ, Charcoal\nNew pipe boots">${esc(d&&d.scope||'')}</textarea></div>`}
+    <label class="oswitch"><input type="checkbox" id="dfShow" ${!d||(c.show||{})[K?'invoice':'estimate']!==false?'checked':''}><span></span><b>Show it in ${esc(f)}’s portal</b><small>${K?'They get a big “View and pay” button.':'They can open it and tap “Yes, go ahead”.'}</small></label>
+    <p class="err" id="dfE" role="alert" hidden></p><div class="obtns"><button class="ob ob-main ob-xl" type="button" id="dfGo">Save</button></div>`),'#dfL');
+  $('#dfF').onchange=ev=>attachFile(ev.target.files[0],u=>{file=u;$('#dfFl').textContent='File attached ✓'});
+  $('#dfGo').onclick=()=>{const l=$('#dfL').value.trim(),e=$('#dfE');if(l&&!/^https?:\/\//.test(l)){e.textContent='Paste the full link (starts with https://).';e.hidden=false;return}
+    if(!l&&!file){e.textContent='Paste the link or upload the file.';e.hidden=false;return}
+    const n=Object.assign(d||{status:'sent',t:Date.now()},{link:l,file});if(!K)n.scope=$('#dfS').value.trim();
+    c[K?'invoice':'estimate']=n;c.show=c.show||{};c.show[K?'invoice':'estimate']=$('#dfShow').checked;if(c.show[K?'invoice':'estimate']&&!c.portal){c.portal=true;ensureJob(c)}
+    if(K){if(n.status!=='paid'&&stageIx(c.stage)<stageIx('invoiced'))c.stage='invoiced';markStep(c,'invoice',true)}else if(['lead','booked','inspected'].includes(c.stage))c.stage='estimate';
+    save();close();custSheet(c.id);done&&done()}}
+function docPage(kind,c){const K=kind==='inv',d=c[K?'invoice':'estimate'],f=first(c.name);if(!hasDoc(d))return docForm(kind,c,d,()=>docPage(kind,c));
+  const ok=K?d.status==='paid':d.status==='approved',when=K?d.paidT:d.okT;
+  const close=open(sheetWrap('dpH',(K?'Invoice':'Estimate')+' · '+esc(f),`<div class="ocard2 obig ${ok?'on':''}"><span class="okick">${K?'Invoice':'Estimate'} · added ${fmtDay(d.t)}</span><b class="obig-n">${ok?(K?'Paid':'Approved'):(K?'Not paid yet':'Waiting for an answer')}</b>${ok&&when?`<small>${fmtDay(when)}${!K&&d.okBy&&d.okBy[0]!=='('?' · '+esc(d.okBy):''}</small>`:d.status==='declined'?'<small>They said no</small>':''}</div>
+    <label class="oswitch big"><input type="checkbox" id="dpOk" ${ok?'checked':''}><span></span><b>${K?'Paid':'They said yes'}</b><small>${K?'Flip it when the money is in.':'Flip it when they agree.'}</small></label>
+    <div class="obtns"><a class="ob ob-line" href="${esc(d.link||d.file)}" target="_blank" rel="noopener" ${!d.link?'download':''}>${oi('file')}Open it</a>
+      ${!ok?`<a class="ob ob-line" href="${smsTo(c.phone,K?`Hi ${f}, it’s ${ownerName} with Ridgeline. Here’s your invoice: ${d.link||portalUrl(c)} Thank you!`:`Hi ${f}, it’s ${ownerName} with Ridgeline. Here’s your estimate: ${d.link||portalUrl(c)} Any questions, just text me.`)}">${oi('chat')}Text it to ${esc(f)}</a>`:''}
+      <button class="ob ob-line" type="button" id="dpEd">${oi('edit')}Change link or file</button></div>
+    ${K&&CFG.backend?`<p class="muted2">Using QuickBooks, Square or Jobber? Under More → Connections “paid” can flip by itself.</p>`:''}`));
+  $('#dpOk').onchange=e=>{const on=e.target.checked;if(K){Object.assign(d,{status:on?'paid':'sent',paidT:on?Date.now():null});if(on){c.stage='paid';markStep(c,'paid',true)}else{if(c.stage==='paid')c.stage='invoiced';markStep(c,'paid',false)}}
+    else{Object.assign(d,{status:on?'approved':'sent',okT:on?Date.now():null,okBy:on?(d.okBy||'(you marked it)'):''});if(on){if(stageIx(c.stage)<stageIx('approved'))c.stage='approved';markStep(c,'contract',true)}else if(c.stage==='approved')c.stage='estimate'}
+    save();close();docPage(kind,c)};
+  $('#dpEd').onclick=()=>{close();docForm(kind,c,d,()=>docPage(kind,c))}}
+function estPage(c){docPage('est',c)}
+function estSheet(id){docPage('est',byId(id))}
+function invoicePage(c){docPage('inv',c)}
+function invoiceSheet(c){docPage('inv',c)}
+function sendInvoiceSheet(c){docPage('inv',c)}
+function approveIt(c){if(!c.estimate)c.estimate={status:'sent',t:Date.now()};Object.assign(c.estimate,{status:'approved',okT:Date.now(),okBy:c.estimate.okBy||'(you marked it)'});if(stageIx(c.stage)<stageIx('approved'))c.stage='approved';markStep(c,'contract',true);save();toast('Approved. Next: order materials and set the work day.')}
+function approveSheet(c){approveIt(c);custSheet(c.id)}
+function paidSheet(c){if(!c.invoice)c.invoice={status:'sent',t:Date.now()};Object.assign(c.invoice,{status:'paid',paidT:Date.now()});c.stage='paid';markStep(c,'paid',true);save();custSheet(c.id);toast('Paid. Nice work.')}
+/* MONEY tab: just who still owes you an invoice or a payment. No dollar totals (their accounting app does that) */
+function oMoney(){const C=DB.customers,bill=C.filter(readyToBill),unpaid=C.filter(c=>owed(c)),paid=C.filter(c=>c.invoice&&c.invoice.status==='paid'&&Date.now()-c.invoice.paidT<60*DAY).sort((a,b)=>b.invoice.paidT-a.invoice.paidT);
+  const row=(c,btn)=>`<article class="ojob" data-open="${c.id}"><span class="oinit st2-${c.stage}">${esc((c.name||'?')[0])}</span><div class="ojob-m"><div class="ojob-h"><h3>${esc(c.name)}</h3></div><p>${esc((c.addr||'').split(',')[0])}</p>${btn||''}</div></article>`;
+  return `<div class="ostats"><div><small>Need an invoice</small><b>${bill.length}</b></div><div><small>Not paid yet</small><b>${unpaid.length}</b></div><div><small>Paid (60 days)</small><b>${paid.length}</b></div></div>
+    <h2 class="osec2">Not paid yet ${unpaid.length?`<span class="ocount">${unpaid.length}</span>`:''}</h2><div class="olist">${unpaid.map(c=>row(c,`<p class="muted2">Invoice added ${ago(c.invoice.t)}</p><div class="otask-acts"><button class="ob ob-main" type="button" data-act="paid" data-cid="${c.id}">Mark paid</button><a class="ob ob-line" href="${smsTo(c.phone,`Hi ${first(c.name)}, friendly reminder from ${ownerName} at Ridgeline: your invoice is ready.${c.invoice.link?' '+c.invoice.link:c.portal?' '+portalUrl(c):''}`)}">Text a reminder</a></div>`)).join('')||'<p class="muted2">Everyone’s paid up.</p>'}</div>
+    <h2 class="osec2">Need an invoice ${bill.length?`<span class="ocount">${bill.length}</span>`:''}</h2><div class="olist">${bill.map(c=>row(c,`<div class="otask-acts"><button class="ob ob-main" type="button" data-act="invoice" data-cid="${c.id}">Add the invoice</button></div>`)).join('')||'<p class="muted2">Nothing waiting.</p>'}</div>
+    <h2 class="osec2">Paid lately</h2><div class="olist">${paid.map(c=>row(c,`<p class="muted2">Paid ${fmtDay(c.invoice.paidT)}</p>`)).join('')||'<p class="muted2">Nothing in the last 60 days.</p>'}</div>`}
 
 /* ---------- backend: every lead and booking goes to the client's Apps Script web app
    (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
