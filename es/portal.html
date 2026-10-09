@@ -215,6 +215,20 @@ svg{display:block}
 .again .ring-fg{stroke-dashoffset:var(--o)}
 .again [data-anim]{opacity:1;transform:none;transition:none}
 .pin-card.busy .pin-dots i{animation:pdot .8s ease-in-out infinite alternate}.pin-card.busy .pin-dots i:nth-child(2){animation-delay:.15s}.pin-card.busy .pin-dots i:nth-child(3){animation-delay:.3s}.pin-card.busy .pin-dots i:nth-child(4){animation-delay:.45s}@keyframes pdot{to{opacity:.35;transform:scale(.8)}}
+/* step-by-step progress (Oct 8) */
+.psteps{list-style:none;margin:10px 0 0;padding:0;position:relative}
+.psteps li{position:relative;display:flex;gap:14px;align-items:flex-start;padding:0 0 16px}
+.psteps li:not(:last-child)::before{content:"";position:absolute;left:15px;top:32px;bottom:0;width:2px;background:var(--line)}
+.psteps li.done:not(:last-child)::before{background:var(--hivis)}
+.pst-b{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex:none;border-radius:50%;border:2px solid var(--muted);color:var(--slate)}
+.pst-b svg{width:18px;height:18px}
+.psteps li.done .pst-b{background:var(--hivis);border-color:var(--hivis)}
+.psteps li.now .pst-b{border-color:var(--hivis);box-shadow:0 0 0 6px rgba(255,212,0,.18);animation:pnow 1.6s ease-in-out infinite}
+@keyframes pnow{50%{box-shadow:0 0 0 10px rgba(255,212,0,.06)}}
+.psteps b{display:block;font-weight:800;line-height:1.3}.psteps li:not(.done):not(.now) b{color:var(--muted);font-weight:600}
+.psteps small{display:block;color:var(--muted);font-size:15px}
+.psteps li.now small{color:var(--hivis);font-weight:800}
+@media (prefers-reduced-motion:reduce){.psteps li.now .pst-b{animation:none}}
 </style></head><body><div id="wall" aria-hidden="true"></div><div id="papp"></div><div id="player"></div><script>/* ============ Ridgeline customer portal (portal.html?j=JOB) — Oct 7, round 1 ============
    Separate screen for customers on a current job. PIN unlock, English/Español, arrival window + who's coming,
    change orders and add-ons they can approve and pay, invoice, job photos. Owner sets everything up in Owner → customer.
@@ -239,7 +253,7 @@ const W={en:{
   hi:n=>`Hi, ${n}`,yourRoof:'Your roof project',website:'Our website',logout:'Lock',
   steps:['Request','Inspection','Estimate','Work','Done'],stepNow:'Where your project is',
   next:'Your next visit',arrive:(a,b)=>`Arriving between ${a} and ${b}`,arriveAt:a=>`Arriving around ${a}`,
-  vt:{inspection:'Free roof inspection',work:'Work day',followup:'Follow-up visit',estimate:'Estimate walk-through'},
+  vt:{inspection:'Free roof inspection',work:'Work day',followup:'Follow-up visit',estimate:'Estimate walk-through',adjuster:'Insurance adjuster visit'},
   st:{scheduled:'Scheduled',confirmed:'Confirmed',onway:'On the way',arrived:'We’re here',done:'Done for today'},
   inDays:n=>n===0?'Today':n===1?'Tomorrow':`In ${n} days`,
   onwayP:m=>m?`About ${m} minutes away.`:'Heading to your home now.',arrivedP:'Our crew is at your home.',doneP:'All done for today. Updates and photos are below.',
@@ -248,11 +262,14 @@ const W={en:{
   todo:'Needs your OK',todoN:n=>n===1?'1 thing needs your OK':`${n} things need your OK`,
   co:'Change to your job',coWhy:'Why',coAdd:'Adds to your price',approve:'Approve',notNow:'Not now',ask:'Ask a question',
   signT:'Approve this change',signL:'Type your full name to sign',signErr:'Type your full name.',signBtn:'Approve and sign',
-  approved:'Approved',declined:'You said not now',paid:'Paid',payNow:a=>`Pay ${a} now`,payLater:'Added to your final bill.',
+  approved:'Approved',declined:'You said not now',paid:'Paid',payNow:a=>`Pay ${a} now`,payLater:'It goes on your final invoice.',
   payNote:'Opens our secure payment page. Card or bank.',thanksApp:'Thank you. We got your OK.',thanksDec:'Got it. We won’t do this change.',
   extras:'Add to your job',extrasP:'While the crew is here, these cost less than a separate visit.',addIt:'Add to my job',added:'Requested',
   addT:'Add this to your job?',addBtn:'Yes, add it',addOk:'Added. We’ll confirm it with you.',
-  est:'Your estimate',choose:'Choose this option',signedBy:n=>`Signed by ${n}.`,
+  est:'Your estimate',choose:'Choose this option',signedBy:n=>`Signed by ${n}.`,viewEst:'Open the estimate',yes:'Yes, go ahead',estT:'Go ahead with this estimate?',estYes:(n,d)=>`You said yes${n?' ('+n+')':''} on ${d}. Thank you!`,estFrom:s=>`From ${s}`,
+  viewInv:'View and pay your invoice',viewInvOnly:'Open the invoice',invLeft:a=>`${a} left to pay`,invWait:'Waiting for payment',invNum:n=>`Invoice #${n}`,
+  prog:'Your roof, step by step',progP:(n,o)=>`${n} of ${o} done`,progNext:'Next',allPhotos:'See every photo',
+  sk:{contract:'Contract signed',claim:'Insurance approved',hoa:'HOA approved',permit:'Permit approved',mat_delivered:'Materials delivered',dumpster:'Dumpster dropped off',arrived:'Crew arrived',tearoff:'Old roof torn off',decking:'Decking checked',dryin:'Dried in (your home is protected from rain)',shingles:'New shingles on',ridge:'Ridge, vents and flashing done',cleanup:'Cleanup and magnet sweep for nails',walkthrough:'Final walkthrough',inspection:'City inspection passed',warranty:'Warranty registered'},
   inv:'Your bill',invPaid:d=>`Paid ${d}. Thank you!`,
   ups:'Job updates',report:'What we found',mats:'What’s going on your roof',matsP:'Everything we order for your home.',
   warr:'10-year workmanship warranty',warrP:'If anything we did leaks, text us and we come back free.',
@@ -267,7 +284,7 @@ const W={en:{
   hi:n=>`Hola, ${n}`,yourRoof:'Su proyecto de techo',website:'Nuestro sitio web',logout:'Bloquear',
   steps:['Solicitud','Inspección','Presupuesto','Trabajo','Listo'],stepNow:'Cómo va su proyecto',
   next:'Su próxima visita',arrive:(a,b)=>`Llegamos entre las ${a} y las ${b}`,arriveAt:a=>`Llegamos alrededor de las ${a}`,
-  vt:{inspection:'Inspección de techo gratis',work:'Día de trabajo',followup:'Visita de seguimiento',estimate:'Repaso del presupuesto'},
+  vt:{inspection:'Inspección de techo gratis',work:'Día de trabajo',followup:'Visita de seguimiento',estimate:'Repaso del presupuesto',adjuster:'Visita del ajustador del seguro'},
   st:{scheduled:'Programada',confirmed:'Confirmada',onway:'En camino',arrived:'Ya llegamos',done:'Terminado por hoy'},
   inDays:n=>n===0?'Hoy':n===1?'Mañana':`En ${n} días`,
   onwayP:m=>m?`A unos ${m} minutos.`:'Vamos camino a su casa.',arrivedP:'Nuestro equipo está en su casa.',doneP:'Terminamos por hoy. Las novedades y fotos están abajo.',
@@ -276,11 +293,14 @@ const W={en:{
   todo:'Necesita su aprobación',todoN:n=>n===1?'1 cosa necesita su aprobación':`${n} cosas necesitan su aprobación`,
   co:'Cambio en su trabajo',coWhy:'Por qué',coAdd:'Se suma a su precio',approve:'Aprobar',notNow:'Ahora no',ask:'Hacer una pregunta',
   signT:'Aprobar este cambio',signL:'Escriba su nombre completo para firmar',signErr:'Escriba su nombre completo.',signBtn:'Aprobar y firmar',
-  approved:'Aprobado',declined:'Usted dijo que ahora no',paid:'Pagado',payNow:a=>`Pagar ${a} ahora`,payLater:'Se agregó a su cuenta final.',
+  approved:'Aprobado',declined:'Usted dijo que ahora no',paid:'Pagado',payNow:a=>`Pagar ${a} ahora`,payLater:'Se agrega a su factura final.',
   payNote:'Abre nuestra página de pago segura. Tarjeta o banco.',thanksApp:'Gracias. Recibimos su aprobación.',thanksDec:'Entendido. No haremos este cambio.',
   extras:'Agregar a su trabajo',extrasP:'Mientras el equipo está aquí, esto cuesta menos que una visita aparte.',addIt:'Agregar a mi trabajo',added:'Solicitado',
   addT:'¿Agregar esto a su trabajo?',addBtn:'Sí, agregarlo',addOk:'Agregado. Lo confirmaremos con usted.',
-  est:'Su presupuesto',choose:'Elegir esta opción',signedBy:n=>`Firmado por ${n}.`,
+  est:'Su presupuesto',choose:'Elegir esta opción',signedBy:n=>`Firmado por ${n}.`,viewEst:'Abrir el presupuesto',yes:'Sí, adelante',estT:'¿Seguimos con este presupuesto?',estYes:(n,d)=>`Usted dijo que sí${n?' ('+n+')':''} el ${d}. ¡Gracias!`,estFrom:s=>`De ${s}`,
+  viewInv:'Ver y pagar su factura',viewInvOnly:'Abrir la factura',invLeft:a=>`Falta pagar ${a}`,invWait:'Pendiente de pago',invNum:n=>`Factura #${n}`,
+  prog:'Su techo, paso a paso',progP:(n,o)=>`${n} de ${o} listos`,progNext:'Sigue',allPhotos:'Ver todas las fotos',
+  sk:{contract:'Contrato firmado',claim:'Seguro aprobado',hoa:'HOA aprobó',permit:'Permiso aprobado',mat_delivered:'Materiales entregados',dumpster:'Contenedor de basura entregado',arrived:'Llegó el equipo',tearoff:'Techo viejo retirado',decking:'Madera del techo revisada',dryin:'Techo protegido contra lluvia',shingles:'Tejas nuevas puestas',ridge:'Cumbrera, ventilas y tapajuntas listos',cleanup:'Limpieza y barrido de clavos con imán',walkthrough:'Revisión final con usted',inspection:'Inspección de la ciudad aprobada',warranty:'Garantía registrada'},
   inv:'Su cuenta',invPaid:d=>`Pagado el ${d}. ¡Gracias!`,
   ups:'Novedades del trabajo',report:'Lo que encontramos',mats:'Lo que va en su techo',matsP:'Todo lo que pedimos para su casa.',
   warr:'Garantía de mano de obra de 10 años',warrP:'Si algo que hicimos gotea, envíenos un texto y regresamos gratis.',
@@ -408,7 +428,7 @@ function coCard(o,i){const t=T(),done=o.status!=='waiting';
     ${(o.photos||[]).length?`<div class="pgrid">${o.photos.map(u=>`<button type="button" class="zoomable" data-zoom="${esc(u)}"><img src="${esc(u)}" alt="${t.photo}"></button>`).join('')}</div>`:''}
     <div class="price"><small>${t.coAdd}</small><b>${usd(o.price)}</b></div>
     ${!done?`<div class="prow"><button type="button" class="pbtn pbtn-main" data-coa="${i}">${I.check}${t.approve}</button><button type="button" class="pbtn pbtn-line" data-cod="${i}">${t.notNow}</button></div><a class="plink" href="${smsHref(t.sms.co(C.name,o.title))}">${t.ask}</a>`
-      :o.status==='approved'?(o.pay?`<a class="pbtn pbtn-main" href="${esc(o.pay)}" target="_blank" rel="noopener" data-paid="co:${i}">${t.payNow(usd(o.price))}</a><p class="pm sm">${t.payNote}</p>`:`<p class="pm">${t.payLater}</p>`)+(o.signed?`<p class="pm sm">${t.signedBy(esc(o.signed))}</p>`:''):''}
+      :o.status==='approved'||o.status==='paid'?`<p class="pm">${t.payLater}</p>`+(o.signed&&o.signed[0]!=='('?`<p class="pm sm">${t.signedBy(esc(o.signed))}</p>`:''):''}
   </article>`}
 let shown=false;
 function portal(){const again=shown;shown=true;const t=T(),c=C,j=c.job=c.job||{},s=c.show||{};document.onkeydown=null;
@@ -416,15 +436,24 @@ function portal(){const again=shown;shown=true;const t=T(),c=C,j=c.job=c.job||{}
   const v=curVisit();const changes=(j.changes||[]);const waiting=changes.filter(o=>o.status==='waiting').length+(c.estimate&&s.estimate&&c.estimate.status==='sent'?1:0)+(c.invoice&&s.invoice&&c.invoice.status==='sent'?1:0);
   const addons=(DB.addons||[]).filter(a=>(j.addons||[]).includes(a.id));const picks=j.picks||[];
   const est=c.estimate&&s.estimate&&c.estimate.status!=='draft'?c.estimate:null,inv=c.invoice&&s.invoice&&c.invoice.status!=='draft'?c.invoice:null,rep=c.report&&s.report?c.report:null,ups=s.updates?(c.updates||[]):[];
+  const SK=['contract','claim','hoa','permit','mat_delivered','dumpster','arrived','tearoff','decking','dryin','shingles','ridge','cleanup','walkthrough','inspection','warranty'].filter(k=>k==='claim'?!!(c.ins&&c.ins.on):k==='hoa'?!!(c.prod&&c.prod.hoa):true);
+  const dn=(c.prod||{}).done||{},nDone=SK.filter(k=>dn[k]).length,nx=SK.find(k=>!dn[k]);
+  const prog=nDone||['approved','work','invoiced','paid'].includes(c.stage)?`<section class="pc pc-prog" data-anim><div class="pc-head"><p class="pk">${t.prog}</p><span class="pill">${t.progP(nDone,SK.length)}</span></div><ol class="psteps">${SK.map(k=>`<li class="${dn[k]?'done':k===nx?'now':''}"><span class="pst-b">${dn[k]?I.check:''}</span><span><b>${esc(t.sk[k])}</b>${dn[k]?`<small>${dayShort(dn[k].t)} · ${new Date(dn[k].t).toLocaleTimeString(LOC(),{hour:'numeric',minute:'2-digit'})}</small>`:k===nx?`<small>${t.progNext}</small>`:''}</span></li>`).join('')}</ol></section>`:'';
   const P=[];
   if(v)P.push(visitCard(v));
   if(waiting)P.push(`<div class="todo" data-anim><b class="todo-n">${waiting}</b><span>${t.todoN(waiting)}</span></div>`);
   changes.map((o,i)=>[o,i]).sort((a,b)=>(a[0].status==='waiting'?0:1)-(b[0].status==='waiting'?0:1)||b[0].t-a[0].t).forEach(([o,i])=>P.push(coCard(o,i)));
-  if(est){const ap=est.status==='approved';P.push(`<section class="pc" data-anim><p class="pk">${t.est}</p>${est.opts.map((o,i)=>`<div class="opt ${ap&&est.pick===i?'on':''}"><div class="opt-h"><b>${esc(o.name)}</b><span>${usd(o.price)}</span></div><ul>${o.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${ap?'':`<button type="button" class="pbtn pbtn-main" data-est="${i}">${t.choose}</button>`}</div>`).join('')}${ap?`<p class="pm sm">${t.signedBy(esc(est.signed))}</p>`:''}</section>`)}
-  if(inv)P.push(`<section class="pc pc-inv" data-anim><p class="pk">${t.inv}</p><h3>${esc(inv.desc||'')}</h3><div class="price big"><b>${usd(inv.amount)}</b></div>${inv.status==='paid'?`<span class="pill pill-ok">${I.check}${t.invPaid(dayShort(inv.paidT))}</span>`:inv.pay?`<a class="pbtn pbtn-main" href="${esc(inv.pay)}" target="_blank" rel="noopener">${t.payNow(usd(inv.amount))}</a><p class="pm sm">${t.payNote}</p>`:''}</section>`);
+  const doc=d=>d.link||d.file||'';
+  if(prog)P.push(prog);
+  if(est&&est.amount!=null){const ap=est.status==='approved';P.push(`<section class="pc" data-anim><p class="pk">${t.est}</p><div class="price big"><b>${usd(est.amount)}</b></div>${est.src&&!/other|paper/i.test(est.src)?`<p class="pm sm">${t.estFrom(esc(est.src))}</p>`:''}
+    ${doc(est)?`<a class="pbtn pbtn-line" href="${esc(doc(est))}" target="_blank" rel="noopener">${t.viewEst}</a>`:''}
+    ${ap?`<span class="pill pill-ok">${I.check}${t.estYes(est.okBy&&est.okBy[0]!=='('?esc(est.okBy):'',dayShort(est.okT||Date.now()))}</span>`:est.status==='sent'?`<button type="button" class="pbtn pbtn-main" data-est="0">${I.check}${t.yes}</button><a class="plink" href="${smsHref(t.sms.q(c.name))}">${t.ask}</a>`:''}</section>`)}
+  if(inv&&inv.amount!=null){const left=inv.balance!=null?inv.balance:inv.amount;P.push(`<section class="pc pc-inv" data-anim><p class="pk">${t.inv}${inv.num?' · '+t.invNum(esc(inv.num)):''}</p><div class="price big"><b>${usd(inv.amount)}</b></div>
+    ${inv.status==='paid'?`<span class="pill pill-ok">${I.check}${t.invPaid(dayShort(inv.paidT||Date.now()))}</span>`:`<p class="pm">${inv.status==='partial'?t.invLeft(usd(left)):t.invWait}</p>`}
+    ${doc(inv)?`<a class="pbtn ${inv.status==='paid'?'pbtn-line':'pbtn-main'}" href="${esc(doc(inv))}" target="_blank" rel="noopener">${inv.status!=='paid'&&inv.link?t.viewInv:t.viewInvOnly}</a>`:''}</section>`)}
   if(addons.length)P.push(`<section class="pc pc-extras" data-anim><p class="pk">${t.extras}</p><p class="pm">${t.extrasP}</p><div class="xgrid">${addons.map(a=>{const pk=picks.find(p=>p.addon===a.id);return`<article class="x ${pk?'on':''}">${a.photo?`<img src="${esc(a.photo)}" alt="">`:''}<div><b>${esc(a.name)}</b>${a.desc?`<p>${esc(a.desc)}</p>`:''}<span class="xp">${usd(a.price)}</span>
-    ${pk?(pk.status==='paid'?`<span class="pill pill-ok">${I.check}${t.paid}</span>`:`<span class="pill pill-ok">${I.check}${t.added}</span>${a.pay&&pk.status!=='paid'?`<a class="pbtn pbtn-main sm" href="${esc(a.pay)}" target="_blank" rel="noopener">${t.payNow(usd(a.price))}</a>`:''}`):`<button type="button" class="pbtn pbtn-line sm" data-add="${a.id}">${t.addIt}</button>`}</div></article>`}).join('')}</div></section>`);
-  if(ups.length)P.push(`<section class="pc" data-anim><p class="pk">${t.ups}</p><ol class="tl">${ups.slice().reverse().map(u=>`<li><small>${dayShort(u.t)}</small><p>${esc(u.text)}</p>${(u.photos||[]).length?`<div class="pgrid">${u.photos.map(p=>`<button type="button" class="zoomable" data-zoom="${esc(p)}"><img src="${esc(p)}" alt="${t.photo}"></button>`).join('')}</div>`:''}</li>`).join('')}</ol></section>`);
+    ${pk?(pk.status==='paid'?`<span class="pill pill-ok">${I.check}${t.paid}</span>`:`<span class="pill pill-ok">${I.check}${t.added}</span><p class="pm sm">${t.payLater}</p>`):`<button type="button" class="pbtn pbtn-line sm" data-add="${a.id}">${t.addIt}</button>`}</div></article>`}).join('')}</div></section>`);
+  if(ups.length||c.camLink)P.push(`<section class="pc" data-anim><p class="pk">${t.ups}</p>${c.camLink?`<a class="pbtn pbtn-line" href="${esc(c.camLink)}" target="_blank" rel="noopener">${t.allPhotos}</a>`:''}<ol class="tl">${ups.slice().reverse().map(u=>`<li><small>${dayShort(u.t)}</small><p>${esc(u.text)}</p>${(u.photos||[]).length?`<div class="pgrid">${u.photos.map(p=>`<button type="button" class="zoomable" data-zoom="${esc(p)}"><img src="${esc(p)}" alt="${t.photo}"></button>`).join('')}</div>`:''}</li>`).join('')}</ol></section>`);
   if(rep)P.push(`<section class="pc" data-anim><p class="pk">${t.report} · ${dayShort(rep.t)}</p><p>${esc(rep.notes)}</p>${rep.photos.length?`<div class="pgrid">${rep.photos.map(u=>`<button type="button" class="zoomable" data-zoom="${esc(u)}"><img src="${esc(u)}" alt="${t.photo}"></button>`).join('')}</div>`:''}</section>`);
   if(c.matPlan&&c.matPlan.length&&s.materials)P.push(`<section class="pc" data-anim><p class="pk">${t.mats}</p><p class="pm">${t.matsP}</p><ul class="mats">${c.matPlan.map(m=>`<li><b>${esc(m.desc)}</b><span>${m.qty} ${esc(m.unit)}</span></li>`).join('')}</ul></section>`);
   if(c.stage==='paid')P.push(`<section class="pc pc-warr" data-anim><p class="pk">${t.warr}</p><p>${t.warrP}</p></section>`);
@@ -448,7 +477,7 @@ function portal(){const again=shown;shown=true;const t=T(),c=C,j=c.job=c.job||{}
   $$('[data-ics]').forEach(b=>b.onclick=()=>ics(j.visits.find(x=>x.id===b.dataset.ics)));
   $$('[data-coa]').forEach(b=>b.onclick=()=>signSheet(t.signT,changes[+b.dataset.coa],n=>{if(LIVE)return remoteAct({act:'co_ok',i:+b.dataset.coa,name:n},t.thanksApp,1);Object.assign(changes[+b.dataset.coa],{status:'approved',signed:n,signedT:Date.now()});log(`Approved change: ${changes[+b.dataset.coa].title} (${usd(changes[+b.dataset.coa].price)})`);confetti();toast(t.thanksApp);portal()}));
   $$('[data-cod]').forEach(b=>b.onclick=()=>{if(LIVE)return remoteAct({act:'co_no',i:+b.dataset.cod},t.thanksDec);const o=changes[+b.dataset.cod];o.status='declined';o.decT=Date.now();log(`Said not now to change: ${o.title}`);toast(t.thanksDec);portal()});
-  $$('[data-est]').forEach(b=>b.onclick=()=>{const i=+b.dataset.est,o=c.estimate.opts[i];signSheet(o.name,{title:o.name,price:o.price},n=>{if(LIVE)return remoteAct({act:'est_ok',i,name:n},t.thanksApp,1);Object.assign(c.estimate,{status:'approved',pick:i,signed:n,signedT:Date.now()});c.stage='approved';log(`Approved estimate: ${o.name} (${usd(o.price)})`);confetti();toast(t.thanksApp);portal()})});
+  $$('[data-est]').forEach(b=>b.onclick=()=>signSheet(t.estT,{title:'',price:c.estimate.amount},n=>{if(LIVE)return remoteAct({act:'est_ok',name:n},t.thanksApp,1);Object.assign(c.estimate,{status:'approved',okBy:n,okT:Date.now()});if(['lead','booked','inspected','estimate'].includes(c.stage))c.stage='approved';log(`Said yes to the estimate (${usd(c.estimate.amount)})`);confetti();toast(t.thanksApp);portal()}));
   $$('[data-add]').forEach(b=>b.onclick=()=>{const a=(DB.addons||[]).find(x=>x.id===b.dataset.add);const cl=sheet(`<h2>${t.addT}</h2><div class="sheet-x">${a.photo?`<img src="${esc(a.photo)}" alt="">`:''}<div><b>${esc(a.name)}</b><p class="pm">${esc(a.desc||'')}</p><p class="price big"><b>${usd(a.price)}</b></p></div></div><div class="prow"><button type="button" class="pbtn pbtn-main" id="addGo">${I.check}${t.addBtn}</button><button type="button" class="pbtn pbtn-line" data-close>${t.notNow}</button></div>`,'#addGo');
     $('#addGo').onclick=()=>{if(LIVE){cl();return remoteAct({act:'extra',id:a.id},t.addOk,1)}j.picks=(j.picks||[]).concat([{addon:a.id,name:a.name,price:a.price,status:'requested',t:Date.now()}]);log(`Added extra: ${a.name} (${usd(a.price)})`);cl();confetti();toast(t.addOk);portal()}});
   if(!reduce&&!again){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});$$('[data-anim]').forEach(el=>io.observe(el))}else $$('[data-anim]').forEach(el=>el.classList.add('in'));
