@@ -66,6 +66,9 @@ function doPost(e) {
   /* ---- shared job store (v10, Oct 8): owner app, crew screen and customer portal all read/write the same jobs ---- */
   if (L.action === 'db_get') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(dbGet()); }
   if (L.action === 'db_put') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(dbPut(L)); }
+  if (L.action === 'appt_get') return json(apptGet(L));
+  if (L.action === 'appt_move') return json(apptMove(L));
+  if (L.action === 'appt_cancel') return json(apptCancel(L));
   if (L.action === 'portal_get') return json(portalGet(L));
   if (L.action === 'portal_act') return json(portalAct(L));
   if (L.action === 'crew_get') return json(crewGet(L));
@@ -180,8 +183,51 @@ function calBook(L, appt) {
     location: L.address || '',
     description: `Phone: ${L.phone ? pretty(L.phone) : 'none'}\nBest way: ${L.best}${L.best === 'Text' && !L.sms ? ' (no auto-text consent)' : ''}\nEmail: ${L.email || ''}\nIssue: ${L.issue || ''}${L.quote ? `\nInstant quote: ${L.quote.name}, ${L.quote.range}` : ''}\n\nDrag this event to reschedule; the customer is told automatically. Delete it to cancel.`
   });
-  P.setProperty('bk_' + ev.getId(), JSON.stringify({ n: L.name, p: L.phone, e: L.email || '', b: L.best, s: !!L.sms, a: L.address || '', t: appt.start.toISOString(), r: 0 }));
+  const k = newApptKey(ev.getId());
+  P.setProperty('bk_' + ev.getId(), JSON.stringify({ n: L.name, p: L.phone, e: L.email || '', b: L.best, s: !!L.sms, a: L.address || '', t: appt.start.toISOString(), r: 0, k }));
+  appt.k = k;
 }
+/* ---- customer's private "change or cancel" link (v12, Oct 8): no login, an unguessable key per booking, like Calendly / Jobber links ---- */
+function newApptKey(evId) { const k = Utilities.getUuid().replace(/-/g, '').slice(0, 22); P.setProperty('bt_' + k, evId); return k; }
+function apptKey(b, evId) { if (!b.k) { b.k = newApptKey(evId); P.setProperty('bk_' + evId, JSON.stringify(b)); } return b.k; }
+const siteUrl = () => cfg('SITE_URL', 'https://roasryan.github.io/ridgeline-demo/');
+const manageUrl = k => siteUrl() + '?b=' + k;
+function apptFind(L) { const k = String(L.k || ''); if (!/^[a-f0-9]{22}$/.test(k) || failCount('ap_fail') >= 30) return null;
+  const id = P.getProperty('bt_' + k), raw = id && P.getProperty('bk_' + id); if (!raw) { bumpFail('ap_fail'); return null; }
+  const b = JSON.parse(raw); if (b.k !== k) return null; let ev = null; try { ev = bookingCal().getEventById(id); } catch (x) {} if (!ev) return null; return { id, b, ev, k }; }
+function apptView(f) { const S = settings(), st = new Date(f.b.t), late = st.getTime() - Date.now() < Math.max(S.noticeH, 2) * 3600e3;
+  return { ok: true, name: String(f.b.n).split(' ')[0], start: f.b.t, date: fmt(st, 'yyyy-MM-dd'), time: fmt(st, 'HH:mm'), when: fmt(st, "EEEE, MMMM d 'at' h:mm a"), addr: String(f.b.a || '').split(',')[0], past: st.getTime() < Date.now(), late, phone: cfg('OWNER_PHONE') }; }
+function apptGet(L) { const f = apptFind(L); return f ? apptView(f) : { ok: false, reason: 'gone' }; }
+function apptMove(L) { const lock = LockService.getScriptLock(); lock.waitLock(20000); try {
+  const f = apptFind(L); if (!f) return { ok: false, reason: 'gone' }; const v = apptView(f); if (v.past || v.late) return { ok: false, reason: 'late' };
+  const start = at(L.date, L.time); if (!start) return { ok: false, reason: 'bad_time' };
+  if (!((calSlots(0, L.date)[L.date] || []).indexOf(L.time) >= 0)) return { ok: false, reason: 'taken' };
+  const old = f.b.t, end = new Date(start.getTime() + settings().len * 60e3);
+  f.b.t = start.toISOString(); f.b.r = 0; P.setProperty('bk_' + f.id, JSON.stringify(f.b));   // registry first, so the calendar trigger sees no change
+  f.ev.setTime(start, end); clearSlotCache();
+  jobApptSync(f.b, old, start, false);
+  const C = { name: f.b.n, phone: f.b.p, email: f.b.e, best: f.b.b, sms: f.b.s, address: f.b.a };
+  notifyCustomer('rebooked', C, { start, k: f.k });
+  apptOwnerAlert(f.b, `moved their inspection to ${fmt(start, "EEE MMM d 'at' h:mm a")} (was ${fmt(new Date(old), "EEE MMM d, h:mm a")})`);
+  return apptView(apptFind(L)); } finally { lock.releaseLock(); } }
+function apptCancel(L) { const lock = LockService.getScriptLock(); lock.waitLock(20000); try {
+  const f = apptFind(L); if (!f) return { ok: false, reason: 'gone' }; if (new Date(f.b.t).getTime() < Date.now()) return { ok: false, reason: 'late' };
+  P.deleteProperty('bk_' + f.id); P.deleteProperty('bt_' + f.k); P.setProperty('cx_' + f.b.p + '|' + f.b.n, f.b.t);
+  try { f.ev.deleteEvent(); } catch (x) { logErr('cancel', x); } clearSlotCache();
+  jobApptSync(f.b, f.b.t, null, true);
+  const C = { name: f.b.n, phone: f.b.p, email: f.b.e, best: f.b.b, sms: f.b.s, address: f.b.a };
+  notifyCustomer('youcancelled', C, { start: new Date(f.b.t) });
+  apptOwnerAlert(f.b, `cancelled their inspection on ${fmt(new Date(f.b.t), "EEE MMM d 'at' h:mm a")}`);
+  return { ok: true, cancelled: true }; } finally { lock.releaseLock(); } }
+/* keep the owner app's job (shared store) in step with the customer's change */
+function jobApptSync(b, oldIso, start, cancel) { try { const all = readAll(), oldT = new Date(oldIso).getTime(), oldDay = fmt(new Date(oldIso), 'yyyy-MM-dd'), oldHm = fmt(new Date(oldIso), 'HH:mm');
+  Object.keys(all).forEach(id => { if (id[0] === '_') return; const c = all[id].d; if (String(c.phone || '') !== String(b.p || '') || !c.appt || Math.abs((c.appt.t || 0) - oldT) > 6e4) return;
+    const j = c.job || {}, v = (j.visits || []).find(x => x.type === 'inspection' && x.date === oldDay && x.from === oldHm && x.status !== 'cancelled');
+    if (cancel) { if (v) v.status = 'cancelled'; delete c.appt; if (c.stage === 'booked') c.stage = 'lead'; c.notes = ((c.notes || '') + `\nCustomer cancelled the ${oldDay} inspection online.`).trim(); }
+    else { const len = settings().len, e = new Date(start.getTime() + len * 60e3); c.appt = Object.assign(c.appt, { t: start.getTime(), time: fmt(start, 'HH:mm'), slot: fmt(start, 'h:mm a'), confirmed: false });
+      if (v) { v.date = fmt(start, 'yyyy-MM-dd'); v.from = fmt(start, 'HH:mm'); v.to = fmt(e, 'HH:mm'); v.status = 'scheduled'; } }
+    c.fresh = true; saveObj(all, id, c); pushActivity(readAll(), id, `${c.name} ${cancel ? 'cancelled' : 'moved'} their inspection online`); }); } catch (x) { logErr('job-sync', x); } }
+function apptOwnerAlert(b, what) { try { const to = cfg('OWNER_EMAIL'); if (!to) return; MailApp.sendEmail({ to, subject: `${b.n} ${what.split(' (')[0]}`, htmlBody: `<div style="font:16px/1.5 Arial,sans-serif"><p><b>${esc(b.n)}</b> ${esc(what)} using the link in their confirmation.</p><p>${b.p ? pretty(b.p) : ''} ${esc(b.e || '')}<br>${esc(b.a || '')}</p><p>Your calendar and owner view are already updated.</p></div>`, name: cfg('BIZ_NAME', 'Website') }); } catch (x) { logErr('appt-alert', x); } }
 
 /* ------------------------------------------------------------------ owner moved / cancelled an event → tell the customer */
 function onCalChange() {
@@ -190,13 +236,13 @@ function onCalChange() {
     const b = JSON.parse(props[k]), id = k.slice(3);
     let ev = null; try { ev = cal.getEventById(id); } catch (x) {}
     const L = { name: b.n, phone: b.p, email: b.e, best: b.b, sms: b.s, address: b.a };
-    if (!ev) { if (new Date(b.t) > new Date()) { notifyCustomer('cancelled', L, { start: new Date(b.t) }); } P.deleteProperty(k); clearSlotCache(); return; }
+    if (!ev) { if (new Date(b.t) > new Date()) { notifyCustomer('cancelled', L, { start: new Date(b.t) }); } P.deleteProperty(k); if (b.k) P.deleteProperty('bt_' + b.k); clearSlotCache(); return; }
     const s = ev.getStartTime();
     if (s.toISOString() !== b.t) {
       b.t = s.toISOString(); b.r = 0; P.setProperty(k, JSON.stringify(b)); clearSlotCache();
-      if (s > new Date()) notifyCustomer('moved', L, { start: s, end: ev.getEndTime() });
+      if (s > new Date()) notifyCustomer('moved', L, { start: s, end: ev.getEndTime(), k: apptKey(b, id) });
     }
-    if (new Date(b.t).getTime() < Date.now() - 7 * 864e5) P.deleteProperty(k); // tidy old bookings
+    if (new Date(b.t).getTime() < Date.now() - 7 * 864e5) { P.deleteProperty(k); if (b.k) P.deleteProperty('bt_' + b.k); } // tidy old bookings
   });
 }
 /* every evening: reminder for tomorrow's inspections */
@@ -205,7 +251,7 @@ function sendReminders() {
   Object.keys(props).filter(k => k.indexOf('bk_') === 0).forEach(k => {
     const b = JSON.parse(props[k]);
     if (b.r || fmt(new Date(b.t), 'yyyy-MM-dd') !== tomorrow) return;
-    notifyCustomer('reminder', { name: b.n, phone: b.p, email: b.e, best: b.b, sms: b.s, address: b.a }, { start: new Date(b.t) });
+    notifyCustomer('reminder', { name: b.n, phone: b.p, email: b.e, best: b.b, sms: b.s, address: b.a }, { start: new Date(b.t), k: apptKey(b, k.slice(3)) });
     b.r = 1; P.setProperty(k, JSON.stringify(b));
   });
 }
@@ -213,24 +259,26 @@ function sendReminders() {
 /* ------------------------------------------------------------------ talking to the customer: only the way they picked */
 function notifyCustomer(kind, L, appt) {
   const first = String(L.name).split(' ')[0], biz = cfg('BIZ_NAME', 'us'), owner = cfg('OWNER_NAME', 'We');
-  const when = appt ? fmt(appt.start, "EEE, MMM d 'at' h:mm a") : '', site = cfg('SITE_URL', 'https://roasryan.github.io/ridgeline-demo/') + '#inspect';
+  const when = appt ? fmt(appt.start, "EEE, MMM d 'at' h:mm a") : '', site = siteUrl() + '#inspect', link = appt && appt.k ? manageUrl(appt.k) : site;
   const msg = {
-    booked: `Hi ${first}, you're booked for a free roof inspection with ${biz} on ${when}${L.address ? ' at ' + L.address : ''}. You don't need to be home. Change the time: ${site}`,
-    moved: `Hi ${first}, ${owner} from ${biz} here. Your roof inspection moved to ${when}. If that doesn't work, pick another time: ${site}`,
+    booked: `Hi ${first}, you're booked for a free roof inspection with ${biz} on ${when}${L.address ? ' at ' + L.address : ''}. You don't need to be home. Change or cancel: ${link}`,
+    moved: `Hi ${first}, ${owner} from ${biz} here. Your roof inspection moved to ${when}. If that doesn't work, change it here: ${link}`,
     cancelled: `Hi ${first}, ${owner} from ${biz} here. We had to cancel your inspection on ${when}. Sorry about that. Pick a new time: ${site}`,
-    reminder: `Hi ${first}, reminder: your free roof inspection with ${biz} is tomorrow, ${when}. Need a different time? ${site}`,
+    reminder: `Hi ${first}, reminder: your free roof inspection with ${biz} is tomorrow, ${when}. Need a different time? ${link}`,
+    rebooked: `Hi ${first}, you're all set: your free roof inspection with ${biz} is now ${when}. Change or cancel: ${link}`,
+    youcancelled: `Hi ${first}, your ${biz} roof inspection on ${when} is cancelled. Want a new time later? ${site}`,
     lock: L.lock ? `Hi ${first}, your ${biz} price is locked: ${L.lock.name}, ${L.lock.range}, good until ${L.lock.until}. Lock code ${L.lock.code}. Book your free inspection and ${owner} confirms the exact price on site.` : '',
     club: `Hi ${first}, welcome to the ${biz} Roof Care Club (${L.club}). Nothing has been charged yet: ${owner} will reach out to set up billing and schedule your first roof checkup.`,
     inquiry: `Hi ${first}, thanks for asking ${biz} about ${String(L.type || '').replace(/^Service inquiry:\s*/, '').toLowerCase() || 'your project'}. ${owner} will reach out within a few business hours to set up a free look. Price comes after we see it.`,
     lead: `Hi ${first}, thanks for reaching out to ${biz}.${L.quote ? ` Your instant quote: ${L.quote.name}, ${L.quote.range} (held 30 days).` : ''} ${owner} will be in touch shortly.`
   }[kind];
-  const subj = { booked: `You're booked: roof inspection ${appt ? fmt(appt.start, 'EEE MMM d') : ''}`, moved: 'Your roof inspection time changed', cancelled: 'Your roof inspection was cancelled', reminder: 'Reminder: roof inspection tomorrow', club: `Welcome to the Roof Care Club, ${first}`, inquiry: `We got your question, ${first}`, lead: `We got your request, ${first}`, lock: `Your price is locked until ${L.lock ? L.lock.until : ''}`}[kind];
+  const subj = { booked: `You're booked: roof inspection ${appt ? fmt(appt.start, 'EEE MMM d') : ''}`, moved: 'Your roof inspection time changed', rebooked: `New time: roof inspection ${appt ? fmt(appt.start, 'EEE MMM d') : ''}`, youcancelled: 'Your roof inspection is cancelled', cancelled: 'Your roof inspection was cancelled', reminder: 'Reminder: roof inspection tomorrow', club: `Welcome to the Roof Care Club, ${first}`, inquiry: `We got your question, ${first}`, lead: `We got your request, ${first}`, lock: `Your price is locked until ${L.lock ? L.lock.until : ''}`}[kind];
   if (L.best === 'Text') {
     if (L.sms && L.phone && smsReady()) { try { sendSms(L.phone, msg + (kind === 'booked' || kind === 'lead' || kind === 'lock' || kind === 'inquiry' || kind === 'club' ? ' Reply STOP to opt out.' : '')); return 'sms'; } catch (x) { logErr('sms', x); } }
     return 'none';                              // owner texts them by hand (alert says so)
   }
   if (L.best === 'Email' && L.email) {
-    MailApp.sendEmail({ to: L.email, subject: subj, htmlBody: `<div style="font:16px/1.55 -apple-system,Segoe UI,Arial,sans-serif;max-width:520px"><p>${esc(msg)}</p><p>${esc(cfg('OWNER_NAME'))}<br>${esc(biz)}<br>${pretty(cfg('OWNER_PHONE'))}</p></div>`, name: biz, replyTo: cfg('OWNER_EMAIL') || undefined });
+    MailApp.sendEmail({ to: L.email, subject: subj, htmlBody: `<div style="font:16px/1.55 -apple-system,Segoe UI,Arial,sans-serif;max-width:520px"><p>${esc(msg).replace(/(https:\/\/[^\s<]+)/g, '<a href="$1">$1</a>')}</p><p>${esc(cfg('OWNER_NAME'))}<br>${esc(biz)}<br>${pretty(cfg('OWNER_PHONE'))}</p></div>`, name: biz, replyTo: cfg('OWNER_EMAIL') || undefined });
     return 'email';
   }
   return 'none';                                // Call: the owner calls (alert says so)
@@ -345,13 +393,13 @@ function ownerLeads() {
   if (n < 2) return [];
   const rows = sh.getRange(Math.max(2, n - 299), 1, Math.min(300, n - 1), LEAD_COLS.length).getValues();
   const moved = {};
-  Object.keys(P.getProperties()).filter(k => k.indexOf('bk_') === 0).forEach(k => { const b = JSON.parse(P.getProperty(k)); moved[b.p + '|' + b.n] = b.t; });
+  const props = P.getProperties(), cx = {}; Object.keys(props).filter(k => k.indexOf('bk_') === 0).forEach(k => { const b = JSON.parse(props[k]); moved[b.p + '|' + b.n] = b.t; }); Object.keys(props).filter(k => k.indexOf('cx_') === 0).forEach(k => cx[k.slice(3)] = props[k]);
   return rows.map(r => {
     const o = {}; LEAD_COLS.forEach((c, i) => o[c] = r[i]);
     const phone = String(o['Mobile']).replace(/\D/g, '').slice(-10);
-    const start = moved[phone + '|' + o['Name']] || (o['Start'] ? String(o['Start']) : '');
+    const orig = o['Start'] ? String(o['Start']) : '', gone = !moved[phone + '|' + o['Name']] && orig && !!cx[phone + '|' + o['Name']], start = gone ? '' : (moved[phone + '|' + o['Name']] || orig);
     return { received: o['Received'] instanceof Date ? o['Received'].toISOString() : String(o['Received']), type: o['Type'], name: o['Name'], phone, email: o['Email'], best: o['Best way'], sms: o['Text consent'] === 'yes',
-      address: o['Address'], issue: o['Issue'], quote: o['Quote'] ? { name: o['Quote'], range: o['Price'] } : null, start, startLabel: start ? fmt(new Date(start), 'h:mm a') : '', startTime: start ? fmt(new Date(start), 'HH:mm') : '' };
+      address: o['Address'], issue: o['Issue'], quote: o['Quote'] ? { name: o['Quote'], range: o['Price'] } : null, start, startLabel: start ? fmt(new Date(start), 'h:mm a') : '', startTime: start ? fmt(new Date(start), 'HH:mm') : '', cancelled: !!gone };
   }).reverse();
 }
 
