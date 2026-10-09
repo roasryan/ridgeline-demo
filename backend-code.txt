@@ -66,6 +66,8 @@ function doPost(e) {
   /* ---- shared job store (v10, Oct 8): owner app, crew screen and customer portal all read/write the same jobs ---- */
   if (L.action === 'db_get') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(dbGet()); }
   if (L.action === 'db_put') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(dbPut(L)); }
+  if (L.action === 'conn_get' || L.action === 'conn_set' || L.action === 'conn_test') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(connAct(L)); }
+  if (L.action === 'inv_hook') return json(invHook(L));
   if (L.action === 'appt_owner_cancel') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(apptOwnerCancel(L)); }
   if (L.action === 'appt_get') return json(apptGet(L));
   if (L.action === 'appt_move') return json(apptMove(L));
@@ -246,15 +248,78 @@ function onCalChange() {
     const b = JSON.parse(props[k]), id = k.slice(3);
     let ev = null; try { ev = cal.getEventById(id); } catch (x) {}
     const L = { name: b.n, phone: b.p, email: b.e, best: b.b, sms: b.s, address: b.a };
-    if (!ev) { if (new Date(b.t) > new Date()) { notifyCustomer('cancelled', L, { start: new Date(b.t) }); } P.deleteProperty(k); if (b.k) P.deleteProperty('bt_' + b.k); clearSlotCache(); return; }
+    const adopted = !!P.getProperty('vk_' + id);
+    if (!ev) { if (new Date(b.t) > new Date()) { notifyCustomer('cancelled', L, { start: new Date(b.t) }); } P.deleteProperty(k); if (b.k) P.deleteProperty('bt_' + b.k); P.setProperty('cx_' + b.p + '|' + b.n, b.t); clearSlotCache(); if (!adopted) jobApptSync(b, b.t, null, true); return; }
     const s = ev.getStartTime();
     if (s.toISOString() !== b.t) {
-      b.t = s.toISOString(); b.r = 0; P.setProperty(k, JSON.stringify(b)); clearSlotCache();
+      const old = b.t; b.t = s.toISOString(); b.r = 0; P.setProperty(k, JSON.stringify(b)); clearSlotCache(); if (!adopted) jobApptSync(b, old, s, false);
       if (s > new Date()) notifyCustomer('moved', L, { start: s, end: ev.getEndTime(), k: apptKey(b, id) });
     }
     if (new Date(b.t).getTime() < Date.now() - 7 * 864e5) { P.deleteProperty(k); if (b.k) P.deleteProperty('bt_' + b.k); } // tidy old bookings
   });
+  calToStore(cal);
 }
+/* ===== Google Calendar ⇄ owner app (v14, Oct 8): every visit is an event on the bookings calendar.
+   App → calendar: dbPut creates / moves / deletes events. Calendar → app: onCalChange moves visits or removes them.
+   Registry: ve_<jobId>|<visitId> = eventId · vk_<eventId> = jobId|visitId|startMs */
+const STEPS = { contract: 'Contract signed', claim: 'Insurance approved', hoa: 'HOA approved', permit: 'Permit approved', mat_ordered: 'Materials ordered', mat_delivered: 'Materials delivered', dumpster: 'Dumpster dropped off', protect: 'Yard, AC and pool covered',
+  arrived: 'Crew arrived', tearoff: 'Old roof torn off', decking: 'Decking checked', dryin: 'Dried in (underlayment on)', shingles: 'Shingles on', ridge: 'Ridge, vents and flashing done', cleanup: 'Cleanup and magnet sweep', walkthrough: 'Final walkthrough',
+  inspection: 'City inspection passed', warranty: 'Warranty registered', invoice: 'Final invoice sent', paid: 'Paid', lien: 'Lien waiver sent', review: 'Review asked' };
+const VT = { inspection: 'Free roof inspection', work: 'Roof work day', followup: 'Follow-up visit', estimate: 'Estimate walk-through', adjuster: 'Adjuster meeting' };
+function calSyncJob(c) { if (!c || !c.id || !c.job) return; const cal = bookingCal(), keep = {}, len = settings().len;
+  (c.job.visits || []).forEach(v => { if (!v.id || !v.date || !v.from) return; const key = 've_' + c.id + '|' + v.id; let evId = P.getProperty(key);
+    if (v.status === 'cancelled') { if (evId) calDrop(evId, key); return; }
+    const start = at(v.date, v.from); if (!start) return; let end = v.to ? at(v.date, v.to) : null; if (!end || end <= start) end = new Date(start.getTime() + len * 6e4);
+    let ev = null; if (evId) { try { ev = cal.getEventById(evId); } catch (x) {} }
+    if (!ev) { const props = P.getProperties();
+      Object.keys(props).forEach(k => { if (ev || k.indexOf('bk_') !== 0 || props['vk_' + k.slice(3)]) return; const b = JSON.parse(props[k]); if (String(b.p) === String(c.phone) && Math.abs(new Date(b.t).getTime() - start.getTime()) < 6e4) { try { ev = cal.getEventById(k.slice(3)); } catch (x) {} } });
+      if (!ev) ev = cal.createEvent(`${VT[v.type] || 'Visit'}: ${c.name}`, start, end, { location: c.addr || '', description: `${c.phone ? pretty(c.phone) : ''}${v.note ? '\n' + v.note : ''}\n\nMade in your owner app. Move or delete it here and the app follows.` });
+      evId = ev.getId(); P.setProperty(key, evId); }
+    else if (ev.getStartTime().getTime() !== start.getTime() || ev.getEndTime().getTime() !== end.getTime()) {
+      const bk = P.getProperty('bk_' + evId); if (bk) { const b = JSON.parse(bk); b.t = start.toISOString(); b.r = 0; P.setProperty('bk_' + evId, JSON.stringify(b)); }
+      ev.setTime(start, end); clearSlotCache(); }
+    P.setProperty('vk_' + evId, c.id + '|' + v.id + '|' + start.getTime()); keep[key] = 1; });
+  const props = P.getProperties(); Object.keys(props).forEach(k => { if (k.indexOf('ve_' + c.id + '|') === 0 && !keep[k]) calDrop(props[k], k); }); }
+function calDrop(evId, key) { P.deleteProperty(key); P.deleteProperty('vk_' + evId); const bk = P.getProperty('bk_' + evId);
+  if (bk) { const b = JSON.parse(bk); P.deleteProperty('bk_' + evId); if (b.k) P.deleteProperty('bt_' + b.k); P.setProperty('cx_' + b.p + '|' + b.n, b.t); }
+  try { const ev = bookingCal().getEventById(evId); if (ev) ev.deleteEvent(); } catch (x) {} clearSlotCache(); }
+function calDropJob(id) { const props = P.getProperties(); Object.keys(props).forEach(k => { if (k.indexOf('ve_' + id + '|') === 0) calDrop(props[k], k); }); }
+const bookingOnly = c => ['lead', 'booked'].indexOf(c.stage) >= 0 && !c.estimate && !c.invoice && !(c.updates || []).length && !c.report && ((c.job || {}).visits || []).every(v => v.type === 'inspection');
+function tombstone(all, id, leadKey) { const st = (all._settings || {}).d || {}; st.deleted = (st.deleted || []).concat([{ id, leadKey: leadKey || '', t: Date.now() }]).slice(-500); saveObj(all, '_settings', st); }
+function calToStore(cal) { const props = P.getProperties();
+  Object.keys(props).filter(k => k.indexOf('vk_') === 0).forEach(k => { const evId = k.slice(3), parts = props[k].split('|'), cid = parts[0], vid = parts[1], was = +parts[2];
+    let ev = null; try { ev = cal.getEventById(evId); } catch (x) {}
+    if (ev && ev.getStartTime().getTime() === was) return;
+    withLock(() => { let all = readAll(); const row = all[cid], c = row && row.d, v = c && ((c.job || {}).visits || []).find(x => x.id === vid);
+      if (!v) { P.deleteProperty(k); P.deleteProperty('ve_' + cid + '|' + vid); return; }
+      if (!ev) { P.deleteProperty(k); P.deleteProperty('ve_' + cid + '|' + vid);
+        if (bookingOnly(c)) { saveObj(all, cid, null); all = readAll(); tombstone(all, cid, c.leadKey); pushActivity(readAll(), cid, `${c.name}: booking deleted from your Google Calendar, removed from the app too`); return; }
+        v.status = 'cancelled'; if (v.type === 'inspection' && c.appt && Math.abs((c.appt.t || 0) - was) < 6e4) { delete c.appt; if (c.stage === 'booked') c.stage = 'lead'; }
+        c.fresh = true; saveObj(all, cid, c); pushActivity(readAll(), cid, `${c.name}: ${VT[v.type] || 'visit'} deleted from your Google Calendar`); return; }
+      const s = ev.getStartTime(), e = ev.getEndTime(); v.date = fmt(s, 'yyyy-MM-dd'); v.from = fmt(s, 'HH:mm'); v.to = fmt(e, 'HH:mm');
+      if (v.type === 'inspection' && c.appt) Object.assign(c.appt, { t: s.getTime(), time: v.from, slot: fmt(s, 'h:mm a') });
+      c.fresh = true; saveObj(all, cid, c); P.setProperty(k, cid + '|' + vid + '|' + s.getTime()); pushActivity(readAll(), cid, `${c.name}: moved on your Google Calendar to ${fmt(s, "EEE MMM d, h:mm a")}`); }); }); }
+
+/* ===== connections (v14): Slack alerts + invoice status from QuickBooks/Square/Jobber/FreshBooks through Zapier or Make ===== */
+function slack(text) { const u = cfg('SLACK_WEBHOOK'); if (!u || !/^https:\/\/hooks\.slack\.com\//.test(u)) return;
+  try { UrlFetchApp.fetch(u, { method: 'post', contentType: 'application/json', payload: JSON.stringify({ text: String(text).slice(0, 2900) }), muteHttpExceptions: true }); } catch (x) { logErr('slack', x); } }
+function connAct(L) { const site = cfg('SITE_URL', ''), cal = (() => { try { return bookingCal().getName(); } catch (x) { return ''; } })();
+  if (L.action === 'conn_set') { if (L.slack !== undefined) { const u = String(L.slack || '').trim(); if (u && !/^https:\/\/hooks\.slack\.com\/services\//.test(u)) return { ok: false, reason: 'slack' }; if (u) P.setProperty('SLACK_WEBHOOK', u); else P.deleteProperty('SLACK_WEBHOOK'); }
+    if (L.zap === 'new') P.setProperty('ZAP_SECRET', Utilities.getUuid().replace(/-/g, '')); if (L.zap === 'off') P.deleteProperty('ZAP_SECRET'); }
+  if (L.action === 'conn_test') { if (!cfg('SLACK_WEBHOOK')) return { ok: false, reason: 'slack' }; slack(`✅ ${cfg('BIZ_NAME', 'Your website')} is connected. New requests, bookings, crew updates and customer approvals will show up here.`); }
+  return { ok: true, slack: !!cfg('SLACK_WEBHOOK'), zap: cfg('ZAP_SECRET') || '', hook: ScriptApp.getService().getUrl(), calendar: cal }; }
+/* Zapier/Make sends {action:'inv_hook', secret, phone|email|name, number, amount, balance, link, source} when an invoice is created, sent or paid in their tool */
+function invHook(L) { if (!cfg('ZAP_SECRET') || String(L.secret || '') !== cfg('ZAP_SECRET')) { Utilities.sleep(800); return { ok: false, reason: 'auth' }; }
+  return withLock(() => { const all = readAll(), ph = String(L.phone || '').replace(/\D/g, '').slice(-10), em = String(L.email || '').toLowerCase().trim(), nm = String(L.name || '').toLowerCase().trim();
+    const jobs = Object.keys(all).filter(k => k[0] !== '_').map(k => all[k].d).filter(c => c.stage !== 'lost').sort((a, b) => (b.created || 0) - (a.created || 0));
+    const c = jobs.find(x => ph && x.phone === ph) || jobs.find(x => em && String(x.email || '').toLowerCase() === em) || jobs.find(x => nm && String(x.name || '').toLowerCase() === nm);
+    if (!c) return { ok: false, reason: 'nomatch' };
+    const amt = Math.round(+L.amount || 0), bal = L.balance === undefined || L.balance === '' ? amt : Math.round(+L.balance || 0), was = c.invoice || {};
+    c.invoice = Object.assign(was, { src: String(L.source || was.src || 'QuickBooks').slice(0, 30), num: String(L.number || was.num || '').slice(0, 40), amount: amt || was.amount || 0, balance: bal, link: /^https:\/\//.test(L.link || '') ? L.link : (was.link || ''), t: was.t || Date.now(), synced: Date.now() });
+    c.invoice.status = bal <= 0 && c.invoice.amount > 0 ? 'paid' : bal < c.invoice.amount ? 'partial' : 'sent';
+    if (c.invoice.status === 'paid') { c.invoice.paidT = c.invoice.paidT || Date.now(); c.stage = 'paid'; } else if (['paid', 'lost'].indexOf(c.stage) < 0) c.stage = 'invoiced';
+    c.fresh = true; saveObj(all, c.id, c); pushActivity(readAll(), c.id, `${c.name}: invoice ${c.invoice.num ? '#' + c.invoice.num + ' ' : ''}${c.invoice.status === 'paid' ? 'PAID' : c.invoice.status === 'partial' ? 'partly paid, $' + bal + ' left' : 'sent ($' + c.invoice.amount + ')'} (from ${c.invoice.src})`);
+    return { ok: true, job: c.id, status: c.invoice.status }; }); }
 /* every evening: reminder for tomorrow's inspections */
 function sendReminders() {
   const tomorrow = fmt(new Date(Date.now() + 864e5), 'yyyy-MM-dd'), props = P.getProperties();
@@ -298,6 +363,7 @@ function notifyCustomer(kind, L, appt) {
 function ownerAlert(L, appt, notified) {
   const how = cfg('OWNER_ALERT', 'email'), first = String(L.name).split(' ')[0];
   const when = appt ? fmt(appt.start, "EEE MMM d 'at' h:mm a") : '';
+  slack(`New ${appt ? 'inspection booked for ' + when : 'request'}: ${L.name} · ${L.phone ? pretty(L.phone) : L.email}${L.address ? ' · ' + L.address : ''}${L.issue ? ' · “' + String(L.issue).slice(0, 140) + '”' : ''}`);
   const todo = L.best === 'Call' ? `CALL ${first} to confirm` : L.best === 'Text' && notified !== 'sms' ? `TEXT ${first} to confirm` : notified === 'sms' ? `${first} got a confirmation text` : notified === 'email' ? `${first} got a confirmation email` : `Reach ${first} by ${L.best.toLowerCase()}`;
   if (how.indexOf('sms') >= 0 || how === 'both') {
     if (smsReady() && cfg('OWNER_PHONE')) try { sendSms(cfg('OWNER_PHONE'), `New ${appt ? 'inspection ' + when : 'lead'}: ${L.name} ${L.phone ? pretty(L.phone) : L.email}. ${todo}. ${L.address || ''}`); } catch (x) { logErr('owner sms', x); }
@@ -434,10 +500,11 @@ function dbGet() { const all = readAll(), jobs = {}; Object.keys(all).forEach(k 
   return { ok: true, jobs, crew: (all._crew || {}).d || [], addons: (all._addons || {}).d || [], settings: (all._settings || {}).d || {}, activity: (all._activity || {}).d || [], ts: Date.now() }; }
 function dbPut(L) { return withLock(() => { let all = readAll(); const put = L.put || {};
   Object.keys(put).forEach(id => { if (!/^[\w-]{2,40}$/.test(id) || id[0] === '_') return; saveObj(all, id, put[id]); all = readAll(); });
-  (L.del || []).forEach(id => { if (!/^[\w-]{2,40}$/.test(id) || id[0] === '_' || !all[id]) return; saveObj(all, id, null); all = readAll(); });   // owner deleted a job (v13)
+  (L.del || []).forEach(id => { if (!/^[\w-]{2,40}$/.test(id) || id[0] === '_') return; calDropJob(id); if (!all[id]) return; saveObj(all, id, null); all = readAll(); });   // owner deleted a job (v13)
+  Object.keys(put).forEach(id => { try { calSyncJob(put[id]); } catch (x) { logErr('cal-sync', x); } });                                   // every visit lives on the Google Calendar too (v14)
   ['crew', 'addons', 'settings', 'activity'].forEach(k => { if (L[k] !== undefined) { saveObj(all, '_' + k, L[k]); all = readAll(); } });
   return { ok: true, ts: Date.now() }; }); }
-function pushActivity(all, cid, text) { const a = ((all._activity || {}).d || []).concat([{ t: Date.now(), cid, text, seen: false }]).slice(-200); saveObj(all, '_activity', a); }
+function pushActivity(all, cid, text) { const nm = (all[cid] && all[cid].d && all[cid].d.name) || ''; slack(nm && String(text).indexOf(nm) < 0 ? `${nm}: ${text}` : text); const a = ((all._activity || {}).d || []).concat([{ t: Date.now(), cid, text, seen: false }]).slice(-200); saveObj(all, '_activity', a); }
 /* ---- customer portal: PIN checked here, never in the browser ---- */
 const MASTER_PORTAL_PIN = '0000';   // TEMPORARY demo code (Ryan, Oct 7). Remove before a real client goes live.
 function portalCheck(L) { const id = String(L.j || ''); if (failCount('pt_' + id) >= 8) return { err: 'locked' };
@@ -456,8 +523,8 @@ function portalAct(L) { return withLock(() => { const r = portalCheck(L); if (r.
   else if (L.act === 'co_ok' || L.act === 'co_no') { const o = (j.changes || [])[+L.i]; if (!o || o.status !== 'waiting') return { ok: false, reason: 'state' };
     if (L.act === 'co_ok') { if (name.length < 3) return { ok: false, reason: 'name' }; Object.assign(o, { status: 'approved', signed: name, signedT: Date.now() }); msg = `Approved change: ${o.title} (${usd(o.price)})`; }
     else { o.status = 'declined'; o.decT = Date.now(); msg = `Said not now to change: ${o.title}`; } }
-  else if (L.act === 'est_ok') { const e = c.estimate, o = e && e.opts[+L.i]; if (!o || e.status === 'approved' || name.length < 3) return { ok: false, reason: 'state' };
-    Object.assign(e, { status: 'approved', pick: +L.i, signed: name, signedT: Date.now() }); if (['lead', 'booked', 'inspected', 'estimate'].indexOf(c.stage) >= 0) c.stage = 'approved'; msg = `Approved estimate: ${o.name} (${usd(o.price)})`; }
+  else if (L.act === 'est_ok') { const e = c.estimate; if (!e || e.status !== 'sent' || name.length < 3) return { ok: false, reason: 'state' };
+    Object.assign(e, { status: 'approved', okBy: name, okT: Date.now() }); if (['lead', 'booked', 'inspected', 'estimate'].indexOf(c.stage) >= 0) c.stage = 'approved'; msg = `Said yes to the estimate (${usd(e.amount)}) in their portal`; }
   else if (L.act === 'extra') { const a = ((r.all._addons || {}).d || []).find(x => x.id === L.id); if (!a || (j.addons || []).indexOf(a.id) < 0 || (j.picks || []).some(p => p.addon === a.id)) return { ok: false, reason: 'state' };
     j.picks = (j.picks || []).concat([{ addon: a.id, name: a.name, price: a.price, status: 'requested', t: Date.now() }]); msg = `Added extra: ${a.name} (${usd(a.price)})`; }
   else return { ok: false, reason: 'act' };
@@ -476,7 +543,7 @@ function crewView(all, me) { const p = me.perms || {}, from = fmt(new Date(Date.
     (j.visits || []).forEach(v => { if (v.status === 'cancelled' || v.date < from || v.date > to) return; if (!p.allJobs && (v.crew || []).indexOf(me.id) < 0) return;
       out.push({ jid: c.id, vid: v.id, type: v.type, date: v.date, from: v.from, to: v.to, status: v.status || 'scheduled', eta: v.eta || 0, note: v.note || '', lead: v.lead, crew: (v.crew || []).map(id => { const m = crew.find(x => x.id === id); return m ? { id: m.id, name: m.name, role: m.role, photo: m.photo } : null; }).filter(Boolean),
         name: c.name, addr: c.addr || '', phone: p.phone !== false ? c.phone : '', email: p.phone !== false ? (c.email || '') : '', msg: c.msg || '', stage: c.stage,
-        work: c.estimate && c.estimate.status === 'approved' ? { name: c.estimate.opts[c.estimate.pick || 0].name, items: c.estimate.opts[c.estimate.pick || 0].items } : null,
+        work: c.estimate && c.estimate.status === 'approved' ? { name: 'Approved scope', items: String(c.estimate.scope || '').split(/\n+/).map(x => x.trim()).filter(Boolean) } : null, steps: (c.prod || {}).done || {}, insurance: !!(c.ins && c.ins.on),
         changes: (j.changes || []).filter(o => o.status === 'approved' || o.status === 'paid').map(o => o.title),
         mats: (c.matPlan || []).map(m => ({ desc: m.desc, qty: m.qty, unit: m.unit })), photos: p.photos !== false ? (c.updates || []).filter(u => (u.photos || []).length).slice(-6).map(u => ({ t: u.t, text: u.text, by: u.by || '', photos: u.photos.slice(0, 4) })) : [] }); }); });
   out.sort((a, b) => (a.date + a.from).localeCompare(b.date + b.from));
@@ -495,6 +562,12 @@ function crewAct(L) { return withLock(() => { const r = crewCheck(L); if (r.err)
   else if (L.act === 'photo') { if (p.photos === false) return { ok: false, reason: 'perm' }; const ph = (L.photos || []).filter(x => /^data:image\/jpeg;base64,/.test(x) && x.length < 400000).slice(0, 6);
     if (!ph.length && !String(L.text || '').trim()) return { ok: false, reason: 'empty' };
     c.updates = (c.updates || []).concat([{ t: Date.now(), text: String(L.text || '').slice(0, 1000), photos: ph, by: me.name, crew: true }]); c.show = c.show || {}; if (L.share) c.show.updates = true; msg = `${me.name} posted ${ph.length} photo${ph.length === 1 ? '' : 's'}`; }
+  else if (L.act === 'step') { if (p.status === false || !STEPS[L.k]) return { ok: false, reason: 'perm' }; const pr = c.prod = c.prod || {}; pr.done = pr.done || {};
+    if (L.undo) { delete pr.done[L.k]; msg = `${me.name} unchecked “${STEPS[L.k]}”`; }
+    else { const ph = (L.photos || []).filter(x => /^data:image\/jpeg;base64,/.test(x) && x.length < 400000).slice(0, 4); pr.done[L.k] = { t: Date.now(), by: me.name };
+      if (ph.length || L.text) { c.updates = (c.updates || []).concat([{ t: Date.now(), text: STEPS[L.k] + (L.text ? ': ' + String(L.text).slice(0, 500) : ''), photos: ph, by: me.name, crew: true, step: L.k }]); c.show = c.show || {}; c.show.updates = true; }
+      if (['arrived', 'tearoff'].indexOf(L.k) >= 0 && ['approved'].indexOf(c.stage) >= 0) c.stage = 'work';
+      msg = `${me.name}: ${STEPS[L.k]} ✓`; } }
   else if (L.act === 'note') { c.crewNotes = (c.crewNotes || []).concat([{ t: Date.now(), by: me.name, text: String(L.text || '').slice(0, 1000) }]); msg = `${me.name} left a note`; }
   else return { ok: false, reason: 'act' };
   c.fresh = true; saveObj(r.all, c.id, c); pushActivity(readAll(), c.id, msg + ' · ' + c.name); return crewView(readAll(), me); }); }

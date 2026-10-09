@@ -99,6 +99,18 @@ button,input,textarea{font:inherit;color:inherit}
 .ctoast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:30;transform:translateX(-50%);max-width:calc(100% - 32px);padding:12px 18px;border-radius:14px;background:var(--sl);color:#fff;font-weight:800;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity .4s}
 .ctoast.out{opacity:0}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* job steps (Oct 8) */
+.cnext{margin:4px 0 14px}.cnext small{display:block;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin-bottom:6px}
+.cgrid-n{display:grid;grid-template-columns:1fr 64px;gap:8px}.cgrid-n .cb-big{margin:0;font-size:19px;justify-content:flex-start;text-align:left}
+.cb-cam{min-height:64px;padding:0;cursor:pointer}.cb-cam .ci{width:28px;height:28px}
+.cdone{display:flex;align-items:center;gap:8px;margin:4px 0 12px;padding:12px;border-radius:12px;background:#E4F4EC;color:var(--green);font-weight:800}
+.cstl{list-style:none;margin:0;padding:0}
+.cstl li{display:flex;align-items:center;gap:6px;border-top:1px solid var(--bg)}
+.cstl li>button{flex:1;display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 0;border:0;background:none;text-align:left;cursor:pointer}
+.cst-b{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;flex:none;border-radius:50%;border:2px solid #B9C3CB;color:transparent}
+.cstl li.done .cst-b{background:var(--green);border-color:var(--green);color:#fff}
+.cstl b{display:block;font-weight:700}.cstl li.done b{color:var(--soft)}.cstl small{color:var(--soft);font-size:14px}
+.cst-cam{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;border:1.5px solid var(--line);color:var(--ink);cursor:pointer}
 </style></head><body><div id="capp"></div><div id="clayer"></div><script>/* ============ Ridgeline crew screen (crew.html) — Oct 8 ============
    For employees on their phone. Sign in with the code the owner gave them. See today's jobs: what kind of job, when,
    where (one tap to Google Maps / Apple Maps / Waze), who the customer is, what to do. Tap "On my way" / "I'm here" / "Done".
@@ -128,7 +140,9 @@ const W={en:{
   callOffice:'Call the office',back:'Back',me:'My photo',meP:'Customers see this photo before you arrive. Take it in good light.',take:'Take my photo',
   lang:'Español',out:'Sign out',busy:'One moment…',fail:'Didn’t go through. Try again.',demo:'Demo: showing jobs saved on this device.',
   done:'Marked done. Nice work.',onway:'Customer can see you’re on the way.',here:'Customer knows you’re here.',
-  win:(a,b)=>b?`${a} – ${b}`:a,photoN:n=>`${n} photo${n===1?'':'s'}`,tooBig:'Photo too large. Try again.'
+  win:(a,b)=>b?`${a} – ${b}`:a,photoN:n=>`${n} photo${n===1?'':'s'}`,tooBig:'Photo too large. Try again.',
+  steps:'Job steps',stepsP:'Tap when it’s done. The customer and the office see it right away.',withPhoto:'Add photo',nextUp:'Next',allDone:'All steps done. Nice work.',unchecked:'Unchecked.',
+  sk:{mat_delivered:'Materials delivered',dumpster:'Dumpster dropped off',protect:'Yard, AC and pool covered',arrived:'Crew arrived',tearoff:'Old roof torn off',decking:'Decking checked',dryin:'Dried in (underlayment on)',shingles:'Shingles on',ridge:'Ridge, vents and flashing done',cleanup:'Cleanup and magnet sweep',walkthrough:'Final walkthrough with the customer'}
 },es:{
   title:'Equipo',signin:'Entrada del equipo',signP:'Escriba el código que le dio su jefe.',code:'Su código de equipo',keep:'Mantener mi sesión en este teléfono',go:'Entrar',
   bad:'Ese código no funciona. Confírmelo con su jefe.',locked:'Demasiados intentos. Espere 15 minutos.',net:'Sin conexión. Revise su señal e intente otra vez.',
@@ -146,7 +160,9 @@ const W={en:{
   callOffice:'Llamar a la oficina',back:'Atrás',me:'Mi foto',meP:'Los clientes ven esta foto antes de que usted llegue. Tómela con buena luz.',take:'Tomar mi foto',
   lang:'English',out:'Salir',busy:'Un momento…',fail:'No se envió. Intente otra vez.',demo:'Demo: muestra trabajos guardados en este dispositivo.',
   done:'Marcado como terminado. Buen trabajo.',onway:'El cliente ve que va en camino.',here:'El cliente sabe que ya llegó.',
-  win:(a,b)=>b?`${a} – ${b}`:a,photoN:n=>`${n} foto${n===1?'':'s'}`,tooBig:'Foto muy grande. Intente otra vez.'
+  win:(a,b)=>b?`${a} – ${b}`:a,photoN:n=>`${n} foto${n===1?'':'s'}`,tooBig:'Foto muy grande. Intente otra vez.',
+  steps:'Pasos del trabajo',stepsP:'Toque cuando esté listo. El cliente y la oficina lo ven al instante.',withPhoto:'Con foto',nextUp:'Sigue',allDone:'Todos los pasos listos. Buen trabajo.',unchecked:'Desmarcado.',
+  sk:{mat_delivered:'Materiales entregados',dumpster:'Contenedor entregado',protect:'Patio, A/C y alberca cubiertos',arrived:'Llegó el equipo',tearoff:'Techo viejo retirado',decking:'Madera revisada',dryin:'Techo protegido (underlayment puesto)',shingles:'Tejas puestas',ridge:'Cumbrera, ventilas y tapajuntas listos',cleanup:'Limpieza y barrido de clavos con imán',walkthrough:'Revisión final con el cliente'}
 }};
 const T=()=>W[LANG];const LOC=()=>LANG==='es'?'es-US':'en-US';
 document.documentElement.lang=LANG;
@@ -178,7 +194,7 @@ function lview(DB,me){const p=me.perms||{},d0=new Date(Date.now()-864e5),d1=new 
     out.push({jid:c.id,vid:v.id,type:v.type,date:v.date,from:v.from,to:v.to,status:v.status||'scheduled',eta:v.eta||0,note:v.note||'',crew:(v.crew||[]).map(id=>crew.find(m=>m.id===id)).filter(Boolean).map(m=>({id:m.id,name:m.name,role:m.role,photo:m.photo})),
       name:c.name,addr:c.addr||'',phone:p.phone!==false?c.phone:'',email:p.phone!==false?(c.email||''):'',msg:c.msg||'',stage:c.stage,work:pick?{name:pick.name,items:pick.items}:null,
       changes:(j.changes||[]).filter(o=>o.status==='approved'||o.status==='paid').map(o=>o.title),mats:(c.matPlan||[]).map(m=>({desc:m.desc,qty:m.qty,unit:m.unit})),
-      photos:p.photos!==false?(c.updates||[]).filter(u=>(u.photos||[]).length).slice(-6).map(u=>({t:u.t,text:u.text,by:u.by||'',photos:u.photos.slice(0,4)})):[]})})});
+      steps:(c.prod||{}).done||{},photos:p.photos!==false?(c.updates||[]).filter(u=>(u.photos||[]).length).slice(-6).map(u=>({t:u.t,text:u.text,by:u.by||'',photos:u.photos.slice(0,4)})):[]})})});
   out.sort((a,b)=>(a.date+a.from).localeCompare(b.date+b.from));return{ok:true,me:{id:me.id,name:me.name,role:me.role,photo:me.photo,perms:p},visits:out,demo:true}}
 function local(o){const DB=ldb(),me=(DB.crew||[]).find(m=>m.code&&String(m.code)===String(o.code)&&m.active!==false);if(!me)return{ok:false,reason:'code'};
   const p=me.perms||{};if(o.action==='crew_get')return lview(DB,me);
@@ -188,6 +204,7 @@ function local(o){const DB=ldb(),me=(DB.crew||[]).find(m=>m.code&&String(m.code)
     if(o.status==='done'&&v.type==='inspection'&&['lead','booked'].includes(c.stage))c.stage='inspected';if((o.status==='onway'||o.status==='arrived')&&v.type==='work'&&c.stage==='approved')c.stage='work';
     msg=`${me.name}: ${{confirmed:'confirmed',onway:'on the way',arrived:'arrived',done:'done for today'}[o.status]}`}
   else if(o.act==='photo'){if(p.photos===false)return{ok:false,reason:'perm'};c.updates=(c.updates||[]).concat([{t:Date.now(),text:o.text||'',photos:o.photos||[],by:me.name,crew:true}]);c.show=c.show||{};if(o.share)c.show.updates=true;msg=`${me.name} posted ${(o.photos||[]).length} photos`}
+  else if(o.act==='step'){if(p.status===false)return{ok:false,reason:'perm'};c.prod=c.prod||{};c.prod.done=c.prod.done||{};if(o.undo){delete c.prod.done[o.k];msg=`${me.name} unchecked ${o.k}`}else{c.prod.done[o.k]={t:Date.now(),by:me.name};if((o.photos||[]).length){c.updates=(c.updates||[]).concat([{t:Date.now(),text:o.label||o.k,photos:o.photos,by:me.name,crew:true,step:o.k}]);c.show=c.show||{};c.show.updates=true}if(['arrived','tearoff'].includes(o.k)&&c.stage==='approved')c.stage='work';msg=`${me.name}: ${o.label||o.k} ✓`}}
   else if(o.act==='note'){c.crewNotes=(c.crewNotes||[]).concat([{t:Date.now(),by:me.name,text:o.text||''}]);msg=`${me.name} left a note`}
   c.fresh=true;DB.activity=(DB.activity||[]).concat([{t:Date.now(),cid:c.id,text:msg+' · '+c.name,seen:false}]).slice(-200);lsave(DB);return lview(DB,me)}
 async function api(o){o=Object.assign({code:CODE},o);
@@ -224,8 +241,8 @@ function signIn(msg){const t=T();V=null;
 function setLang(l){LANG=l;document.documentElement.lang=l;try{localStorage.setItem('rl-crew-lang',l)}catch(x){}}
 
 /* ---------- home: today + coming up ---------- */
-function nextBtn(v,big){const t=T(),p=(V.me.perms||{});if(p.status===false||!t.next[v.status||'scheduled'])return'';const s=v.status||'scheduled';
-  return `<button type="button" class="cb ${s==='arrived'?'cb-go':'cb-main'} ${big?'cb-big':''}" data-next="${v.jid}|${v.vid}">${ic(s==='onway'?'flag':s==='arrived'?'check':'truck')}${t.next[s]}</button>`}
+function nextBtn(v,big){const t=T(),p=(V.me.perms||{});if(p.status===false||!t.next[v.status||'scheduled'])return'';const s=v.status||'scheduled';if(big&&s==='arrived'&&v.type==='work'&&CSTEPS.some(k=>!(v.steps||{})[k]))big=false;
+  return `<button type="button" class="cb ${s==='arrived'?(big?'cb-go':'cb-line'):'cb-main'} ${big?'cb-big':''}" data-next="${v.jid}|${v.vid}">${ic(s==='onway'?'flag':s==='arrived'?'check':'truck')}${t.next[s]}</button>`}
 function card(v){const t=T(),s=v.status||'scheduled',street=(v.addr||'').split(',')[0];
   return `<article class="cjob st-${s}" data-open="${v.jid}|${v.vid}" tabindex="0" role="button" aria-label="${esc(t.vt[v.type]||'')} · ${esc(v.name)}">
     <div class="cjob-top"><span class="ctype ct-${esc(v.type)}">${esc(t.vt[v.type]||t.vt.work)}</span><span class="cst cs-${s}">${t.st[s]}</span></div>
@@ -277,6 +294,7 @@ function job(k,keep){const v=find(k),t=T();if(!v)return home();OPEN=k;const p=V.
     <main class="cmain cjobpage">
       <section class="ccard chero st-${s}"><div class="cjob-top"><span class="ctype ct-${esc(v.type)}">${esc(t.vt[v.type]||t.vt.work)}</span><span class="cst cs-${s}">${t.st[s]}${s==='onway'&&v.eta?` · ${t.min(v.eta)}`:''}</span></div>
         <h2>${esc(v.name)}</h2>${v.note?`<p class="cnote">${esc(v.note)}</p>`:''}${nextBtn(v,true)}</section>
+      ${stepsCard(v)}
       <section class="ccard"><h3>${ic('pin')}${t.directions}</h3>${v.addr?`<p class="cbigaddr">${esc(v.addr)}</p><div class="cgrid3">${maps(v.addr).map(([n,u])=>`<a class="cb cb-line cb-map m-${n}" href="${u}" target="_blank" rel="noopener">${t[n]}</a>`).join('')}</div>`:`<p class="cmuted">${t.noAddr}</p>`}</section>
       <section class="ccard"><h3>${ic('user')}${t.customer}</h3><p class="cname">${esc(v.name)}</p>
         ${v.phone?`<div class="cgrid2"><a class="cb cb-main" href="tel:${esc(v.phone)}">${ic('phone')}${t.call}</a><a class="cb cb-line" href="${smsHref(v.phone,'')}">${ic('chat')}${t.text}</a></div><p class="cmuted csm">${esc(pretty(v.phone))}${v.email?' · '+esc(v.email):''}</p>`:`<p class="cmuted">${t.noPhone}</p>`}
@@ -291,13 +309,23 @@ function job(k,keep){const v=find(k),t=T();if(!v)return home();OPEN=k;const p=V.
       <section class="ccard"><h3>${ic('note')}${t.note}</h3><label class="cfield"><span class="sr">${t.note}</span><textarea id="nT" rows="3" placeholder="${t.noteP}"></textarea></label><button type="button" class="cb cb-line cb-wide" id="nGo">${t.send}</button></section>
       <a class="cb cb-line cb-wide" href="tel:${BIZ_PHONE}">${ic('phone')}${t.callOffice} · ${BIZ_PRETTY}</a>
     </main>`;
-  scrollTo(0,y);bindCommon();$('#cBack').onclick=()=>{home();scrollTo(0,0)};
+  scrollTo(0,y);bindCommon();bindSteps(v);$('#cBack').onclick=()=>{home();scrollTo(0,0)};
   $$('[data-mat]').forEach(c=>c.onchange=()=>{got[c.dataset.mat]=c.checked;try{localStorage.setItem(matKey,JSON.stringify(got))}catch(x){}});
   $$('[data-zoom]').forEach(b=>b.onclick=()=>sheet(`<img class="czoom" src="${esc(b.dataset.zoom)}" alt=""><button type="button" class="cb cb-line cb-wide" data-close>${t.cancel}</button>`));
   const pics=[];const f=$('#phF');if(f){f.onchange=async()=>{for(const x of [...f.files].slice(0,6-pics.length)){try{pics.push(await readPhoto(x,1280,.72))}catch(e){toast(t.tooBig)}}
       $('#phTh').innerHTML=pics.map(u=>`<span class="cth"><img src="${u}" alt=""></span>`).join('');$('#phMore').hidden=!pics.length;f.value=''};
     $('#phGo').onclick=()=>{if(!pics.length)return;act({act:'photo',jid:v.jid,vid:v.vid,photos:pics,text:$('#phT').value.trim(),share:$('#phS').checked},t.sent)}}
   $('#nGo').onclick=()=>{const x=$('#nT').value.trim();if(!x)return $('#nT').focus();act({act:'note',jid:v.jid,vid:v.vid,text:x},t.noteSent)}}
+
+/* ---------- job steps (Oct 8): one tap = done; camera button = done + photo. Customer portal + owner + Slack update right away ---------- */
+const CSTEPS=['mat_delivered','dumpster','protect','arrived','tearoff','decking','dryin','shingles','ridge','cleanup','walkthrough'];
+function stepsCard(v){const t=T(),p=V.me.perms||{};if(p.status===false||!(v.type==='work'||Object.keys(v.steps||{}).length))return'';const d=v.steps||{},nx=CSTEPS.find(k=>!d[k]);
+  return `<section class="ccard csteps"><h3>${ic('check')}${t.steps}</h3><p class="cmuted csm">${t.stepsP}</p>
+    ${nx?`<div class="cnext"><small>${t.nextUp}</small><div class="cgrid-n"><button type="button" class="cb cb-go cb-big" data-stp="${nx}">${ic('check')}${esc(t.sk[nx])}</button>${p.photos!==false?`<label class="cb cb-line cb-cam" aria-label="${t.withPhoto}: ${esc(t.sk[nx])}">${ic('cam')}<input type="file" accept="image/*" capture="environment" data-stpc="${nx}" hidden></label>`:''}</div></div>`:`<p class="cdone">${ic('check')}${t.allDone}</p>`}
+    <ul class="cstl">${CSTEPS.map(k=>`<li class="${d[k]?'done':''}"><button type="button" data-stp="${k}" ${d[k]?'data-undo="1"':''} aria-pressed="${!!d[k]}"><span class="cst-b">${ic('check')}</span><span><b>${esc(t.sk[k])}</b>${d[k]?`<small>${new Date(d[k].t).toLocaleTimeString(LOC(),{hour:'numeric',minute:'2-digit'})} · ${esc(d[k].by||'')}</small>`:''}</span></button>${!d[k]&&p.photos!==false?`<label class="cst-cam" aria-label="${t.withPhoto}">${ic('cam')}<input type="file" accept="image/*" capture="environment" data-stpc="${k}" hidden></label>`:''}</li>`).join('')}</ul></section>`}
+function bindSteps(v){const t=T();
+  $$('[data-stp]').forEach(b=>b.onclick=()=>{const k=b.dataset.stp,undo=!!b.dataset.undo;act({act:'step',jid:v.jid,vid:v.vid,k,label:t.sk[k],undo},undo?t.unchecked:'✓ '+t.sk[k])});
+  $$('[data-stpc]').forEach(i=>i.onchange=async()=>{const f=i.files[0];if(!f)return;const k=i.dataset.stpc;try{const u=await readPhoto(f,1280,.72);act({act:'step',jid:v.jid,vid:v.vid,k,label:t.sk[k],photos:[u]},'✓ '+t.sk[k])}catch(x){toast(t.tooBig)}})}
 
 /* ---------- start + stay fresh ---------- */
 async function reload(manual){if(!CODE)return;if(!manual&&($('#clayer .csheet')||busy||document.hidden))return;
