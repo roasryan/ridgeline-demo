@@ -66,6 +66,7 @@ function doPost(e) {
   /* ---- shared job store (v10, Oct 8): owner app, crew screen and customer portal all read/write the same jobs ---- */
   if (L.action === 'db_get') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(dbGet()); }
   if (L.action === 'db_put') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(dbPut(L)); }
+  if (L.action === 'appt_owner_cancel') { if (!ownerOk(L)) { Utilities.sleep(800); return json({ ok: false, reason: 'auth' }); } return json(apptOwnerCancel(L)); }
   if (L.action === 'appt_get') return json(apptGet(L));
   if (L.action === 'appt_move') return json(apptMove(L));
   if (L.action === 'appt_cancel') return json(apptCancel(L));
@@ -227,6 +228,15 @@ function jobApptSync(b, oldIso, start, cancel) { try { const all = readAll(), ol
     else { const len = settings().len, e = new Date(start.getTime() + len * 60e3); c.appt = Object.assign(c.appt, { t: start.getTime(), time: fmt(start, 'HH:mm'), slot: fmt(start, 'h:mm a'), confirmed: false });
       if (v) { v.date = fmt(start, 'yyyy-MM-dd'); v.from = fmt(start, 'HH:mm'); v.to = fmt(e, 'HH:mm'); v.status = 'scheduled'; } }
     c.fresh = true; saveObj(all, id, c); pushActivity(readAll(), id, `${c.name} ${cancel ? 'cancelled' : 'moved'} their inspection online`); }); } catch (x) { logErr('job-sync', x); } }
+/* owner deleted a job that had a website booking: free the calendar time; tell the customer only if the owner chose to (v13) */
+function apptOwnerCancel(L) { const lock = LockService.getScriptLock(); lock.waitLock(20000); try {
+  const phone = String(L.phone || '').replace(/\D/g, '').slice(-10), t = +L.t || 0, props = P.getProperties(); let hit = null;
+  Object.keys(props).filter(k => k.indexOf('bk_') === 0).forEach(k => { const b = JSON.parse(props[k]); if (!hit && String(b.p) === phone && Math.abs(new Date(b.t).getTime() - t) < 6e4) hit = { id: k.slice(3), b }; });
+  if (!hit) return { ok: true, found: false };
+  P.deleteProperty('bk_' + hit.id); if (hit.b.k) P.deleteProperty('bt_' + hit.b.k); P.setProperty('cx_' + hit.b.p + '|' + hit.b.n, hit.b.t);
+  try { const ev = bookingCal().getEventById(hit.id); if (ev) ev.deleteEvent(); } catch (x) { logErr('owner-cancel', x); } clearSlotCache();
+  let told = 'no'; if (L.notify && new Date(hit.b.t) > new Date()) told = notifyCustomer('cancelled', { name: hit.b.n, phone: hit.b.p, email: hit.b.e, best: hit.b.b, sms: hit.b.s, address: hit.b.a }, { start: new Date(hit.b.t) });
+  return { ok: true, found: true, told }; } finally { lock.releaseLock(); } }
 function apptOwnerAlert(b, what) { try { const to = cfg('OWNER_EMAIL'); if (!to) return; MailApp.sendEmail({ to, subject: `${b.n} ${what.split(' (')[0]}`, htmlBody: `<div style="font:16px/1.5 Arial,sans-serif"><p><b>${esc(b.n)}</b> ${esc(what)} using the link in their confirmation.</p><p>${b.p ? pretty(b.p) : ''} ${esc(b.e || '')}<br>${esc(b.a || '')}</p><p>Your calendar and owner view are already updated.</p></div>`, name: cfg('BIZ_NAME', 'Website') }); } catch (x) { logErr('appt-alert', x); } }
 
 /* ------------------------------------------------------------------ owner moved / cancelled an event → tell the customer */
@@ -424,6 +434,7 @@ function dbGet() { const all = readAll(), jobs = {}; Object.keys(all).forEach(k 
   return { ok: true, jobs, crew: (all._crew || {}).d || [], addons: (all._addons || {}).d || [], settings: (all._settings || {}).d || {}, activity: (all._activity || {}).d || [], ts: Date.now() }; }
 function dbPut(L) { return withLock(() => { let all = readAll(); const put = L.put || {};
   Object.keys(put).forEach(id => { if (!/^[\w-]{2,40}$/.test(id) || id[0] === '_') return; saveObj(all, id, put[id]); all = readAll(); });
+  (L.del || []).forEach(id => { if (!/^[\w-]{2,40}$/.test(id) || id[0] === '_' || !all[id]) return; saveObj(all, id, null); all = readAll(); });   // owner deleted a job (v13)
   ['crew', 'addons', 'settings', 'activity'].forEach(k => { if (L[k] !== undefined) { saveObj(all, '_' + k, L[k]); all = readAll(); } });
   return { ok: true, ts: Date.now() }; }); }
 function pushActivity(all, cid, text) { const a = ((all._activity || {}).d || []).concat([{ t: Date.now(), cid, text, seen: false }]).slice(-200); saveObj(all, '_activity', a); }

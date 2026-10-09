@@ -519,6 +519,12 @@ svg.oi{width:22px;height:22px;flex:none}.oi.flip{transform:rotate(180deg)}
 .app-open .toast{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
 #layer .opage .chips{display:flex;flex-wrap:wrap;gap:8px}#layer .opage .chips button{min-height:52px;padding:0 18px;border-radius:14px;font:800 16px var(--body)}
 @media (min-width:980px){.app-open .toast{bottom:24px}}
+/* fix mistakes: undo bar, delete, stage hint (Oct 8) */
+.oundo{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:60;transform:translateX(-50%);display:flex;align-items:center;gap:14px;max-width:calc(100% - 24px);padding:10px 10px 10px 16px;border-radius:14px;background:#1F2A33;color:#fff;font:700 16px var(--body);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.oundo button{min-height:44px;padding:0 16px;border:0;border-radius:10px;background:#FFD400;color:#1F2A33;font:900 16px var(--body);cursor:pointer}
+@media (min-width:980px){.oundo{bottom:24px}}
+.ob-danger{background:#C0371C;color:#fff;border-color:#C0371C}
+.jhint{margin:-4px 0 12px;text-align:center;color:var(--osoft);font-size:14px}
 
 .app .kicker,.sheet .kicker{font-size:14px;font-weight:700;color:var(--hivis);margin:0}
 .app{color:var(--text)}
@@ -1424,7 +1430,7 @@ const SITE_URL=location.href.split('#')[0];
 function seedDB(){return{v:3,customers:[]}}/* real data only: no sample customers (Ryan, Oct 3) */
 let DB;try{DB=JSON.parse(localStorage.getItem('rl-db')||'null')}catch(x){}
 if(!DB||DB.v!==3)DB=seedDB();
-const save=()=>{try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}if(window.__onSave)window.__onSave()};save();
+const save=()=>{try{localStorage.setItem('rl-db',JSON.stringify(DB))}catch(x){}if(window.__onSave)window.__onSave();if(window.__onUndoable)window.__onUndoable()};save();
 const byPhone=p=>DB.customers.find(c=>c.phone===digits(p));
 const byId=id=>DB.customers.find(c=>c.id===id);
 function upsert(o){const p=digits(o.phone);let c=p?byPhone(p):(o.email?DB.customers.find(x=>!x.phone&&x.email===o.email):null);
@@ -1673,11 +1679,12 @@ const avatar=(m,sz=44)=>`<span class="oav" style="width:${sz}px;height:${sz}px">
 /* Today: what customers did in their portals + visits today */
 function statusBtns(c,v){const nx={scheduled:['confirmed','Confirmed'],confirmed:['onway','On the way'],onway:['arrived','Arrived'],arrived:['done','Done for today']}[v.status];
   return (nx?`<button class="btn btn-main btn-sm" type="button" data-vst="${c.id}|${v.id}|${nx[0]}">${nx[1]}</button>`:'')+`<button class="btn btn-line btn-sm" type="button" data-snap="${c.id}|${v.id}">Who’s going (photos)</button>`}
-function setVisit(c,v,st,eta){v.status=st;v.statusT=Date.now();if(eta!=null)v.eta=eta;if(st==='done'&&v.type==='inspection'&&stageIx(c.stage)<stageIx('inspected'))c.stage='inspected';if((st==='onway'||st==='arrived')&&v.type==='work'&&stageIx(c.stage)<stageIx('work'))c.stage='work';save();
+function setVisit(c,v,st,eta){const prev={status:v.status,stage:c.stage,eta:v.eta};v.status=st;v.statusT=Date.now();if(eta!=null)v.eta=eta;if(st==='done'&&v.type==='inspection'&&stageIx(c.stage)<stageIx('inspected'))c.stage='inspected';if((st==='onway'||st==='arrived')&&v.type==='work'&&stageIx(c.stage)<stageIx('work'))c.stage='work';save();
   const es=(c.job||{}).lang==='es',u=portalUrl(c),msg={confirmed:es?`Hola ${first(c.name)}, su visita del ${vWhen(v)} está confirmada. Vea quién va: ${u}`:`Hi ${first(c.name)}, your visit ${vWhen(v)} is confirmed. See who’s coming: ${u}`,
     onway:es?`Hola ${first(c.name)}, vamos en camino${eta?', a unos '+eta+' minutos':''}. Vea quién va: ${u}`:`Hi ${first(c.name)}, we’re on the way${eta?', about '+eta+' minutes out':''}. See who’s coming: ${u}`,
     arrived:es?`Hola ${first(c.name)}, ya llegamos.`:`Hi ${first(c.name)}, we’re here.`,done:es?`Hola ${first(c.name)}, terminamos por hoy. Fotos y novedades: ${u}`:`Hi ${first(c.name)}, all done for today. Photos and updates: ${u}`}[st];
-  if(msg){const close=open(sheetWrap('vsH',`${vstName(st)}: ${esc(first(c.name))}`,`<p class="muted">Their portal shows “${vstName(st)}” now. Send them a text too?</p><p class="pbox" style="padding:10px 12px">${esc(msg)}</p><div class="smsrow"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,msg)}">Text it</a><button class="btn btn-line btn-sm" type="button" data-close>Skip</button></div>`));
+  if(msg){const close=open(sheetWrap('vsH',`${vstName(st)}: ${esc(first(c.name))}`,`<p class="muted">Their portal shows “${vstName(st)}” now. Send them a text too?</p><p class="pbox" style="padding:10px 12px">${esc(msg)}</p><div class="smsrow"><a class="btn btn-main btn-sm" href="${smsTo(c.phone,msg)}">Text it</a><button class="btn btn-line btn-sm" type="button" data-close>Don’t text</button></div><p style="margin:14px 0 0"><button class="linkbtn" type="button" id="vsUndo">Oops, undo: put it back to “${vstName(prev.status)}”</button></p>`));
+    $('#vsUndo').onclick=()=>{$$('.oundo').forEach(x=>x.remove());v.status=prev.status;c.stage=prev.stage;v.eta=prev.eta;save();close();openOwner();toast('Undone. Back to “'+vstName(prev.status)+'”.')};
     $$('#layer a[href^="sms:"]').forEach(a=>a.addEventListener('click',e=>{if(!isPhone()){e.preventDefault();toast('Opens your texting app on your phone.')}else setTimeout(close,300)}))}}
 function etaAsk(c,v,done){const close=open(sheetWrap('etH','How far out?',`<div class="chips" role="group" aria-label="Minutes away">${[10,20,30,45,60].map(m=>`<button type="button" data-eta="${m}">${m} min</button>`).join('')}<button type="button" data-eta="">Not sure</button></div>`));
   $$('#layer [data-eta]').forEach(b=>b.onclick=()=>{close();setVisit(c,v,'onway',b.dataset.eta?+b.dataset.eta:null);done&&done()})}
@@ -1825,7 +1832,25 @@ function nextStep(c){const f=first(c.name),v=nextVisit(c),today=v&&v.date===toda
 const actBtn=(c,a,cls)=>a.href?`<a class="${cls}" href="${a.href}" ${/^https?:/.test(a.href)?'target="_blank" rel="noopener"':''}>${a.label}</a>`:a.vst?`<button class="${cls}" type="button" data-vst="${a.vst}">${a.label}</button>`:a.snap?`<button class="${cls}" type="button" data-snap="${a.snap}">${a.label}</button>`:`<button class="${cls}" type="button" data-act="${a.act}" data-cid="${c.id}">${a.label}</button>`;
 function doAct(c,a){const id=c.id;({book:()=>visitSheet(id,null,'inspection'),visits:()=>jobSheet(id,'visits'),report:()=>reportSheet(id),estimate:()=>estSheet(id),approve:()=>approveSheet(c),work:()=>visitSheet(id,null,'work'),
   update:()=>updSheet(id),updates:()=>jobSheet(id,'updates'),invoice:()=>invoiceSheet(c),paid:()=>paidSheet(c),mat:()=>matSheet(id),change:()=>coSheet(id),details:()=>jobSheet(id,'details'),
+  del:()=>deleteSheet(c),
   lost:()=>{c.stage='lost';c.lostT=Date.now();save();lostAsk(c,()=>custSheet(id))},reopen:()=>{c.stage='lead';delete c.lostReason;delete c.lostT;save();custSheet(id)}}[a]||(()=>{}))()}
+
+/* ---------- fix mistakes (Ryan, Oct 8): every change can be undone for a few seconds, visits can be edited from any card, jobs can be deleted ---------- */
+let UNDO=null;
+addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('button,a,[role=button],input[type=checkbox],input[type=radio]');if(!t||!t.closest('#owner,#layer')||t.closest('.oundo'))return;
+  try{UNDO={s:JSON.stringify({c:DB.customers,d:DB.deleted||[]}),t:Date.now(),shown:false}}catch(x){UNDO=null}},true);
+window.__onUndoable=()=>{if(!UNDO||UNDO.shown||Date.now()-UNDO.t>2500)return;UNDO.shown=true;const snap=UNDO.s;setTimeout(()=>undoBar(snap),60)};
+function undoBar(snap,msg){$$('.oundo').forEach(x=>x.remove());const tt=$$('body>.toast');if(tt.length){msg=msg||tt[tt.length-1].textContent;tt.forEach(x=>x.remove())}const el=document.createElement('div');el.className='oundo';el.setAttribute('role','status');
+  el.innerHTML=`<span>${esc(msg||'Saved.')}</span><button type="button">Undo</button>`;document.body.appendChild(el);const tm=setTimeout(()=>el.remove(),8000);
+  el.querySelector('button').onclick=()=>{clearTimeout(tm);el.remove();try{const o=JSON.parse(snap);DB.customers=o.c;DB.deleted=o.d;UNDO=null;save();$$('#layer .scrim').forEach(x=>x.remove());openOwner();toast('Undone.')}catch(x){toast('Couldn’t undo that one.')}}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ved2]');if(!b||!b.closest('#owner,#layer'))return;e.preventDefault();e.stopPropagation();const[cid,vid]=b.dataset.ved2.split('|');visitSheet(cid,vid)},true);
+function deleteSheet(c){const f=first(c.name),future=c.appt&&c.appt.t>Date.now(),site=future&&CFG.backend&&!!c.leadKey;
+  const close=open(sheetWrap('dlH','Delete '+esc(f)+'’s job?',`<p class="muted">Removes ${esc(c.name)} and everything on this job (visits, estimate, photos, invoice) from your owner view on every device. Use this for test bookings, duplicates or mistakes. If they just said no, use “Mark as lost” instead so your numbers stay honest.</p>
+    ${future?`<label class="tog"><input type="checkbox" id="dlCal" checked> Free up ${esc(f)}’s inspection time (${esc(fmtDay(c.appt.t))}) on your calendar</label><label class="tog"><input type="checkbox" id="dlTell"> Text/email ${esc(f)} that it’s cancelled</label>`:''}
+    <div class="obtns"><button class="ob ob-danger" type="button" id="dlGo">Delete job</button><button class="ob ob-line" type="button" data-close>Keep it</button></div>`));
+  $('#dlGo').onclick=async()=>{const cal=future&&$('#dlCal').checked,tell=future&&$('#dlTell').checked,appt=c.appt;
+    DB.customers=DB.customers.filter(x=>x!==c);DB.deleted=(DB.deleted||[]).concat([{id:c.id,leadKey:c.leadKey||'',t:Date.now()}]).slice(-500);save();close();oTab='people';openOwner();
+    if(cal&&CFG.backend&&otok()){try{const r=await ownerPost({action:'appt_owner_cancel',token:otok(),phone:c.phone,t:appt.t,notify:tell});if(r.ok&&r.found)toast(tell?'Deleted. Calendar time freed and '+f+' was told.':'Deleted. Calendar time freed.')}catch(x){toast('Deleted here. Couldn’t reach your calendar, remove the event there.')}}}}
 
 /* ---------- shell ---------- */
 const OPAGES={today:'Home',people:'Jobs',schedule:'Schedule',money:'Money',more:'More',team:'Crew & extras',mat:'Materials',avail:'Availability',numbers:'Numbers',job:''};
@@ -1892,7 +1917,7 @@ function oHome(){const C=DB.customers,now=Date.now(),td=todayIso();
 function visitCard(c,v){const nx={scheduled:['confirmed','They confirmed'],confirmed:['onway','On my way'],onway:['arrived','I’m here'],arrived:['done','Done for today']}[v.status];const crew=(v.crew||[]).map(x=>(DB.crew||[]).find(m=>m.id===x)).filter(Boolean);
   return `<article class="ovisit vs2-${v.status}" data-open="${c.id}"><div class="ovisit-time"><b>${t12(v.from)}</b>${v.to?`<small>to ${t12(v.to)}</small>`:''}</div>
     <div class="ovisit-m"><span class="vstat vs-${v.status}">${vstName(v.status)}</span><h3>${esc(c.name)}</h3><p>${esc(VTYPE[v.type]||'Visit')} · ${esc((c.addr||'No address').split(',')[0])}</p>${crew.length?`<span class="jcrew">${crew.map(m=>avatar(m,28)).join('')}</span>`:''}
-    <div class="otask-acts">${nx?`<button class="ob ob-main" type="button" data-vst="${c.id}|${v.id}|${nx[0]}">${nx[1]}</button>`:''}<a class="ob ob-line" href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}Directions</a></div></div></article>`}
+    <div class="otask-acts">${nx?`<button class="ob ob-main" type="button" data-vst="${c.id}|${v.id}|${nx[0]}">${nx[1]}</button>`:''}<a class="ob ob-line" href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}Directions</a><button class="ob ob-line" type="button" data-ved2="${c.id}|${v.id}">Edit</button></div></div></article>`}
 
 /* ---------- JOBS ---------- */
 let oFilter='all',oQuery='';
@@ -1912,7 +1937,7 @@ function oJobPage(c){const n=nextStep(c),j=c.job||{},si=STEP8.findIndex(s=>s[0]=
   return `<section class="jhead"><div class="jhead-m"><span class="opill st2-${c.stage}">${stageName(c.stage)}</span><p>${c.addr?`<a href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}${esc(c.addr)}</a>`:'<span class="muted2">No address yet</span>'}</p><small>${esc(c.source||'')} · ${ago(c.created||Date.now())}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small></div>
     <div class="jcontact"><a href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. `)}">${oi('chat')}Text</a><a href="tel:+1${c.phone}">${oi('phone')}Call</a>${c.email?`<a href="mailto:${esc(c.email)}">${oi('mail')}Email</a>`:`<a aria-disabled="true" class="off">${oi('mail')}Email</a>`}<a href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}Map</a></div></section>
   <section class="onext"><span class="okick">Next step · ${n.k}</span><h2>${n.t}</h2>${n.s?`<p>${n.s}</p>`:''}${actBtn(c,n.p,'ob ob-main ob-xl')}${n.m.length?`<div class="onext-more">${n.m.map(a=>actBtn(c,a,'ob ob-line')).join('')}</div>`:''}</section>
-  ${c.stage!=='lost'?`<ol class="jsteps" aria-label="Job stage">${STEP8.map(([k,l],i)=>`<li class="${i<si?'done':i===si?'now':''}"><button type="button" data-stage="${k}" aria-label="Set stage: ${l}">${i<si?oi('check'):i+1}</button><span>${l}</span></li>`).join('')}</ol>`:''}
+  ${c.stage!=='lost'?`<ol class="jsteps" aria-label="Job stage">${STEP8.map(([k,l],i)=>`<li class="${i<si?'done':i===si?'now':''}"><button type="button" data-stage="${k}" aria-label="Set stage: ${l}">${i<si?oi('check'):i+1}</button><span>${l}</span></li>`).join('')}</ol><p class="jhint">Tap any step to move the job back or forward.</p>`:''}
   <div class="otiles">
     ${tile('visits','cal','Visits',V.length,nv?vWhen(nv):'None scheduled')}
     ${tile('estimate','file','Estimate',est?(est.status==='approved'?'Approved':usd(Math.max(...est.opts.map(o=>o.price)))):'—',est?(est.status==='approved'?usd(est.opts[est.pick||0].price):'Waiting'):'Not written')}
@@ -1923,7 +1948,7 @@ function oJobPage(c){const n=nextStep(c),j=c.job||{},si=STEP8.findIndex(s=>s[0]=
     ${tile('portal','key','Customer portal',c.portal?'On':'Off',c.portal?'PIN '+ensureJob(c).pin:'Their own page')}
     ${tile('details','user','Details','',pretty(c.phone))}
   </div>
-  ${c.stage!=='lost'?`<p class="jlost"><button type="button" class="olink" data-act="lost" data-cid="${c.id}">Mark as lost</button></p>`:''}`}
+  <p class="jlost">${c.stage!=='lost'?`<button type="button" class="olink" data-act="lost" data-cid="${c.id}">Mark as lost</button><span aria-hidden="true"> · </span>`:''}<button type="button" class="olink" data-act="del" data-cid="${c.id}">Delete job</button></p>`}
 function bindJob(c){{const now=$('#obody .jsteps li.now');if(now)now.scrollIntoView({block:'nearest',inline:'center'})}$$('#obody [data-sec]').forEach(b=>b.onclick=()=>{const k=b.dataset.sec;if(k==='mat')return matSheet(c.id);jobSheet(c.id,k)});
   $$('#obody [data-stage]').forEach(b=>b.onclick=()=>{const k=b.dataset.stage;if(k===c.stage)return;c.stage=k;if(k==='paid'&&c.invoice&&c.invoice.status!=='paid'){c.invoice.status='paid';c.invoice.paidT=Date.now()}save();openOwner();toast('Stage: '+stageName(k))})}
 
@@ -2054,14 +2079,15 @@ if(CFG.backend){const q=outbox();if(q.length){setOutbox([]);q.forEach(row=>postB
    Crew and customers change the same jobs from their own phones; the owner view checks for changes every minute. */
 const SYNC={last:{},meta:'',act:'',timer:0,poll:0,loaded:false};
 const jh=o=>JSON.stringify(o);
-const metaObj=()=>({crew:DB.crew||[],addons:DB.addons||[],settings:{payLink:DB.payLink||'',spend:DB.spend||{},fee:DB.fee,labor:DB.labor,repeat:DB.repeat}});
+const metaObj=()=>({crew:DB.crew||[],addons:DB.addons||[],settings:{payLink:DB.payLink||'',spend:DB.spend||{},fee:DB.fee,labor:DB.labor,repeat:DB.repeat,deleted:(DB.deleted||[]).slice(-500)}});
 function markSynced(skip){SYNC.last={};DB.customers.forEach(c=>{if(!skip||!skip.has(c.id))SYNC.last[c.id]=jh(c)});SYNC.meta=jh(metaObj());SYNC.act=jh(DB.activity||[])}
 window.__onSave=()=>{if(!SYNC.loaded)return;clearTimeout(SYNC.timer);SYNC.timer=setTimeout(pushNow,1200)};
 async function pushNow(){const t=otok();if(!t||!CFG.backend||!SYNC.loaded)return;clearTimeout(SYNC.timer);
   const put={};DB.customers.forEach(c=>{if(SYNC.last[c.id]!==jh(c))put[c.id]=c});const body={action:'db_put',token:t,put};
   const m=jh(metaObj()),a=jh(DB.activity||[]);if(m!==SYNC.meta){const o=metaObj();body.crew=o.crew;body.addons=o.addons;body.settings=o.settings}if(a!==SYNC.act)body.activity=DB.activity||[];
-  if(!Object.keys(put).length&&!body.crew&&!body.activity)return;
-  try{const r=await ownerPost(body);if(r.ok){Object.keys(put).forEach(id=>SYNC.last[id]=jh(put[id]));if(body.crew)SYNC.meta=m;if(body.activity)SYNC.act=a}else if(r.reason==='auth'){setTok('');window.__ownerLive=false}}catch(x){SYNC.timer=setTimeout(pushNow,15000)}}
+  const del=Object.keys(SYNC.last).filter(id=>!DB.customers.some(c=>c.id===id));if(del.length)body.del=del;
+  if(!Object.keys(put).length&&!body.crew&&!body.activity&&!del.length)return;
+  try{const r=await ownerPost(body);if(r.ok){Object.keys(put).forEach(id=>SYNC.last[id]=jh(put[id]));del.forEach(id=>delete SYNC.last[id]);if(body.crew)SYNC.meta=m;if(body.activity)SYNC.act=a}else if(r.reason==='auth'){setTok('');window.__ownerLive=false}}catch(x){SYNC.timer=setTimeout(pushNow,15000)}}
 window.__pushNow=pushNow;
 function leadToJob(L){const rec=Date.parse(L.received)||Date.now(),key=digits(L.phone)+'|'+rec,t=L.start?new Date(L.start):null;
   return{id:'w'+rec.toString(36)+(digits(L.phone).slice(-4)||'x'),leadKey:key,name:L.name||'Customer',phone:digits(L.phone),addr:L.address||'',email:L.email||'',contactPref:L.best||'',smsOk:!!L.sms,source:L.type||'Website',created:rec,
@@ -2069,11 +2095,13 @@ function leadToJob(L){const rec=Date.parse(L.received)||Date.now(),key=digits(L.
     appt:t?{t:t.getTime(),time:L.startTime,slot:AV.label(L.startTime),confirmed:false}:undefined}}
 async function loadOwnerLeads(token){const [db,ld]=await Promise.all([ownerPost({action:'db_get',token}),ownerPost({action:'leads',token})]);
   if(!db.ok)return db;const dirty=new Set(SYNC.loaded?DB.customers.filter(c=>SYNC.last[c.id]!==jh(c)).map(c=>c.id):[]);
-  const local=new Map(DB.customers.filter(c=>c.id&&c.id[0]!=='s').map(c=>[c.id,c]));
+  const tomb=new Set([].concat(DB.deleted||[],(db.settings||{}).deleted||[]).flatMap(x=>[x.id,x.leadKey]).filter(Boolean));if((db.settings||{}).deleted){const m=new Map((DB.deleted||[]).concat(db.settings.deleted).map(x=>[x.id,x]));DB.deleted=[...m.values()].slice(-500)}
+  db.jobs=Object.fromEntries(Object.entries(db.jobs||{}).filter(([id])=>!tomb.has(id)));
+  const local=new Map(DB.customers.filter(c=>c.id&&c.id[0]!=='s'&&!tomb.has(c.id)).map(c=>[c.id,c]));
   db.jobs=db.jobs||{};const merged=Object.values(db.jobs).map(sc=>dirty.has(sc.id)&&local.get(sc.id)?local.get(sc.id):sc);
   local.forEach((c,id)=>{if(!db.jobs[id])merged.push(c)});
   const added=[],fresh=new Set();
-  ((ld&&ld.leads)||[]).forEach(L=>{const j=leadToJob(L);if(merged.some(c=>c.leadKey===j.leadKey||c.id===j.id))return;
+  ((ld&&ld.leads)||[]).forEach(L=>{const j=leadToJob(L);if(tomb.has(j.id)||tomb.has(j.leadKey)||merged.some(c=>c.leadKey===j.leadKey||c.id===j.id))return;
     const same=merged.find(c=>!c.leadKey&&c.phone&&c.phone===j.phone&&Math.abs((c.created||0)-j.created)<15*6e4);if(same){same.leadKey=j.leadKey;if(!same.appt&&j.appt){same.appt=j.appt;same.stage=j.stage}fresh.add(same.id);return}
     merged.push(j);added.push(j);fresh.add(j.id)});
   DB.customers=merged.sort((a,b)=>(b.created||0)-(a.created||0));
