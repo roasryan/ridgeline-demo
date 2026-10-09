@@ -213,12 +213,12 @@ function sendReminders() {
 /* ------------------------------------------------------------------ talking to the customer: only the way they picked */
 function notifyCustomer(kind, L, appt) {
   const first = String(L.name).split(' ')[0], biz = cfg('BIZ_NAME', 'us'), owner = cfg('OWNER_NAME', 'We');
-  const when = appt ? fmt(appt.start, "EEE, MMM d 'at' h:mm a") : '';
+  const when = appt ? fmt(appt.start, "EEE, MMM d 'at' h:mm a") : '', site = cfg('SITE_URL', 'https://roasryan.github.io/ridgeline-demo/') + '#inspect';
   const msg = {
-    booked: `Hi ${first}, you're booked for a free roof inspection with ${biz} on ${when}${L.address ? ' at ' + L.address : ''}. You don't need to be home. Reply here to change the time.`,
-    moved: `Hi ${first}, ${owner} from ${biz} here. Your roof inspection moved to ${when}. Reply if that doesn't work and we'll find another time.`,
-    cancelled: `Hi ${first}, ${owner} from ${biz} here. We had to cancel your inspection on ${when}. Reply and we'll set a new time.`,
-    reminder: `Hi ${first}, reminder: your free roof inspection with ${biz} is tomorrow, ${when}. Reply if you need to change it.`,
+    booked: `Hi ${first}, you're booked for a free roof inspection with ${biz} on ${when}${L.address ? ' at ' + L.address : ''}. You don't need to be home. Change the time: ${site}`,
+    moved: `Hi ${first}, ${owner} from ${biz} here. Your roof inspection moved to ${when}. If that doesn't work, pick another time: ${site}`,
+    cancelled: `Hi ${first}, ${owner} from ${biz} here. We had to cancel your inspection on ${when}. Sorry about that. Pick a new time: ${site}`,
+    reminder: `Hi ${first}, reminder: your free roof inspection with ${biz} is tomorrow, ${when}. Need a different time? ${site}`,
     lock: L.lock ? `Hi ${first}, your ${biz} price is locked: ${L.lock.name}, ${L.lock.range}, good until ${L.lock.until}. Lock code ${L.lock.code}. Book your free inspection and ${owner} confirms the exact price on site.` : '',
     club: `Hi ${first}, welcome to the ${biz} Roof Care Club (${L.club}). Nothing has been charged yet: ${owner} will reach out to set up billing and schedule your first roof checkup.`,
     inquiry: `Hi ${first}, thanks for asking ${biz} about ${String(L.type || '').replace(/^Service inquiry:\s*/, '').toLowerCase() || 'your project'}. ${owner} will reach out within a few business hours to set up a free look. Price comes after we see it.`,
