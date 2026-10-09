@@ -318,7 +318,7 @@ function job(k,keep){const v=find(k),t=T();if(!v)return home();OPEN=k;const p=V.
   $('#nGo').onclick=()=>{const x=$('#nT').value.trim();if(!x)return $('#nT').focus();act({act:'note',jid:v.jid,vid:v.vid,text:x},t.noteSent)}}
 
 /* ---------- job steps (Oct 8): one tap = done; camera button = done + photo. Customer portal + owner + Slack update right away ---------- */
-const CSTEPS=['mat_delivered','dumpster','protect','arrived','tearoff','decking','dryin','shingles','ridge','cleanup','walkthrough'];
+const CSTEPS=['mat_delivered','arrived','tearoff','decking','dryin','shingles','cleanup','walkthrough'];
 function stepsCard(v){const t=T(),p=V.me.perms||{};if(p.status===false||!(v.type==='work'||Object.keys(v.steps||{}).length))return'';const d=v.steps||{},nx=CSTEPS.find(k=>!d[k]);
   return `<section class="ccard csteps"><h3>${ic('check')}${t.steps}</h3><p class="cmuted csm">${t.stepsP}</p>
     ${nx?`<div class="cnext"><small>${t.nextUp}</small><div class="cgrid-n"><button type="button" class="cb cb-go cb-big" data-stp="${nx}">${ic('check')}${esc(t.sk[nx])}</button>${p.photos!==false?`<label class="cb cb-line cb-cam" aria-label="${t.withPhoto}: ${esc(t.sk[nx])}">${ic('cam')}<input type="file" accept="image/*" capture="environment" data-stpc="${nx}" hidden></label>`:''}</div></div>`:`<p class="cdone">${ic('check')}${t.allDone}</p>`}

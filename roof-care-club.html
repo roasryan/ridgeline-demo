@@ -540,6 +540,10 @@ svg.oi{width:22px;height:22px;flex:none}.oi.flip{transform:rotate(180deg)}
 .ostep input:focus-visible+.ostep-b{outline:3px solid var(--oblue);outline-offset:2px}
 .oconn{margin-bottom:12px}.oconn p{margin:6px 0}.osmall{margin:6px 0 10px;padding-left:20px;font-size:15px;color:var(--osoft)}.osmall a{color:var(--oblue)}
 .oconn textarea,.oconn input[readonly]{font:13px/1.4 ui-monospace,Menlo,monospace}
+.jsteps.js4{grid-template-columns:repeat(4,1fr);overflow:visible}
+.jprog{display:block;width:100%;margin:0 0 14px;padding:14px 16px;border:1px solid var(--oline);border-radius:16px;background:#fff;text-align:left;cursor:pointer;font:inherit;color:var(--oink)}
+.jprog b{display:block;margin:2px 0 8px;font:850 18px/1.25 var(--body)}.jprog small{color:var(--osoft);font-weight:700}
+.jprog .obar2{display:block}.jprog .obar2 i{display:block}
 
 .app .kicker,.sheet .kicker{font-size:14px;font-weight:700;color:var(--hivis);margin:0}
 .app{color:var(--text)}
@@ -1505,19 +1509,11 @@ function chip(c){return `<span class="chip st-${c.stage}">${stageName(c.stage)}<
 function bookSheet(id){const c=byId(id);let d=0,s=null;const close=open(sheetWrap('bkH','Book '+esc(first(c.name))+'’s inspection',`<div class="days" id="odays"></div><div class="slots" id="oslots"></div><div class="field"><label for="oaddr">Address</label><input id="oaddr" value="${esc(c.addr||'')}" autocomplete="street-address"></div><p class="err" id="obe" role="alert" hidden></p><button class="btn btn-main" type="button" id="obk">Book it</button>`));
   const draw=()=>{$('#odays').innerHTML=days.map((x,i)=>`<button type="button" class="day" data-od="${i}" aria-pressed="${d===i}"><small>${x.toLocaleDateString('en-US',{weekday:'short'})}</small><b>${x.getDate()}</b></button>`).join('');$('#oslots').innerHTML=SL.map((x,j)=>`<button type="button" class="slot" data-os="${j}" aria-pressed="${s===j}">${x}</button>`).join('');$$('[data-od]').forEach(b=>b.onclick=()=>{d=+b.dataset.od;draw()});$$('[data-os]').forEach(b=>b.onclick=()=>{s=+b.dataset.os;draw()})};draw();
   $('#obk').onclick=()=>{if(s==null){$('#obe').textContent='Pick a time window.';$('#obe').hidden=false;return}c.addr=$('#oaddr').value.trim()||c.addr;c.appt={t:days[d].getTime(),slot:SL[s],confirmed:false};c.stage='booked';c.show.schedule=true;if(!c.replied)c.replied=Date.now();save();close();openOwner();toast('Booked. Text them to confirm from Today.')}}
-function reportSheet(id){const c=byId(id);const pics=[];const close=open(sheetWrap('rpH','Inspection report: '+esc(first(c.name)),`<div class="field"><label for="rpn">What you found, in plain words</label><textarea id="rpn" rows="4" placeholder="Soft decking over the back bedroom, about 3 sheets. Gutters fine."></textarea></div>
-    <div class="field"><span class="flabel">Photos</span><label class="upl" for="rpf"><span>Add photos from your phone</span><input id="rpf" type="file" accept="image/*" multiple></label><div class="thumbs" id="rpt"></div></div>
-    <label class="tog"><input type="checkbox" id="rpshow" checked> Show this report in ${esc(first(c.name))}’s portal</label><button class="btn btn-main" type="button" id="rps">Save report</button>`),'#rpn');
-  $('#rpf').onchange=e=>{[...e.target.files].slice(0,8).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*k;cv.height=im.height*k;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);pics.push(cv.toDataURL('image/jpeg',.7));$('#rpt').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('')};im.src=r.result};r.readAsDataURL(f)})};
-  $('#rps').onclick=()=>{c.report={t:Date.now(),notes:$('#rpn').value.trim()||'Inspection done.',photos:pics};c.stage='inspected';c.show.report=$('#rpshow').checked;c.portal=true;save();close();openOwner();toast('Report saved. Send an estimate from the customer page.')}}
 function addSheet(){const close=open(sheetWrap('adH','Add a customer',`<div class="field"><label for="an">Name</label><input id="an" autocomplete="off"></div><div class="field"><label for="ap">Mobile number</label><input id="ap" type="tel" inputmode="tel"></div><div class="field"><label for="aa">Address (optional)</label><input id="aa"></div>
     <div class="field"><label for="as">How they found you</label><input id="as" list="srcs" placeholder="Neighbor, yard sign, Google…"><datalist id="srcs">${[...new Set(DB.customers.map(c=>c.source))].map(s=>`<option value="${esc(s)}">`).join('')}</datalist></div>
     <label class="tog"><input type="checkbox" id="aport" checked> Let them log in to the customer portal with this number</label><p class="err" id="ae" role="alert" hidden></p><button class="btn btn-main" type="button" id="ago">Add customer</button>`),'#an');
   $('#ago').onclick=()=>{const n=$('#an').value.trim(),p=$('#ap').value;if(!n||digits(p).length<10){$('#ae').textContent='Add a name and a 10-digit mobile number.';$('#ae').hidden=false;return}
     const c=upsert({name:n,phone:p,addr:$('#aa').value.trim(),source:$('#as').value.trim()||'Owner added'});c.portal=$('#aport').checked;c.replied=c.replied||Date.now();save();close();custSheet(c.id)}}
-function updSheet(id){const c=byId(id);const pics=[];const close=open(sheetWrap('upH','Post an update',`<div class="field"><label for="upt">What happened today</label><textarea id="upt" rows="3" placeholder="Tear-off done. Shingles go on tomorrow."></textarea></div><div class="field"><span class="flabel">Photos</span><label class="upl" for="upf"><span>Add photos</span><input id="upf" type="file" accept="image/*" multiple></label><div class="thumbs" id="upth"></div></div><button class="btn btn-main" type="button" id="upgo">Post</button>`),'#upt');
-  $('#upf').onchange=e=>{[...e.target.files].slice(0,6).forEach(f=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/im.width),cv=document.createElement('canvas');cv.width=im.width*k;cv.height=im.height*k;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);pics.push(cv.toDataURL('image/jpeg',.7));$('#upth').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('')};im.src=r.result};r.readAsDataURL(f)})};
-  $('#upgo').onclick=()=>{const t=$('#upt').value.trim();if(!t&&!pics.length)return;c.updates=(c.updates||[]).concat([{t:Date.now(),text:t,photos:pics}]);c.show.updates=true;if(stageIx(c.stage)<stageIx('work'))c.stage='work';save();close();custSheet(c.id)}}
 function routeHash(){if(location.hash==='#'+OWNER_KEY){oTab='today';openOwner()}}
 
 /* ================= MATERIALS + PURCHASES (Oct 4) =================
@@ -1928,7 +1924,8 @@ const JSTEPS=[
   ['before','Before the job',[['contract','Contract signed',1],['claim','Insurance approved',1],['hoa','HOA approved',1],['permit','Permit approved',1],['mat_ordered','Materials ordered',0],['mat_delivered','Materials delivered',1],['dumpster','Dumpster dropped off',1]]],
   ['day','On the roof',[['protect','Yard, AC and pool covered',0],['arrived','Crew arrived',1],['tearoff','Old roof torn off',1],['decking','Decking checked',1],['dryin','Dried in (underlayment on)',1],['shingles','Shingles on',1],['ridge','Ridge, vents and flashing done',1],['cleanup','Cleanup and magnet sweep',1],['walkthrough','Final walkthrough',1]]],
   ['after','After the job',[['inspection','City inspection passed',1],['warranty','Warranty registered',1],['invoice','Final invoice sent',0],['paid','Paid',0],['lien','Lien waiver sent',0],['review','Review asked',0]]]];
-const stepOn=(c,k)=>k==='claim'?!!(c.ins&&c.ins.on):k==='hoa'?!!(c.prod&&c.prod.hoa):true;
+const CORE=['contract','mat_delivered','arrived','tearoff','decking','dryin','shingles','cleanup','walkthrough','inspection'];
+const stepOn=(c,k)=>k==='claim'?!!(c.ins&&c.ins.on):k==='hoa'?!!(c.prod&&c.prod.hoa):CORE.includes(k)||!!(c.prod&&c.prod.all);
 const stepList=c=>JSTEPS.flatMap(([g,gl,L])=>L.filter(([k])=>stepOn(c,k)).map(([k,l,pub])=>({k,l,pub,g})));
 const stepsDone=c=>((c.prod||{}).done)||{};
 const progress=c=>{const L=stepList(c),d=stepsDone(c);return{n:L.filter(s=>d[s.k]).length,of:L.length,next:L.find(s=>!d[s.k])}};
@@ -1975,13 +1972,14 @@ function changesPage(c){const j=ensureJob(c);
 function progressPage(c){const d=stepsDone(c),p=progress(c);c.prod=c.prod||{};
   const row=s=>{const x=d[s.k];return`<label class="ostep ${x?'done':''}"><input type="checkbox" data-step="${s.k}" ${x?'checked':''}><span class="ostep-b">${oi('check')}</span><span class="ostep-t"><b>${esc(s.l)}</b><small>${x?`${fmtDay(x.t)} ${new Date(x.t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})} · ${esc(x.by||'')}`:s.pub?'Customer sees this':'Only you and the crew'}</small></span></label>`};
   const close=open(sheetWrap('prH','Progress · '+esc(first(c.name)),`<div class="obar2"><i style="width:${Math.round(p.n/Math.max(1,p.of)*100)}%"></i></div><p class="muted2">${p.n} of ${p.of} done${p.next?` · next: <b>${esc(p.next.l)}</b>`:' · all done'}</p>
-    <div class="otogs"><label class="oswitch"><input type="checkbox" id="prIns" ${c.ins&&c.ins.on?'checked':''}><span></span><b>Insurance job</b></label><label class="oswitch"><input type="checkbox" id="prHoa" ${c.prod.hoa?'checked':''}><span></span><b>Needs HOA approval</b></label></div>
+    <div class="otogs"><label class="oswitch"><input type="checkbox" id="prAll" ${c.prod.all?'checked':''}><span></span><b>More steps</b><small>Permit, materials ordered, dumpster, warranty, lien waiver, review…</small></label><label class="oswitch"><input type="checkbox" id="prIns" ${c.ins&&c.ins.on?'checked':''}><span></span><b>Insurance job</b></label><label class="oswitch"><input type="checkbox" id="prHoa" ${c.prod.hoa?'checked':''}><span></span><b>Needs HOA approval</b></label></div>
     ${JSTEPS.map(([g,gl])=>`<h4 class="osub">${gl}</h4><div class="osteps">${stepList(c).filter(s=>s.g===g).map(row).join('')}</div>`).join('')}
-    <div class="ocard2"><span class="okick">Permit</span><div class="two"><div class="field"><label for="prPn">Permit #</label><input id="prPn" value="${esc(c.prod.permit||'')}" placeholder="City of Houston iPermits #"></div><div class="field"><label for="prPd">City inspection date</label><input id="prPd" type="date" value="${esc(c.prod.inspDate||'')}"></div></div></div>
+    ${c.prod.all?`<div class="ocard2"><span class="okick">Permit</span><div class="two"><div class="field"><label for="prPn">Permit #</label><input id="prPn" value="${esc(c.prod.permit||'')}" placeholder="City of Houston iPermits #"></div><div class="field"><label for="prPd">City inspection date</label><input id="prPd" type="date" value="${esc(c.prod.inspDate||'')}"></div></div></div>`:''}
     ${c.portal?'':'<p class="muted2">Turn on the customer portal so they can follow along.</p>'}`));
   $$('#layer [data-step]').forEach(x=>x.onchange=()=>{markStep(c,x.dataset.step,x.checked);save();close();progressPage(c)});
+  $('#prAll').onchange=e=>{c.prod.all=e.target.checked;save();close();progressPage(c)};
   $('#prIns').onchange=e=>{c.ins=c.ins||{};c.ins.on=e.target.checked;save();close();progressPage(c)};$('#prHoa').onchange=e=>{c.prod.hoa=e.target.checked;save();close();progressPage(c)};
-  $('#prPn').onchange=e=>{c.prod.permit=e.target.value.trim();save()};$('#prPd').onchange=e=>{c.prod.inspDate=e.target.value;save()}}
+  const pn=$('#prPn');if(pn){pn.onchange=e=>{c.prod.permit=e.target.value.trim();save()};$('#prPd').onchange=e=>{c.prod.inspDate=e.target.value;save()}}}
 
 /* ---------- INSURANCE CLAIM: what roofers track, nothing more (Texas: the homeowner pays the deductible; no public-adjuster talk) ---------- */
 function insurancePage(c){const i=c.ins=c.ins||{};const f=(k,l,ph,t)=>`<div class="field"><label for="in_${k}">${l}</label><input id="in_${k}" ${t?`type="${t}"`:''} ${t==='money'?'inputmode="decimal"':''} value="${esc(i[k]||'')}" placeholder="${ph||''}"></div>`;
@@ -2037,13 +2035,6 @@ function connPage(){open(sheetWrap('cnH','Connections','<p class="muted2">Loadin
   ownerPost({action:'conn_get',token:otok()}).then(r=>{CONN=r.ok?r:{};draw()}).catch(()=>{CONN={};draw()})}
 
 /* ---------- photos page: + CompanyCam link ---------- */
-function updatesPage(c){const U=(c.updates||[]).slice().reverse();
-  const close=open(sheetWrap('upP','Photos & updates · '+esc(first(c.name)),`<div class="obtns"><button class="ob ob-main" type="button" id="upNew">${oi('cam')}Post photos / update</button><button class="ob ob-line" type="button" id="rpNew">${c.report?'Redo':'Add'} inspection report</button></div>
-    <div class="field"><label for="ccL">CompanyCam timeline link (optional)</label><input id="ccL" type="url" placeholder="https://app.companycam.com/timeline/…" value="${esc(c.camLink||'')}"></div>
-    ${c.report?`<div class="ocard2"><span class="okick">Inspection report · ${fmtDay(c.report.t)}</span><p>${esc(c.report.notes)}</p>${c.report.photos.length?`<div class="pgrid">${c.report.photos.map(u=>`<img src="${u}" alt="">`).join('')}</div>`:''}</div>`:''}
-    ${U.map(u=>`<div class="ocard2"><span class="okick">${fmtDay(u.t)}${u.by?' · '+esc(u.by):''}</span>${u.text?`<p>${esc(u.text)}</p>`:''}${(u.photos||[]).length?`<div class="pgrid">${u.photos.map(p=>`<img src="${p}" alt="">`).join('')}</div>`:''}</div>`).join('')||(c.report?'':'<p class="muted2">Nothing posted yet.</p>')}`));
-  $('#upNew').onclick=()=>{close();updSheet(c.id)};$('#rpNew').onclick=()=>{close();reportSheet(c.id)};
-  $('#ccL').onchange=e=>{const v=e.target.value.trim();if(v&&!/^https:\/\//.test(v)){toast('Paste the full https:// link.');return}c.camLink=v;c.show=c.show||{};if(v)c.show.updates=true;save();toast('Saved. Their portal shows “See every photo”.')}}
 function plusSheet(){const close=open(sheetWrap('plH','What do you need?',`<div class="obig-grid">${[['add','user','New job','Someone called or stopped you'],['steps','check','Job steps','Tear-off done, dried in…'],['visit','cal','Add a visit','Inspection or work day'],['photos','cam','Post photos','Update from the roof'],['invoice','file','Add an invoice','Paste the QuickBooks or Square link'],['paid','check','Record a payment','Check, cash, card']].map(([k,i,l,s])=>`<button type="button" class="obig-btn" data-quick="${k}">${oi(i)}<b>${l}</b><small>${s}</small></button>`).join('')}</div>`));
   $$('#layer [data-quick]').forEach(b=>b.onclick=()=>{close();quick(b.dataset.quick)})}
 function quick(k){if(k==='add')return addSheet();
@@ -2064,8 +2055,8 @@ function nextStep(c){const f=first(c.name),v=nextVisit(c),today=v&&v.date===toda
   if(visitAct)return{k:'Today · '+(VTYPE[v.type]||'Visit'),t:`${t12(v.from)}${v.to?'–'+t12(v.to):''} at ${esc((c.addr||'').split(',')[0]||'their place')}`,p:{label:visitAct[1],vst:`${c.id}|${v.id}|${visitAct[0]}`},m:[{label:'Directions',href:mapsUrl(c.addr)},{label:'Job steps',act:'progress'},{label:'Who’s going (photos)',snap:`${c.id}|${v.id}`}]};
   switch(c.stage){
     case'lead':return{k:'New request',t:`Answer ${esc(f)} and book the free inspection`,s:c.msg?`“${esc(c.msg)}”`:'',p:{label:'Text '+esc(f),href:smsTo(c.phone,`Hi ${f}, this is ${ownerName} with Ridgeline Roofing. Got your request. What day works for a free roof inspection?`)},m:[{label:'Book inspection',act:'book'},{label:'Call',href:'tel:+1'+c.phone}]};
-    case'booked':return{k:'Inspection booked',t:v?vWhen(v):'Inspection time not set',p:{label:'Add inspection report',act:'report'},m:[{label:v?'Change time':'Set time',act:v?'visits':'book'},{label:'Directions',href:mapsUrl(c.addr)}]};
-    case'inspected':return{k:'Inspected',t:`Send ${esc(f)} the estimate`,s:'Make it in your estimate app, then paste the link or upload it here.',p:{label:'Add the estimate',act:'estimate'},m:[{label:'See report',act:'updates'},{label:'Insurance claim',act:'ins'}]};
+    case'booked':return{k:'Inspection booked',t:v?vWhen(v):'Inspection time not set',p:{label:'Add inspection photos & notes',act:'update'},m:[{label:v?'Change time':'Set time',act:v?'visits':'book'},{label:'Directions',href:mapsUrl(c.addr)}]};
+    case'inspected':return{k:'Inspected',t:`Send ${esc(f)} the estimate`,s:'Make it in your estimate app, then paste the link or upload it here.',p:{label:'Add the estimate',act:'estimate'},m:[{label:'See photos & notes',act:'updates'},{label:'Insurance claim',act:'ins'}]};
     case'estimate':return{k:'Estimate sent',t:`Waiting on ${esc(f)}`,s:c.estimate?`Sent ${ago(c.estimate.t)}`:'',p:{label:'They said yes',act:'approve'},m:[{label:'Text a check-in',href:smsTo(c.phone,`Hi ${f}, ${ownerName} with Ridgeline. Any questions on the estimate? Happy to walk through it.`)},{label:'They said no',act:'lost'}]};
     case'approved':return{k:'Approved',t:p.next?'Next: '+esc(p.next.l):'Schedule the work day',p:{label:'Add work day',act:'work'},m:[{label:'Materials order',act:'mat'},{label:'Job steps',act:'progress'}]};
     case'work':return{k:'Job in progress',t:p.next?`${p.n}/${p.of} steps · next: ${esc(p.next.l)}`:'All steps done',p:p.next?{label:'✓ '+p.next.l,step:p.next.k}:{label:'Add the invoice',act:'invoice'},m:[{label:'Job steps',act:'progress'},{label:'Post photos',act:'update'},{label:'Add a change',act:'change'},{label:'Add the invoice',act:'invoice'}]};
@@ -2087,12 +2078,12 @@ function oJobPage(c){const n=nextStep(c),j=c.job||{},si=STEP8.findIndex(s=>s[0]=
   return `<section class="jhead"><div class="jhead-m"><span class="opill st2-${c.stage}">${stageName(c.stage)}</span>${c.ins&&c.ins.on?'<span class="opill">Insurance</span>':''}<p>${c.addr?`<a href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}${esc(c.addr)}</a>`:'<span class="muted2">No address yet</span>'}</p><small>${esc(c.source||'')} · ${ago(c.created||Date.now())}${c.contactPref?' · prefers '+esc(c.contactPref):''}</small></div>
     <div class="jcontact"><a href="${smsTo(c.phone,`Hi ${first(c.name)}, it’s ${ownerName} with Ridgeline. `)}">${oi('chat')}Text</a><a href="tel:+1${c.phone}">${oi('phone')}Call</a>${c.email?`<a href="mailto:${esc(c.email)}">${oi('mail')}Email</a>`:`<a aria-disabled="true" class="off">${oi('mail')}Email</a>`}<a href="${mapsUrl(c.addr)}" target="_blank" rel="noopener">${oi('pin')}Map</a></div></section>
   <section class="onext"><span class="okick">Next step · ${n.k}</span><h2>${n.t}</h2>${n.s?`<p>${n.s}</p>`:''}${pBtn}${n.m.length?`<div class="onext-more">${n.m.map(a=>actBtn(c,a,'ob ob-line')).join('')}</div>`:''}</section>
-  ${c.stage!=='lost'?`<ol class="jsteps" aria-label="Job stage">${STEP8.map(([k,l],i)=>`<li class="${i<si?'done':i===si?'now':''}"><button type="button" data-stage="${k}" aria-label="Set stage: ${l}">${i<si?oi('check'):i+1}</button><span>${l}</span></li>`).join('')}</ol><p class="jhint">Tap any step to move the job back or forward.</p>`:''}
+  ${stageBar(c)}
   <div class="otiles">
     ${tile('progress','check','Job steps',`${p.n}/${p.of}`,p.next?'Next: '+esc(p.next.l):'All done',p.n===p.of?'good':'')}
     ${tile('visits','cal','Visits',V.length,nv?vWhen(nv):'None scheduled')}
     ${tile('estimate','file','Estimate',est?(est.status==='approved'?'Yes':est.status==='declined'?'No':'Sent'):'—',est?(est.status==='approved'?'They said yes':est.status==='declined'?'They said no':'Waiting for an answer'):'Paste link or upload')}
-    ${tile('updates','cam','Photos & updates',ups,ups?'Report and job photos':'Nothing yet')}
+    ${tile('updates','cam','Photos & notes',ups,ups?'Inspection and job photos':'Nothing yet')}
     ${tile('changes','tool','Changes',ch.length,wait?wait+' waiting for OK':'Extra work found','' + (wait?'warn':''))}
     ${tile('mat','truck','Materials',m.sup?esc(m.sup):'—',m.date?'Delivery '+fmtDay(new Date(m.date+'T12:00').getTime()):'Order and delivery')}
     ${tile('invoice','money','Invoice',inv?(inv.status==='paid'?'Paid':'Sent'):'—',inv?(inv.status==='paid'?fmtDay(inv.paidT):'Not paid yet'):'Paste link or upload',inv&&inv.status==='paid'?'good':'')}
@@ -2151,6 +2142,31 @@ function oMoney(){const C=DB.customers,bill=C.filter(readyToBill),unpaid=C.filte
     <h2 class="osec2">Not paid yet ${unpaid.length?`<span class="ocount">${unpaid.length}</span>`:''}</h2><div class="olist">${unpaid.map(c=>row(c,`<p class="muted2">Invoice added ${ago(c.invoice.t)}</p><div class="otask-acts"><button class="ob ob-main" type="button" data-act="paid" data-cid="${c.id}">Mark paid</button><a class="ob ob-line" href="${smsTo(c.phone,`Hi ${first(c.name)}, friendly reminder from ${ownerName} at Ridgeline: your invoice is ready.${c.invoice.link?' '+c.invoice.link:c.portal?' '+portalUrl(c):''}`)}">Text a reminder</a></div>`)).join('')||'<p class="muted2">Everyone’s paid up.</p>'}</div>
     <h2 class="osec2">Need an invoice ${bill.length?`<span class="ocount">${bill.length}</span>`:''}</h2><div class="olist">${bill.map(c=>row(c,`<div class="otask-acts"><button class="ob ob-main" type="button" data-act="invoice" data-cid="${c.id}">Add the invoice</button></div>`)).join('')||'<p class="muted2">Nothing waiting.</p>'}</div>
     <h2 class="osec2">Paid lately</h2><div class="olist">${paid.map(c=>row(c,`<p class="muted2">Paid ${fmtDay(c.invoice.paidT)}</p>`)).join('')||'<p class="muted2">Nothing in the last 60 days.</p>'}</div>`}
+
+/* ---------- PHOTOS & NOTES (Oct 9): one place for inspection findings and job photos ---------- */
+const allNotes=c=>(c.report?[{t:c.report.t,text:c.report.notes,photos:c.report.photos||[],kind:'inspection'}]:[]).concat(c.updates||[]).sort((a,b)=>b.t-a.t);
+function updatesPage(c){const U=allNotes(c);
+  const close=open(sheetWrap('upP','Photos & notes · '+esc(first(c.name)),`<div class="obtns"><button class="ob ob-main ob-xl" type="button" id="upNew">${oi('cam')}Add photos & notes</button></div>
+    <div class="field"><label for="ccL">CompanyCam timeline link (optional)</label><input id="ccL" type="url" placeholder="https://app.companycam.com/timeline/…" value="${esc(c.camLink||'')}"></div>
+    ${U.map(u=>`<div class="ocard2"><span class="okick">${u.kind==='inspection'?'Inspection · ':''}${fmtDay(u.t)}${u.by?' · '+esc(u.by):''}</span>${u.text?`<p>${esc(u.text)}</p>`:''}${(u.photos||[]).length?`<div class="pgrid">${u.photos.map(p=>`<img src="${p}" alt="">`).join('')}</div>`:''}</div>`).join('')||'<p class="muted2">Nothing yet.</p>'}`));
+  $('#upNew').onclick=()=>{close();updSheet(c.id)};
+  $('#ccL').onchange=e=>{const v=e.target.value.trim();if(v&&!/^https:\/\//.test(v)){toast('Paste the full https:// link.');return}c.camLink=v;c.show=c.show||{};if(v)c.show.updates=true;save();toast('Saved. Their portal shows “See every photo”.')}}
+function updSheet(id){const c=byId(id),insp=['lead','booked'].includes(c.stage),pics=[];
+  const close=open(sheetWrap('upH',insp?'Inspection photos & notes':'Photos & notes',`<div class="field"><label for="upt">${insp?'What you found, in plain words':'What happened'}</label><textarea id="upt" rows="3" placeholder="${insp?'Soft decking over the back bedroom, about 3 sheets. Gutters fine.':'Tear-off done. Shingles go on tomorrow.'}"></textarea></div>
+    <div class="field"><span class="flabel">Photos</span><label class="upl" for="upf"><span>Take or add photos</span><input id="upf" type="file" accept="image/*" multiple></label><div class="thumbs" id="upth"></div></div>
+    <label class="oswitch"><input type="checkbox" id="upShow" checked><span></span><b>Show in ${esc(first(c.name))}’s portal</b></label>
+    <div class="obtns"><button class="ob ob-main ob-xl" type="button" id="upgo">Save</button></div>`),'#upt');
+  $('#upf').onchange=e=>{[...e.target.files].slice(0,8).forEach(f=>readPhoto(f,1000,u=>{pics.push(u);$('#upth').innerHTML=pics.map(u=>`<img src="${u}" alt="">`).join('')}))};
+  $('#upgo').onclick=()=>{const t=$('#upt').value.trim();if(!t&&!pics.length){toast('Add a note or a photo.');return}
+    c.updates=(c.updates||[]).concat([{t:Date.now(),text:t,photos:pics,kind:insp?'inspection':''}]);c.show=c.show||{};if($('#upShow').checked)c.show.updates=true;
+    if(insp)c.stage='inspected';save();close();custSheet(c.id);toast(insp?'Saved. Next: send the estimate.':'Saved.')}}
+function reportSheet(id){updSheet(id)}
+/* ---------- STAGE BAR (Oct 9): sales only. After “Approved”, job steps take over ---------- */
+const SALES=[['lead','Request'],['booked','Booked'],['estimate','Estimate'],['approved','Approved']];
+function stageBar(c){if(c.stage==='lost')return'';const after=['approved','work','invoiced','paid'].includes(c.stage);
+  if(after&&c.stage!=='approved'){const p=progress(c),inv=c.invoice;return`<button type="button" class="jprog" data-sec="progress"><span class="okick">Job steps</span><b>${p.n} of ${p.of}${p.next?' · next: '+esc(p.next.l):' · all done'}</b><span class="obar2"><i style="width:${Math.round(p.n/Math.max(1,p.of)*100)}%"></i></span>${inv?`<small>${inv.status==='paid'?'Invoice paid ✓':'Invoice not paid yet'}</small>`:''}</button>`}
+  const si=Math.max(0,SALES.findIndex(s=>s[0]===(c.stage==='inspected'?'booked':c.stage)));
+  return`<ol class="jsteps js4" aria-label="Job stage">${SALES.map(([k,l],i)=>`<li class="${i<si?'done':i===si?'now':''}"><button type="button" data-stage="${k}" aria-label="Set stage: ${l}">${i<si?oi('check'):i+1}</button><span>${l}</span></li>`).join('')}</ol><p class="jhint">Tap any step to move the job back or forward.${c.stage==='approved'?' After this, use Job steps.':''}</p>`}
 
 /* ---------- backend: every lead and booking goes to the client's Apps Script web app
    (Google Sheet row + instant owner alert + GoHighLevel contact/appointment). Demo mode when CFG.backend is empty. ---------- */
