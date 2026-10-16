@@ -1,4 +1,4 @@
-/* Clear v3 (Oct 16): light, product-first, matches the Unplanned Holdings page. Generated from luxe2.css by mk_clear3.py + overrides below.
+/* Clear v3 (Oct 16): light, product-first, matches the Unplanned & Co. page. Generated from luxe2.css by mk_clear3.py + overrides below.
    (was Luxe v2: dark, lit, simple. For trades (HVAC, plumbing, auto, barbers...). No engraving.
    Per-trade tokens come from <style id="luxe2-theme">: --lx-night (base), --lx-hi (accent light). Instrument Sans throughout. */
 :root{
