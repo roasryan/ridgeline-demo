@@ -111,7 +111,16 @@ button,input,textarea{font:inherit;color:inherit}
 .cstl li.done .cst-b{background:var(--green);border-color:var(--green);color:#fff}
 .cstl b{display:block;font-weight:700}.cstl li.done b{color:var(--soft)}.cstl small{color:var(--soft);font-size:14px}
 .cst-cam{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;border:1.5px solid var(--line);color:var(--ink);cursor:pointer}
-</style></head><body><div id="capp"></div><div id="clayer"></div><script>/* ============ Ridgeline crew screen (crew.html) — Oct 8 ============
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="assets/clear3.css">
+<style id="clear3-theme">:root{--lx-night:#1F2A33;--lx-hi:#FFD400;--hi-ink:#7A6500}</style>
+
+
+
+
+
+</head><body><div id="capp"></div><div id="clayer"></div><script>/* ============ Ridgeline crew screen (crew.html) — Oct 8 ============
    For employees on their phone. Sign in with the code the owner gave them. See today's jobs: what kind of job, when,
    where (one tap to Google Maps / Apple Maps / Waze), who the customer is, what to do. Tap "On my way" / "I'm here" / "Done".
    Add photos if the owner allows it. English / Español. Live: shared job store on the backend. Demo: this browser. */
@@ -337,4 +346,5 @@ if(CODE){$('#capp').innerHTML=`<main class="csign"><div class="ccard csign-card"
   api({action:'crew_get'}).then(r=>{if(r.ok){V=r;home()}else{if(r.reason==='code')S.set('rl-crew','');signIn(r.reason==='net'?T().net:'')}})}
 else signIn();
 })();
-</script></body></html>
+</script><script src="assets/luxe2.js" defer></script>
+</body></html>
