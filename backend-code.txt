@@ -1,5 +1,5 @@
 /**
- * Unplanned Studio — website backend for local service sites (template). v3
+ * Unplanned & Co. — website backend for local service sites (template). v3
  * One copy per client, deployed as a Google Apps Script web app (free).
  *
  *   GET  ?action=slots&days=28   → open start times per day ("08:00", "09:30"…) + the owner's settings
